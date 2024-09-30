@@ -1,0 +1,10 @@
+﻿@page "/"
+@inject IConfiguration config
+
+<PageTitle>Home</PageTitle>
+
+<h1>Welcome to @(config.GetValue<string>("CSIDE:AppName"))</h1>
+
+<div style="height:50vh;background-color:lightgrey">This is a big ol empty div to check scroll behaviour</div>
+
+

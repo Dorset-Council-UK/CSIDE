@@ -1,0 +1,65 @@
+﻿@inject IConfiguration config
+
+<div class="top-row ps-1 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">
+            <img src="https://gistaticprod.blob.core.windows.net/giframeworkmaps/version-logos/Dorset council logo_white_d.svg" width="32" class="d-inline-block">
+            <span class="d-none d-md-inline-block"> @(config.GetValue<string>("CSIDE:AppName"))</span>
+        </a>
+    </div>
+</div>
+
+<div class="nav-scrollable d-flex flex-column align-items-center align-items-md-start">
+    <nav class="flex-grow-1">
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door-fill mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">Home</span></i><span class="d-none d-md-block"> Home</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="rights-of-way">
+                <i class="bi bi-person-walking mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">Rights of Way</span></i><span class="d-none d-md-block"> Rights of Way</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="maintenance">
+                <i class="bi bi-tools mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">Maintenance</span></i><span class="d-none d-md-block"> Maintenance</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="infrastructure">
+                <i class="bi bi-signpost-split-fill mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">Infrastructure</span></i><span class="d-none d-md-block"> Infrastructure</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="surveys">
+                <i class="bi bi-question-circle-fill mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">Surveys</span></i><span class="d-none d-md-block"> Surveys</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="dmmo">
+                <i class="bi bi-file-earmark-text-fill mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">DMMOs</span></i><span class="d-none d-md-block"> DMMOs</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="ppo">
+                <i class="bi bi-sign-merge-right-fill mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">PPOs</span></i><span class="d-none d-md-block"> PPOs</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-1 px-md-3">
+            <NavLink class="nav-link" href="landowner-deposits">
+                <i class="bi bi-archive-fill mx-2 fs-5" aria-hidden="true"><span class="visually-hidden">Landowner Deposits</span></i><span class="d-none d-md-block"> Landowner Deposits</span>
+            </NavLink>
+        </div>
+        
+    </nav>
+    <div class="mt-auto p-2 small d-none d-md-flex nav-credit"><a href="https://github.com/Dorset-Council-UK"><i class="bi bi-github"></i> CSIDE v0.1 ALPHA</a></div>
+</div>
+
