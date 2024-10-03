@@ -1,4 +1,7 @@
 ﻿@inject IConfiguration config
+@{
+    var iconsRoot = config.GetValue<string>("CSIDE:Theme:IconsRoot");
+}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +13,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="CSIDE.styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" href="@iconsRoot/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="@iconsRoot/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="@iconsRoot/apple-touch-icon.png" />
+    @if (!string.IsNullOrEmpty(iconsRoot))
+    {
+        <link rel="manifest" href="@iconsRoot/manifest.webmanifest" />
+    }
     <style type="text/css">
         :root{
             --primary-color: @(config.GetValue<string>("CSIDE:Theme:PrimaryColour"));

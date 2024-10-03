@@ -3,7 +3,7 @@
 <div class="top-row ps-1 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">
-            <img src="https://gistaticprod.blob.core.windows.net/giframeworkmaps/version-logos/Dorset council logo_white_d.svg" width="32" class="d-inline-block">
+            <img src="@(config.GetValue<string>("CSIDE:Theme:IconsRoot"))/brand_logo.svg" width="32" class="d-inline-block" alt="Logo">
             <span class="d-none d-md-inline-block"> @(config.GetValue<string>("CSIDE:AppName"))</span>
         </a>
     </div>
