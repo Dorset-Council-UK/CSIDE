@@ -1,4 +1,6 @@
+using CSIDE.Authorization;
 using CSIDE.Components;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -40,37 +42,15 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                         },
                         OnTicketReceived = async ctxt =>
                         {
-                            if (ctxt.Principal != null)
-                            {
-                                if (ctxt.Principal.Identity is ClaimsIdentity identity)
-                                {
-                                    var colClaims = ctxt.Principal.Claims.ToList();
-                                    var IdentityProvider = colClaims.FirstOrDefault(
-                                        c => c.Type == "http://schemas.microsoft.com/identity/claims/identityprovider")?.Value;
-                                    var Objectidentifier = colClaims.FirstOrDefault(
-                                        c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                                    var EmailAddress = colClaims.FirstOrDefault(
-                                        c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
-                                    var FirstName = colClaims.FirstOrDefault(
-                                        c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")?.Value;
-                                    var LastName = colClaims.FirstOrDefault(
-                                        c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname")?.Value;
-                                    var AzureB2CFlow = colClaims.FirstOrDefault(
-                                        c => c.Type == "http://schemas.microsoft.com/claims/authnclassreference")?.Value;
-                                    var auth_time = colClaims.FirstOrDefault(
-                                        c => c.Type == "auth_time")?.Value;
-                                    var DisplayName = colClaims.FirstOrDefault(
-                                        c => c.Type == "name")?.Value;
-                                    var idp_access_token = colClaims.FirstOrDefault(
-                                        c => c.Type == "idp_access_token")?.Value;
-                                }
-                            }
                             await Task.Yield();
                         },
                     };
                 });
-builder.Services.AddControllersWithViews()
-    .AddMicrosoftIdentityUI();
+
+builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator"));
 
 var app = builder.Build();
 
@@ -85,7 +65,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
