@@ -13,7 +13,11 @@
                         <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-circle"></i> @context.User.Identity?.Name</button>
                         <ul class="dropdown-menu">
                             <li><h6 class="dropdown-header">@(context.User.Claims.FirstOrDefault(c => c.Type.Contains("email")) != null ? context.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))!.Value : "")</h6></li>
-                            <li><a class="dropdown-item" href="#">Manage application</a></li>
+                            <li><a class="dropdown-item" href="Account/MyAccount">My account</a></li>
+                            @if (context.User.IsInRole("Administrator"))
+                            {
+                                <li><a class="dropdown-item" href="#">Manage application</a></li>
+                            }
                             <li><a class="dropdown-item" href="MicrosoftIdentity/Account/SignOut">Logout</a></li>
                         </ul>
                     </div>

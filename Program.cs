@@ -1,9 +1,13 @@
 using CSIDE.Authorization;
 using CSIDE.Components;
+using CSIDE.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using System;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +17,16 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddCascadingAuthenticationState();
-
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+{
+    options.UseNpgsql("name=ConnectionStrings:CSIDE", x =>
+    {
+        x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
+        x.UseNodaTime();
+    });
+    options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
+});
+builder.Services.AddMemoryCache();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
                 {
