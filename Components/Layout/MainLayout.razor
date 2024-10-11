@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
 <div class="page flex-row">
     <div class="sidebar">
@@ -17,14 +18,14 @@
                             <ul class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
                                 <li><h6 class="dropdown-header">@(context.User.Claims.FirstOrDefault(c => c.Type.Contains("email")) != null ? context.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))!.Value : "")</h6></li>
 
-                                <li><a class="dropdown-item" href="Account/MyAccount">My account</a></li>
+                                <li><a class="dropdown-item" href="Account/MyAccount">@localizer["My Account Label"]</a></li>
                                 @if (context.User.IsInRole("Administrator"))
                                 {
-                                    <li><a class="dropdown-item" href="#">Manage application</a></li>
+                                    <li><a class="dropdown-item" href="#">@localizer["Manage Application Label"]</a></li>
                                 }
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a id="logout" type="submit" class="btn btn-outline-danger btn-sm ms-2" href="MicrosoftIdentity/Account/SignOut"><i class="bi-door-open"></i> Logout</a>
+                                    <a id="logout" type="submit" class="btn btn-outline-danger btn-sm ms-2" href="MicrosoftIdentity/Account/SignOut"><i class="bi-door-open"></i> @localizer["Logout Label"]</a>
                                 </li>
                             </ul>
                         </li>

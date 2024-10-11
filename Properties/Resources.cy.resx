@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Home Title" xml:space="preserve">
+    <value>Hafan</value>
+  </data>
+  <data name="Welcome Text" xml:space="preserve">
+    <value>Croeso i {0}</value>
+  </data>
+  <data name="Manage Application Label" xml:space="preserve">
+    <value>Rheoli</value>
+  </data>
+  <data name="Rights of Way Title" xml:space="preserve">
+    <value>Hawliau Tramwy</value>
+  </data>
+  <data name="Maintenance Title" xml:space="preserve">
+    <value>Cynhaliaeth</value>
+  </data>
+  <data name="Infrastructure Title" xml:space="preserve">
+    <value>Seilwaith</value>
+  </data>
+  <data name="Surveys Title" xml:space="preserve">
+    <value>Arolygon</value>
+  </data>
+  <data name="Landowner Deposits Title" xml:space="preserve">
+    <value>Blaendal y Tirfeddiannwr</value>
+  </data>
+  <data name="DMMO Abbreviation" xml:space="preserve">
+    <value>GAMD</value>
+  </data>
+  <data name="PPO Abbreviation" xml:space="preserve">
+    <value>GLC</value>
+  </data>
+  <data name="PPO Full Text" xml:space="preserve">
+    <value>Gorchmynion Llwybrau Cyhoeddus</value>
+  </data>
+  <data name="DMMO Full Text" xml:space="preserve">
+    <value>Gorchmynion Addasu Mapiau Diffiniol</value>
+  </data>
+  <data name="Logout Label" xml:space="preserve">
+    <value>Allgofnodi</value>
+  </data>
+  <data name="Access Denied Title" xml:space="preserve">
+    <value>Mynediad wedi'i wrthod</value>
+  </data>
+  <data name="Access Denied Text" xml:space="preserve">
+    <value>Mae'n debyg nad oes gennych chi fynediad i'r dudalen hon. Cysylltwch â gweinyddwr eich system i ofyn am fynediad</value>
+  </data>
+  <data name="Error Title" xml:space="preserve">
+    <value>Gwall</value>
+  </data>
+  <data name="Error Header Text" xml:space="preserve">
+    <value>Sori! Aeth rhywbeth o'i le</value>
+  </data>
+  <data name="Error Text" xml:space="preserve">
+    <value>Bu gwall wrth ddelio â'ch cais. Os bydd hyn yn parhau i ddigwydd, cysylltwch â gweinyddwr eich system</value>
+  </data>
+  <data name="My Account Label" xml:space="preserve">
+    <value>Fy nghyfrif</value>
+  </data>
+  <data name="My Roles Header" xml:space="preserve">
+    <value>Fy rolau</value>
+  </data>
+  <data name="Loading Text" xml:space="preserve">
+    <value>Llwytho</value>
+  </data>
+  <data name="No Roles Text" xml:space="preserve">
+    <value>Nid oes gennych unrhyw rolau wedi'u neilltuo i chi</value>
+  </data>
+  <data name="Roles List Text" xml:space="preserve">
+    <value>Dyma'r rolau sydd wedi'u neilltuo i chi gan weinyddwr eich system. Maent yn rheoli'r hyn y gallwch ac na allwch ei wneud yn yr app.</value>
+  </data>
+  <data name="Account Details Text" xml:space="preserve">
+    <value>Mae manylion eich cyfrif a chyfrinair yn cael eu rheoli gan eich darparwr hunaniaeth.</value>
+  </data>
+  <data name="Display Name Label" xml:space="preserve">
+    <value>Enw arddangos</value>
+  </data>
+  <data name="Primary Email Label" xml:space="preserve">
+    <value>Prif gyfeiriad e-bost</value>
+  </data>
+  <data name="User ID Label" xml:space="preserve">
+    <value>ID Defnyddiwr</value>
+  </data>
+</root>

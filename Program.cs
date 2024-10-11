@@ -26,6 +26,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     });
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 });
+builder.Services.AddLocalization();
 builder.Services.AddMemoryCache();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
@@ -66,7 +67,14 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));
 
 var app = builder.Build();
+// add supported languages/cultures
+string[] supportedCultures = ["en-GB", "cy"];
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
 
+app.UseRequestLocalization(localizationOptions);
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
