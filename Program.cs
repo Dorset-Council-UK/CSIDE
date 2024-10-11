@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator"));
+    .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));
 
 var app = builder.Build();
 
