@@ -1,11 +1,11 @@
-﻿@page "/Maintenance"
+﻿@page "/Landowner-Deposits"
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
-<h1>@localizer["Maintenance Title"]</h1>
+<h1>@localizer["Landowner Deposits Title"]</h1>
 
 
 
@@ -19,7 +19,7 @@
         NavItems = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-            new BreadcrumbItem{ Text = localizer["Maintenance Title"], IsCurrentPage = true }
+            new BreadcrumbItem{ Text = localizer["Landowner Deposits Title"], IsCurrentPage = true }
         };
     }
 
