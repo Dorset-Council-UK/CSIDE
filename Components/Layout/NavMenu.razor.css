@@ -4,6 +4,7 @@
     background-color: rgba(0,0,0,0.4);
     position:sticky;
     top:0;
+    padding-left:0.2rem !important; /*overrides Blazor Bootstrap CSS*/
 }
 
 .navbar-brand {
