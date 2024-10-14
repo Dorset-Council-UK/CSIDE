@@ -26,6 +26,8 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     });
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 });
+builder.Services.AddLocalization();
+builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
@@ -63,10 +65,17 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator"));
+    .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));
 
 var app = builder.Build();
+// add supported languages/cultures
+string[] supportedCultures = ["en-GB", "cy"];
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
 
+app.UseRequestLocalization(localizationOptions);
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -79,7 +88,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

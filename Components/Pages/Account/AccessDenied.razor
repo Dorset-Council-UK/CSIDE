@@ -1,10 +1,13 @@
 ﻿@attribute [AllowAnonymous]
 @page "/Account/AccessDenied"
-<PageTitle>Access Denied</PageTitle>
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
-<h3>Access Denied</h3>
 
-<p>Looks like you don't have access to this page. Contact your system administrator to request access.</p>
+<PageTitle>@localizer["Access Denied Title"]</PageTitle>
+
+<h3>@localizer["Access Denied Title"]</h3>
+
+<p>@localizer["Access Denied Text"]</p>
 
 @code {
 

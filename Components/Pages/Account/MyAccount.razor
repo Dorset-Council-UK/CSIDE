@@ -1,30 +1,31 @@
 ﻿@page "/Account/MyAccount"
 @inject IDbContextFactory<ApplicationDbContext> ContextFactory;
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
-<PageTitle>My Account</PageTitle>
+<PageTitle>@localizer["My Account Label"]</PageTitle>
 
-<h3>My Account</h3>
+<h3>@localizer["My Account Label"]</h3>
 
-<p>Your account details and password are managed by your identity provider.</p>
+<p>@localizer["Account Details Text"]</p>
 
 <table class="table table-striped">
-    <tr><th>Display name</th><td>@UserDisplayName</td></tr>
-    <tr><th>Primary email address</th><td>@UserPrimaryEmailAddress</td></tr>
-    <tr><th>User ID</th><td>@UserID</td></tr>
+    <tr><th>@localizer["Display Name Label"]</th><td>@UserDisplayName</td></tr>
+    <tr><th>@localizer["Primary Email Label"]</th><td>@UserPrimaryEmailAddress</td></tr>
+    <tr><th>@localizer["User ID Label"]</th><td>@UserID</td></tr>
 </table>
 
-<h3>My roles</h3>
+<h3>@localizer["My Roles Header"]</h3>
 
 @if(ApplicationRoles is null){
-    <p>Loading</p>
+    <p>@localizer["Loading Text"]</p>
 }else{
     if(ApplicationRoles.Count == 0)
     {
-        <p>You haven't been assigined any roles</p>
+        <p>@localizer["No Roles Text"]</p>
     }
     else
     {
-        <p>These are the roles that have been assigned to you by your system administrator. They control what you can and can't do in the app.</p>
+        <p>@localizer["Roles List Text"]</p>
         <ul>
             @foreach (var role in ApplicationRoles)
             {
