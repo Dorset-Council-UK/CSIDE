@@ -1,0 +1,27 @@
+﻿@page "/Maintenance"
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Maintenance Title"]</h1>
+
+
+
+@code {
+
+    private List<BreadcrumbItem>? NavItems;
+
+
+    protected override void OnInitialized()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = "Home", Href ="/" },
+            new BreadcrumbItem{ Text = "Maintenance", IsCurrentPage = true }
+        };
+    }
+
+
+}

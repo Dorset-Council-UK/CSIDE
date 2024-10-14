@@ -29,6 +29,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
+builder.Services.AddBlazorBootstrap();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
                 {
