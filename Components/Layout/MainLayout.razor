@@ -8,9 +8,10 @@
 
     <main class="flex-grow-1">
         <div class="top-row px-4">
+            <CultureSelector></CultureSelector>
             <AuthorizeView>
                 <Authorized>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ps-3">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> @context.User.Identity?.Name

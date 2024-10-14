@@ -27,6 +27,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 });
 builder.Services.AddLocalization();
+builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
@@ -87,7 +88,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
