@@ -21,6 +21,18 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.WorkDone)
                 .HasMaxLength(4000);
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (point)");
+
+            builder
+                .Navigation(x => x.JobPriority)
+                .AutoInclude();
+
+            builder
+                .Navigation(x => x.JobStatus)
+                .AutoInclude();
+
+            builder
+                .Navigation(x => x.Route)
+                .AutoInclude();
         }
     }
 }

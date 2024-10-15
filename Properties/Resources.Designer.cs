@@ -205,6 +205,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maintenance Job {0}.
+        /// </summary>
+        internal static string Maintenance_Details_Title {
+            get {
+                return ResourceManager.GetString("Maintenance Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance.
         /// </summary>
         internal static string Maintenance_Title {

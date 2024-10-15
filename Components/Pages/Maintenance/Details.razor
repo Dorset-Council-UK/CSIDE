@@ -1,0 +1,94 @@
+﻿@page "/Maintenance/Details/{JobId:int}"
+@using CSIDE.Data.Models.Maintenance
+@using NodaTime
+@using System.Globalization
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+@if (Job is null && !IsBusy)
+{
+    <div class="alert alert-danger">This maintenance job does not exist</div>
+}
+else
+{
+    if(Job is not null){
+        <h1>@localizer["Maintenance Details Title", Job.Id]</h1>
+
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Job ID</th>
+                            <td>@Job.Id</td>
+                        </tr>
+                        <tr>
+                            <th>Log date</th>
+                            <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.ToString("g", CultureInfo.CurrentCulture) : "Unknown")</td>
+                        </tr>
+                        <tr>
+                            <th>Logged by</th>
+                            <td>@Job.LoggedByName</td>
+                        </tr>
+                        <tr>
+                            <th>Problem</th>
+                            <td class="text-break">@Job.ProblemDescription</td>
+                        </tr>
+                        <tr>
+                            <th>Assigned to</th>
+                            <td>@Job.MaintenanceTeam?.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Route code</th>
+                            <td>@Job.RouteId</td>
+                        </tr>
+                        <tr>
+                            <th>Priority</th>
+                            <td>@Job.JobPriority?.Description</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>@Job.JobStatus?.Description</td>
+                        </tr>
+                        <tr>
+                            <th>Work done</th>
+                            <td class="text-break">@Job.WorkDone</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <img src="https://gi.dorsetcouncil.gov.uk/geoserver/background_maps_open/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&TRANSPARENT=TRUE&LAYERS=background_maps_open:openzoomstack&srs=epsg%3a27700&format=image%2fjpeg&width=300&height=300&bbox=362270,90976,362570,91276&format_options=layout:red_star_40_copy;" class="img-fluid" alt="Map" />
+                <table class="table table-striped table-sm">
+                    <tbody>
+                        <tr><th>Easting</th><td>@Job.Geom?.X</td></tr>
+                        <tr><th>Northing</th><td>@Job.Geom?.Y</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+@code {
+
+    [Parameter]
+    public int JobId{ get; set; }
+    private Job? Job { get; set; }
+
+    private bool IsBusy{ get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsBusy = true;
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            Job = await context.MaintenanceJobs.FindAsync(JobId);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+}
