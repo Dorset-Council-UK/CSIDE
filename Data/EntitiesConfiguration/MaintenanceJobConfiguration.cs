@@ -20,6 +20,7 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.JobStatusId).IsRequired();
             builder.Property(x => x.CompletionNotes)
                 .HasMaxLength(4000);
+            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (point)");
         }
     }
 }

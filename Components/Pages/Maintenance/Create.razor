@@ -100,7 +100,8 @@
             if (Job is not null)
             {
                 using var context = contextFactory.CreateDbContext();
-
+                Job.Geom = new NetTopologySuite.Geometries.Point(366646, 101677);
+                Job.Geom.SRID = 27700;
                 context.MaintenanceJobs.Add(Job);
                 await context.SaveChangesAsync();
                 //redirect

@@ -23,6 +23,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     {
         x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
         x.UseNodaTime();
+        x.UseNetTopologySuite();
     });
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 });

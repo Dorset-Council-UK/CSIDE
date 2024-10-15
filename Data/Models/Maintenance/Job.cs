@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using NetTopologySuite.Geometries;
+using NodaTime;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,6 +17,7 @@ namespace CSIDE.Data.Models.Maintenance
         public LocalDate? CompletionDate { get; set; }
         [StringLength(4000)]
         public string? CompletionNotes { get; set; }
+        public Point Geom { get; set; }
 
         //linked properties
         [Required]
