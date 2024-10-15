@@ -1,8 +1,8 @@
 ﻿using CSIDE.Data.EntitiesConfiguration;
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.RoW;
 using Microsoft.EntityFrameworkCore;
-using System.Transactions;
 
 namespace CSIDE.Data
 {
@@ -13,6 +13,9 @@ namespace CSIDE.Data
         public DbSet<Job> MaintenanceJobs { get; set; }
         public DbSet<JobPriority> JobPriorities { get; set; }
         public DbSet<JobStatus> JobStatuses { get; set; }
+        public DbSet<MaintenanceTeam> MaintenanceTeams { get; set; }
+        public DbSet<Models.RoW.Route> Routes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +31,7 @@ namespace CSIDE.Data
             // DbSet configurations
             modelBuilder.ApplyConfiguration(new ApplicationUserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new MaintenanceJobConfiguration());
+            modelBuilder.ApplyConfiguration(new RouteConfiguration());
         }
     }
 }

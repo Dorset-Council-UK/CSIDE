@@ -7,76 +7,97 @@
 
 <h1>@localizer["Maintenance Create Title"]</h1>
 
-@if(Job is not null){
-    <EditForm Model="Job" OnValidSubmit="@HandleValidSubmit">
+<div class="row">
+    <div class="col-md-8">
+        @if (Job is not null)
+        {
+            <EditForm Model="Job" OnValidSubmit="@HandleValidSubmit">
 
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-        <div class="mb-3">
-            <label class="form-label" for="problem-description">Problem description</label>
-            <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
-            <ValidationMessage For="() => Job.ProblemDescription" />
-        </div>
+                <div class="mb-3">
+                    <label class="form-label" for="route-code">Route code</label>
+                    <InputText id="route-code" class="form-control-plaintext" readonly @bind-Value="Job.RouteId"></InputText>
+                </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="status">Status</label>
-            <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
-                @if(JobStatuses is not null)
-                {
-                    @foreach(var status in JobStatuses.OrderBy(s => s.SortOrder))
-                    {
-                        if(Job.JobStatusId == status.Id)
+                <div class="mb-3">
+                    <label class="form-label" for="problem-description">Problem description</label>
+                    <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
+                    <ValidationMessage For="() => Job.ProblemDescription" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="priority">Priority</label>
+                    <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
+                        @if (JobPriorities is not null)
                         {
-                            <option value="@status.Id" selected>@status.Description</option>
+                            @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
+                            {
+                                <option value="@priority.Id">@priority.Description</option>
+                            }
                         }
-                        else
+
+                    </InputSelect>
+                    <ValidationMessage For="() => Job.JobPriorityId" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="status">Status</label>
+                    <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
+                        @if (JobStatuses is not null)
                         {
-                            <option value="@status.Id">@status.Description</option>
+                            @foreach (var status in JobStatuses.OrderBy(s => s.SortOrder))
+                            {
+                                if (Job.JobStatusId == status.Id)
+                                {
+                                    <option value="@status.Id" selected>@status.Description</option>
+                                }
+                                else
+                                {
+                                    <option value="@status.Id">@status.Description</option>
+                                }
+
+                            }
                         }
-                        
-                    }
-                }
-            </select>
-            <ValidationMessage For="() => Job.JobStatusId" />
-        </div>
-        <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
-            <div class="mb-3">
-                <label class="form-label" for="completion-date">Completion date</label>
-                <input type="date" class="form-control" value="@JobCompletionDate" @onchange="UpdateCompletionDateProperty" />
-                <ValidationMessage For="() => Job.CompletionDate" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="completion-notes">Completion Notes</label>
-                <InputTextArea id="completion-notes" class="form-control" @bind-Value="Job.CompletionNotes"></InputTextArea>
-                <ValidationMessage For="() => Job.CompletionNotes" />
-            </div>
-            
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="priority">Priority</label>
-            <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
-                @if (JobPriorities is not null)
-                {
-                    @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
-                    {
-                        <option value="@priority.Id">@priority.Description</option>
-                    }
-                }
+                    </select>
+                    <ValidationMessage For="() => Job.JobStatusId" />
+                </div>
 
-            </InputSelect>
-            <ValidationMessage For="() => Job.JobPriorityId" />
-        </div>
+                <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
+                    <div class="mb-3">
+                        <label class="form-label" for="completion-date">Completion date</label>
+                        <input type="date" class="form-control" value="" @onchange="UpdateCompletionDateProperty" />
+                        <ValidationMessage For="() => Job.CompletionDate" />
+                    </div>
 
-        <button type="submit" class="btn btn-primary" disabled="@IsBusy">Create</button>
-    </EditForm>
-}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="work-done">Work done</label>
+                    <InputTextArea id="work-done" class="form-control" @bind-Value="Job.WorkDone"></InputTextArea>
+                    <ValidationMessage For="() => Job.WorkDone" />
+                </div>
+
+                <button type="submit" class="btn btn-primary" disabled="@IsBusy">Create</button>
+            </EditForm>
+        }
+    </div>
+    <div class="col-md-4">
+        <img src="https://gi.dorsetcouncil.gov.uk/geoserver/background_maps_open/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&TRANSPARENT=TRUE&LAYERS=background_maps_open:openzoomstack&srs=epsg%3a27700&format=image%2fjpeg&width=300&height=300&bbox=362270,90976,362570,91276&format_options=layout:red_star_40_copy;" class="img-fluid" alt="Map" />
+        <p>Map goes here</p>
+
+    </div>
+</div>
+
+
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     private Job? Job { get; set; }
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
-
-    private DateTime? JobCompletionDate;
 
     private bool IsBusy{ get; set; }
     private bool CompleteDateShown { get; set; } = false;
@@ -89,23 +110,28 @@
         Job = new()
         {
             JobStatusId = JobStatuses.FirstOrDefault()?.Id,
-            JobPriorityId = JobPriorities.FirstOrDefault()?.Id
+            JobPriorityId = JobPriorities.FirstOrDefault()?.Id,
+            RouteId = "S27/2" //TODO - Make this dynamic (should come from previous screen)
         };
     }
 
     private async Task HandleValidSubmit()
     {
+        if(IsBusy){ return; }
         IsBusy = true;
         try {
             if (Job is not null)
             {
                 using var context = contextFactory.CreateDbContext();
-                Job.Geom = new NetTopologySuite.Geometries.Point(366646, 101677);
+                Job.Geom = new NetTopologySuite.Geometries.Point(366646, 101677); //TODO - Make this dynamic
                 Job.Geom.SRID = 27700;
+                var user = (await authenticationStateTask).User;
+                Job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                Job.LoggedByName = user.Identity?.Name;
                 context.MaintenanceJobs.Add(Job);
                 await context.SaveChangesAsync();
                 //redirect
-                navigationManager.NavigateTo("/Maintenance");
+                navigationManager.NavigateTo($"/Maintenance/Details/{Job.Id}");
             }
         }
         catch(Exception ex)
