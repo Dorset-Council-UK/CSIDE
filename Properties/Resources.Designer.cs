@@ -88,6 +88,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new job.
+        /// </summary>
+        internal static string Create_New_Job_Label {
+            get {
+                return ResourceManager.GetString("Create New Job Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Display name.
         /// </summary>
         internal static string Display_Name_Label {
@@ -183,6 +192,15 @@ namespace CSIDE.Properties {
         internal static string Logout_Label {
             get {
                 return ResourceManager.GetString("Logout Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new maintenance job.
+        /// </summary>
+        internal static string Maintenance_Create_Title {
+            get {
+                return ResourceManager.GetString("Maintenance Create Title", resourceCulture);
             }
         }
         

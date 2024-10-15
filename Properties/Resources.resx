@@ -198,4 +198,10 @@
   <data name="User ID Label" xml:space="preserve">
     <value>User ID</value>
   </data>
+  <data name="Maintenance Create Title" xml:space="preserve">
+    <value>Create new maintenance job</value>
+  </data>
+  <data name="Create New Job Label" xml:space="preserve">
+    <value>Create new job</value>
+  </data>
 </root>

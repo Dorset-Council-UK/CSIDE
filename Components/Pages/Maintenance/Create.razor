@@ -1,0 +1,139 @@
+﻿@page "/Maintenance/Create"
+@using CSIDE.Data.Models.Maintenance
+@using NodaTime
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+<h1>@localizer["Maintenance Create Title"]</h1>
+
+@if(Job is not null){
+    <EditForm Model="Job" OnValidSubmit="@HandleValidSubmit">
+
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="mb-3">
+            <label class="form-label" for="problem-description">Problem description</label>
+            <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
+            <ValidationMessage For="() => Job.ProblemDescription" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="status">Status</label>
+            <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
+                @if(JobStatuses is not null)
+                {
+                    @foreach(var status in JobStatuses.OrderBy(s => s.SortOrder))
+                    {
+                        if(Job.JobStatusId == status.Id)
+                        {
+                            <option value="@status.Id" selected>@status.Description</option>
+                        }
+                        else
+                        {
+                            <option value="@status.Id">@status.Description</option>
+                        }
+                        
+                    }
+                }
+            </select>
+            <ValidationMessage For="() => Job.JobStatusId" />
+        </div>
+        <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
+            <div class="mb-3">
+                <label class="form-label" for="completion-date">Completion date</label>
+                <input type="date" class="form-control" value="@JobCompletionDate" @onchange="UpdateCompletionDateProperty" />
+                <ValidationMessage For="() => Job.CompletionDate" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="completion-notes">Completion Notes</label>
+                <InputTextArea id="completion-notes" class="form-control" @bind-Value="Job.CompletionNotes"></InputTextArea>
+                <ValidationMessage For="() => Job.CompletionNotes" />
+            </div>
+            
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="priority">Priority</label>
+            <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
+                @if (JobPriorities is not null)
+                {
+                    @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
+                    {
+                        <option value="@priority.Id">@priority.Description</option>
+                    }
+                }
+
+            </InputSelect>
+            <ValidationMessage For="() => Job.JobPriorityId" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled="@IsBusy">Create</button>
+    </EditForm>
+}
+@code {
+    private Job? Job { get; set; }
+    private JobStatus[]? JobStatuses { get; set; }
+    private JobPriority[]? JobPriorities { get; set; }
+
+    private DateTime? JobCompletionDate;
+
+    private bool IsBusy{ get; set; }
+    private bool CompleteDateShown { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = contextFactory.CreateDbContext();
+        JobStatuses = await context.JobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
+        JobPriorities = await context.JobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
+        Job = new()
+        {
+            JobStatusId = JobStatuses.FirstOrDefault()?.Id,
+            JobPriorityId = JobPriorities.FirstOrDefault()?.Id
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        IsBusy = true;
+        try {
+            if (Job is not null)
+            {
+                using var context = contextFactory.CreateDbContext();
+
+                context.MaintenanceJobs.Add(Job);
+                await context.SaveChangesAsync();
+                //redirect
+                navigationManager.NavigateTo("/Maintenance");
+            }
+        }
+        catch(Exception ex)
+        {
+            //TODO show error
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private void UpdateCompletionDateProperty(ChangeEventArgs eventArgs)
+    {
+        if (Job is not null && eventArgs.Value is not null)
+        {
+            var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
+            var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
+            Job.CompletionDate = parseResult.Value;
+        }
+    }
+
+    private void ShowOrHideCompletionDate(ChangeEventArgs eventArgs)
+    {
+        int NewJobStatusId;
+        if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
+        {
+            CompleteDateShown = JobStatuses!.Where(s => s.Id == NewJobStatusId).First().IsComplete;
+        }
+    }
+
+}
