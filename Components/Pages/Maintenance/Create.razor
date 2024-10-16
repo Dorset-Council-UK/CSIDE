@@ -94,6 +94,7 @@
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private List<BreadcrumbItem>? NavItems;
 
     private Job? Job { get; set; }
     private JobStatus[]? JobStatuses { get; set; }
@@ -104,6 +105,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Create Title"], IsCurrentPage = true }
+        };
+
         using var context = contextFactory.CreateDbContext();
         JobStatuses = await context.JobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
         JobPriorities = await context.JobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();

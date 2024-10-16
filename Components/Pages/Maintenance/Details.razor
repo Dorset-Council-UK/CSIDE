@@ -25,7 +25,7 @@ else
                         </tr>
                         <tr>
                             <th>Log date</th>
-                            <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.ToString("g", CultureInfo.CurrentCulture) : "Unknown")</td>
+                            <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")</td>
                         </tr>
                         <tr>
                             <th>Logged by</th>
@@ -71,12 +71,25 @@ else
     }
 }
 @code {
+    private List<BreadcrumbItem>? NavItems;
 
     [Parameter]
     public int JobId{ get; set; }
     private Job? Job { get; set; }
+    
 
     private bool IsBusy{ get; set; }
+
+    protected override void OnInitialized()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Details Title", JobId], IsCurrentPage = true }
+        };
+        base.OnInitialized();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
