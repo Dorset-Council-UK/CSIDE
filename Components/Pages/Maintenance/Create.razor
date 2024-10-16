@@ -5,30 +5,34 @@
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
 <h1>@localizer["Maintenance Create Title"]</h1>
 
 <div class="row">
     <div class="col-md-8">
         @if (Job is not null)
         {
-            <EditForm Model="Job" OnValidSubmit="@HandleValidSubmit">
+            <EditForm Model="Job"  OnSubmit="@SubmitFormAsync">
 
-                <DataAnnotationsValidator />
+                <FluentValidationValidator  @ref="_fluentValidationValidator" />
                 <ValidationSummary />
 
                 <div class="mb-3">
-                    <label class="form-label" for="route-code">Route code</label>
+                    <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
                     <InputText id="route-code" class="form-control-plaintext" readonly @bind-Value="Job.RouteId"></InputText>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="problem-description">Problem description</label>
+                    <label class="form-label" for="problem-description">@localizer["Problem Description Label"]</label>
                     <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
                     <ValidationMessage For="() => Job.ProblemDescription" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="priority">Priority</label>
+                    <label class="form-label" for="priority">@localizer["Job Priority Label"]</label>
                     <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
                         @if (JobPriorities is not null)
                         {
@@ -43,7 +47,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="status">Status</label>
+                    <label class="form-label" for="status">@localizer["Job Status Label"]</label>
                     <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
                         @if (JobStatuses is not null)
                         {
@@ -66,7 +70,7 @@
 
                 <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
                     <div class="mb-3">
-                        <label class="form-label" for="completion-date">Completion date</label>
+                        <label class="form-label" for="completion-date">@localizer["Completion Date Label"]</label>
                         <input type="date" class="form-control" value="" @onchange="UpdateCompletionDateProperty" />
                         <ValidationMessage For="() => Job.CompletionDate" />
                     </div>
@@ -74,12 +78,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="work-done">Work done</label>
+                    <label class="form-label" for="work-done">@localizer["Work Done Label"]</label>
                     <InputTextArea id="work-done" class="form-control" @bind-Value="Job.WorkDone"></InputTextArea>
                     <ValidationMessage For="() => Job.WorkDone" />
                 </div>
 
-                <button type="submit" class="btn btn-primary" disabled="@IsBusy">Create</button>
+                <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
             </EditForm>
         }
     </div>
@@ -95,6 +99,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private List<BreadcrumbItem>? NavItems;
+    private FluentValidationValidator? _fluentValidationValidator;
 
     private Job? Job { get; set; }
     private JobStatus[]? JobStatuses { get; set; }
@@ -123,32 +128,37 @@
         };
     }
 
-    private async Task HandleValidSubmit()
+
+    private async Task SubmitFormAsync()
     {
-        if(IsBusy){ return; }
-        IsBusy = true;
-        try {
-            if (Job is not null)
+        if (await _fluentValidationValidator!.ValidateAsync())
+        {
+            if (IsBusy) { return; }
+            IsBusy = true;
+            try
             {
-                using var context = contextFactory.CreateDbContext();
-                Job.Geom = new NetTopologySuite.Geometries.Point(366646, 101677); //TODO - Make this dynamic
-                Job.Geom.SRID = 27700;
-                var user = (await authenticationStateTask).User;
-                Job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                Job.LoggedByName = user.Identity?.Name;
-                context.MaintenanceJobs.Add(Job);
-                await context.SaveChangesAsync();
-                //redirect
-                navigationManager.NavigateTo($"/Maintenance/Details/{Job.Id}");
+                if (Job is not null)
+                {
+                    using var context = contextFactory.CreateDbContext();
+                    Job.Geom = new NetTopologySuite.Geometries.Point(366646, 101677); //TODO - Make this dynamic
+                    Job.Geom.SRID = 27700;
+                    var user = (await authenticationStateTask).User;
+                    Job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                    Job.LoggedByName = user.Identity?.Name;
+                    context.MaintenanceJobs.Add(Job);
+                    await context.SaveChangesAsync();
+                    //redirect
+                    navigationManager.NavigateTo($"/Maintenance/Details/{Job.Id}");
+                }
             }
-        }
-        catch(Exception ex)
-        {
-            //TODO show error
-        }
-        finally
-        {
-            IsBusy = false;
+            catch (Exception ex)
+            {
+                //TODO show error
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 
@@ -168,6 +178,7 @@
         if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
         {
             CompleteDateShown = JobStatuses!.Where(s => s.Id == NewJobStatusId).First().IsComplete;
+            Job.JobStatusId = NewJobStatusId;
         }
     }
 

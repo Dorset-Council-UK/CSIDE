@@ -22,7 +22,7 @@ namespace CSIDE.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace CSIDE.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CSIDE.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace CSIDE.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Looks like you don&apos;t have access to this page. Contact your system administrator to request access.
         /// </summary>
-        internal static string Access_Denied_Text {
+        public static string Access_Denied_Text {
             get {
                 return ResourceManager.GetString("Access Denied Text", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Access Denied.
         /// </summary>
-        internal static string Access_Denied_Title {
+        public static string Access_Denied_Title {
             get {
                 return ResourceManager.GetString("Access Denied Title", resourceCulture);
             }
@@ -81,16 +81,43 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Your account details and password are managed by your identity provider..
         /// </summary>
-        internal static string Account_Details_Text {
+        public static string Account_Details_Text {
             get {
                 return ResourceManager.GetString("Account Details Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assigned to.
+        /// </summary>
+        public static string Assigned_To_Label {
+            get {
+                return ResourceManager.GetString("Assigned To Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completion date.
+        /// </summary>
+        public static string Completion_Date_Label {
+            get {
+                return ResourceManager.GetString("Completion Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Create_Label {
+            get {
+                return ResourceManager.GetString("Create Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new job.
         /// </summary>
-        internal static string Create_New_Job_Label {
+        public static string Create_New_Job_Label {
             get {
                 return ResourceManager.GetString("Create New Job Label", resourceCulture);
             }
@@ -99,7 +126,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Display name.
         /// </summary>
-        internal static string Display_Name_Label {
+        public static string Display_Name_Label {
             get {
                 return ResourceManager.GetString("Display Name Label", resourceCulture);
             }
@@ -108,7 +135,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DMMO.
         /// </summary>
-        internal static string DMMO_Abbreviation {
+        public static string DMMO_Abbreviation {
             get {
                 return ResourceManager.GetString("DMMO Abbreviation", resourceCulture);
             }
@@ -117,16 +144,25 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Definitive Map Modification Orders.
         /// </summary>
-        internal static string DMMO_Full_Text {
+        public static string DMMO_Full_Text {
             get {
                 return ResourceManager.GetString("DMMO Full Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Easting.
+        /// </summary>
+        public static string Easting_Label {
+            get {
+                return ResourceManager.GetString("Easting Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sorry! Something went wrong.
         /// </summary>
-        internal static string Error_Header_Text {
+        public static string Error_Header_Text {
             get {
                 return ResourceManager.GetString("Error Header Text", resourceCulture);
             }
@@ -135,7 +171,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to There was an error dealing with your request. If this continues to happen, get in touch with your system administrator.
         /// </summary>
-        internal static string Error_Text {
+        public static string Error_Text {
             get {
                 return ResourceManager.GetString("Error Text", resourceCulture);
             }
@@ -144,7 +180,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
-        internal static string Error_Title {
+        public static string Error_Title {
             get {
                 return ResourceManager.GetString("Error Title", resourceCulture);
             }
@@ -153,7 +189,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
-        internal static string Home_Title {
+        public static string Home_Title {
             get {
                 return ResourceManager.GetString("Home Title", resourceCulture);
             }
@@ -162,16 +198,43 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Infrastructure.
         /// </summary>
-        internal static string Infrastructure_Title {
+        public static string Infrastructure_Title {
             get {
                 return ResourceManager.GetString("Infrastructure Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Job ID.
+        /// </summary>
+        public static string Job_ID_Label {
+            get {
+                return ResourceManager.GetString("Job ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Priority.
+        /// </summary>
+        public static string Job_Priority_Label {
+            get {
+                return ResourceManager.GetString("Job Priority Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Job_Status_Label {
+            get {
+                return ResourceManager.GetString("Job Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Landowner Deposits.
         /// </summary>
-        internal static string Landowner_Deposits_Title {
+        public static string Landowner_Deposits_Title {
             get {
                 return ResourceManager.GetString("Landowner Deposits Title", resourceCulture);
             }
@@ -180,16 +243,34 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading.
         /// </summary>
-        internal static string Loading_Text {
+        public static string Loading_Text {
             get {
                 return ResourceManager.GetString("Loading Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Log date.
+        /// </summary>
+        public static string Log_Date_Label {
+            get {
+                return ResourceManager.GetString("Log Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logged by.
+        /// </summary>
+        public static string Logged_By_Label {
+            get {
+                return ResourceManager.GetString("Logged By Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logout.
         /// </summary>
-        internal static string Logout_Label {
+        public static string Logout_Label {
             get {
                 return ResourceManager.GetString("Logout Label", resourceCulture);
             }
@@ -198,7 +279,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Create new maintenance job.
         /// </summary>
-        internal static string Maintenance_Create_Title {
+        public static string Maintenance_Create_Title {
             get {
                 return ResourceManager.GetString("Maintenance Create Title", resourceCulture);
             }
@@ -207,7 +288,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Maintenance Job {0}.
         /// </summary>
-        internal static string Maintenance_Details_Title {
+        public static string Maintenance_Details_Title {
             get {
                 return ResourceManager.GetString("Maintenance Details Title", resourceCulture);
             }
@@ -216,7 +297,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Maintenance.
         /// </summary>
-        internal static string Maintenance_Title {
+        public static string Maintenance_Title {
             get {
                 return ResourceManager.GetString("Maintenance Title", resourceCulture);
             }
@@ -225,7 +306,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Manage application.
         /// </summary>
-        internal static string Manage_Application_Label {
+        public static string Manage_Application_Label {
             get {
                 return ResourceManager.GetString("Manage Application Label", resourceCulture);
             }
@@ -234,7 +315,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to My account.
         /// </summary>
-        internal static string My_Account_Label {
+        public static string My_Account_Label {
             get {
                 return ResourceManager.GetString("My Account Label", resourceCulture);
             }
@@ -243,7 +324,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to My roles.
         /// </summary>
-        internal static string My_Roles_Header {
+        public static string My_Roles_Header {
             get {
                 return ResourceManager.GetString("My Roles Header", resourceCulture);
             }
@@ -252,16 +333,25 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have any roles assigned to you.
         /// </summary>
-        internal static string No_Roles_Text {
+        public static string No_Roles_Text {
             get {
                 return ResourceManager.GetString("No Roles Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Northing.
+        /// </summary>
+        public static string Northing_Label {
+            get {
+                return ResourceManager.GetString("Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PPO.
         /// </summary>
-        internal static string PPO_Abbreviation {
+        public static string PPO_Abbreviation {
             get {
                 return ResourceManager.GetString("PPO Abbreviation", resourceCulture);
             }
@@ -270,7 +360,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Public Path Orders.
         /// </summary>
-        internal static string PPO_Full_Text {
+        public static string PPO_Full_Text {
             get {
                 return ResourceManager.GetString("PPO Full Text", resourceCulture);
             }
@@ -279,16 +369,25 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Primary email address.
         /// </summary>
-        internal static string Primary_Email_Label {
+        public static string Primary_Email_Label {
             get {
                 return ResourceManager.GetString("Primary Email Label", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Problem description.
+        /// </summary>
+        public static string Problem_Description_Label {
+            get {
+                return ResourceManager.GetString("Problem Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rights of Way.
         /// </summary>
-        internal static string Rights_of_Way_Title {
+        public static string Rights_of_Way_Title {
             get {
                 return ResourceManager.GetString("Rights of Way Title", resourceCulture);
             }
@@ -297,16 +396,25 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to These are the roles that have been assigned to you by your system administrator. They control what you can and can&apos;t do in the app..
         /// </summary>
-        internal static string Roles_List_Text {
+        public static string Roles_List_Text {
             get {
                 return ResourceManager.GetString("Roles List Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Route code.
+        /// </summary>
+        public static string Route_ID_Label {
+            get {
+                return ResourceManager.GetString("Route ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Surveys.
         /// </summary>
-        internal static string Surveys_Title {
+        public static string Surveys_Title {
             get {
                 return ResourceManager.GetString("Surveys Title", resourceCulture);
             }
@@ -315,7 +423,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to User ID.
         /// </summary>
-        internal static string User_ID_Label {
+        public static string User_ID_Label {
             get {
                 return ResourceManager.GetString("User ID Label", resourceCulture);
             }
@@ -324,9 +432,18 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Welcome to {0}.
         /// </summary>
-        internal static string Welcome_Text {
+        public static string Welcome_Text {
             get {
                 return ResourceManager.GetString("Welcome Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Work done.
+        /// </summary>
+        public static string Work_Done_Label {
+            get {
+                return ResourceManager.GetString("Work Done Label", resourceCulture);
             }
         }
     }

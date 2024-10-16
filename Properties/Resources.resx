@@ -207,4 +207,43 @@
   <data name="Maintenance Details Title" xml:space="preserve">
     <value>Maintenance Job {0}</value>
   </data>
+  <data name="Problem Description Label" xml:space="preserve">
+    <value>Problem description</value>
+  </data>
+  <data name="Completion Date Label" xml:space="preserve">
+    <value>Completion date</value>
+  </data>
+  <data name="Job ID Label" xml:space="preserve">
+    <value>Job ID</value>
+  </data>
+  <data name="Log Date Label" xml:space="preserve">
+    <value>Log date</value>
+  </data>
+  <data name="Logged By Label" xml:space="preserve">
+    <value>Logged by</value>
+  </data>
+  <data name="Assigned To Label" xml:space="preserve">
+    <value>Assigned to</value>
+  </data>
+  <data name="Route ID Label" xml:space="preserve">
+    <value>Route code</value>
+  </data>
+  <data name="Job Priority Label" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Job Status Label" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Work Done Label" xml:space="preserve">
+    <value>Work done</value>
+  </data>
+  <data name="Easting Label" xml:space="preserve">
+    <value>Easting</value>
+  </data>
+  <data name="Northing Label" xml:space="preserve">
+    <value>Northing</value>
+  </data>
+  <data name="Create Label" xml:space="preserve">
+    <value>Create</value>
+  </data>
 </root>

@@ -207,4 +207,43 @@
   <data name="Maintenance Details Title" xml:space="preserve">
     <value>Swydd cynnal {0}</value>
   </data>
+  <data name="Problem Description Label" xml:space="preserve">
+    <value>Disgrifiad o'r broblem</value>
+  </data>
+  <data name="Completion Date Label" xml:space="preserve">
+    <value>Dyddiad cwblhau</value>
+  </data>
+  <data name="Job ID Label" xml:space="preserve">
+    <value>ID Swydd</value>
+  </data>
+  <data name="Log Date Label" xml:space="preserve">
+    <value>Dyddiad log</value>
+  </data>
+  <data name="Logged By Label" xml:space="preserve">
+    <value>Wedi'i logio gan</value>
+  </data>
+  <data name="Assigned To Label" xml:space="preserve">
+    <value>Wedi'i neilltuo i</value>
+  </data>
+  <data name="Route ID Label" xml:space="preserve">
+    <value>Cod llwybr</value>
+  </data>
+  <data name="Job Priority Label" xml:space="preserve">
+    <value>Blaenoriaeth</value>
+  </data>
+  <data name="Job Status Label" xml:space="preserve">
+    <value>Statws</value>
+  </data>
+  <data name="Work Done Label" xml:space="preserve">
+    <value>Gwaith a wnaed</value>
+  </data>
+  <data name="Easting Label" xml:space="preserve">
+    <value>Dwyrain</value>
+  </data>
+  <data name="Northing Label" xml:space="preserve">
+    <value>Gogledd</value>
+  </data>
+  <data name="Create Label" xml:space="preserve">
+    <value>Creu</value>
+  </data>
 </root>
