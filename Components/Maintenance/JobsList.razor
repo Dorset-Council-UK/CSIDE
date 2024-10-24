@@ -1,0 +1,54 @@
+﻿@rendermode InteractiveServer
+@using CSIDE.Data.Models.Maintenance
+@using NodaTime
+@using System.Globalization
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+@if(Jobs is null)
+{
+    <p>@localizer["Loading label"]</p>
+}
+else if(Jobs.Count == 0)
+{
+    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="/Maintenance#search-form">@localizer["Search Again Label"]</a></Alert>
+}
+else
+{
+    <a href="/Maintenance#search-form">@localizer["Search Again Label"]</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@localizer["Job ID Label"]</th>
+                <th>@localizer["Route ID Label"]</th>
+                <th>@localizer["Log Date Label"]</th>
+                <th>@localizer["Parish Label"]</th>
+                <th>@localizer["Problem Description Label"]</th>
+                <th>@localizer["Job Priority Label"]</th>
+                <th>@localizer["Job Status Label"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var job in Jobs)
+            {
+                <tr>
+                    <td><a href="/Maintenance/Details/@job.Id">@job.Id</a></td>
+                    <td>@job.RouteId</td>
+                    <td>@(job.LogDate.HasValue ? job.LogDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
+                    <td>[No data yet]</td>
+                    <td>@job.ProblemDescription</td>
+                    <td>@job.JobPriority?.Description</td>
+                    <td>@job.JobStatus?.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    [Parameter]
+    public List<Job>? Jobs{ get; set; }
+
+}

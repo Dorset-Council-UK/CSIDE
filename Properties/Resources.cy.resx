@@ -222,9 +222,6 @@
   <data name="Logged By Label" xml:space="preserve">
     <value>Wedi'i logio gan</value>
   </data>
-  <data name="Assigned To Label" xml:space="preserve">
-    <value>Wedi'i neilltuo i</value>
-  </data>
   <data name="Route ID Label" xml:space="preserve">
     <value>Cod llwybr</value>
   </data>
@@ -245,5 +242,50 @@
   </data>
   <data name="Create Label" xml:space="preserve">
     <value>Creu</value>
+  </data>
+  <data name="Search Label" xml:space="preserve">
+    <value>Chwiliwch</value>
+  </data>
+  <data name="Create New Job Text" xml:space="preserve">
+    <value>Ychwanegwch swydd i'r gronfa ddata cynnal a chadw trwy ei hychwanegu at y map a llenwi'r manylion perthnasol.</value>
+  </data>
+  <data name="View All Recent Jobs Label" xml:space="preserve">
+    <value>Gweld yr holl swyddi diweddar sydd heb eu gweithredu</value>
+  </data>
+  <data name="Search Jobs Label" xml:space="preserve">
+    <value>Chwilio am swyddi cynnal a chadw</value>
+  </data>
+  <data name="Search Results Title" xml:space="preserve">
+    <value>Canlyniadau chwilio</value>
+  </data>
+  <data name="Search Validation Date Not In Future Message" xml:space="preserve">
+    <value>Rhaid i '{0}' beidio â bod yn y dyfodol</value>
+  </data>
+  <data name="Log Date From Label" xml:space="preserve">
+    <value>Dyddiad wedi'i logio o</value>
+  </data>
+  <data name="Completed Date From Label" xml:space="preserve">
+    <value>Dyddiad wedi ei gwblhau o</value>
+  </data>
+  <data name="Completed Date To Label" xml:space="preserve">
+    <value>Dyddiad wedi ei gwblhau i</value>
+  </data>
+  <data name="Log Date To Label" xml:space="preserve">
+    <value>Dyddiad wedi'i logio i</value>
+  </data>
+  <data name="Assigned To Team Label" xml:space="preserve">
+    <value>Wedi'i neilltuo i</value>
+  </data>
+  <data name="No Results Found Label" xml:space="preserve">
+    <value>Heb ganfod canlyniadau</value>
+  </data>
+  <data name="Search Again Label" xml:space="preserve">
+    <value>Chwiliwch eto</value>
+  </data>
+  <data name="Search Validation At Least One Message" xml:space="preserve">
+    <value>Dylid llenwi o leiaf un maes chwilio</value>
+  </data>
+  <data name="Parish Label" xml:space="preserve">
+    <value>Cymuned</value>
   </data>
 </root>

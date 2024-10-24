@@ -88,11 +88,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Assigned to.
+        ///   Looks up a localized string similar to Assigned to team.
         /// </summary>
-        public static string Assigned_To_Label {
+        public static string Assigned_To_Team_Label {
             get {
-                return ResourceManager.GetString("Assigned To Label", resourceCulture);
+                return ResourceManager.GetString("Assigned To Team Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed date from.
+        /// </summary>
+        public static string Completed_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Completed Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed date to.
+        /// </summary>
+        public static string Completed_Date_To_Label {
+            get {
+                return ResourceManager.GetString("Completed Date To Label", resourceCulture);
             }
         }
         
@@ -120,6 +138,15 @@ namespace CSIDE.Properties {
         public static string Create_New_Job_Label {
             get {
                 return ResourceManager.GetString("Create New Job Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a job to the maintenance database by adding it to the map and filling in the relevant details..
+        /// </summary>
+        public static string Create_New_Job_Text {
+            get {
+                return ResourceManager.GetString("Create New Job Text", resourceCulture);
             }
         }
         
@@ -250,11 +277,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Log date from.
+        /// </summary>
+        public static string Log_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Log Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Log date.
         /// </summary>
         public static string Log_Date_Label {
             get {
                 return ResourceManager.GetString("Log Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log date to.
+        /// </summary>
+        public static string Log_Date_To_Label {
+            get {
+                return ResourceManager.GetString("Log Date To Label", resourceCulture);
             }
         }
         
@@ -331,6 +376,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string No_Results_Found_Label {
+            get {
+                return ResourceManager.GetString("No Results Found Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have any roles assigned to you.
         /// </summary>
         public static string No_Roles_Text {
@@ -345,6 +399,15 @@ namespace CSIDE.Properties {
         public static string Northing_Label {
             get {
                 return ResourceManager.GetString("Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parish.
+        /// </summary>
+        public static string Parish_Label {
+            get {
+                return ResourceManager.GetString("Parish Label", resourceCulture);
             }
         }
         
@@ -412,6 +475,60 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search again.
+        /// </summary>
+        public static string Search_Again_Label {
+            get {
+                return ResourceManager.GetString("Search Again Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for maintenance jobs.
+        /// </summary>
+        public static string Search_Jobs_Title {
+            get {
+                return ResourceManager.GetString("Search Jobs Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Search_Label {
+            get {
+                return ResourceManager.GetString("Search Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search results.
+        /// </summary>
+        public static string Search_Results_Title {
+            get {
+                return ResourceManager.GetString("Search Results Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one search field should be filled in.
+        /// </summary>
+        public static string Search_Validation_At_Least_One_Message {
+            get {
+                return ResourceManager.GetString("Search Validation At Least One Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; must not be in the future.
+        /// </summary>
+        public static string Search_Validation_Date_Not_In_Future_Message {
+            get {
+                return ResourceManager.GetString("Search Validation Date Not In Future Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Surveys.
         /// </summary>
         public static string Surveys_Title {
@@ -426,6 +543,15 @@ namespace CSIDE.Properties {
         public static string User_ID_Label {
             get {
                 return ResourceManager.GetString("User ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View all recent unactioned jobs.
+        /// </summary>
+        public static string View_All_Recent_Jobs_Label {
+            get {
+                return ResourceManager.GetString("View All Recent Jobs Label", resourceCulture);
             }
         }
         
