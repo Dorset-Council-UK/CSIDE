@@ -67,7 +67,10 @@ else
                 </table>
             </div>
             <div class="col-md-4">
-                <img src="https://gi.dorsetcouncil.gov.uk/geoserver/background_maps_open/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&TRANSPARENT=TRUE&LAYERS=background_maps_open:openzoomstack&srs=epsg%3a27700&format=image%2fjpeg&width=300&height=300&bbox=362270,90976,362570,91276&format_options=layout:red_star_40_copy;" class="img-fluid" alt="Map" />
+                @if (Job.Geom is not null)
+                {
+                    <CSIDE.Components.Mapping.MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="14"></CSIDE.Components.Mapping.MiniMap>
+                }
                 <table class="table table-striped table-sm">
                     <tbody>
                         <tr><th>@localizer["Easting Label"]</th><td>@Job.Geom?.X</td></tr>
