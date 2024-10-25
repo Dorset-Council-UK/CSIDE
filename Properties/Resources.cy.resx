@@ -235,10 +235,10 @@
     <value>Gwaith a wnaed</value>
   </data>
   <data name="Easting Label" xml:space="preserve">
-    <value>Dwyrain</value>
+    <value>Cyfesuryn X</value>
   </data>
   <data name="Northing Label" xml:space="preserve">
-    <value>Gogledd</value>
+    <value>Cyfesuryn Y</value>
   </data>
   <data name="Create Label" xml:space="preserve">
     <value>Creu</value>
@@ -251,9 +251,6 @@
   </data>
   <data name="View All Recent Jobs Label" xml:space="preserve">
     <value>Gweld yr holl swyddi diweddar sydd heb eu gweithredu</value>
-  </data>
-  <data name="Search Jobs Label" xml:space="preserve">
-    <value>Chwilio am swyddi cynnal a chadw</value>
   </data>
   <data name="Search Results Title" xml:space="preserve">
     <value>Canlyniadau chwilio</value>
@@ -287,5 +284,8 @@
   </data>
   <data name="Parish Label" xml:space="preserve">
     <value>Cymuned</value>
+  </data>
+  <data name="Search Jobs Label" xml:space="preserve">
+    <value>Chwilio am swyddi cynnal a chadw</value>
   </data>
 </root>

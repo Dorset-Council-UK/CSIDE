@@ -69,7 +69,7 @@ else
             <div class="col-md-4">
                 @if (Job.Geom is not null)
                 {
-                    <CSIDE.Components.Mapping.MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="14"></CSIDE.Components.Mapping.MiniMap>
+                    <CSIDE.Components.Mapping.MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="16" Geometry="@Job.Geom"></CSIDE.Components.Mapping.MiniMap>
                 }
                 <table class="table table-striped table-sm">
                     <tbody>

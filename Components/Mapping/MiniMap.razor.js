@@ -1,13 +1,22 @@
-﻿let roadBasemap = new ol.source.XYZ(
+﻿const bngTilegrid = new ol.tilegrid.TileGrid({
+  "resolutions": [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375],
+  "origin": [-238375.0, 1376256.0]
+});
+
+const roadBasemap = new ol.source.XYZ(
   {
-    url: 'https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=J3H6E7O9J3cZuUvkjdOASdbGDAmQxjZJ',
+    url: 'https://api.os.uk/maps/raster/v1/zxy/Road_27700/{z}/{x}/{y}.png?key=J3H6E7O9J3cZuUvkjdOASdbGDAmQxjZJ',
     attributions: `© Crown copyright and database rights ${new Date().getFullYear()} <a href="https://os.uk" target="_blank">OS</a> AC0000830671.`,
-    attributionsCollapsible: false
+    attributionsCollapsible: false,
+    tileGrid: bngTilegrid,
+    projection: 'EPSG:27700'
   });
+
+
 
 let vectorSource;
 
-export function initMap(mapId, x, y, z) {
+export function initMap(mapId, x, y, z, geometry) {
   //convert x/y from BNG to Spherical Mercator
   proj4.defs(
     'EPSG:27700',
@@ -17,7 +26,6 @@ export function initMap(mapId, x, y, z) {
     '+units=m +no_defs',
   );
   ol.proj.proj4.register(proj4);
-  const coords = ol.proj.transform([x,y],'EPSG:27700','EPSG:3857')
   const map = new ol.Map({
     target: mapId,
     layers: [
@@ -32,5 +40,25 @@ export function initMap(mapId, x, y, z) {
     })
   });
 
+  if (geometry) {
+    const features = new ol.format.GeoJSON().readFeatures(geometry);
+    const mapExtent = features[0].getGeometry().getExtent();
+    features.forEach(feature => {
+      ol.extent.extend(mapExtent, feature.getGeometry().getExtent())
+    });
+    map.getView().fit(mapExtent, {
+      padding: [20, 20, 20, 20],
+      maxZoom: z
+    });
+    vectorSource = new ol.source.Vector({
+      features: features,
+    });
+    const vectorLayer = new ol.layer.Vector({
+      source: vectorSource,
+    });
+    map.addLayer(vectorLayer);
+    vectorLayer.setVisible(true);
+
+  }
 
 };
