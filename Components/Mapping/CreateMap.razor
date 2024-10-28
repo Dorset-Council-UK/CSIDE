@@ -1,0 +1,52 @@
+﻿@inject IJSRuntime JS
+@implements IAsyncDisposable
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.IO
+
+<div id="@MapId" class="" style="width:100%;height:400px"></div>
+
+@code {
+    [Parameter]
+    public double CenterX { get; set; }
+    [Parameter]
+    public double CenterY { get; set; }
+    [Parameter]
+    public int Zoom { get; set; }
+    [Parameter]
+    public string GeomType{ get; set; }
+    [Parameter] 
+    public EventCallback<string> OnDrawEndMethod { get; set; }
+
+    private string MapId = $"create-map-{new Random().Next()}";
+
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<CreateMap>? self;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            self ??= DotNetObjectReference.Create(this);
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>(
+                "import", "/Components/Mapping/CreateMap.razor.js");
+
+            await _jsModule.InvokeVoidAsync("initMap", MapId, CenterX, CenterY, Zoom, GeomType, self);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+
+    [JSInvokable]
+    public void OnDrawEnd(string features)
+    {
+        OnDrawEndMethod.InvokeAsync(features);
+        //check validity of features
+    }
+}

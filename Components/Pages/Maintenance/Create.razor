@@ -1,15 +1,26 @@
 ﻿@page "/Maintenance/Create"
+@using CSIDE.Components.Mapping
 @using CSIDE.Data.Models.Maintenance
 @using NodaTime
+@using NetTopologySuite
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.Features
+@using NetTopologySuite.IO
+@using FluentValidation
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
+<PageTitle>@localizer["Maintenance Create Title"]</PageTitle>
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
 <h1>@localizer["Maintenance Create Title"]</h1>
+
+<div class="row">
+    <CreateMap @ref="createMap" OnDrawEndMethod="ValidateGeometry" CenterX="366646" CenterY="101677" Zoom="10" GeomType="Point"></CreateMap>
+</div>
 
 <div class="row">
     <div class="col-md-8">
@@ -20,9 +31,9 @@
                 <FluentValidationValidator  @ref="_fluentValidationValidator" />
                 <ValidationSummary />
 
-                <div class="mb-3">
+                <div class="mb-3 @(RouteCodeShown ?"" : "visually-hidden")">
                     <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
-                    <InputText id="route-code" class="form-control-plaintext" readonly @bind-Value="Job.RouteId"></InputText>
+                    <InputText id="route-code" class="form-control" @bind-Value="Job.RouteId"></InputText>
                 </div>
 
                 <div class="mb-3">
@@ -87,19 +98,39 @@
             </EditForm>
         }
     </div>
-    <div class="col-md-4">
-        <img src="https://gi.dorsetcouncil.gov.uk/geoserver/background_maps_open/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&TRANSPARENT=TRUE&LAYERS=background_maps_open:openzoomstack&srs=epsg%3a27700&format=image%2fjpeg&width=300&height=300&bbox=362270,90976,362570,91276&format_options=layout:red_star_40_copy;" class="img-fluid" alt="Map" />
-        <p>Map goes here</p>
-
-    </div>
 </div>
 
+
+<Modal @ref="routeValidationModal" Title="@localizer["Error Label"]">
+    <BodyTemplate>
+        @localizer["No Rights of Way Near Geometry Validation Message"]<br />
+        @localizer["No Rights of Way Near Geometry Options Text"]
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="ShowRouteCode">Manually enter Route ID</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
+    </FooterTemplate>
+    
+</Modal>
+
+<Modal @ref="errorModal" Title="@localizer["Error Label"]">
+    <BodyTemplate>
+        @localizer["Invalid Geometry Validation Message"]
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private List<BreadcrumbItem>? NavItems;
     private FluentValidationValidator? _fluentValidationValidator;
+    private Modal routeValidationModal = default!;
+    private Modal errorModal = default!;
+
+    private CreateMap? createMap;
 
     private Job? Job { get; set; }
     private JobStatus[]? JobStatuses { get; set; }
@@ -107,6 +138,7 @@
 
     private bool IsBusy{ get; set; }
     private bool CompleteDateShown { get; set; } = false;
+    private bool RouteCodeShown { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,8 +155,7 @@
         Job = new()
         {
             JobStatusId = JobStatuses.FirstOrDefault()?.Id,
-            JobPriorityId = JobPriorities.FirstOrDefault()?.Id,
-            RouteId = "S27/2" //TODO - Make this dynamic (should come from previous screen)
+            JobPriorityId = JobPriorities.FirstOrDefault()?.Id
         };
     }
 
@@ -140,8 +171,7 @@
                 if (Job is not null)
                 {
                     using var context = contextFactory.CreateDbContext();
-                    Job.Geom = new NetTopologySuite.Geometries.Point(366646, 101677); //TODO - Make this dynamic
-                    Job.Geom.SRID = 27700;
+
                     var user = (await authenticationStateTask).User;
                     Job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
                     Job.LoggedByName = user.Identity?.Name;
@@ -180,6 +210,79 @@
             CompleteDateShown = JobStatuses!.Where(s => s.Id == NewJobStatusId).First().IsComplete;
             Job.JobStatusId = NewJobStatusId;
         }
+    }
+
+    private async Task ValidateGeometry(string features)
+    {
+        //check the geometry is a single point and is on a valid route
+
+
+        GeoJsonReader _geoJsonReader = new GeoJsonReader();
+        FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
+
+        CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory,localizer);
+
+        var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point","Point On Route"));
+        if (result.IsValid)
+        {
+            //get route code and update Job.Geom
+            if (Job is not null)
+            {
+                Job.Geom = featureCollection.First().Geometry.Centroid;
+                Job.Geom.SRID = 27700;
+                using var context = contextFactory.CreateDbContext();
+                var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 10).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
+                if(Route is not null)
+                {
+                    Job.RouteId = Route.RouteCode;
+                    RouteCodeShown = false;
+                }
+            }
+        }
+        else
+        {
+            //Check to see what the error is and show appropriate error message
+            if (result.Errors.Any(failure => failure.ErrorCode == "GEOM_OUTSIDE_BOUNDS") || result.Errors.Any(failure => failure.ErrorCode == "INVALID_GEOM"))
+            {
+                //show generic error
+                await ShowGeometryValidationErrorModal();
+            }
+            else if (result.Errors.Any(failure => failure.ErrorCode == "NO_ROUTE_NEARBY"))
+            {
+                
+                await ShowRouteValidationModal();
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task ShowRouteValidationModal()
+    {
+        await routeValidationModal.ShowAsync();
+    }
+
+    private async Task ShowGeometryValidationErrorModal()
+    {
+        await errorModal.ShowAsync();
+    }
+
+    private async Task ShowRouteCode()
+    {
+        RouteCodeShown = true;
+        await routeValidationModal.HideAsync();
+    }
+
+    private async Task ClearDrawnGeometries()
+    {
+        if (Job is not null)
+        {
+            Job.Geom = null;
+            Job.RouteId = null;
+        }
+        RouteCodeShown = false;
+        //TODO send interop message to clear drawn geometries from map
+        await routeValidationModal.HideAsync();
+        await errorModal.HideAsync();
     }
 
 }

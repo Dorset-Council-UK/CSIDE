@@ -11,6 +11,7 @@ namespace CSIDE.Data.EntitiesConfiguration
         {
             builder.Property(x => x.RouteCode).ValueGeneratedNever();
             builder.HasKey(x => x.RouteCode);
+            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (multilinestring)");
         }
     }
 }
