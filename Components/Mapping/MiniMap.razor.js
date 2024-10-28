@@ -12,7 +12,18 @@ const roadBasemap = new ol.source.XYZ(
     projection: 'EPSG:27700'
   });
 
-
+const computedStyles = window.getComputedStyle(document.body);
+const themeColor = computedStyles.getPropertyValue('--primary-color'); //get the primary color from the CSS variables
+const iconStyle = new ol.style.Style({
+  image: new ol.style.Icon({
+    anchor: [0.5, 32], //50% from left, 32px (height of icon) up. Pins the tail of the icon to the right location, rather than the center
+    anchorXUnits: "fraction",
+    anchorYUnits: "pixels",
+    crossOrigin: 'anonymous',
+    color: themeColor,
+    src: `/img/map-pin.svg`, //TODO this won't work in contexts where the app isn't running on root
+  }),
+});
 
 let vectorSource;
 
@@ -55,6 +66,7 @@ export function initMap(mapId, x, y, z, geometry) {
     });
     const vectorLayer = new ol.layer.Vector({
       source: vectorSource,
+      style: iconStyle
     });
     map.addLayer(vectorLayer);
     vectorLayer.setVisible(true);

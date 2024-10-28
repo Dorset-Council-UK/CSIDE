@@ -6,17 +6,21 @@
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
+<PageTitle>@localizer["Loading Text"]</PageTitle>
+
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
 @if (Job is null && !IsBusy)
 {
+    <PageTitle>@localizer["Maintenance job does not exist text"]</PageTitle>
     <div class="alert alert-danger">@localizer["Maintenance job does not exist text"]</div>
 }
 else
 {
     if(Job is not null){
+        <PageTitle>@localizer["Maintenance Details Title", Job.Id]</PageTitle>
         <h1>@localizer["Maintenance Details Title", Job.Id]</h1>
 
         <div class="row">
@@ -69,7 +73,7 @@ else
             <div class="col-md-4">
                 @if (Job.Geom is not null)
                 {
-                    <CSIDE.Components.Mapping.MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="16" Geometry="@Job.Geom"></CSIDE.Components.Mapping.MiniMap>
+                    <CSIDE.Components.Mapping.MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="18" Geometry="@Job.Geom"></CSIDE.Components.Mapping.MiniMap>
                 }
                 <table class="table table-striped table-sm">
                     <tbody>
