@@ -187,6 +187,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string Edit_Label {
+            get {
+                return ResourceManager.GetString("Edit Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sorry! Something went wrong.
         /// </summary>
         public static string Error_Header_Text {
@@ -228,6 +237,15 @@ namespace CSIDE.Properties {
         public static string Infrastructure_Title {
             get {
                 return ResourceManager.GetString("Infrastructure Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your geometry is not valid. Redraw your geometry, and if you still have issues, contact your system administrator.
+        /// </summary>
+        public static string Invalid_Geometry_Validation_Message {
+            get {
+                return ResourceManager.GetString("Invalid Geometry Validation Message", resourceCulture);
             }
         }
         
@@ -340,6 +358,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Maintenance Job {0}.
+        /// </summary>
+        public static string Maintenance_Edit_Title {
+            get {
+                return ResourceManager.GetString("Maintenance Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maintenance job with ID &apos;{0}&apos; was not found in the database.
+        /// </summary>
+        public static string Maintenance_Job_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("Maintenance Job Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance.
         /// </summary>
         public static string Maintenance_Title {
@@ -381,6 +417,24 @@ namespace CSIDE.Properties {
         public static string No_Results_Found_Label {
             get {
                 return ResourceManager.GetString("No Results Found Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can either redraw your point nearer to a route, or fill in the Route ID manually..
+        /// </summary>
+        public static string No_Rights_of_Way_Near_Geometry_Options_Text {
+            get {
+                return ResourceManager.GetString("No Rights of Way Near Geometry Options Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no routes near where you clicked. .
+        /// </summary>
+        public static string No_Rights_of_Way_Near_Geometry_Validation_Message {
+            get {
+                return ResourceManager.GetString("No Rights of Way Near Geometry Validation Message", resourceCulture);
             }
         }
         
@@ -462,6 +516,15 @@ namespace CSIDE.Properties {
         public static string Roles_List_Text {
             get {
                 return ResourceManager.GetString("Roles List Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Route &apos;{0}&apos; does not exist in the database.
+        /// </summary>
+        public static string Route_Does_Not_Exist_Validation_Message {
+            get {
+                return ResourceManager.GetString("Route Does Not Exist Validation Message", resourceCulture);
             }
         }
         

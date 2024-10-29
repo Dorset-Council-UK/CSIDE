@@ -17,5 +17,12 @@
 @using Microsoft.Extensions.Localization
 @using BlazorBootstrap
 @using Blazored.FluentValidation
+@using NodaTime
+@using NetTopologySuite
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.Features
+@using NetTopologySuite.IO
+@using FluentValidation
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
 @attribute [Authorize("CanAccessApp")]

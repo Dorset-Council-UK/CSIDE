@@ -3,6 +3,7 @@ using System;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241029100605_AddGeomToMaintenanceTeam")]
+    partial class AddGeomToMaintenanceTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,6 +96,9 @@ namespace CSIDE.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedToTeamId")
+                        .HasColumnType("text");
 
                     b.Property<LocalDate?>("CompletionDate")
                         .HasColumnType("date");
@@ -208,9 +214,9 @@ namespace CSIDE.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Polygon>("Geom")
+                    b.Property<MultiPolygon>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (polygon)");
+                        .HasColumnType("geometry (multipolygon)");
 
                     b.Property<string>("Name")
                         .IsRequired()

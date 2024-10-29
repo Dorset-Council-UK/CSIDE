@@ -288,4 +288,25 @@
   <data name="Parish Label" xml:space="preserve">
     <value>Parish</value>
   </data>
+  <data name="Route Does Not Exist Validation Message" xml:space="preserve">
+    <value>Route '{0}' does not exist in the database</value>
+  </data>
+  <data name="No Rights of Way Near Geometry Validation Message" xml:space="preserve">
+    <value>There are no routes near where you clicked. </value>
+  </data>
+  <data name="No Rights of Way Near Geometry Options Text" xml:space="preserve">
+    <value>You can either redraw your point nearer to a route, or fill in the Route ID manually.</value>
+  </data>
+  <data name="Invalid Geometry Validation Message" xml:space="preserve">
+    <value>Your geometry is not valid. Redraw your geometry, and if you still have issues, contact your system administrator</value>
+  </data>
+  <data name="Maintenance Edit Title" xml:space="preserve">
+    <value>Edit Maintenance Job {0}</value>
+  </data>
+  <data name="Edit Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Maintenance Job Not Found Error Message" xml:space="preserve">
+    <value>Maintenance job with ID '{0}' was not found in the database</value>
+  </data>
 </root>

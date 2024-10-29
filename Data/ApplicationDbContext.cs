@@ -31,6 +31,7 @@ namespace CSIDE.Data
             // DbSet configurations
             modelBuilder.ApplyConfiguration(new ApplicationUserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new MaintenanceJobConfiguration());
+            modelBuilder.ApplyConfiguration(new MaintenanceTeamConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
         }
     }

@@ -19,7 +19,7 @@ namespace CSIDE.Data.Models.Maintenance
         public int? JobStatusId { get; set; }
         public int? JobPriorityId { get; set; }
         public string? RouteId { get; set; }
-        public string? AssignedToTeamId { get; set; }
+        public int? MaintenanceTeamId { get; set; }
 
         //navigation properties
         public JobStatus? JobStatus { get; set; }

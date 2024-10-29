@@ -35,18 +35,24 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        if (_jsModule is not null)
-        {
-            await _jsModule.DisposeAsync();
-        }
-    }
 
     [JSInvokable]
     public void OnDrawEnd(string features)
     {
         OnDrawEndMethod.InvokeAsync(features);
         //check validity of features
+    }
+
+    public async Task ClearDrawnGeometries()
+    {
+        await _jsModule!.InvokeVoidAsync("clearDrawnGeometries");
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
     }
 }

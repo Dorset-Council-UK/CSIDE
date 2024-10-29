@@ -1,119 +1,51 @@
 ﻿@page "/Maintenance/Create"
 @using CSIDE.Components.Mapping
+@using CSIDE.Components.Maintenance
 @using CSIDE.Data.Models.Maintenance
-@using NodaTime
-@using NetTopologySuite
-@using NetTopologySuite.Geometries
-@using NetTopologySuite.Features
-@using NetTopologySuite.IO
-@using FluentValidation
-@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <PageTitle>@localizer["Maintenance Create Title"]</PageTitle>
 <div>
-    <Breadcrumb Items="NavItems"></Breadcrumb>
+    <Breadcrumb Items="@NavItems"></Breadcrumb>
 </div>
 
 <h1>@localizer["Maintenance Create Title"]</h1>
 
 <div class="row">
-    <CreateMap @ref="createMap" OnDrawEndMethod="ValidateGeometry" CenterX="366646" CenterY="101677" Zoom="10" GeomType="Point"></CreateMap>
+    <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" CenterX="366646" CenterY="101677" Zoom="10" GeomType="Point"></CreateMap>
 </div>
 
 <div class="row">
     <div class="col-md-8">
-        @if (Job is not null)
+        @if(ErrorMessage is not null)
         {
-            <EditForm Model="Job"  OnSubmit="@SubmitFormAsync">
-
-                <FluentValidationValidator  @ref="_fluentValidationValidator" />
-                <ValidationSummary />
-
-                <div class="mb-3 @(RouteCodeShown ?"" : "visually-hidden")">
-                    <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
-                    <InputText id="route-code" class="form-control" @bind-Value="Job.RouteId"></InputText>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="problem-description">@localizer["Problem Description Label"]</label>
-                    <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
-                    <ValidationMessage For="() => Job.ProblemDescription" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="priority">@localizer["Job Priority Label"]</label>
-                    <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
-                        @if (JobPriorities is not null)
-                        {
-                            @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
-                            {
-                                <option value="@priority.Id">@priority.Description</option>
-                            }
-                        }
-
-                    </InputSelect>
-                    <ValidationMessage For="() => Job.JobPriorityId" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="status">@localizer["Job Status Label"]</label>
-                    <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
-                        @if (JobStatuses is not null)
-                        {
-                            @foreach (var status in JobStatuses.OrderBy(s => s.SortOrder))
-                            {
-                                if (Job.JobStatusId == status.Id)
-                                {
-                                    <option value="@status.Id" selected>@status.Description</option>
-                                }
-                                else
-                                {
-                                    <option value="@status.Id">@status.Description</option>
-                                }
-
-                            }
-                        }
-                    </select>
-                    <ValidationMessage For="() => Job.JobStatusId" />
-                </div>
-
-                <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
-                    <div class="mb-3">
-                        <label class="form-label" for="completion-date">@localizer["Completion Date Label"]</label>
-                        <input type="date" class="form-control" value="" @onchange="UpdateCompletionDateProperty" />
-                        <ValidationMessage For="() => Job.CompletionDate" />
-                    </div>
-
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="work-done">@localizer["Work Done Label"]</label>
-                    <InputTextArea id="work-done" class="form-control" @bind-Value="Job.WorkDone"></InputTextArea>
-                    <ValidationMessage For="() => Job.WorkDone" />
-                </div>
-
-                <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
-            </EditForm>
+            <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
         }
+        <JobEditForm 
+            Job="@Job" 
+            JobPriorities="@JobPriorities"
+            JobStatuses="@JobStatuses"
+            IsBusy="@IsBusy"
+            OnSubmit="@SubmitFormAsync"
+            @ref="@childJobEditForm" />
     </div>
 </div>
 
 
-<Modal @ref="routeValidationModal" Title="@localizer["Error Label"]">
+<Modal @ref="routeValidationModal" Title="@localizer["Error Title"]">
     <BodyTemplate>
         @localizer["No Rights of Way Near Geometry Validation Message"]<br />
         @localizer["No Rights of Way Near Geometry Options Text"]
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="ShowRouteCode">Manually enter Route ID</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">Manually enter Route ID</Button>
         <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
     </FooterTemplate>
     
 </Modal>
 
-<Modal @ref="errorModal" Title="@localizer["Error Label"]">
+<Modal @ref="errorModal" Title="@localizer["Error Title"]">
     <BodyTemplate>
         @localizer["Invalid Geometry Validation Message"]
     </BodyTemplate>
@@ -126,7 +58,6 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private List<BreadcrumbItem>? NavItems;
-    private FluentValidationValidator? _fluentValidationValidator;
     private Modal routeValidationModal = default!;
     private Modal errorModal = default!;
 
@@ -137,8 +68,10 @@
     private JobPriority[]? JobPriorities { get; set; }
 
     private bool IsBusy{ get; set; }
+    private string? ErrorMessage { get; set; }
     private bool CompleteDateShown { get; set; } = false;
-    private bool RouteCodeShown { get; set; } = false;
+
+    private JobEditForm? childJobEditForm;
 
     protected override async Task OnInitializedAsync()
     {
@@ -162,10 +95,14 @@
 
     private async Task SubmitFormAsync()
     {
-        if (await _fluentValidationValidator!.ValidateAsync())
+        if (IsBusy) {
+            ErrorMessage = null;    
+            return;
+        }
+        if (await childJobEditForm!.ValidateAsync())
         {
-            if (IsBusy) { return; }
             IsBusy = true;
+            StateHasChanged();
             try
             {
                 if (Job is not null)
@@ -175,6 +112,9 @@
                     var user = (await authenticationStateTask).User;
                     Job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
                     Job.LoggedByName = user.Identity?.Name;
+                    //get maintenance team
+                    var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(Job.Geom)).FirstOrDefaultAsync();
+                    Job.MaintenanceTeamId = team?.Id;
                     context.MaintenanceJobs.Add(Job);
                     await context.SaveChangesAsync();
                     //redirect
@@ -183,7 +123,7 @@
             }
             catch (Exception ex)
             {
-                //TODO show error
+                ErrorMessage = localizer["Save Error Message"];
             }
             finally
             {
@@ -192,31 +132,11 @@
         }
     }
 
-    private void UpdateCompletionDateProperty(ChangeEventArgs eventArgs)
-    {
-        if (Job is not null && eventArgs.Value is not null)
-        {
-            var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
-            var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
-            Job.CompletionDate = parseResult.Value;
-        }
-    }
 
-    private void ShowOrHideCompletionDate(ChangeEventArgs eventArgs)
-    {
-        int NewJobStatusId;
-        if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
-        {
-            CompleteDateShown = JobStatuses!.Where(s => s.Id == NewJobStatusId).First().IsComplete;
-            Job.JobStatusId = NewJobStatusId;
-        }
-    }
 
     private async Task ValidateGeometry(string features)
     {
         //check the geometry is a single point and is on a valid route
-
-
         GeoJsonReader _geoJsonReader = new GeoJsonReader();
         FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
@@ -235,21 +155,30 @@
                 if(Route is not null)
                 {
                     Job.RouteId = Route.RouteCode;
-                    RouteCodeShown = false;
                 }
             }
         }
         else
         {
-            //Check to see what the error is and show appropriate error message
+            // Check to see what the error is and show appropriate error message
+            // first check if the geometry was invalid
             if (result.Errors.Any(failure => failure.ErrorCode == "GEOM_OUTSIDE_BOUNDS") || result.Errors.Any(failure => failure.ErrorCode == "INVALID_GEOM"))
             {
                 //show generic error
                 await ShowGeometryValidationErrorModal();
             }
+            // if its valid, check to see if there was no route nearby
+            // NOTE I know it seems backwards to test this way round, but if you don't, 
+            // invalid geometries always come back saying 'no route found', which is not the right message
+            // TODO - Improve logic through use of conditional validation
             else if (result.Errors.Any(failure => failure.ErrorCode == "NO_ROUTE_NEARBY"))
             {
-                
+                //we assigned the geom at this point in case the user goes ahead with overriding the route ID
+                if (Job is not null)
+                {
+                    Job.Geom = featureCollection.First().Geometry.Centroid;
+                    Job.Geom.SRID = 27700;
+                }
                 await ShowRouteValidationModal();
             }
         }
@@ -266,9 +195,8 @@
         await errorModal.ShowAsync();
     }
 
-    private async Task ShowRouteCode()
+    private async Task HideRouteValidationModal()
     {
-        RouteCodeShown = true;
         await routeValidationModal.HideAsync();
     }
 
@@ -279,8 +207,7 @@
             Job.Geom = null;
             Job.RouteId = null;
         }
-        RouteCodeShown = false;
-        //TODO send interop message to clear drawn geometries from map
+        await createMap!.ClearDrawnGeometries();
         await routeValidationModal.HideAsync();
         await errorModal.HideAsync();
     }

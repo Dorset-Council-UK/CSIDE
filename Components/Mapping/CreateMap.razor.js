@@ -30,7 +30,8 @@ const lineStyle = new ol.style.Style({
     width: 3
   })
 });
-
+let map;
+let editSource;
 export function initMap(mapId, x, y, z, geomType, component) {
   //convert x/y from BNG to Spherical Mercator
   proj4.defs(
@@ -41,7 +42,7 @@ export function initMap(mapId, x, y, z, geomType, component) {
     '+units=m +no_defs',
   );
   ol.proj.proj4.register(proj4);
-  const map = new ol.Map({
+  map = new ol.Map({
     target: mapId,
     layers: [
       new ol.layer.Tile({
@@ -55,7 +56,7 @@ export function initMap(mapId, x, y, z, geomType, component) {
     })
   });
 
-  const editSource = new ol.source.Vector();
+  editSource = new ol.source.Vector();
   switch (geomType) {
     case "Point":
       //create point editing tools
@@ -88,4 +89,8 @@ export function initMap(mapId, x, y, z, geomType, component) {
       break;
 
   }
+};
+
+export function clearDrawnGeometries() {
+  editSource.clear();
 };

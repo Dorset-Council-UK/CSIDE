@@ -1,5 +1,4 @@
-﻿using CSIDE.Data.Models.Authorization;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.Maintenance;
 
@@ -32,6 +31,10 @@ namespace CSIDE.Data.EntitiesConfiguration
 
             builder
                 .Navigation(x => x.Route)
+                .AutoInclude();
+
+            builder
+                .Navigation(x => x.MaintenanceTeam)
                 .AutoInclude();
         }
     }

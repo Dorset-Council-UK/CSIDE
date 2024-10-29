@@ -1,0 +1,116 @@
+﻿@page "/Maintenance/Edit/{JobId:int}"
+@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Components.Maintenance
+@using NodaTime
+@using System.Globalization
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+<PageTitle>@localizer["Maintenance Edit Title", JobId]</PageTitle>
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Maintenance Edit Title", JobId]</h1>
+
+@if(Job is null && !IsBusy)
+{
+    <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message", JobId]</Alert>
+    <a href="/Maintenance" class="btn btn-primary">@localizer["Search Jobs Title"]</a>
+}
+else
+{
+    if(ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
+    <JobEditForm 
+        Job="@Job"
+        JobStatuses="@JobStatuses"
+        JobPriorities="@JobPriorities"
+        IsBusy="@IsBusy"
+        IsEdit="true"
+        OnSubmit="SubmitFormAsync"
+        OnCancel="NavigateBackToJobDetailsPage"
+        @ref="childJobEditForm"/>
+}
+
+
+
+@code{
+    [Parameter]
+    public int JobId { get; set; }
+
+    private Job? Job{ get; set; }
+    private JobStatus[]? JobStatuses { get; set; }
+    private JobPriority[]? JobPriorities { get; set; }
+
+    private JobEditForm? childJobEditForm;
+
+    private List<BreadcrumbItem>? NavItems;
+    private bool IsBusy{ get; set; }
+    private string? ErrorMessage{ get; set; }
+    protected override void OnInitialized()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", JobId], IsCurrentPage = true }
+        };
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsBusy = true;
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            JobStatuses = await context.JobStatuses.AsNoTracking().OrderBy(s => s.SortOrder).ToArrayAsync();
+            JobPriorities = await context.JobPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
+            Job = await context.MaintenanceJobs.AsNoTracking().IgnoreAutoIncludes().FirstOrDefaultAsync(j => j.Id == JobId);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task SubmitFormAsync()
+    {
+        if (Job is null || IsBusy) {
+            ErrorMessage = null;
+            return; 
+        }
+        if (await childJobEditForm!.ValidateAsync())
+        {
+            IsBusy = true;
+            StateHasChanged();
+            try
+            {
+                if (Job is not null)
+                {
+                    using var context = contextFactory.CreateDbContext();
+                    context.Update(Job);
+                    await context.SaveChangesAsync();
+                    //redirect
+                    NavigateBackToJobDetailsPage();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Save Error Message"];
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+    private void NavigateBackToJobDetailsPage()
+    {
+        navigationManager.NavigateTo($"/Maintenance/Details/{JobId}");
+    }
+}

@@ -64,9 +64,9 @@
         {
             query = query.Where(j => j.RouteId == RouteId);
         }
-        if (AssignedToTeamId is not null)
+        if (AssignedToTeamId is not null && int.TryParse(AssignedToTeamId, out int parsedAssignedToTeamId))
         {
-            query = query.Where(j => j.AssignedToTeamId == AssignedToTeamId);
+            query = query.Where(j => j.MaintenanceTeamId == parsedAssignedToTeamId);
         }
         if (JobPriorityId is not null && int.TryParse(JobPriorityId, out int parsedPriorityId))
         {
@@ -94,7 +94,7 @@
             query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
         }
 
-        SearchResults = await query.Take(500).ToListAsync();
+        SearchResults = await query.OrderByDescending(j => j.LogDate).Take(500).ToListAsync();
 
     }
 
