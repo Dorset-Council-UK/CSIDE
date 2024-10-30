@@ -16,7 +16,7 @@
     <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" CenterX="366646" CenterY="101677" Zoom="10" GeomType="Point"></CreateMap>
 </div>
 
-<div class="row">
+<div class="row mt-2">
     <div class="col-md-8">
         @if(ErrorMessage is not null)
         {
@@ -134,6 +134,8 @@
 
 
 
+    //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)
+
     private async Task ValidateGeometry(string features)
     {
         //check the geometry is a single point and is on a valid route
@@ -151,6 +153,7 @@
                 Job.Geom = featureCollection.First().Geometry.Centroid;
                 Job.Geom.SRID = 27700;
                 using var context = contextFactory.CreateDbContext();
+                //TODO - Move this to shared location
                 var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 10).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
                 if(Route is not null)
                 {

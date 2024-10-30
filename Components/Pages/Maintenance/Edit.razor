@@ -1,6 +1,7 @@
 ﻿@page "/Maintenance/Edit/{JobId:int}"
 @using CSIDE.Data.Models.Maintenance
 @using CSIDE.Components.Maintenance
+@using CSIDE.Components.Mapping
 @using NodaTime
 @using System.Globalization
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
@@ -26,18 +27,49 @@ else
     {
         <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
     }
-    <JobEditForm 
-        Job="@Job"
-        JobStatuses="@JobStatuses"
-        JobPriorities="@JobPriorities"
-        IsBusy="@IsBusy"
-        IsEdit="true"
-        OnSubmit="SubmitFormAsync"
-        OnCancel="NavigateBackToJobDetailsPage"
-        @ref="childJobEditForm"/>
+
+    if (Job is not null)
+    {
+        <div class="row">
+            <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" CenterX="366646" CenterY="101677" Zoom="18" GeomType="Point" Geometry="@Job.Geom"></EditMap>
+        </div>
+    }
+    <div class="row mt-2">
+        <div class="col-md-8">
+            <JobEditForm 
+                Job="@Job"
+                JobStatuses="@JobStatuses"
+                JobPriorities="@JobPriorities"
+                MaintenanceTeams="@MaintenanceTeams"
+                IsBusy="@IsBusy"
+                IsEdit="true"
+                OnSubmit="SubmitFormAsync"
+                OnCancel="NavigateBackToJobDetailsPage"
+                @ref="childJobEditForm"/>
+        </div>
+    </div>
 }
 
+<Modal @ref="routeValidationModal" Title="@localizer["Error Title"]">
+    <BodyTemplate>
+        @localizer["No Rights of Way Near Geometry Validation Message"]<br />
+        @localizer["No Rights of Way Near Geometry Options Text"]
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">Manually enter Route ID</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
+    </FooterTemplate>
 
+</Modal>
+
+<Modal @ref="errorModal" Title="@localizer["Error Title"]">
+    <BodyTemplate>
+        @localizer["Invalid Geometry Validation Message"]
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
+    </FooterTemplate>
+</Modal>
 
 @code{
     [Parameter]
@@ -46,10 +78,15 @@ else
     private Job? Job{ get; set; }
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
+    private MaintenanceTeam[]? MaintenanceTeams{ get; set; }
 
     private JobEditForm? childJobEditForm;
 
     private List<BreadcrumbItem>? NavItems;
+    private Modal routeValidationModal = default!;
+    private Modal errorModal = default!;
+
+    private EditMap? editMap;
     private bool IsBusy{ get; set; }
     private string? ErrorMessage{ get; set; }
     protected override void OnInitialized()
@@ -70,6 +107,7 @@ else
             using var context = contextFactory.CreateDbContext();
             JobStatuses = await context.JobStatuses.AsNoTracking().OrderBy(s => s.SortOrder).ToArrayAsync();
             JobPriorities = await context.JobPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
+            MaintenanceTeams = await context.MaintenanceTeams.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
             Job = await context.MaintenanceJobs.AsNoTracking().IgnoreAutoIncludes().FirstOrDefaultAsync(j => j.Id == JobId);
         }
         finally
@@ -112,5 +150,86 @@ else
     private void NavigateBackToJobDetailsPage()
     {
         navigationManager.NavigateTo($"/Maintenance/Details/{JobId}");
+    }
+
+    //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)
+
+    private async Task ValidateGeometry(string features)
+    {
+        //check the geometry is a single point and is on a valid route
+        GeoJsonReader _geoJsonReader = new GeoJsonReader();
+        FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
+
+        CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+
+        var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
+        if (result.IsValid)
+        {
+            //get route code and update Job.Geom
+            if (Job is not null)
+            {
+                Job.Geom = featureCollection.First().Geometry.Centroid;
+                Job.Geom.SRID = 27700;
+                using var context = contextFactory.CreateDbContext();
+                //TODO - Move this to shared location
+                var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 10).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
+                if (Route is not null)
+                {
+                    Job.RouteId = Route.RouteCode;
+                }
+            }
+        }
+        else
+        {
+            // Check to see what the error is and show appropriate error message
+            // first check if the geometry was invalid
+            if (result.Errors.Any(failure => failure.ErrorCode == "GEOM_OUTSIDE_BOUNDS") || result.Errors.Any(failure => failure.ErrorCode == "INVALID_GEOM"))
+            {
+                //show generic error
+                await ShowGeometryValidationErrorModal();
+            }
+            // if its valid, check to see if there was no route nearby
+            // NOTE I know it seems backwards to test this way round, but if you don't,
+            // invalid geometries always come back saying 'no route found', which is not the right message
+            // TODO - Improve logic through use of conditional validation
+            else if (result.Errors.Any(failure => failure.ErrorCode == "NO_ROUTE_NEARBY"))
+            {
+                //we assigned the geom at this point in case the user goes ahead with overriding the route ID
+                if (Job is not null)
+                {
+                    Job.Geom = featureCollection.First().Geometry.Centroid;
+                    Job.Geom.SRID = 27700;
+                }
+                await ShowRouteValidationModal();
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task ShowRouteValidationModal()
+    {
+        await routeValidationModal.ShowAsync();
+    }
+
+    private async Task ShowGeometryValidationErrorModal()
+    {
+        await errorModal.ShowAsync();
+    }
+
+    private async Task HideRouteValidationModal()
+    {
+        await routeValidationModal.HideAsync();
+    }
+
+    private async Task ClearDrawnGeometries()
+    {
+        if (Job is not null)
+        {
+            Job.Geom = null;
+            Job.RouteId = null;
+        }
+        await editMap!.ClearDrawnGeometries();
+        await routeValidationModal.HideAsync();
+        await errorModal.HideAsync();
     }
 }

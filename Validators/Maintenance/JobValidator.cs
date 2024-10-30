@@ -36,6 +36,11 @@ namespace CSIDE.Validators.Maintenance
                 .NotEmpty()
                 .WhenAsync(JobStatusIsComplete)
                 .WithName(_localizer["Completion Date Label"]);
+
+            RuleFor(job => job.WorkDone)
+                .NotEmpty()
+                .WhenAsync(JobStatusIsComplete)
+                .WithName(_localizer["Work Done Label"]);
         }
 
         private async Task<bool> JobStatusIsComplete(Job job, CancellationToken ct)

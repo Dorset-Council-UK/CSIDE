@@ -252,6 +252,9 @@
   <data name="View All Recent Jobs Label" xml:space="preserve">
     <value>Gweld yr holl swyddi diweddar sydd heb eu gweithredu</value>
   </data>
+  <data name="Search Jobs Title" xml:space="preserve">
+    <value>Dod o hyd i swyddi cynnal a chadw</value>
+  </data>
   <data name="Search Results Title" xml:space="preserve">
     <value>Canlyniadau chwilio</value>
   </data>
@@ -305,5 +308,11 @@
   </data>
   <data name="Maintenance Job Not Found Error Message" xml:space="preserve">
     <value>Ni chanfuwyd swydd cynnal a chadw gydag ID '{0}' yn y gronfa ddata</value>
+  </data>
+  <data name="Update Label" xml:space="preserve">
+    <value>Diweddaru</value>
+  </data>
+  <data name="Cancel Label" xml:space="preserve">
+    <value>Canslo</value>
   </data>
 </root>

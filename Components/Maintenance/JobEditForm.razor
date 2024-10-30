@@ -6,67 +6,93 @@
         <FluentValidationValidator @ref="fluentValidationValidator" />
         <ValidationSummary />
 
-        <div class="mb-3">
-            <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
-            <InputText id="route-code" class="form-control" @bind-Value="Job.RouteId"></InputText>
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
+                <InputText id="route-code" class="form-control" @bind-Value="Job.RouteId"></InputText>
+            </div>
             <ValidationMessage For="() => Job.RouteId" />
         </div>
 
+        @if (IsEdit)
+        {
+            <div class="mb-3 row">
+                <div class="col-sm-8 col-lg-6">
+                    <label class="form-label" for="priority">@localizer["Assigned To Team Label"]</label>
+                    <InputSelect id="priority" class="form-select" @bind-Value="Job.MaintenanceTeamId">
+                        @if (MaintenanceTeams is not null)
+                        {
+                            @foreach (var team in MaintenanceTeams.OrderBy(s => s.Name))
+                            {
+                                <option value="@team.Id">@team.Name</option>
+                            }
+                        }
+
+                    </InputSelect>
+                </div>
+                <ValidationMessage For="() => Job.MaintenanceTeamId" />
+            </div>
+        }
         <div class="mb-3">
             <label class="form-label" for="problem-description">@localizer["Problem Description Label"]</label>
             <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
             <ValidationMessage For="() => Job.ProblemDescription" />
         </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="priority">@localizer["Job Priority Label"]</label>
-            <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
-                @if (JobPriorities is not null)
-                {
-                    @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="priority">@localizer["Job Priority Label"]</label>
+                <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
+                    @if (JobPriorities is not null)
                     {
-                        <option value="@priority.Id">@priority.Description</option>
+                        @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
+                        {
+                            <option value="@priority.Id">@priority.Description</option>
+                        }
                     }
-                }
 
-            </InputSelect>
+                </InputSelect>
+            </div>
             <ValidationMessage For="() => Job.JobPriorityId" />
         </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="status">@localizer["Job Status Label"]</label>
-            <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
-                @if (JobStatuses is not null)
-                {
-                    @foreach (var status in JobStatuses.OrderBy(s => s.SortOrder))
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="status">@localizer["Job Status Label"]</label>
+                <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
+                    @if (JobStatuses is not null)
                     {
-                        if (Job.JobStatusId == status.Id)
+                        @foreach (var status in JobStatuses.OrderBy(s => s.SortOrder))
                         {
-                            <option value="@status.Id" selected>@status.Description</option>
-                        }
-                        else
-                        {
-                            <option value="@status.Id">@status.Description</option>
-                        }
+                            if (Job.JobStatusId == status.Id)
+                            {
+                                <option value="@status.Id" selected>@status.Description</option>
+                            }
+                            else
+                            {
+                                <option value="@status.Id">@status.Description</option>
+                            }
 
+                        }
                     }
-                }
-            </select>
+                </select>
+            </div>
             <ValidationMessage For="() => Job.JobStatusId" />
         </div>
 
         <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
-            <div class="mb-3">
-                <label class="form-label" for="completion-date">@localizer["Completion Date Label"]</label>
-                @{
-
-                    string CompleteDateStringRepresentation = "";
-                    if (Job.CompletionDate.HasValue)
-                    {
-                        CompleteDateStringRepresentation = Job.CompletionDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+            <div class="mb-3 row">
+                <div class=" col-sm-4 col-md-6 col-lg-4">
+                    <label class="form-label" for="completion-date">@localizer["Completion Date Label"]</label>
+                    @{
+                        string CompleteDateStringRepresentation = "";
+                        if (Job.CompletionDate.HasValue)
+                        {
+                            CompleteDateStringRepresentation = Job.CompletionDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                        }
                     }
-                }
-                <input type="date" class="form-control" value="@CompleteDateStringRepresentation" @onchange="UpdateCompletionDateProperty" />
+                    <input type="date" class="form-control" value="@CompleteDateStringRepresentation" @onchange="UpdateCompletionDateProperty" />
+                </div>
                 <ValidationMessage For="() => Job.CompletionDate" />
             </div>
 
@@ -99,6 +125,8 @@
     public JobStatus[]? JobStatuses { get; set; }
     [Parameter]
     public JobPriority[]? JobPriorities { get; set; }
+    [Parameter]
+    public MaintenanceTeam[]? MaintenanceTeams { get; set; }
     [Parameter]
     public bool IsBusy { get; set; }
     [Parameter]

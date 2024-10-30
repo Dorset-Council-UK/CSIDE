@@ -8,11 +8,26 @@ a, .btn-link {
   background-color: var(--primary-color);
   border-color: var(--primary-color-dark);
 }
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn-primary:hover {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
 }
-.comment-field{
-  white-space:pre-line;
+.btn-primary:focus-visible {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+.btn-primary:focus, .btn-primary:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--primary-color-dark);
+}
+.btn-check:checked + .btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check) + .btn:active {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+.form-label{
+  font-weight:500;
+}
+.comment-field {
+  white-space: pre-line;
 }
 .content {
     padding-top: 1.1rem;
