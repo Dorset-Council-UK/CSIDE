@@ -137,6 +137,10 @@ else
                     NavigateBackToJobDetailsPage();
                 }
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                ErrorMessage = localizer["Concurrency Error Message", localizer["Maintenance Details Title",Job.Id]];
+            }
             catch (Exception ex)
             {
                 ErrorMessage = localizer["Save Error Message"];

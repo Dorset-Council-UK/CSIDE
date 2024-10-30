@@ -20,6 +20,8 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.WorkDone)
                 .HasMaxLength(4000);
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (point)");
+            builder.Property(x => x.Version)
+                .IsRowVersion();
 
             builder
                 .Navigation(x => x.JobPriority)

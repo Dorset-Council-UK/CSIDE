@@ -315,4 +315,7 @@
   <data name="Cancel Label" xml:space="preserve">
     <value>Canslo</value>
   </data>
+  <data name="Concurrency Error Message" xml:space="preserve">
+    <value>Nid oedd modd diweddaru {0}. Mae'r data wedi'i addasu gan ddefnyddiwr arall. Ail-lwythwch y dudalen os gwelwch yn dda.</value>
+  </data>
 </root>

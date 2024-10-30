@@ -26,5 +26,7 @@ namespace CSIDE.Data.Models.Maintenance
         public JobPriority? JobPriority { get; set; }
         public RoW.Route? Route { get; set; }
         public MaintenanceTeam? MaintenanceTeam { get; set; }
+
+        public uint Version { get; set; }
     }
 }

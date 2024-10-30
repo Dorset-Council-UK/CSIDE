@@ -97,6 +97,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel_Label {
+            get {
+                return ResourceManager.GetString("Cancel Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Completed date from.
         /// </summary>
         public static string Completed_Date_From_Label {
@@ -120,6 +129,15 @@ namespace CSIDE.Properties {
         public static string Completion_Date_Label {
             get {
                 return ResourceManager.GetString("Completion Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not update {0}. The data has been modified by another user. Please reload the page..
+        /// </summary>
+        public static string Concurrency_Error_Message {
+            get {
+                return ResourceManager.GetString("Concurrency Error Message", resourceCulture);
             }
         }
         
@@ -597,6 +615,15 @@ namespace CSIDE.Properties {
         public static string Surveys_Title {
             get {
                 return ResourceManager.GetString("Surveys Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        public static string Update_Label {
+            get {
+                return ResourceManager.GetString("Update Label", resourceCulture);
             }
         }
         
