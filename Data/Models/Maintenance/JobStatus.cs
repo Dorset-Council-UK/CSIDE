@@ -6,6 +6,7 @@
         public required string Description { get; set; }
         public required string FriendlyDescription { get; set; }
         public bool IsComplete {  get; set; }
+        public bool IsDuplicate { get; set; }
         public int SortOrder { get; set; }
     }
 }

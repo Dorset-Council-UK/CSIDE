@@ -13,6 +13,7 @@ namespace CSIDE.Data.Models.Maintenance
         public string? WorkDone { get; set; }
         public string? LoggedById { get; set; }
         public string? LoggedByName { get; set; }
+        public int? DuplicateJobId { get; set; }
         public Point? Geom { get; set; }
 
         //linked properties

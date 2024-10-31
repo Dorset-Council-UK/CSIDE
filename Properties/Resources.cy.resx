@@ -324,7 +324,7 @@
   <data name="Not Public Label" xml:space="preserve">
     <value>Preifat</value>
   </data>
-  <data name="Comment Title" xml:space="preserve">
+  <data name="Comment Author Title" xml:space="preserve">
     <value>{0} ar {1}</value>
   </data>
   <data name="Delete Comment Confirmation" xml:space="preserve">
@@ -356,5 +356,8 @@
   </data>
   <data name="Comments Label" xml:space="preserve">
     <value>Sylwadau ({0})</value>
+  </data>
+  <data name="Duplicate Job ID Label" xml:space="preserve">
+    <value>Dyblyg o</value>
   </data>
 </root>

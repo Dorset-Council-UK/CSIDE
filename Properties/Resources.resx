@@ -357,4 +357,7 @@
   <data name="Comments Label" xml:space="preserve">
     <value>Comments ({0})</value>
   </data>
+  <data name="Duplicate Job ID Label" xml:space="preserve">
+    <value>Duplicate of</value>
+  </data>
 </root>

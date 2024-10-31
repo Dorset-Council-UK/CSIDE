@@ -250,6 +250,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate of.
+        /// </summary>
+        public static string Duplicate_Job_ID_Label {
+            get {
+                return ResourceManager.GetString("Duplicate Job ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Easting.
         /// </summary>
         public static string Easting_Label {

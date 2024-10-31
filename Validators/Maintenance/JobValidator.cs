@@ -40,7 +40,13 @@ namespace CSIDE.Validators.Maintenance
             RuleFor(job => job.WorkDone)
                 .NotEmpty()
                 .WhenAsync(JobStatusIsComplete)
+                .UnlessAsync(JobStatusIsDuplicate)
                 .WithName(_localizer["Work Done Label"]);
+
+            RuleFor(job => job.DuplicateJobId)
+                .NotEmpty().WithName(_localizer["Duplicate Job ID Label"])
+                .MustAsync(JobIDExists).WithMessage(r => _localizer["Maintenance Job Not Found Error Message", r.DuplicateJobId!])
+                .WhenAsync(JobStatusIsDuplicate);
         }
 
         private async Task<bool> JobStatusIsComplete(Job job, CancellationToken ct)
@@ -54,12 +60,29 @@ namespace CSIDE.Validators.Maintenance
             return false;
         }
 
+        private async Task<bool> JobStatusIsDuplicate(Job job, CancellationToken ct)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var JobStatus = await context.JobStatuses.FindAsync([job.JobStatusId], cancellationToken: ct);
+            if (JobStatus is not null)
+            {
+                return JobStatus.IsDuplicate;
+            }
+            return false;
+        }
+
         private async Task<bool> RouteIDExists(string? RouteId, CancellationToken ct)
         {
-
             using var context = _contextFactory.CreateDbContext();
             var Route = await context.Routes.FindAsync([RouteId], cancellationToken: ct);
             return (Route is not null);
+        }
+
+        private async Task<bool> JobIDExists(int? JobId, CancellationToken ct)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var Job = await context.MaintenanceJobs.FindAsync([JobId], cancellationToken: ct);
+            return (Job is not null);
         }
     }
 }

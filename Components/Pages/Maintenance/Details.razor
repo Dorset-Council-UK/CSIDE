@@ -67,6 +67,12 @@ else
                                     <th>@localizer["Job Status Label"]</th>
                                     <td>@Job.JobStatus?.Description</td>
                                 </tr>
+                                @if (Job.DuplicateJobId is not null){
+                                    <tr>
+                                        <th>@localizer["Duplicate Job ID Label"]</th>
+                                        <td><a href="/Maintenance/Details/@Job.DuplicateJobId">@Job.DuplicateJobId</a></td>
+                                    </tr>
+                                }
                                 <tr>
                                     <th>@localizer["Completion Date Label"]</th>
                                     <td>@Job.CompletionDate</td>
