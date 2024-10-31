@@ -318,4 +318,43 @@
   <data name="Concurrency Error Message" xml:space="preserve">
     <value>Nid oedd modd diweddaru {0}. Mae'r data wedi'i addasu gan ddefnyddiwr arall. Ail-lwythwch y dudalen os gwelwch yn dda.</value>
   </data>
+  <data name="Public Label" xml:space="preserve">
+    <value>Cyhoeddus</value>
+  </data>
+  <data name="Not Public Label" xml:space="preserve">
+    <value>Preifat</value>
+  </data>
+  <data name="Comment Title" xml:space="preserve">
+    <value>{0} ar {1}</value>
+  </data>
+  <data name="Delete Comment Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r sylw hwn?</value>
+  </data>
+  <data name="Add Comment Label" xml:space="preserve">
+    <value>Ychwanegu sylw</value>
+  </data>
+  <data name="Is Public Label" xml:space="preserve">
+    <value>Yn weladwy i'r cyhoedd?</value>
+  </data>
+  <data name="Public Comment Warning Text" xml:space="preserve">
+    <value>Bydd y sylw hwn yn weladwy i aelodau'r cyhoedd ac (os yw'n newydd) yn cael ei e-bostio at danysgrifwyr. Sicrhewch fod manylion personol yn cael eu dileu a bod y sylw wedi'i ysgrifennu'n briodol.</value>
+  </data>
+  <data name="No Maintenance Comments Message" xml:space="preserve">
+    <value>Dim sylwadau ar gyfer yr eitem cynnal a chadw hon.</value>
+  </data>
+  <data name="Delete Label" xml:space="preserve">
+    <value>Dileu</value>
+  </data>
+  <data name="New Comment Label" xml:space="preserve">
+    <value>Ychwanegu sylw newydd</value>
+  </data>
+  <data name="Toggle Label" xml:space="preserve">
+    <value>Toglo</value>
+  </data>
+  <data name="Basic Details Label" xml:space="preserve">
+    <value>Manylion Sylfaenol</value>
+  </data>
+  <data name="Comments Label" xml:space="preserve">
+    <value>Sylwadau ({0})</value>
+  </data>
 </root>

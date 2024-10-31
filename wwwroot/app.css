@@ -19,12 +19,42 @@ a, .btn-link {
 .btn-primary:focus, .btn-primary:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--primary-color-dark);
 }
-.btn-check:checked + .btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check) + .btn:active {
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color-dark);
+}
+.btn-outline-primary:hover {
+  color:#fff;
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+
+.btn-outline-primary:focus-visible {
+  color:#fff;
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+
+.btn-outline-primary:focus, .btn-primary:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--primary-color-dark);
+}
+.btn-primary.active, .btn-primary.show, .btn-primary:first-child:active, :not(.btn-check) + .btn-primary:active,
+.btn-outline-primary.active, .btn-outline-primary.show, .btn-outline-primary:first-child:active, :not(.btn-check) + .btn-outline-primary:active {
   background-color: var(--primary-color-dark);
   border-color: var(--primary-color-dark);
 }
 .form-label{
   font-weight:500;
+}
+.form-switch > label{
+  cursor:pointer;
+}
+.form-switch > input{
+  cursor:pointer;
+}
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border: var(--primary-color-dark);
 }
 .comment-field {
   white-space: pre-line;

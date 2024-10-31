@@ -88,6 +88,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add comment.
+        /// </summary>
+        public static string Add_Comment_Label {
+            get {
+                return ResourceManager.GetString("Add Comment Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigned to team.
         /// </summary>
         public static string Assigned_To_Team_Label {
@@ -97,11 +106,38 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Basic Details.
+        /// </summary>
+        public static string Basic_Details_Label {
+            get {
+                return ResourceManager.GetString("Basic Details Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel_Label {
             get {
                 return ResourceManager.GetString("Cancel Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} at {1}.
+        /// </summary>
+        public static string Comment_Author_Title {
+            get {
+                return ResourceManager.GetString("Comment Author Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comments ({0}).
+        /// </summary>
+        public static string Comments_Label {
+            get {
+                return ResourceManager.GetString("Comments Label", resourceCulture);
             }
         }
         
@@ -165,6 +201,24 @@ namespace CSIDE.Properties {
         public static string Create_New_Job_Text {
             get {
                 return ResourceManager.GetString("Create New Job Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this comment?.
+        /// </summary>
+        public static string Delete_Comment_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Comment Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Delete_Label {
+            get {
+                return ResourceManager.GetString("Delete Label", resourceCulture);
             }
         }
         
@@ -264,6 +318,15 @@ namespace CSIDE.Properties {
         public static string Invalid_Geometry_Validation_Message {
             get {
                 return ResourceManager.GetString("Invalid Geometry Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publicly viewable?.
+        /// </summary>
+        public static string Is_Public_Label {
+            get {
+                return ResourceManager.GetString("Is Public Label", resourceCulture);
             }
         }
         
@@ -430,6 +493,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add new comment.
+        /// </summary>
+        public static string New_Comment_Label {
+            get {
+                return ResourceManager.GetString("New Comment Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No comments for this maintenance item..
+        /// </summary>
+        public static string No_Maintenance_Comments_Message {
+            get {
+                return ResourceManager.GetString("No Maintenance Comments Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No results found.
         /// </summary>
         public static string No_Results_Found_Label {
@@ -475,6 +556,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Private.
+        /// </summary>
+        public static string Not_Public_Label {
+            get {
+                return ResourceManager.GetString("Not Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parish.
         /// </summary>
         public static string Parish_Label {
@@ -516,6 +606,24 @@ namespace CSIDE.Properties {
         public static string Problem_Description_Label {
             get {
                 return ResourceManager.GetString("Problem Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This comment will be visible to members of the public and (if new) will be emailed to subscribers. Make sure personal details are removed and the comment is appropriately written..
+        /// </summary>
+        public static string Public_Comment_Warning_Text {
+            get {
+                return ResourceManager.GetString("Public Comment Warning Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Public.
+        /// </summary>
+        public static string Public_Label {
+            get {
+                return ResourceManager.GetString("Public Label", resourceCulture);
             }
         }
         
@@ -615,6 +723,15 @@ namespace CSIDE.Properties {
         public static string Surveys_Title {
             get {
                 return ResourceManager.GetString("Surveys Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle.
+        /// </summary>
+        public static string Toggle_Label {
+            get {
+                return ResourceManager.GetString("Toggle Label", resourceCulture);
             }
         }
         

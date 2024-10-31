@@ -1,5 +1,8 @@
 ﻿@page "/Maintenance/Details/{JobId:int}"
 @using CSIDE.Data.Models.Maintenance
+@using CSIDE.Components.Maintenance
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.Layout
 @using NodaTime
 @using System.Globalization
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
@@ -27,55 +30,68 @@ else
 
         <div class="row">
             <div class="col-md-8">
-                <table class="table table-striped">
-                    <tbody>
-                        <tr>
-                            <th class="w-25">@localizer["Job ID Label"]</th>
-                            <td>@Job.Id</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Log Date Label"]</th>
-                            <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Logged By Label"]</th>
-                            <td>@Job.LoggedByName</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Problem Description Label"]</th>
-                            <td class="text-break comment-field">@Job.ProblemDescription</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Assigned To Team Label"]</th>
-                            <td>@Job.MaintenanceTeam?.Name</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Route ID Label"]</th>
-                            <td>@Job.RouteId</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Job Priority Label"]</th>
-                            <td>@Job.JobPriority?.Description</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Job Status Label"]</th>
-                            <td>@Job.JobStatus?.Description</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Completion Date Label"]</th>
-                            <td>@Job.CompletionDate</td>
-                        </tr>
-                        <tr>
-                            <th>@localizer["Work Done Label"]</th>
-                            <td class="text-break">@Job.WorkDone</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <CollapsibleCard Id="maint-basic-details" Title="@localizer["Basic Details Label"]" IsShownByDefault="true">
+                    <ChildContent>
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">@localizer["Job ID Label"]</th>
+                                    <td>@Job.Id</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Log Date Label"]</th>
+                                    <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Logged By Label"]</th>
+                                    <td>@Job.LoggedByName</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Problem Description Label"]</th>
+                                    <td class="text-break comment-field">@Job.ProblemDescription</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Assigned To Team Label"]</th>
+                                    <td>@Job.MaintenanceTeam?.Name</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Route ID Label"]</th>
+                                    <td>@Job.RouteId</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Job Priority Label"]</th>
+                                    <td>@Job.JobPriority?.Description</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Job Status Label"]</th>
+                                    <td>@Job.JobStatus?.Description</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Completion Date Label"]</th>
+                                    <td>@Job.CompletionDate</td>
+                                </tr>
+                                <tr>
+                                    <th>@localizer["Work Done Label"]</th>
+                                    <td class="text-break">@Job.WorkDone</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="maint-comments" Title="@localizer["Comments Label",Job.Comments.Count]">
+                    <ChildContent>
+                        <CommentsList Job="@Job"></CommentsList>
+                    </ChildContent>
+                </CollapsibleCard>
+                
+
             </div>
             <div class="col-md-4">
                 @if (Job.Geom is not null)
                 {
-                    <CSIDE.Components.Mapping.MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="18" Geometry="@Job.Geom"></CSIDE.Components.Mapping.MiniMap>
+                    <MiniMap CenterX="Job.Geom.X" CenterY="Job.Geom.Y" Zoom="18" Geometry="@Job.Geom"></MiniMap>
                 }
                 <table class="table table-striped table-sm">
                     <tbody>

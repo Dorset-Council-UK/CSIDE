@@ -1,0 +1,26 @@
+﻿<div class="card my-2">
+    <div class="card-header d-flex justify-content-between py-3" style="transform:rotate(0)"> @*Transform added to make stretched link work properly*@
+        <h3 class="mb-0">@Title</h3>
+        <span>
+            <a href="#@Id" data-bs-toggle="collapse" role="button" class="stretched-link align-middle">@localizer["Toggle Label"]</a>
+        </span>
+    </div>
+    <div class="card-body collapse @(IsShownByDefault ? "show" : "")" id="@Id">
+        @ChildContent
+    </div>
+</div>
+@code {
+    [Parameter]
+    public required string Id{ get; set; }
+    [Parameter]
+    public required string Title{ get; set; }
+    [Parameter]
+    public bool IsShownByDefault{ get; set; }
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+
+    public void UpdateHeading(string NewHeading)
+    {
+        Title = NewHeading;
+    }
+}

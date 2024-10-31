@@ -38,6 +38,10 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder
                 .Navigation(x => x.MaintenanceTeam)
                 .AutoInclude();
+
+            builder
+                .Navigation(x => x.Comments)
+                .AutoInclude();
         }
     }
 }

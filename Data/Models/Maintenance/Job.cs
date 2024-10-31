@@ -27,6 +27,10 @@ namespace CSIDE.Data.Models.Maintenance
         public RoW.Route? Route { get; set; }
         public MaintenanceTeam? MaintenanceTeam { get; set; }
 
+        //one-many relationships
+        public ICollection<Comment> Comments { get; } = [];
+
+        //Concurrency token
         public uint Version { get; set; }
     }
 }

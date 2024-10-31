@@ -1,0 +1,7 @@
+﻿.card.comment-card > .card-header, .card.comment-card > .card-footer {
+  background-color: transparent;
+  border: 0;
+  padding-top: .7rem;
+  padding-bottom: .7rem;
+  font-size: .8em;
+}

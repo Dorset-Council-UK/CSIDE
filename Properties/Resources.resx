@@ -318,4 +318,43 @@
   <data name="Concurrency Error Message" xml:space="preserve">
     <value>Could not update {0}. The data has been modified by another user. Please reload the page.</value>
   </data>
+  <data name="Public Label" xml:space="preserve">
+    <value>Public</value>
+  </data>
+  <data name="Not Public Label" xml:space="preserve">
+    <value>Private</value>
+  </data>
+  <data name="Comment Author Title" xml:space="preserve">
+    <value>{0} at {1}</value>
+  </data>
+  <data name="Delete Comment Confirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this comment?</value>
+  </data>
+  <data name="Add Comment Label" xml:space="preserve">
+    <value>Add comment</value>
+  </data>
+  <data name="Is Public Label" xml:space="preserve">
+    <value>Publicly viewable?</value>
+  </data>
+  <data name="Public Comment Warning Text" xml:space="preserve">
+    <value>This comment will be visible to members of the public and (if new) will be emailed to subscribers. Make sure personal details are removed and the comment is appropriately written.</value>
+  </data>
+  <data name="No Maintenance Comments Message" xml:space="preserve">
+    <value>No comments for this maintenance item.</value>
+  </data>
+  <data name="Delete Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="New Comment Label" xml:space="preserve">
+    <value>Add new comment</value>
+  </data>
+  <data name="Toggle Label" xml:space="preserve">
+    <value>Toggle</value>
+  </data>
+  <data name="Basic Details Label" xml:space="preserve">
+    <value>Basic Details</value>
+  </data>
+  <data name="Comments Label" xml:space="preserve">
+    <value>Comments ({0})</value>
+  </data>
 </root>
