@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using CSIDE.Data.Models.Shared;
+using NetTopologySuite.Geometries;
 using NodaTime;
 
 namespace CSIDE.Data.Models.Maintenance
@@ -30,6 +31,7 @@ namespace CSIDE.Data.Models.Maintenance
 
         //one-many relationships
         public ICollection<Comment> Comments { get; } = [];
+        public ICollection<JobContact> JobContacts { get; } = [];
 
         //Concurrency token
         public uint Version { get; set; }

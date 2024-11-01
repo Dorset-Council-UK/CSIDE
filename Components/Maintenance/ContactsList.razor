@@ -1,0 +1,30 @@
+﻿@using CSIDE.Data.Models.Maintenance
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IJSRuntime JS
+
+@if(Job is not null)
+{
+    @if (Job.JobContacts is not null && Job.JobContacts.Count != 0)
+    {
+        <div class="row">
+            @foreach (JobContact contact in Job.JobContacts.OrderByDescending(c => c.ContactId))
+            {
+                <ContactCard JobContact="@contact" IsEditable="true"></ContactCard>
+            }
+        </div>
+    }
+    else
+    {
+        <Alert Color="AlertColor.Info">@localizer["No Maintenance Contacts Message"]</Alert>
+    }
+}
+
+
+
+@code {
+    [Parameter]
+    public Job? Job{ get; set; }
+
+    
+}

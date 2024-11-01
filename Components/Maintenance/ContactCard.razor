@@ -1,0 +1,94 @@
+﻿@using CSIDE.Data.Models.Maintenance
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IJSRuntime JS
+
+<div class="col-md-6">
+    <div class="card bg-light" id="contact-@JobContact.ContactId-@JobContact.JobId">
+        <div class="card-header">
+            <strong>
+            @if (!string.IsNullOrEmpty(JobContact.Contact.ContactType?.Name))
+            {
+                @JobContact.Contact.ContactType.Name
+            }
+            else
+            {
+                 @localizer["Contact Label"]   
+            }
+            </strong>
+        </div>
+        <div class="card-body">
+            <ul class="list-unstyled">
+                @if (!string.IsNullOrEmpty(JobContact.Contact.Name))
+                {
+                    <li>@JobContact.Contact.Name</li>
+                }
+                @if (!string.IsNullOrEmpty(JobContact.Contact.Email))
+                {
+                    <li><i class="bi bi-envelope"></i> @JobContact.Contact.Email</li>
+                }
+                @if (!string.IsNullOrEmpty(JobContact.Contact.PrimaryContactNo))
+                {
+                    <li><i class="bi bi-telephone"></i> @JobContact.Contact.PrimaryContactNo</li>
+                }
+                @if (!string.IsNullOrEmpty(JobContact.Contact.SecondaryContactNo))
+                {
+                    <li><i class="bi bi-telephone"></i> @JobContact.Contact.SecondaryContactNo</li>
+                }
+                @if (!string.IsNullOrEmpty(JobContact.Contact.OrganisationName))
+                {
+                    <li><i class="bi bi-building"></i> @JobContact.Contact.OrganisationName</li>
+                }
+            </ul>
+        </div>
+        <div class="card-footer">
+            @if (IsEditable)
+            {
+                <button class="btn btn-sm btn-outline-primary" type="button">@localizer["Edit Label"]</button>
+                <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsBusy)" @onclick="() => DeleteContact(JobContact.ContactId, JobContact.JobId)">@localizer["Delete Label"]</button>
+            }
+        </div>
+    </div>
+    
+</div>
+@code {
+    [Parameter]
+    public required JobContact JobContact{ get; set; }
+    [Parameter]
+    public bool IsEditable{ get; set; }
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
+    public bool IsBusy{ get; set; }
+
+    private string? ErrorMessage{ get; set; }
+
+
+    private async Task DeleteContact(int ContactId, int JobId)
+    {
+        IsBusy = true;
+        bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Contact Confirmation"].Value);
+        if (ConfirmDelete)
+        {
+            using var context = contextFactory.CreateDbContext();
+            var contactToDelete = await context.JobContact.FindAsync([JobId, ContactId]);
+            if (contactToDelete is not null)
+            {
+                context.Remove(contactToDelete);
+                await context.SaveChangesAsync();
+                await RefreshComponent();
+            }
+        }
+        IsBusy = false;
+    }
+
+    private async Task RefreshComponent()
+    {
+        if (OnRefresh.HasDelegate)
+        {
+            await OnRefresh.InvokeAsync();
+        }
+    }
+
+
+}

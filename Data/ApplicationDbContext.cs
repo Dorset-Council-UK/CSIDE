@@ -15,6 +15,9 @@ namespace CSIDE.Data
         public DbSet<MaintenanceTeam> MaintenanceTeams { get; set; }
         public DbSet<Comment> MaintenanceComments { get; set; }
         public DbSet<Models.RoW.Route> Routes { get; set; }
+        public DbSet<Models.Shared.Contact> Contacts  { get; set; }
+        public DbSet<Models.Shared.ContactType> ContactTypes { get; set; }
+        public DbSet<JobContact> JobContact { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,6 +37,8 @@ namespace CSIDE.Data
             modelBuilder.ApplyConfiguration(new MaintenanceTeamConfiguration());
             modelBuilder.ApplyConfiguration(new MaintenanceCommentConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
+            modelBuilder.ApplyConfiguration(new ContactConfiguration());
+            modelBuilder.ApplyConfiguration(new JobContactConfiguration());
         }
     }
 }

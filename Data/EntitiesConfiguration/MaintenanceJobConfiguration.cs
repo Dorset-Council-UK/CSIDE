@@ -42,6 +42,10 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder
                 .Navigation(x => x.Comments)
                 .AutoInclude();
+
+            builder
+                .Navigation(x => x.JobContacts)
+                .AutoInclude();
         }
     }
 }
