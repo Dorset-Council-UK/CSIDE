@@ -26,7 +26,7 @@ const iconStyle = new ol.style.Style({
 });
 
 let vectorSource;
-
+let map;
 export function initMap(mapId, x, y, z, geometry) {
   //convert x/y from BNG to Spherical Mercator
   proj4.defs(
@@ -37,7 +37,7 @@ export function initMap(mapId, x, y, z, geometry) {
     '+units=m +no_defs',
   );
   ol.proj.proj4.register(proj4);
-  const map = new ol.Map({
+  map = new ol.Map({
     target: mapId,
     layers: [
       new ol.layer.Tile({
@@ -52,25 +52,35 @@ export function initMap(mapId, x, y, z, geometry) {
   });
 
   if (geometry) {
-    const features = new ol.format.GeoJSON().readFeatures(geometry);
-    const mapExtent = features[0].getGeometry().getExtent();
-    features.forEach(feature => {
-      ol.extent.extend(mapExtent, feature.getGeometry().getExtent())
-    });
-    map.getView().fit(mapExtent, {
-      padding: [20, 20, 20, 20],
-      maxZoom: z
-    });
-    vectorSource = new ol.source.Vector({
-      features: features,
-    });
-    const vectorLayer = new ol.layer.Vector({
-      source: vectorSource,
-      style: iconStyle
-    });
-    map.addLayer(vectorLayer);
-    vectorLayer.setVisible(true);
-
+    addGeometryToMapAndCenter(geometry, z);
   }
 
 };
+
+export function updateMap(geometry, z) {
+  vectorSource.clear();
+  if (geometry) {
+    addGeometryToMapAndCenter(geometry, z);
+  }
+};
+
+function addGeometryToMapAndCenter(geometry, maxZoom) {
+  const features = new ol.format.GeoJSON().readFeatures(geometry);
+  const mapExtent = features[0].getGeometry().getExtent();
+  features.forEach(feature => {
+    ol.extent.extend(mapExtent, feature.getGeometry().getExtent())
+  });
+  map.getView().fit(mapExtent, {
+    padding: [20, 20, 20, 20],
+    maxZoom: maxZoom
+  });
+  vectorSource = new ol.source.Vector({
+    features: features,
+  });
+  const vectorLayer = new ol.layer.Vector({
+    source: vectorSource,
+    style: iconStyle
+  });
+  map.addLayer(vectorLayer);
+  vectorLayer.setVisible(true);
+}

@@ -91,12 +91,13 @@ else
                         <CommentsList Job="@Job"></CommentsList>
                     </ChildContent>
                 </CollapsibleCard>
-                
+
                 <CollapsibleCard Id="maint-contacts" Title="@localizer["Contacts Label",Job.JobContacts.Count]">
                     <ChildContent>
                         <ContactsList Job="@Job"></ContactsList>
                     </ChildContent>
                 </CollapsibleCard>
+                
 
             </div>
             <div class="col-md-4">
@@ -124,7 +125,7 @@ else
 
     private bool IsBusy{ get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnParametersSetAsync()
     {
         NavItems = new List<BreadcrumbItem>
         {
@@ -132,11 +133,7 @@ else
             new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
             new BreadcrumbItem{ Text = localizer["Maintenance Details Title", JobId], IsCurrentPage = true }
         };
-        base.OnInitialized();
-    }
 
-    protected override async Task OnParametersSetAsync()
-    {
         IsBusy = true;
         try
         {
