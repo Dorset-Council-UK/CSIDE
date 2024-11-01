@@ -61,16 +61,14 @@
     private Comment? NewComment{ get; set; }
     private string? ErrorMessage{ get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        if(NewComment is null)
-        {
-            NewComment = new()
-                {
-                    JobId = Job!.Id,
-                    CommentText = string.Empty
-                };
-        }
+        NewComment = new()
+            {
+                JobId = Job!.Id,
+                CommentText = string.Empty
+            };
+        
     }
 
     private async Task SubmitFormAsync()

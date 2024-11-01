@@ -89,7 +89,8 @@ else
     private EditMap? editMap;
     private bool IsBusy{ get; set; }
     private string? ErrorMessage{ get; set; }
-    protected override void OnInitialized()
+
+    protected override async Task OnParametersSetAsync()
     {
         NavItems = new List<BreadcrumbItem>
         {
@@ -97,10 +98,6 @@ else
             new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
             new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", JobId], IsCurrentPage = true }
         };
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
         IsBusy = true;
         try
         {

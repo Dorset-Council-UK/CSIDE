@@ -52,7 +52,7 @@
     private string? ErrorMessage{ get; set; }
     private string? OriginalValue { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         OriginalValue = comment.CommentText;
     }
