@@ -192,9 +192,6 @@
   <data name="Display Name Label" xml:space="preserve">
     <value>Display name</value>
   </data>
-  <data name="Primary Email Label" xml:space="preserve">
-    <value>Primary email address</value>
-  </data>
   <data name="User ID Label" xml:space="preserve">
     <value>User ID</value>
   </data>
@@ -359,5 +356,50 @@
   </data>
   <data name="Duplicate Job ID Label" xml:space="preserve">
     <value>Duplicate of</value>
+  </data>
+  <data name="Contact Label" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Contacts Label" xml:space="preserve">
+    <value>Contacts ({0})</value>
+  </data>
+  <data name="Add Contact Label" xml:space="preserve">
+    <value>Add contact</value>
+  </data>
+  <data name="At Least One Contact Property Validation Message" xml:space="preserve">
+    <value>You need to fill in at least one contact detail</value>
+  </data>
+  <data name="Comment Label" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="Email Label" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="Name Label" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Primary Contact Number Label" xml:space="preserve">
+    <value>Primary contact number</value>
+  </data>
+  <data name="Secondary Contact Number Label" xml:space="preserve">
+    <value>Secondary contact number</value>
+  </data>
+  <data name="Contact Organisation Label" xml:space="preserve">
+    <value>Organisation</value>
+  </data>
+  <data name="Contact Type Label" xml:space="preserve">
+    <value>Contact type</value>
+  </data>
+  <data name="Redraw Label" xml:space="preserve">
+    <value>Redraw</value>
+  </data>
+  <data name="Route ID Manual Entry Label" xml:space="preserve">
+    <value>Enter Route ID manually</value>
+  </data>
+  <data name="Save Error Message" xml:space="preserve">
+    <value>There was a problem saving this data. Try again or contact your system administrator.</value>
+  </data>
+  <data name="Save Label" xml:space="preserve">
+    <value>Save</value>
   </data>
 </root>

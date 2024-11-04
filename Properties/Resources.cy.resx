@@ -192,9 +192,6 @@
   <data name="Display Name Label" xml:space="preserve">
     <value>Enw arddangos</value>
   </data>
-  <data name="Primary Email Label" xml:space="preserve">
-    <value>Prif gyfeiriad e-bost</value>
-  </data>
   <data name="User ID Label" xml:space="preserve">
     <value>ID Defnyddiwr</value>
   </data>
@@ -359,5 +356,50 @@
   </data>
   <data name="Duplicate Job ID Label" xml:space="preserve">
     <value>Dyblyg o</value>
+  </data>
+  <data name="Contact Label" xml:space="preserve">
+    <value>Cyswllt</value>
+  </data>
+  <data name="Contacts Label" xml:space="preserve">
+    <value>Cysylltiadau ({0})</value>
+  </data>
+  <data name="Add Contact Label" xml:space="preserve">
+    <value>Ychwanegwch gyswllt</value>
+  </data>
+  <data name="At Least One Contact Property Validation Message" xml:space="preserve">
+    <value>Mae angen i chi lenwi o leiaf un manylion cyswllt</value>
+  </data>
+  <data name="Comment Label" xml:space="preserve">
+    <value>Sylw</value>
+  </data>
+  <data name="Email Label" xml:space="preserve">
+    <value>Cyfeiriad e-bost</value>
+  </data>
+  <data name="Name Label" xml:space="preserve">
+    <value>Enw</value>
+  </data>
+  <data name="Primary Contact Number Label" xml:space="preserve">
+    <value>Prif rif cyswllt</value>
+  </data>
+  <data name="Secondary Contact Number Label" xml:space="preserve">
+    <value>Rhif cyswllt eilaidd</value>
+  </data>
+  <data name="Contact Organisation Label" xml:space="preserve">
+    <value>Sefydliad</value>
+  </data>
+  <data name="Contact Type Label" xml:space="preserve">
+    <value>Math o gyswllt</value>
+  </data>
+  <data name="Redraw Label" xml:space="preserve">
+    <value>Aildynnu</value>
+  </data>
+  <data name="Route ID Manual Entry Label" xml:space="preserve">
+    <value>Rhowch ID y Llwybr â llaw</value>
+  </data>
+  <data name="Save Error Message" xml:space="preserve">
+    <value>Roedd problem wrth gadw'r data hwn. Ceisiwch eto neu cysylltwch â gweinyddwr eich system.</value>
+  </data>
+  <data name="Save Label" xml:space="preserve">
+    <value>Arbed</value>
   </data>
 </root>

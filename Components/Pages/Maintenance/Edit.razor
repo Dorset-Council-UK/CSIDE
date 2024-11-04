@@ -50,14 +50,15 @@ else
     </div>
 }
 
+@*TODO - These are duplicated in Create.razor - Componentize them? Or make it part of the EditForm?*@
 <Modal @ref="routeValidationModal" Title="@localizer["Error Title"]">
     <BodyTemplate>
         @localizer["No Rights of Way Near Geometry Validation Message"]<br />
         @localizer["No Rights of Way Near Geometry Options Text"]
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">Manually enter Route ID</Button>
-        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">@localizer["Route ID Manual Entry Label"]</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
     </FooterTemplate>
 
 </Modal>
@@ -67,7 +68,7 @@ else
         @localizer["Invalid Geometry Validation Message"]
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Redraw</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Re@localizer["Redraw Label"]draw</Button>
     </FooterTemplate>
 </Modal>
 

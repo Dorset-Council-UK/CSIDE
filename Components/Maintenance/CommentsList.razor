@@ -6,7 +6,7 @@
 @if(Job is not null)
 {
     //add comment section
-    @if (NewComment is not null)
+    @if (NewComment is not null && IsEditable)
     {
         <EditForm Model="NewComment" OnSubmit="SubmitFormAsync" class="mb-2">
             <FluentValidationValidator @ref="newCommentValidator" />
@@ -37,7 +37,7 @@
     {
         @foreach (Comment comment in Job.Comments.OrderByDescending(c => c.CreatedAt))
         {
-            <SingleComment comment="@comment" IsEditable="true" OnRefresh="RefreshComponent"></SingleComment>
+            <SingleComment comment="@comment" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></SingleComment>
         }
     }
     else
@@ -51,6 +51,8 @@
 @code {
     [Parameter]
     public Job? Job{ get; set; }
+    [Parameter]
+    public bool IsEditable{ get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }

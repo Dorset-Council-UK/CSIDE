@@ -1,16 +1,27 @@
 ﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Models.Shared
 @using System.Globalization
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject IJSRuntime JS
 
 @if(Job is not null)
 {
+    if (IsEditable)
+    {
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ShowAddContactModal">@localizer["Add Contact Label"]</button>
+    }
+    
     @if (Job.JobContacts is not null && Job.JobContacts.Count != 0)
     {
         <div class="row">
-            @foreach (JobContact contact in Job.JobContacts.OrderByDescending(c => c.ContactId))
+            @*defined contact types first, then generic contact types*@
+            @foreach (JobContact contact in Job.JobContacts.Where(c => c.Contact.ContactType != null).OrderBy(c => c.Contact.ContactType?.Id))
             {
-                <ContactCard JobContact="@contact" IsEditable="true"></ContactCard>
+                <ContactCard JobContact="@contact" IsEditable="@IsEditable"></ContactCard>
+            }
+            @foreach (JobContact contact in Job.JobContacts.Where(c => c.Contact.ContactType == null).OrderBy(c => c.Contact.Id))
+            {
+                <ContactCard JobContact="@contact" IsEditable="@IsEditable"></ContactCard>
             }
         </div>
     }
@@ -20,11 +31,102 @@
     }
 }
 
+@if (NewContact is not null && IsEditable)
+{
+    <Modal @ref="AddContactModal" Title="@localizer["Add Contact Label"]">
+        
+        <BodyTemplate>
+
+            <ContactEditForm ContactToEdit="NewContact"
+                ContactTypes="ContactTypes"
+                OnSubmit="SubmitFormAsync"
+                OnCancel="HideAddContactModal"
+                IsBusy="IsBusy"
+                @ref="NewContactForm" />
+        </BodyTemplate>
+
+    </Modal>
+}
 
 
 @code {
     [Parameter]
     public Job? Job{ get; set; }
+    [Parameter]
+    public bool IsEditable{ get; set; }
 
-    
+    //private FluentValidationValidator? newContactValidator;
+
+    private Modal AddContactModal = default!;
+    private bool IsBusy { get; set; }
+    private bool IsEditing { get; set; }
+    private Contact? NewContact { get; set; }
+    private ContactType[]? ContactTypes { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    private ContactEditForm? NewContactForm;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        NewContact = new();
+        using var context = contextFactory.CreateDbContext();
+        ContactTypes = await context.ContactTypes.OrderBy(c => c.Id).ToArrayAsync();
+    }
+
+    private async Task SubmitFormAsync()
+    {
+        if (IsBusy)
+        {
+            ErrorMessage = null;
+            return;
+        }
+        if (await NewContactForm!.ValidateAsync())
+        {
+            IsBusy = true;
+
+            try
+            {
+                if (NewContact is not null && Job is not null)
+                {
+                    using var context = contextFactory.CreateDbContext();
+
+                    context.Contacts.Add(NewContact);
+                    await context.SaveChangesAsync();
+                    context.JobContact.Add(new JobContact { ContactId = NewContact.Id, JobId = Job.Id }); //UHRMMMM?
+                    await context.SaveChangesAsync();
+                    await HideAddContactModal();
+                    //refresh component
+                    await RefreshComponent();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Save Error Message"];
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+
+    private async Task ShowAddContactModal()
+    {
+        await AddContactModal.ShowAsync();
+    }
+    private async Task HideAddContactModal()
+    {
+        await AddContactModal.HideAsync();
+    }
+    private async Task RefreshComponent()
+    {
+        if (Job is not null)
+        {
+            NewContact = new();
+            using var context = contextFactory.CreateDbContext();
+            Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
+            ErrorMessage = null;
+            StateHasChanged();
+        }
+    }
 }

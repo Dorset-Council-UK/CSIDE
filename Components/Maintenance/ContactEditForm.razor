@@ -1,0 +1,89 @@
+﻿@using CSIDE.Data.Models.Shared
+
+@if (ContactToEdit is not null)
+{
+
+    <EditForm Model="ContactToEdit" OnSubmit="@HandleSubmit">
+        <FluentValidationValidator @ref="contactValidator" />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label" for="contact-name">@localizer["Name Label"]</label>
+            <InputText id="contact-name" class="form-control" @bind-Value="ContactToEdit.Name"></InputText>
+            <ValidationMessage For="() => ContactToEdit.Name" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="contact-email">@localizer["Email Label"]</label>
+            <InputText id="contact-email" class="form-control" @bind-Value="ContactToEdit.Email"></InputText>
+            <ValidationMessage For="() => ContactToEdit.Email" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="contact-pri-tel">@localizer["Primary Contact Number Label"]</label>
+            <InputText id="contact-pri-tel" class="form-control" @bind-Value="ContactToEdit.PrimaryContactNo"></InputText>
+            <ValidationMessage For="() => ContactToEdit.PrimaryContactNo" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="contact-sec-tel">@localizer["Secondary Contact Number Label"]</label>
+            <InputText id="contact-sec-tel" class="form-control" @bind-Value="ContactToEdit.SecondaryContactNo"></InputText>
+            <ValidationMessage For="() => ContactToEdit.SecondaryContactNo" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="contact-org">@localizer["Contact Organisation Label"]</label>
+            <InputText id="contact-org" class="form-control" @bind-Value="ContactToEdit.OrganisationName"></InputText>
+            <ValidationMessage For="() => ContactToEdit.OrganisationName" />
+        </div>
+        @if (ContactTypes is not null)
+        {
+            <div class="mb-3">
+                <label class="form-label" for="contact-type">@localizer["Contact Type Label"]</label>
+                <InputSelect id="contact-type" class="form-select" @bind-Value="ContactToEdit.ContactTypeId">
+                    <option value=""></option>
+                    @foreach (ContactType contactType in ContactTypes)
+                    {
+                        <option value="@contactType.Id">@contactType.Name</option>
+                    }
+
+                </InputSelect>
+                <ValidationMessage For="() => ContactToEdit.ContactTypeId" />
+            </div>
+        }
+        <button type="button" class="btn btn-outline-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+        <button type="submit" class="btn btn-outline-primary" disabled="@IsBusy">@localizer["Save Label"]</button>
+    </EditForm>
+}
+
+@code{
+    [Parameter]
+    public Contact? ContactToEdit {get;set; }
+    [Parameter]
+    public ContactType[]? ContactTypes{get;set;}
+    [Parameter]
+    public bool IsBusy { get; set; }
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private FluentValidationValidator? contactValidator;
+
+    private string? ErrorMessage{ get; set; }
+    
+    public async Task<bool> ValidateAsync()
+    {
+        return await contactValidator!.ValidateAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync();
+        }
+    }
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+}

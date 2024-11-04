@@ -17,8 +17,8 @@
 
 @if (Job is null && !IsBusy)
 {
-    <PageTitle>@localizer["Maintenance job does not exist text"]</PageTitle>
-    <div class="alert alert-danger">@localizer["Maintenance job does not exist text"]</div>
+    <PageTitle>@localizer["404 Error Title"]</PageTitle>
+    <div class="alert alert-danger">@localizer["Maintenance Job Not Found Error Message",JobId]</div>
 }
 else
 {
@@ -88,13 +88,13 @@ else
 
                 <CollapsibleCard Id="maint-comments" Title="@localizer["Comments Label",Job.Comments.Count]">
                     <ChildContent>
-                        <CommentsList Job="@Job"></CommentsList>
+                        <CommentsList Job="@Job" IsEditable="true"></CommentsList>
                     </ChildContent>
                 </CollapsibleCard>
 
                 <CollapsibleCard Id="maint-contacts" Title="@localizer["Contacts Label",Job.JobContacts.Count]">
                     <ChildContent>
-                        <ContactsList Job="@Job"></ContactsList>
+                        <ContactsList Job="@Job" IsEditable="true"></ContactsList>
                     </ChildContent>
                 </CollapsibleCard>
                 

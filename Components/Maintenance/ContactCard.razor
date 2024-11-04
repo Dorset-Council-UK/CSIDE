@@ -1,10 +1,11 @@
 ﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Models.Shared
 @using System.Globalization
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject IJSRuntime JS
 
-<div class="col-md-6">
-    <div class="card bg-light" id="contact-@JobContact.ContactId-@JobContact.JobId">
+<div class="col-md-6 my-2">
+    <div class="card bg-light h-100" id="contact-@JobContact.ContactId-@JobContact.JobId">
         <div class="card-header">
             <strong>
             @if (!string.IsNullOrEmpty(JobContact.Contact.ContactType?.Name))
@@ -44,13 +45,30 @@
         <div class="card-footer">
             @if (IsEditable)
             {
-                <button class="btn btn-sm btn-outline-primary" type="button">@localizer["Edit Label"]</button>
+                <button class="btn btn-sm btn-outline-primary" type="button" @onclick="ShowEditContactModal">@localizer["Edit Label"]</button>
                 <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsBusy)" @onclick="() => DeleteContact(JobContact.ContactId, JobContact.JobId)">@localizer["Delete Label"]</button>
             }
         </div>
     </div>
     
 </div>
+
+@if (JobContact is not null && IsEditable)
+{
+    <Modal @ref="EditContactModal" Title="@localizer["Edit Contact Label"]">
+
+        <BodyTemplate>
+
+            <ContactEditForm ContactToEdit="JobContact.Contact"
+                             ContactTypes="ContactTypes"
+                             OnSubmit="SubmitFormAsync"
+                             OnCancel="HideEditContactModal"
+                             IsBusy="IsBusy"
+                             @ref="EditContactForm" />
+        </BodyTemplate>
+
+    </Modal>
+}
 @code {
     [Parameter]
     public required JobContact JobContact{ get; set; }
@@ -62,7 +80,63 @@
     public bool IsBusy{ get; set; }
 
     private string? ErrorMessage{ get; set; }
+    private Modal EditContactModal = default!;
+    private bool IsEditing { get; set; }
+    private ContactType[]? ContactTypes { get; set; }
 
+    private ContactEditForm? EditContactForm;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var context = contextFactory.CreateDbContext();
+        ContactTypes = await context.ContactTypes.OrderBy(c => c.Id).ToArrayAsync();
+    }
+
+    private async Task SubmitFormAsync()
+    {
+        if (IsBusy)
+        {
+            ErrorMessage = null;
+            return;
+        }
+        if (await EditContactForm!.ValidateAsync())
+        {
+            IsBusy = true;
+
+            try
+            {
+                if (JobContact is not null && JobContact.Contact is not null)
+                {
+                    using var context = contextFactory.CreateDbContext();
+                    //clear the 'ContactType' navigation property, otherwise ef core uses that which hasn't changed
+                    JobContact.Contact.ContactType = null;
+                    context.Update(JobContact);
+                    await context.SaveChangesAsync();
+                    
+                    await HideEditContactModal();
+                    //refresh component
+                    await RefreshComponent();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Save Error Message"];
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+
+    private async Task ShowEditContactModal()
+    {
+        await EditContactModal.ShowAsync();
+    }
+    private async Task HideEditContactModal()
+    {
+        await EditContactModal.HideAsync();
+    }
 
     private async Task DeleteContact(int ContactId, int JobId)
     {

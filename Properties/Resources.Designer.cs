@@ -97,11 +97,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add contact.
+        /// </summary>
+        public static string Add_Contact_Label {
+            get {
+                return ResourceManager.GetString("Add Contact Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigned to team.
         /// </summary>
         public static string Assigned_To_Team_Label {
             get {
                 return ResourceManager.GetString("Assigned To Team Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to fill in at least one contact detail.
+        /// </summary>
+        public static string At_Least_One_Contact_Property_Validation_Message {
+            get {
+                return ResourceManager.GetString("At Least One Contact Property Validation Message", resourceCulture);
             }
         }
         
@@ -129,6 +147,15 @@ namespace CSIDE.Properties {
         public static string Comment_Author_Title {
             get {
                 return ResourceManager.GetString("Comment Author Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comment.
+        /// </summary>
+        public static string Comment_Label {
+            get {
+                return ResourceManager.GetString("Comment Label", resourceCulture);
             }
         }
         
@@ -174,6 +201,42 @@ namespace CSIDE.Properties {
         public static string Concurrency_Error_Message {
             get {
                 return ResourceManager.GetString("Concurrency Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact.
+        /// </summary>
+        public static string Contact_Label {
+            get {
+                return ResourceManager.GetString("Contact Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Organisation.
+        /// </summary>
+        public static string Contact_Organisation_Label {
+            get {
+                return ResourceManager.GetString("Contact Organisation Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact type.
+        /// </summary>
+        public static string Contact_Type_Label {
+            get {
+                return ResourceManager.GetString("Contact Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contacts ({0}).
+        /// </summary>
+        public static string Contacts_Label {
+            get {
+                return ResourceManager.GetString("Contacts Label", resourceCulture);
             }
         }
         
@@ -273,6 +336,15 @@ namespace CSIDE.Properties {
         public static string Edit_Label {
             get {
                 return ResourceManager.GetString("Edit Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address.
+        /// </summary>
+        public static string Email_Label {
+            get {
+                return ResourceManager.GetString("Email Label", resourceCulture);
             }
         }
         
@@ -502,6 +574,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Name_Label {
+            get {
+                return ResourceManager.GetString("Name Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add new comment.
         /// </summary>
         public static string New_Comment_Label {
@@ -601,11 +682,11 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Primary email address.
+        ///   Looks up a localized string similar to Primary contact number.
         /// </summary>
-        public static string Primary_Email_Label {
+        public static string Primary_Contact_Number_Label {
             get {
-                return ResourceManager.GetString("Primary Email Label", resourceCulture);
+                return ResourceManager.GetString("Primary Contact Number Label", resourceCulture);
             }
         }
         
@@ -633,6 +714,15 @@ namespace CSIDE.Properties {
         public static string Public_Label {
             get {
                 return ResourceManager.GetString("Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redraw.
+        /// </summary>
+        public static string Redraw_Label {
+            get {
+                return ResourceManager.GetString("Redraw Label", resourceCulture);
             }
         }
         
@@ -669,6 +759,33 @@ namespace CSIDE.Properties {
         public static string Route_ID_Label {
             get {
                 return ResourceManager.GetString("Route ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Route ID manually.
+        /// </summary>
+        public static string Route_ID_Manual_Entry_Label {
+            get {
+                return ResourceManager.GetString("Route ID Manual Entry Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was a problem saving this data. Try again or contact your system administrator..
+        /// </summary>
+        public static string Save_Error_Message {
+            get {
+                return ResourceManager.GetString("Save Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save_Label {
+            get {
+                return ResourceManager.GetString("Save Label", resourceCulture);
             }
         }
         
@@ -723,6 +840,15 @@ namespace CSIDE.Properties {
         public static string Search_Validation_Date_Not_In_Future_Message {
             get {
                 return ResourceManager.GetString("Search Validation Date Not In Future Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary contact number.
+        /// </summary>
+        public static string Secondary_Contact_Number_Label {
+            get {
+                return ResourceManager.GetString("Secondary Contact Number Label", resourceCulture);
             }
         }
         
