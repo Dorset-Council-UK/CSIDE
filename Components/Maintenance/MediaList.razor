@@ -1,0 +1,126 @@
+﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Models.Shared
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IJSRuntime JS
+
+@if(Job is not null)
+{
+    if (IsEditable)
+    {
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ShowAddMediaModal">@localizer["Add Media Label"]</button>
+    }
+    
+    @if (Job.JobMedia is not null && Job.JobMedia.Count != 0)
+    {
+        <div class="row">
+            @*defined contact types first, then generic contact types*@
+            @foreach (JobMedia jobMediaItem in Job.JobMedia.OrderBy(m => m.Media.UploadDate))
+            {
+                <div class="col-sm-6">
+                    <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <Alert Color="AlertColor.Info">@localizer["No Media Message"]</Alert>
+    }
+}
+
+@if (NewMedia is not null && IsEditable)
+{
+    <Modal @ref="AddMediaModal" Title="@localizer["Add Media Label"]">
+        
+        <BodyTemplate>
+
+@*             <MediaEditForm MediaToEdit="NewMedia"
+                OnSubmit="SubmitFormAsync"
+                OnCancel="HideAddMediaModal"
+                IsBusy="IsBusy"
+                @ref="NewMediaForm" /> *@
+        </BodyTemplate>
+
+    </Modal>
+}
+
+
+@code {
+    [Parameter]
+    public Job? Job{ get; set; }
+    [Parameter]
+    public bool IsEditable{ get; set; }
+
+    //private FluentValidationValidator? newContactValidator;
+
+    private Modal AddMediaModal = default!;
+    private bool IsBusy { get; set; }
+    private bool IsEditing { get; set; }
+    private Media? NewMedia { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    //private MediaEditForm? NewMediaForm;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        NewMedia = new() { URL = string.Empty };
+    }
+
+    private async Task SubmitFormAsync()
+    {
+        if (IsBusy)
+        {
+            ErrorMessage = null;
+            return;
+        }
+        // if (await NewMediaForm!.ValidateAsync())
+        // {
+        //     IsBusy = true;
+
+        //     try
+        //     {
+        //         if (NewMedia is not null && Job is not null)
+        //         {
+        //             using var context = contextFactory.CreateDbContext();
+
+        //             context.Media.Add(NewMedia);
+        //             await context.SaveChangesAsync();
+        //             context.JobMedia.Add(new JobMedia { MediaId = NewMedia.Id, JobId = Job.Id }); //UHRMMMM?
+        //             await context.SaveChangesAsync();
+        //             await HideAddMediaModal();
+        //             //refresh component
+        //             await RefreshComponent();
+        //         }
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         ErrorMessage = localizer["Save Error Message"];
+        //     }
+        //     finally
+        //     {
+        //         IsBusy = false;
+        //     }
+        //}
+    }
+
+    private async Task ShowAddMediaModal()
+    {
+        await AddMediaModal.ShowAsync();
+    }
+    private async Task HideAddMediaModal()
+    {
+        await AddMediaModal.HideAsync();
+    }
+    private async Task RefreshComponent()
+    {
+        if (Job is not null)
+        {
+            NewMedia = new(){URL = string.Empty };
+            using var context = contextFactory.CreateDbContext();
+            Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
+            ErrorMessage = null;
+            StateHasChanged();
+        }
+    }
+}

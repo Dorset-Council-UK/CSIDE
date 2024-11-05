@@ -32,6 +32,7 @@ namespace CSIDE.Data.Models.Maintenance
         //one-many relationships
         public ICollection<Comment> Comments { get; } = [];
         public ICollection<JobContact> JobContacts { get; } = [];
+        public ICollection<JobMedia> JobMedia { get; } = [];
 
         //Concurrency token
         public uint Version { get; set; }

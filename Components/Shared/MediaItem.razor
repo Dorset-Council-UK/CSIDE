@@ -1,0 +1,30 @@
+﻿@using CSIDE.Data.Models.Shared
+
+@if (Media is not null)
+{
+    <div class="card my-2 bg-light">
+        <img src="@Media.URL" class="img-fluid" />
+        <div class="card-body">
+            @if (IsEditable)
+            {
+                <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" title="@localizer["Rotate Counter Clockwise Label"]"><i class="bi bi-arrow-counterclockwise"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" title="@localizer["Rotate Clockwise Label"]"><i class="bi bi-arrow-clockwise"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></button>
+            }
+            @if (!string.IsNullOrEmpty(Media.Title))
+            {
+                <p><strong>@localizer["Title Label"]:</strong> @Media.Title</p>
+            }
+            
+            <p><strong>@localizer["Date Uploaded Label"]:</strong> @Media.UploadDate</p>
+
+        </div>
+    </div>
+}
+@code{
+    [Parameter]
+    public required Media Media { get; set; }
+    [Parameter]
+    public bool IsEditable { get; set; }
+}

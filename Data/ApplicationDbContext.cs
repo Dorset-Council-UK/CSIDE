@@ -9,15 +9,19 @@ namespace CSIDE.Data
     {
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
         public DbSet<ApplicationUserRole> ApplicationUserRoles { get; set; }
+
         public DbSet<Job> MaintenanceJobs { get; set; }
         public DbSet<JobPriority> JobPriorities { get; set; }
         public DbSet<JobStatus> JobStatuses { get; set; }
         public DbSet<MaintenanceTeam> MaintenanceTeams { get; set; }
         public DbSet<Comment> MaintenanceComments { get; set; }
-        public DbSet<Models.RoW.Route> Routes { get; set; }
-        public DbSet<Models.Shared.Contact> Contacts  { get; set; }
-        public DbSet<Models.Shared.ContactType> ContactTypes { get; set; }
         public DbSet<JobContact> JobContact { get; set; }
+        public DbSet<JobMedia> JobMedia { get; set; }
+
+        public DbSet<Models.RoW.Route> Routes { get; set; }
+        public DbSet<Models.Shared.Contact> Contacts { get; set; }
+        public DbSet<Models.Shared.ContactType> ContactTypes { get; set; }
+        public DbSet<Models.Shared.Media> Media { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,6 +43,8 @@ namespace CSIDE.Data
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new ContactConfiguration());
             modelBuilder.ApplyConfiguration(new JobContactConfiguration());
+            modelBuilder.ApplyConfiguration(new MediaConfiguration());
+            modelBuilder.ApplyConfiguration(new JobMediaConfiguration());
         }
     }
 }

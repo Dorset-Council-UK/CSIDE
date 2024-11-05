@@ -3,6 +3,7 @@ using System;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105150026_AddMediaTable")]
+    partial class AddMediaTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -390,12 +393,6 @@ namespace CSIDE.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Instant?>("UploadDate")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
                     b.HasKey("Id");
 
                     b.ToTable("Media", "cside");
@@ -476,7 +473,7 @@ namespace CSIDE.Migrations
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobMedia", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Maintenance.Job", "Job")
-                        .WithMany("JobMedia")
+                        .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -506,8 +503,6 @@ namespace CSIDE.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("JobContacts");
-
-                    b.Navigation("JobMedia");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>

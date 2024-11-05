@@ -97,6 +97,12 @@ else
                         <ContactsList Job="@Job" IsEditable="true"></ContactsList>
                     </ChildContent>
                 </CollapsibleCard>
+
+                <CollapsibleCard Id="maint-media" Title="@localizer["Media Label",Job.JobMedia.Count]">
+                    <ChildContent>
+                        <MediaList Job="@Job" IsEditable="true"></MediaList>
+                    </ChildContent>
+                </CollapsibleCard>
                 
 
             </div>
