@@ -1,26 +1,81 @@
 ﻿@using CSIDE.Data.Models.Shared
+@using System.Globalization
 
 @if (Media is not null)
 {
-    <div class="card my-2 bg-light">
-        <img src="@Media.URL" class="img-fluid" />
-        <div class="card-body">
+    
+    @if(Media.Format == MediaType.Image)
+    {
+        <div class="card my-2 bg-light">
+            <img src="@Media.URL" class="img-fluid" />
+            <div class="card-body">
+                @if (IsEditable)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-danger me-2"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Counter Clockwise Label"]"><i class="bi bi-arrow-counterclockwise"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Clockwise Label"]"><i class="bi bi-arrow-clockwise"></i></button>
+                }
+                <a href="@Media.URL" download target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></a>
+                <div class="mt-2">
+                    @if (!string.IsNullOrEmpty(Media.Title))
+                    {
+                        <p><strong>@localizer["Title Label"]:</strong> @Media.Title</p>
+                    }
+                    <p><strong>@localizer["Upload Date Label"]:</strong> @(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</p>
+                </div>
+            </div>
+        </div>
+    }
+    else if(Media.Format == MediaType.Video)
+    {
+        <video src="@Media.URL" class="my-2" style="max-width:100%;height:300px;max-height:80vh" controls preload="metadata"></video>
+        <div class="my-2">
             @if (IsEditable)
             {
-                <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" title="@localizer["Rotate Counter Clockwise Label"]"><i class="bi bi-arrow-counterclockwise"></i></button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" title="@localizer["Rotate Clockwise Label"]"><i class="bi bi-arrow-clockwise"></i></button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-danger me-2"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
             }
-            @if (!string.IsNullOrEmpty(Media.Title))
+            <a href="@Media.URL" download target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></a>
+
+            <div class="mt-2">
+                @if (!string.IsNullOrEmpty(Media.Title))
+                {
+                    <p><strong>@localizer["Title Label"]:</strong> @Media.Title</p>
+                }
+                <p><strong>@localizer["Upload Date Label"]:</strong> @(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</p>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        var icon = "bi-fil-earmark";
+        if(Media.Format == MediaType.Word_Document)
+        {
+            icon = "bi-filetype-docx";
+        }else if(Media.Format == MediaType.Excel_Spreadsheet)
+        {
+            icon = "bi-filetype-xlsx";
+        }else if(Media.Format == MediaType.PDF_Document)
+        {
+            icon = "bi-filetype-pdf";
+        }
+
+        <tr>
+            
+            <td>
+                <a href="@Media.URL" download target="_blank"><i class="bi @icon"></i> 
+                    @(string.IsNullOrEmpty(Media.Title) ? new System.IO.FileInfo(Media.URL).Name : Media.Title)
+                </a>
+            </td>
+            <td>@(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
+            @if (IsEditable)
             {
-                <p><strong>@localizer["Title Label"]:</strong> @Media.Title</p>
+                <td> <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button></td>
             }
             
-            <p><strong>@localizer["Date Uploaded Label"]:</strong> @Media.UploadDate</p>
+        </tr>
+        }
 
-        </div>
-    </div>
 }
 @code{
     [Parameter]

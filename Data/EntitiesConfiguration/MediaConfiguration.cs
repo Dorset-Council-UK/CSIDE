@@ -14,6 +14,7 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
             builder.Property(x => x.URL).IsRequired();
             builder.Property(x => x.Title).HasMaxLength(200);
+            builder.Ignore(x => x.Format);
         }
     }
 }

@@ -402,4 +402,13 @@
   <data name="Save Label" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="Media Label" xml:space="preserve">
+    <value>Media ({0})</value>
+  </data>
+  <data name="Title Label" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Upload Date Label" xml:space="preserve">
+    <value>Uploaded</value>
+  </data>
 </root>

@@ -13,15 +13,58 @@
     
     @if (Job.JobMedia is not null && Job.JobMedia.Count != 0)
     {
-        <div class="row">
-            @*defined contact types first, then generic contact types*@
-            @foreach (JobMedia jobMediaItem in Job.JobMedia.OrderBy(m => m.Media.UploadDate))
-            {
-                <div class="col-sm-6">
-                    <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
-                </div>
-            }
-        </div>
+        
+        var images = from m in Job.JobMedia where m.Media.Format == MediaType.Image select m;
+        var videos = from m in Job.JobMedia where m.Media.Format == MediaType.Video select m;
+        var docs = 
+            from m in Job.JobMedia where (
+                m.Media.Format == MediaType.PDF_Document | 
+                m.Media.Format == MediaType.Word_Document |
+                m.Media.Format == MediaType.Excel_Spreadsheet |
+                m.Media.Format == MediaType.Unknown)
+            select m;
+
+        if (images.Count() != 0)
+        {
+            <div class="row my-4">
+                <h4>@localizer["Images Label"]</h4>
+                @foreach (JobMedia jobMediaItem in images.OrderBy(i => i.Media.UploadDate))
+                {
+                    <div class="col-sm-12 col-xl-6 col-xxl-4">
+                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
+                    </div>
+                }
+            </div>
+            <hr/>
+        }
+        if (videos.Count() != 0)
+        {
+            <div class="row my-4">
+                <h4>@localizer["Videos Label"]</h4>
+                @foreach (JobMedia jobMediaItem in videos.OrderBy(i => i.Media.UploadDate))
+                {
+                    <div class="col-12">
+                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
+                    </div>
+                }
+            </div>
+            <hr />
+        }
+
+        if (docs.Count() != 0)
+        {
+            <div class="row my-4">
+                <h4>@localizer["Documents Label"]</h4>
+                <table class="table table-striped">
+                    <tbody>
+                    @foreach (JobMedia jobMediaItem in docs.OrderBy(i => i.Media.UploadDate))
+                    {
+                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
     }
     else
     {
@@ -31,18 +74,8 @@
 
 @if (NewMedia is not null && IsEditable)
 {
-    <Modal @ref="AddMediaModal" Title="@localizer["Add Media Label"]">
-        
-        <BodyTemplate>
+    <InputFile OnChange="LoadFiles" multiple />
 
-@*             <MediaEditForm MediaToEdit="NewMedia"
-                OnSubmit="SubmitFormAsync"
-                OnCancel="HideAddMediaModal"
-                IsBusy="IsBusy"
-                @ref="NewMediaForm" /> *@
-        </BodyTemplate>
-
-    </Modal>
 }
 
 
@@ -52,7 +85,7 @@
     [Parameter]
     public bool IsEditable{ get; set; }
 
-    //private FluentValidationValidator? newContactValidator;
+    //private FluentValidationValidator? newMediaValidator;
 
     private Modal AddMediaModal = default!;
     private bool IsBusy { get; set; }
@@ -60,48 +93,16 @@
     private Media? NewMedia { get; set; }
     private string? ErrorMessage { get; set; }
 
-    //private MediaEditForm? NewMediaForm;
+    //private NewMediaForm? NewMediaForm;
 
     protected override async Task OnParametersSetAsync()
     {
         NewMedia = new() { URL = string.Empty };
     }
 
-    private async Task SubmitFormAsync()
+    private void LoadFiles(InputFileChangeEventArgs e)
     {
-        if (IsBusy)
-        {
-            ErrorMessage = null;
-            return;
-        }
-        // if (await NewMediaForm!.ValidateAsync())
-        // {
-        //     IsBusy = true;
-
-        //     try
-        //     {
-        //         if (NewMedia is not null && Job is not null)
-        //         {
-        //             using var context = contextFactory.CreateDbContext();
-
-        //             context.Media.Add(NewMedia);
-        //             await context.SaveChangesAsync();
-        //             context.JobMedia.Add(new JobMedia { MediaId = NewMedia.Id, JobId = Job.Id }); //UHRMMMM?
-        //             await context.SaveChangesAsync();
-        //             await HideAddMediaModal();
-        //             //refresh component
-        //             await RefreshComponent();
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         ErrorMessage = localizer["Save Error Message"];
-        //     }
-        //     finally
-        //     {
-        //         IsBusy = false;
-        //     }
-        //}
+        //TODO
     }
 
     private async Task ShowAddMediaModal()

@@ -556,6 +556,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Media ({0}).
+        /// </summary>
+        public static string Media_Label {
+            get {
+                return ResourceManager.GetString("Media Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My account.
         /// </summary>
         public static string My_Account_Label {
@@ -862,6 +871,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Title_Label {
+            get {
+                return ResourceManager.GetString("Title Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Toggle.
         /// </summary>
         public static string Toggle_Label {
@@ -876,6 +894,15 @@ namespace CSIDE.Properties {
         public static string Update_Label {
             get {
                 return ResourceManager.GetString("Update Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploaded.
+        /// </summary>
+        public static string Upload_Date_Label {
+            get {
+                return ResourceManager.GetString("Upload Date Label", resourceCulture);
             }
         }
         

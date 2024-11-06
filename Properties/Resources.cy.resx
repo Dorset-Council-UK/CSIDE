@@ -402,4 +402,13 @@
   <data name="Save Label" xml:space="preserve">
     <value>Arbed</value>
   </data>
+  <data name="Media Label" xml:space="preserve">
+    <value>Cyfryngau ({0})</value>
+  </data>
+  <data name="Title Label" xml:space="preserve">
+    <value>Teitl</value>
+  </data>
+  <data name="Upload Date Label" xml:space="preserve">
+    <value>Dyddiad Uwchlwytho</value>
+  </data>
 </root>
