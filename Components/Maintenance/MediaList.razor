@@ -6,10 +6,6 @@
 
 @if(Job is not null)
 {
-    if (IsEditable)
-    {
-        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ShowAddMediaModal">@localizer["Add Media Label"]</button>
-    }
     
     @if (Job.JobMedia is not null && Job.JobMedia.Count != 0)
     {
@@ -31,7 +27,7 @@
                 @foreach (JobMedia jobMediaItem in images.OrderBy(i => i.Media.UploadDate))
                 {
                     <div class="col-sm-12 col-xl-6 col-xxl-4">
-                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
+                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
                     </div>
                 }
             </div>
@@ -44,7 +40,7 @@
                 @foreach (JobMedia jobMediaItem in videos.OrderBy(i => i.Media.UploadDate))
                 {
                     <div class="col-12">
-                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
+                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
                     </div>
                 }
             </div>
@@ -55,14 +51,16 @@
         {
             <div class="row my-4">
                 <h4>@localizer["Documents Label"]</h4>
-                <table class="table table-striped">
-                    <tbody>
-                    @foreach (JobMedia jobMediaItem in docs.OrderBy(i => i.Media.UploadDate))
-                    {
-                        <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable"></MediaItem>
-                    }
-                    </tbody>
-                </table>
+                <div class="col">
+                    <table class="table table-striped">
+                        <tbody>
+                        @foreach (JobMedia jobMediaItem in docs.OrderBy(i => i.Media.UploadDate))
+                        {
+                            <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                        }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         }
     }
@@ -72,9 +70,9 @@
     }
 }
 
-@if (NewMedia is not null && IsEditable)
+@if (IsEditable)
 {
-    <InputFile OnChange="LoadFiles" multiple />
+    <UploadFile MaxAllowedFiles="10" OnUploadComplete="@AddMediaToJob"></UploadFile>
 
 }
 
@@ -85,39 +83,33 @@
     [Parameter]
     public bool IsEditable{ get; set; }
 
-    //private FluentValidationValidator? newMediaValidator;
 
-    private Modal AddMediaModal = default!;
     private bool IsBusy { get; set; }
     private bool IsEditing { get; set; }
-    private Media? NewMedia { get; set; }
     private string? ErrorMessage { get; set; }
 
-    //private NewMediaForm? NewMediaForm;
-
-    protected override async Task OnParametersSetAsync()
+    private async Task AddMediaToJob(List<Media> UploadedMedia)
     {
-        NewMedia = new() { URL = string.Empty };
-    }
-
-    private void LoadFiles(InputFileChangeEventArgs e)
-    {
-        //TODO
-    }
-
-    private async Task ShowAddMediaModal()
-    {
-        await AddMediaModal.ShowAsync();
-    }
-    private async Task HideAddMediaModal()
-    {
-        await AddMediaModal.HideAsync();
+        if (Job is not null)
+        {
+            using var context = contextFactory.CreateDbContext();
+            context.Attach(Job);
+            foreach (Media media in UploadedMedia)
+            {
+                Job.JobMedia.Add(new JobMedia
+                    {
+                        JobId = Job.Id,
+                        Media = media
+                    });
+            }
+            await context.SaveChangesAsync();
+            //await RefreshComponent();
+        }
     }
     private async Task RefreshComponent()
     {
         if (Job is not null)
         {
-            NewMedia = new(){URL = string.Empty };
             using var context = contextFactory.CreateDbContext();
             Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
             ErrorMessage = null;

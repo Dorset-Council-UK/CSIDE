@@ -1,0 +1,103 @@
+﻿@using CSIDE.Services
+@using CSIDE.Data.Models.Shared
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IBlobStorageService blobStorageService
+
+@if(ErrorMessage is not null)
+{
+    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+}
+<div>
+    <label for="uploadFile" class="form-label">@localizer["Upload File Label"]</label>
+    <InputFile @key="_inputFileId" class="form-control form-control-lg" disabled="@IsFileUploading" OnChange="@OnInputFileChange" multiple />
+    @if (IsFileUploading)
+    {
+        <p><div class="spinner-border" role="status"></div> @localizer["Uploading Text"]</p>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public long MaxFileSize{ get; set; } = 20 * (1024 * 1024); // 20MB;
+    [Parameter]
+    public int MaxAllowedFiles { get; set; } = 10;
+    [Parameter]
+    public EventCallback<List<Media>> OnUploadComplete { get; set; }
+
+    private string _inputFileId = Guid.NewGuid().ToString();
+    private string? ErrorMessage;
+    private bool IsFileUploading;
+    IReadOnlyList<IBrowserFile>? SelectedFiles;
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        SelectedFiles = e.GetMultipleFiles();
+        ErrorMessage = null;
+        IsFileUploading = true;
+        int numFiles = SelectedFiles.Count;
+        int successfullyUploadedFiles = 0;
+        List<Media> UploadedMediaItems = [];
+        if(SelectedFiles.Count > MaxAllowedFiles)
+        {
+            ErrorMessage = localizer["Too Many Files Upload Error"];
+            return;
+        }
+        foreach (var file in SelectedFiles)
+        {
+            try
+            {
+                if (file.Size > MaxFileSize)
+                {
+                    throw new ValidationException(string.Format("Max file size exceeded for file {0}",file.Name));
+                }
+                var trustedFileNameForFileStorage = $"{Guid.NewGuid().ToString()}{System.IO.Path.GetExtension(file.Name)}";
+                var originalFileName = file.Name;
+                var blobUrl = await blobStorageService.UploadFileToBlobAsync(trustedFileNameForFileStorage, file.ContentType, file.OpenReadStream(MaxFileSize));
+
+                if (blobUrl != null)
+                {
+                    //add to media table
+                    using var context = contextFactory.CreateDbContext();
+                    var mediaItem = new Data.Models.Shared.Media
+                        {
+                            URL = blobUrl,
+                            Title = originalFileName
+                        };
+                    context.Media.Add(mediaItem);
+                    UploadedMediaItems.Add(mediaItem);
+                    await context.SaveChangesAsync();
+                    successfullyUploadedFiles += 1;
+
+                }
+                else{
+                    //ErrorMessage = "File Upload failed, Please try again!!";
+                    //TODO - Add error to list
+                }
+            }
+            catch (Exception ex)
+            {
+                //ErrorMessage = ex.Message;
+                //TODO - Add error to list
+            }
+        }
+
+        if(successfullyUploadedFiles == 0)
+        {
+            ErrorMessage = localizer["No Files Uploaded Error"];
+        }
+        if(successfullyUploadedFiles != numFiles)
+        {
+            ErrorMessage = localizer["Partial File Upload Error"];
+        }
+
+        IsFileUploading = false;
+        //regenerate upload box
+        _inputFileId = Guid.NewGuid().ToString();
+        if (OnUploadComplete.HasDelegate)
+        {
+            await OnUploadComplete.InvokeAsync(UploadedMediaItems);
+        }
+    }
+
+}
