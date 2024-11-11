@@ -26,7 +26,7 @@
                 <h4>@localizer["Images Label"]</h4>
                 @foreach (JobMedia jobMediaItem in images.OrderBy(i => i.Media.UploadDate))
                 {
-                    <div class="col-sm-12 col-xl-6 col-xxl-4">
+                    <div class="col-sm-12 col-xl-6 col-xxl-4" id="media-gallery">
                         <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
                     </div>
                 }

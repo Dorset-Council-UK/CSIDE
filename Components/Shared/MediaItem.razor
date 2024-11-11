@@ -1,6 +1,8 @@
 ﻿@using CSIDE.Data.Models.Shared
+@using CSIDE.Services
 @using System.Globalization
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IBlobStorageService blobStorageService
 @inject IJSRuntime JS
 
 @if (Media is not null)
@@ -8,7 +10,9 @@
     @if(Media.Format == MediaType.Image)
     {
         <div class="card my-2 bg-light">
-            <img src="@Media.URL" class="img-fluid" />
+            <a href="@Media.URL">
+                <img src="@Media.URL" class="img-fluid" />
+            </a>
             <div class="card-body">
                 @if (IsEditable)
                 {
@@ -91,16 +95,27 @@
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Media Confirmation"].Value);
         if (ConfirmDelete)
         {
-            using var context = contextFactory.CreateDbContext();
-            var mediaToDelete = await context.Media.FindAsync([MediaId]);
-            if (mediaToDelete is not null)
+            try
             {
-                context.Remove(mediaToDelete);
-                await context.SaveChangesAsync();
-                if (OnRefreshComponent.HasDelegate)
+                using var context = contextFactory.CreateDbContext();
+                var mediaToDelete = await context.Media.FindAsync([MediaId]);
+                if (mediaToDelete is not null)
                 {
-                    await OnRefreshComponent.InvokeAsync();
+
+                    context.Remove(mediaToDelete);
+                    await context.SaveChangesAsync();
+                    if (!await blobStorageService.DeleteFileFromBlobByURLAsync(mediaToDelete.URL))
+                    {
+                        //TODO - Log storage deletion failure for administators. Users need not know.
+                    }
+                    if (OnRefreshComponent.HasDelegate)
+                    {
+                        await OnRefreshComponent.InvokeAsync();
+                    }
                 }
+            }catch(Exception e)
+            {
+                
             }
         }
     }

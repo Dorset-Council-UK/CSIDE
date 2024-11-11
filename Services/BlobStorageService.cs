@@ -1,5 +1,5 @@
-﻿using Azure.Storage.Blobs.Models;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace CSIDE.Services
 {
@@ -21,15 +21,15 @@ namespace CSIDE.Services
             blobContainerName = _configuration.GetValue<string>("AzureBlobStorage:ContainerName");
         }
 
-        public async Task<bool> DeleteFileToBlobAsync(string strFileName)
+        public async Task<bool> DeleteFileFromBlobAsync(string fileName)
         {
             try
             {
                 var container = new BlobContainerClient(blobStorageConnection, blobContainerName);
                 var createResponse = await container.CreateIfNotExistsAsync();
                 if (createResponse != null && createResponse.GetRawResponse().Status == 201)
-                    await container.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
-                var blob = container.GetBlobClient(strFileName);
+                    await container.SetAccessPolicyAsync(PublicAccessType.Blob);
+                var blob = container.GetBlobClient(fileName);
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
                 return true;
             }
@@ -40,6 +40,13 @@ namespace CSIDE.Services
             }
         }
 
+        public async Task<bool> DeleteFileFromBlobByURLAsync(string url)
+        {
+            Uri uri = new(url);
+            string fileName = uri.PathAndQuery.Replace($"/{blobContainerName}/", "");
+            return await DeleteFileFromBlobAsync(fileName);
+        }
+
         public async Task<string> UploadFileToBlobAsync(string strFileName, string contentType, Stream fileStream)
         {
             try
@@ -47,7 +54,7 @@ namespace CSIDE.Services
                 var container = new BlobContainerClient(blobStorageConnection, blobContainerName);
                 var createResponse = await container.CreateIfNotExistsAsync();
                 if (createResponse != null && createResponse.GetRawResponse().Status == 201)
-                    await container.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+                    await container.SetAccessPolicyAsync(PublicAccessType.Blob);
                 var blob = container.GetBlobClient("media/" + strFileName);
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
                 await blob.UploadAsync(fileStream, new BlobHttpHeaders { ContentType = contentType });

@@ -411,4 +411,28 @@
   <data name="Upload Date Label" xml:space="preserve">
     <value>Uploaded</value>
   </data>
+  <data name="Images Label" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="Videos Label " xml:space="preserve">
+    <value>Videos</value>
+  </data>
+  <data name="Documents Label" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="Upload File Label" xml:space="preserve">
+    <value>Upload File</value>
+  </data>
+  <data name="Download Label" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Rotate Clockwise Label" xml:space="preserve">
+    <value>Rotate clockwise</value>
+  </data>
+  <data name="Rotate Counter Clockwise Label" xml:space="preserve">
+    <value>Rotate counter clockwise</value>
+  </data>
+  <data name="Uploading Text" xml:space="preserve">
+    <value>Uploading</value>
+  </data>
 </root>

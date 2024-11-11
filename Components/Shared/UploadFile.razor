@@ -8,7 +8,7 @@
     <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
 }
 <div>
-    <label for="uploadFile" class="form-label">@localizer["Upload File Label"]</label>
+    <label for="_inputFileId" class="form-label">@localizer["Upload File Label"]</label>
     <InputFile @key="_inputFileId" class="form-control form-control-lg" disabled="@IsFileUploading" OnChange="@OnInputFileChange" multiple />
     @if (IsFileUploading)
     {

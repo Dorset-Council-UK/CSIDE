@@ -411,4 +411,28 @@
   <data name="Upload Date Label" xml:space="preserve">
     <value>Dyddiad Uwchlwytho</value>
   </data>
+  <data name="Images Label" xml:space="preserve">
+    <value>Delweddau</value>
+  </data>
+  <data name="Videos Label " xml:space="preserve">
+    <value>Fideos</value>
+  </data>
+  <data name="Documents Label" xml:space="preserve">
+    <value>Dogfennau</value>
+  </data>
+  <data name="Upload File Label" xml:space="preserve">
+    <value>Llwythwch Ffeil i fyny</value>
+  </data>
+  <data name="Download Label" xml:space="preserve">
+    <value>Lawrlwythwch</value>
+  </data>
+  <data name="Rotate Clockwise Label" xml:space="preserve">
+    <value>Cylchdroi clocwedd</value>
+  </data>
+  <data name="Rotate Counter Clockwise Label" xml:space="preserve">
+    <value>Cylchdroi cownter clocwedd</value>
+  </data>
+  <data name="Uploading Text" xml:space="preserve">
+    <value>Wrthi'n uwchlwytho</value>
+  </data>
 </root>
