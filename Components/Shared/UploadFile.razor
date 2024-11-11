@@ -8,7 +8,7 @@
     <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
 }
 <div>
-    <label for="_inputFileId" class="form-label">@localizer["Upload File Label"]</label>
+    <label for="_inputFileId" class="form-label h4">@localizer["Upload File Label"]</label>
     <InputFile @key="_inputFileId" class="form-control form-control-lg" disabled="@IsFileUploading" OnChange="@OnInputFileChange" multiple />
     @if (IsFileUploading)
     {
@@ -19,16 +19,25 @@
 
 @code {
     [Parameter]
-    public long MaxFileSize{ get; set; } = 20 * (1024 * 1024); // 20MB;
+    public int MaxFileSizeMB { get; set; } = 20; // 20MB;
     [Parameter]
     public int MaxAllowedFiles { get; set; } = 10;
     [Parameter]
     public EventCallback<List<Media>> OnUploadComplete { get; set; }
+    [Parameter]
+    public EventCallback<List<string>> OnUploadError { get; set; }
 
     private string _inputFileId = Guid.NewGuid().ToString();
     private string? ErrorMessage;
     private bool IsFileUploading;
+    private long MaxFileSize = 20 * (1024 * 1024);
+    private List<string> ErrorMessages = [];
     IReadOnlyList<IBrowserFile>? SelectedFiles;
+
+    protected override void OnInitialized()
+    {
+        MaxFileSize = MaxFileSizeMB * (1024 * 1024);
+    }
 
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
@@ -40,20 +49,20 @@
         List<Media> UploadedMediaItems = [];
         if(SelectedFiles.Count > MaxAllowedFiles)
         {
-            ErrorMessage = localizer["Too Many Files Upload Error"];
+            ErrorMessage = localizer["Too Many Files Upload Error", MaxAllowedFiles];
             return;
         }
         foreach (var file in SelectedFiles)
         {
             try
             {
-                if (file.Size > MaxFileSize)
+                if (file.Size > MaxFileSizeMB)
                 {
-                    throw new ValidationException(string.Format("Max file size exceeded for file {0}",file.Name));
+                    throw new ValidationException(localizer["File Too Large Upload Error", MaxFileSizeMB, file.Name]);
                 }
                 var trustedFileNameForFileStorage = $"{Guid.NewGuid().ToString()}{System.IO.Path.GetExtension(file.Name)}";
                 var originalFileName = file.Name;
-                var blobUrl = await blobStorageService.UploadFileToBlobAsync(trustedFileNameForFileStorage, file.ContentType, file.OpenReadStream(MaxFileSize));
+                var blobUrl = await blobStorageService.UploadFileToBlobAsync(trustedFileNameForFileStorage, file.ContentType, file.OpenReadStream(MaxFileSizeMB));
 
                 if (blobUrl != null)
                 {
@@ -71,24 +80,26 @@
 
                 }
                 else{
-                    //ErrorMessage = "File Upload failed, Please try again!!";
-                    //TODO - Add error to list
+                    ErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
                 }
+            }
+            catch(ValidationException v)
+            {
+                ErrorMessages.Add(v.Message);
             }
             catch (Exception ex)
             {
-                //ErrorMessage = ex.Message;
-                //TODO - Add error to list
+                ErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
+                //TODO log error
             }
         }
 
         if(successfullyUploadedFiles == 0)
         {
-            ErrorMessage = localizer["No Files Uploaded Error"];
-        }
-        if(successfullyUploadedFiles != numFiles)
+            ErrorMessages.Add(localizer["No Files Uploaded Error"]);
+        }else if(successfullyUploadedFiles != numFiles)
         {
-            ErrorMessage = localizer["Partial File Upload Error"];
+            ErrorMessages.Add(localizer["Partial File Upload Error"]);
         }
 
         IsFileUploading = false;
@@ -97,6 +108,11 @@
         if (OnUploadComplete.HasDelegate)
         {
             await OnUploadComplete.InvokeAsync(UploadedMediaItems);
+        }
+        //TODO instead of using an event callback, just pass the message in as a parameter
+        if(ErrorMessages.Count != 0 && OnUploadError.HasDelegate)
+        {
+            await OnUploadError.InvokeAsync(ErrorMessages);
         }
     }
 

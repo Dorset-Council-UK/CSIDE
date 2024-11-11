@@ -435,4 +435,13 @@
   <data name="Uploading Text" xml:space="preserve">
     <value>Wrthi'n uwchlwytho</value>
   </data>
+  <data name="Upload Success Message" xml:space="preserve">
+    <value>{0} ffeil(iau) wedi'u huwchlwytho'n llwyddiannus</value>
+  </data>
+  <data name="Too Many Files Upload Error" xml:space="preserve">
+    <value>Dim ond uchafswm o {0) o ffeiliau y gallwch chi uwchlwytho ar unwaith</value>
+  </data>
+  <data name="File Too Large Upload Error" xml:space="preserve">
+    <value>Mwy na maint ffeil o {0}MB ar gyfer ffeil '{1}'</value>
+  </data>
 </root>

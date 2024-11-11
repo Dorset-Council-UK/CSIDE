@@ -3,6 +3,7 @@
 @using System.Globalization
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 @if(Job is not null)
 {
@@ -24,12 +25,13 @@
         {
             <div class="row my-4">
                 <h4>@localizer["Images Label"]</h4>
-                @foreach (JobMedia jobMediaItem in images.OrderBy(i => i.Media.UploadDate))
-                {
-                    <div class="col-sm-12 col-xl-6 col-xxl-4" id="media-gallery">
+                <div id="media-gallery">
+                    @foreach (JobMedia jobMediaItem in images.OrderByDescending(i => i.Media.UploadDate))
+                    {
                         <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
-                    </div>
-                }
+                    }
+                </div>
+                
             </div>
             <hr/>
         }
@@ -37,7 +39,7 @@
         {
             <div class="row my-4">
                 <h4>@localizer["Videos Label"]</h4>
-                @foreach (JobMedia jobMediaItem in videos.OrderBy(i => i.Media.UploadDate))
+                @foreach (JobMedia jobMediaItem in videos.OrderByDescending(i => i.Media.UploadDate))
                 {
                     <div class="col-12">
                         <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
@@ -54,7 +56,7 @@
                 <div class="col">
                     <table class="table table-striped">
                         <tbody>
-                        @foreach (JobMedia jobMediaItem in docs.OrderBy(i => i.Media.UploadDate))
+                            @foreach (JobMedia jobMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
                         {
                             <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
                         }
@@ -72,10 +74,48 @@
 
 @if (IsEditable)
 {
-    <UploadFile MaxAllowedFiles="10" OnUploadComplete="@AddMediaToJob"></UploadFile>
+    if(UploadSuccessMessage is not null)
+    {
+        <Alert Color="AlertColor.Success">@UploadSuccessMessage</Alert>
+    }
+    if (UploadErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@UploadErrorMessage</Alert>
+    }
+    <UploadFile MaxAllowedFiles="2" MaxFileSizeMB="1" OnUploadComplete="@AddMediaToJob" OnUploadError="@ShowUploadErrors"></UploadFile>
 
 }
 
+
+
+<!--lightbox-->
+<div id="blueimp-gallery"
+class="blueimp-gallery blueimp-gallery-controls"
+aria-label="image gallery"
+aria-modal="true"
+role="dialog">
+    <div class="slides" aria-live="polite"></div>
+    <h3 class="title"></h3>
+    <a class="prev"
+    aria-controls="blueimp-gallery"
+    aria-label="previous slide"
+    aria-keyshortcuts="ArrowLeft"></a>
+    <a class="next"
+    aria-controls="blueimp-gallery"
+    aria-label="next slide"
+    aria-keyshortcuts="ArrowRight"></a>
+    <a class="close"
+    aria-controls="blueimp-gallery"
+    aria-label="close"
+    aria-keyshortcuts="Escape"></a>
+    <a class="play-pause"
+    aria-controls="blueimp-gallery"
+    aria-label="play slideshow"
+    aria-keyshortcuts="Space"
+    aria-pressed="false"
+    role="button"></a>
+    <ol class="indicator"></ol>
+</div>
 
 @code {
     [Parameter]
@@ -87,10 +127,31 @@
     private bool IsBusy { get; set; }
     private bool IsEditing { get; set; }
     private string? ErrorMessage { get; set; }
+    private string? UploadSuccessMessage{ get; set; }
+    private string? UploadErrorMessage { get; set; }
+    private IJSObjectReference? _jsModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Maintenance/MediaList.razor.js");
+
+        await _jsModule.InvokeVoidAsync("initGallery");
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            await _jsModule.DisposeAsync();
+        }
+    }
+
 
     private async Task AddMediaToJob(List<Media> UploadedMedia)
     {
-        if (Job is not null)
+        if (Job is not null && UploadedMedia.Count != 0)
         {
             using var context = contextFactory.CreateDbContext();
             context.Attach(Job);
@@ -103,9 +164,16 @@
                     });
             }
             await context.SaveChangesAsync();
+            UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
             //await RefreshComponent();
         }
     }
+
+    private void ShowUploadErrors(List<string> ErrorMessages)
+    {
+        UploadErrorMessage = string.Join(",", ErrorMessages);
+    }
+
     private async Task RefreshComponent()
     {
         if (Job is not null)

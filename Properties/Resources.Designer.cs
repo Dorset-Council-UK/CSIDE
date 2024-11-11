@@ -313,6 +313,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Documents.
+        /// </summary>
+        public static string Documents_Label {
+            get {
+                return ResourceManager.GetString("Documents Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string Download_Label {
+            get {
+                return ResourceManager.GetString("Download Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate of.
         /// </summary>
         public static string Duplicate_Job_ID_Label {
@@ -376,11 +394,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max file size of {0}MB exceeded for file &apos;{1}&apos;.
+        /// </summary>
+        public static string File_Too_Large_Upload_Error {
+            get {
+                return ResourceManager.GetString("File Too Large Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home_Title {
             get {
                 return ResourceManager.GetString("Home Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Images.
+        /// </summary>
+        public static string Images_Label {
+            get {
+                return ResourceManager.GetString("Images Label", resourceCulture);
             }
         }
         
@@ -754,6 +790,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rotate clockwise.
+        /// </summary>
+        public static string Rotate_Clockwise_Label {
+            get {
+                return ResourceManager.GetString("Rotate Clockwise Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rotate counter clockwise.
+        /// </summary>
+        public static string Rotate_Counter_Clockwise_Label {
+            get {
+                return ResourceManager.GetString("Rotate Counter Clockwise Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Route &apos;{0}&apos; does not exist in the database.
         /// </summary>
         public static string Route_Does_Not_Exist_Validation_Message {
@@ -889,6 +943,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can only upload a maximum of {0) files at once.
+        /// </summary>
+        public static string Too_Many_Files_Upload_Error {
+            get {
+                return ResourceManager.GetString("Too Many Files Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update.
         /// </summary>
         public static string Update_Label {
@@ -907,11 +970,47 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Upload File.
+        /// </summary>
+        public static string Upload_File_Label {
+            get {
+                return ResourceManager.GetString("Upload File Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} file(s) successfully uploaded.
+        /// </summary>
+        public static string Upload_Success_Message {
+            get {
+                return ResourceManager.GetString("Upload Success Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading.
+        /// </summary>
+        public static string Uploading_Text {
+            get {
+                return ResourceManager.GetString("Uploading Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User ID.
         /// </summary>
         public static string User_ID_Label {
             get {
                 return ResourceManager.GetString("User ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Videos.
+        /// </summary>
+        public static string Videos_Label_ {
+            get {
+                return ResourceManager.GetString("Videos Label ", resourceCulture);
             }
         }
         
