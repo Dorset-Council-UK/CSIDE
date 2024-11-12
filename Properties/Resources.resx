@@ -453,4 +453,7 @@
   <data name="Reload Label" xml:space="preserve">
     <value>Reload</value>
   </data>
+  <data name="General Component Error Message" xml:space="preserve">
+    <value>There was an error showing this data that we weren't expecting. Reload the page to try again, or contact your system administrator if the problem persists.</value>
+  </data>
 </root>

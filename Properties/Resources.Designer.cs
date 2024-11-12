@@ -403,6 +403,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error showing this data that we weren&apos;t expecting. Reload the page to try again, or contact your system administrator if the problem persists..
+        /// </summary>
+        public static string General_Component_Error_Message {
+            get {
+                return ResourceManager.GetString("General Component Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred that we weren&apos;t expecting. Reload the page to try again..
         /// </summary>
         public static string General_Error_Message {
