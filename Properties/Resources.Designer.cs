@@ -403,6 +403,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred that we weren&apos;t expecting. Reload the page to try again..
+        /// </summary>
+        public static string General_Error_Message {
+            get {
+                return ResourceManager.GetString("General Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home_Title {
@@ -772,6 +781,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reload.
+        /// </summary>
+        public static string Reload_Label {
+            get {
+                return ResourceManager.GetString("Reload Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rights of Way.
         /// </summary>
         public static string Rights_of_Way_Title {
@@ -943,7 +961,7 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can only upload a maximum of {0) files at once.
+        ///   Looks up a localized string similar to You can only upload a maximum of {0} files at once.
         /// </summary>
         public static string Too_Many_Files_Upload_Error {
             get {
@@ -966,6 +984,15 @@ namespace CSIDE.Properties {
         public static string Upload_Date_Label {
             get {
                 return ResourceManager.GetString("Upload Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click or drag and drop files into the box below to upload. You can add up to {0} files at once, maximum {1}MB per file. If you are on a mobile device you can take a photo or video directly from the button below..
+        /// </summary>
+        public static string Upload_Explanatory_Text {
+            get {
+                return ResourceManager.GetString("Upload Explanatory Text", resourceCulture);
             }
         }
         

@@ -74,19 +74,14 @@
 
 @if (IsEditable)
 {
-    if(UploadSuccessMessage is not null)
-    {
-        <Alert Color="AlertColor.Success">@UploadSuccessMessage</Alert>
-    }
-    if (UploadErrorMessage is not null)
-    {
-        <Alert Color="AlertColor.Danger">@UploadErrorMessage</Alert>
-    }
-    <UploadFile MaxAllowedFiles="2" MaxFileSizeMB="1" OnUploadComplete="@AddMediaToJob" OnUploadError="@ShowUploadErrors"></UploadFile>
-
+    <UploadFile 
+        MaxAllowedFiles="10" 
+        MaxFileSizeMB="50" 
+        OnUploadComplete="@AddMediaToJob" 
+        UploadErrorMessages="@UploadErrorMessages" 
+        UploadSuccessMessage="@UploadSuccessMessage">
+    </UploadFile>
 }
-
-
 
 <!--lightbox-->
 <div id="blueimp-gallery"
@@ -128,7 +123,7 @@ role="dialog">
     private bool IsEditing { get; set; }
     private string? ErrorMessage { get; set; }
     private string? UploadSuccessMessage{ get; set; }
-    private string? UploadErrorMessage { get; set; }
+    private List<string> UploadErrorMessages { get; set; } = [];
     private IJSObjectReference? _jsModule;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -148,9 +143,9 @@ role="dialog">
         }
     }
 
-
     private async Task AddMediaToJob(List<Media> UploadedMedia)
     {
+        UploadSuccessMessage = null;
         if (Job is not null && UploadedMedia.Count != 0)
         {
             using var context = contextFactory.CreateDbContext();
@@ -169,11 +164,6 @@ role="dialog">
         }
     }
 
-    private void ShowUploadErrors(List<string> ErrorMessages)
-    {
-        UploadErrorMessage = string.Join(",", ErrorMessages);
-    }
-
     private async Task RefreshComponent()
     {
         if (Job is not null)
@@ -181,6 +171,7 @@ role="dialog">
             using var context = contextFactory.CreateDbContext();
             Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
             ErrorMessage = null;
+            UploadErrorMessages = [];
             StateHasChanged();
         }
     }

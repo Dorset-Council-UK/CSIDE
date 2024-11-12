@@ -439,9 +439,18 @@
     <value>{0} ffeil(iau) wedi'u huwchlwytho'n llwyddiannus</value>
   </data>
   <data name="Too Many Files Upload Error" xml:space="preserve">
-    <value>Dim ond uchafswm o {0) o ffeiliau y gallwch chi uwchlwytho ar unwaith</value>
+    <value>Dim ond uchafswm o {0} o ffeiliau y gallwch chi uwchlwytho ar unwaith</value>
   </data>
   <data name="File Too Large Upload Error" xml:space="preserve">
     <value>Mwy na maint ffeil o {0}MB ar gyfer ffeil '{1}'</value>
+  </data>
+  <data name="Upload Explanatory Text" xml:space="preserve">
+    <value>Cliciwch neu llusgo a gollwng ffeiliau i'r blwch isod i'w huwchlwytho. Gallwch ychwanegu hyd at {0} ffeil ar unwaith, uchafswm o {1}MB y ffeil. Os ydych ar ddyfais symudol gallwch dynnu llun neu fideo yn uniongyrchol o'r botwm isod.</value>
+  </data>
+  <data name="General Error Message" xml:space="preserve">
+    <value>Digwyddodd gwall nad oeddem yn ei ddisgwyl. Ail-lwythwch y dudalen i geisio eto.</value>
+  </data>
+  <data name="Reload Label" xml:space="preserve">
+    <value>Ail-lwytho</value>
   </data>
 </root>

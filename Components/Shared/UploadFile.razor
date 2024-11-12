@@ -3,35 +3,54 @@
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject IBlobStorageService blobStorageService
 
-@if(ErrorMessage is not null)
+@if(UploadSuccessMessage is not null)
 {
-    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    <Alert Color="AlertColor.Success">@UploadSuccessMessage</Alert>
 }
-<div>
-    <label for="_inputFileId" class="form-label h4">@localizer["Upload File Label"]</label>
-    <InputFile @key="_inputFileId" class="form-control form-control-lg" disabled="@IsFileUploading" OnChange="@OnInputFileChange" multiple />
+@if (UploadErrorMessages.Count != 0)
+{
+    <Alert Color="AlertColor.Danger">
+        <ul>
+            @foreach (var msg in UploadErrorMessages)
+            {
+                <li>@msg</li>
+            }
+        </ul>
+    </Alert>
+}
+
+<div class="@(IsFileUploading ? "loading-indicator" :"")">
+
+    <label for="@_inputFileId" class="form-label h4">@localizer["Upload File Label"]</label>
     @if (IsFileUploading)
     {
-        <p><div class="spinner-border" role="status"></div> @localizer["Uploading Text"]</p>
+        <div class="position-absolute loading-indicator-overlay start-50 translate-middle p-1">
+            <div class="spinner-border" role="status"></div><div class="position-absolute start-50 translate-middle" style="margin-top: 1rem;">
+                <p class="mb-0 p-1" style="background-color:rgba(255,255,255,0.8)">@localizer["Uploading Text"]</p>
+            </div>
+        </div>
     }
+    <div class="form-text">@localizer["Upload Explanatory Text", MaxAllowedFiles, MaxFileSizeMB]</div>
+    <InputFile id="@_inputFileId" @key="@_inputFileId" class="form-control form-control-lg" disabled="@IsFileUploading" OnChange="@OnInputFileChange" multiple />
+
 </div>
 
 
 @code {
     [Parameter]
-    public int MaxFileSizeMB { get; set; } = 20; // 20MB;
+    public int MaxFileSizeMB { get; set; } = 20;
     [Parameter]
     public int MaxAllowedFiles { get; set; } = 10;
     [Parameter]
     public EventCallback<List<Media>> OnUploadComplete { get; set; }
     [Parameter]
-    public EventCallback<List<string>> OnUploadError { get; set; }
+    public required List<string> UploadErrorMessages{ get; set; }
+    [Parameter]
+    public string? UploadSuccessMessage{ get; set; }
 
     private string _inputFileId = Guid.NewGuid().ToString();
-    private string? ErrorMessage;
     private bool IsFileUploading;
     private long MaxFileSize = 20 * (1024 * 1024);
-    private List<string> ErrorMessages = [];
     IReadOnlyList<IBrowserFile>? SelectedFiles;
 
     protected override void OnInitialized()
@@ -42,27 +61,33 @@
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
         SelectedFiles = e.GetMultipleFiles();
-        ErrorMessage = null;
-        IsFileUploading = true;
         int numFiles = SelectedFiles.Count;
+        if (numFiles == 0)
+        {
+            return;
+        }
+        UploadErrorMessages.Clear();
+        UploadSuccessMessage = null;
+        IsFileUploading = true;
         int successfullyUploadedFiles = 0;
         List<Media> UploadedMediaItems = [];
         if(SelectedFiles.Count > MaxAllowedFiles)
         {
-            ErrorMessage = localizer["Too Many Files Upload Error", MaxAllowedFiles];
+            UploadErrorMessages.Add(localizer["Too Many Files Upload Error", MaxAllowedFiles]);
+            IsFileUploading = false;
             return;
         }
         foreach (var file in SelectedFiles)
         {
             try
             {
-                if (file.Size > MaxFileSizeMB)
+                if (file.Size > MaxFileSize)
                 {
                     throw new ValidationException(localizer["File Too Large Upload Error", MaxFileSizeMB, file.Name]);
                 }
                 var trustedFileNameForFileStorage = $"{Guid.NewGuid().ToString()}{System.IO.Path.GetExtension(file.Name)}";
                 var originalFileName = file.Name;
-                var blobUrl = await blobStorageService.UploadFileToBlobAsync(trustedFileNameForFileStorage, file.ContentType, file.OpenReadStream(MaxFileSizeMB));
+                var blobUrl = await blobStorageService.UploadFileToBlobAsync(trustedFileNameForFileStorage, file.ContentType, file.OpenReadStream(MaxFileSize));
 
                 if (blobUrl != null)
                 {
@@ -80,26 +105,26 @@
 
                 }
                 else{
-                    ErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
+                    UploadErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
                 }
             }
             catch(ValidationException v)
             {
-                ErrorMessages.Add(v.Message);
+                UploadErrorMessages.Add(v.Message);
             }
             catch (Exception ex)
             {
-                ErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
+                UploadErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
                 //TODO log error
             }
         }
 
         if(successfullyUploadedFiles == 0)
         {
-            ErrorMessages.Add(localizer["No Files Uploaded Error"]);
+            UploadErrorMessages.Add(localizer["No Files Uploaded Error"]);
         }else if(successfullyUploadedFiles != numFiles)
         {
-            ErrorMessages.Add(localizer["Partial File Upload Error"]);
+            UploadErrorMessages.Add(localizer["Partial File Upload Error"]);
         }
 
         IsFileUploading = false;
@@ -109,11 +134,5 @@
         {
             await OnUploadComplete.InvokeAsync(UploadedMediaItems);
         }
-        //TODO instead of using an event callback, just pass the message in as a parameter
-        if(ErrorMessages.Count != 0 && OnUploadError.HasDelegate)
-        {
-            await OnUploadError.InvokeAsync(ErrorMessages);
-        }
     }
-
 }
