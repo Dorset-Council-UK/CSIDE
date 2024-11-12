@@ -96,13 +96,13 @@
 
                     context.MaintenanceComments.Add(NewComment);
                     await context.SaveChangesAsync();
-                    //refresh component
                     await RefreshComponent();
                 }
             }
             catch (Exception ex)
             {
                 ErrorMessage = localizer["Save Error Message"];
+                //TODO log error
             }
             finally
             {

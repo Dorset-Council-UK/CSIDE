@@ -17,11 +17,11 @@
             @*defined contact types first, then generic contact types*@
             @foreach (JobContact contact in Job.JobContacts.Where(c => c.Contact.ContactType != null).OrderBy(c => c.Contact.ContactType?.Id))
             {
-                <ContactCard JobContact="@contact" IsEditable="@IsEditable"></ContactCard>
+                <ContactCard JobContact="@contact" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></ContactCard>
             }
             @foreach (JobContact contact in Job.JobContacts.Where(c => c.Contact.ContactType == null).OrderBy(c => c.Contact.Id))
             {
-                <ContactCard JobContact="@contact" IsEditable="@IsEditable"></ContactCard>
+                <ContactCard JobContact="@contact" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></ContactCard>
             }
         </div>
     }
@@ -54,8 +54,6 @@
     public Job? Job{ get; set; }
     [Parameter]
     public bool IsEditable{ get; set; }
-
-    //private FluentValidationValidator? newContactValidator;
 
     private Modal AddContactModal = default!;
     private bool IsBusy { get; set; }

@@ -118,10 +118,6 @@ role="dialog">
     [Parameter]
     public bool IsEditable{ get; set; }
 
-
-    private bool IsBusy { get; set; }
-    private bool IsEditing { get; set; }
-    private string? ErrorMessage { get; set; }
     private string? UploadSuccessMessage{ get; set; }
     private List<string> UploadErrorMessages { get; set; } = [];
     private IJSObjectReference? _jsModule;
@@ -148,19 +144,26 @@ role="dialog">
         UploadSuccessMessage = null;
         if (Job is not null && UploadedMedia.Count != 0)
         {
-            using var context = contextFactory.CreateDbContext();
-            context.Attach(Job);
-            foreach (Media media in UploadedMedia)
+            try
             {
-                Job.JobMedia.Add(new JobMedia
-                    {
-                        JobId = Job.Id,
-                        Media = media
-                    });
+                using var context = contextFactory.CreateDbContext();
+                context.Attach(Job);
+                foreach (Media media in UploadedMedia)
+                {
+                    Job.JobMedia.Add(new JobMedia
+                        {
+                            JobId = Job.Id,
+                            Media = media
+                        });
+                }
+                await context.SaveChangesAsync();
+                UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
+            }catch(Exception e)
+            {
+                UploadErrorMessages.Add(localizer["Save Error Message"]);
+                //TODO log error
             }
-            await context.SaveChangesAsync();
-            UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
-            //await RefreshComponent();
+
         }
     }
 
@@ -170,8 +173,8 @@ role="dialog">
         {
             using var context = contextFactory.CreateDbContext();
             Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
-            ErrorMessage = null;
             UploadErrorMessages = [];
+            UploadSuccessMessage = null;
             StateHasChanged();
         }
     }

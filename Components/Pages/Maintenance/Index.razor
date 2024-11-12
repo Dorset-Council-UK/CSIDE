@@ -25,11 +25,14 @@
 <a href="/Maintenance/Jobs?LogDateFrom=@(DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"))" class="btn btn-primary">@localizer["View All Recent Jobs Label"]</a>
 
 <form method="post" @onsubmit="@OnJobIDSearchSubmit" @formname="JobIDSearch" class="mt-3">
+    @if (JobIDSearchErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@JobIDSearchErrorMessage</Alert>
+    }
     <div class="row">
         <div class="col-sm-6 col-lg-4">
             <label class="form-label" for="job-id-search">@localizer["Job ID Label"]</label>
             <div class="input-group mb-3">
-                
                 <InputText id="job-id-search" @bind-Value="JobIDSearch" class="form-control"></InputText>
                 <button class="btn btn-outline-secondary" type="submit" id="search-job-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
             </div>
@@ -141,7 +144,7 @@
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
     private MaintenanceTeam[]? MaintenanceTeams { get; set; }
-
+    private string? JobIDSearchErrorMessage{ get; set; }
     private FluentValidationValidator? _fluentValidationValidator;
 
 
@@ -166,6 +169,7 @@
         if(JobIDSearch is not null)
         {
             IsBusy = true;
+            JobIDSearchErrorMessage = null;
             try
             {
                 int JobIDSearchInt;
@@ -178,6 +182,14 @@
                         navigationManager.NavigateTo($"/Maintenance/Details/{JobIDSearchInt}");
                         return;
                     }
+                    else
+                    {
+                        JobIDSearchErrorMessage = localizer["Maintenance Job Not Found Error Message", JobIDSearch];
+                    }
+                }
+                else
+                {
+                    JobIDSearchErrorMessage = localizer["Maintenance Job Not Found Error Message", JobIDSearch];
                 }
             }
             finally
