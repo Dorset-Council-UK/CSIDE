@@ -33,6 +33,7 @@ namespace CSIDE.Data.Models.Maintenance
         public ICollection<Comment> Comments { get; } = [];
         public ICollection<JobContact> JobContacts { get; } = [];
         public ICollection<JobMedia> JobMedia { get; } = [];
+        public ICollection<JobInfrastructure> JobInfrastructure { get; } = [];
 
         //Concurrency token
         public uint Version { get; set; }

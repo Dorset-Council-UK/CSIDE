@@ -456,4 +456,19 @@
   <data name="General Component Error Message" xml:space="preserve">
     <value>There was an error showing this data that we weren't expecting. Reload the page to try again, or contact your system administrator if the problem persists.</value>
   </data>
+  <data name="X Metres Away Label" xml:space="preserve">
+    <value>{0}m away</value>
+  </data>
+  <data name="Add Nearby Infrastructure Label" xml:space="preserve">
+    <value>Add nearby infrastructure</value>
+  </data>
+  <data name="Add Infrastructure Link Label" xml:space="preserve">
+    <value>Add infrastructure link</value>
+  </data>
+  <data name="Infrastructure ID Label" xml:space="preserve">
+    <value>Infrastructure ID</value>
+  </data>
+  <data name="Infrastructure Type Label" xml:space="preserve">
+    <value>Infrastructure type</value>
+  </data>
 </root>

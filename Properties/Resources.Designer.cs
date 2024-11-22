@@ -106,6 +106,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add infrastructure link.
+        /// </summary>
+        public static string Add_Infrastructure_Link_Label {
+            get {
+                return ResourceManager.GetString("Add Infrastructure Link Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add nearby infrastructure.
+        /// </summary>
+        public static string Add_Nearby_Infrastructure_Label {
+            get {
+                return ResourceManager.GetString("Add Nearby Infrastructure Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigned to team.
         /// </summary>
         public static string Assigned_To_Team_Label {
@@ -439,11 +457,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Infrastructure ID.
+        /// </summary>
+        public static string Infrastructure_ID_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Infrastructure.
         /// </summary>
         public static string Infrastructure_Title {
             get {
                 return ResourceManager.GetString("Infrastructure Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infrastructure type.
+        /// </summary>
+        public static string Infrastructure_Type_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Type Label", resourceCulture);
             }
         }
         
@@ -1074,6 +1110,15 @@ namespace CSIDE.Properties {
         public static string Work_Done_Label {
             get {
                 return ResourceManager.GetString("Work Done Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}m away.
+        /// </summary>
+        public static string X_Metres_Away_Label {
+            get {
+                return ResourceManager.GetString("X Metres Away Label", resourceCulture);
             }
         }
     }

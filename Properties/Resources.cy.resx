@@ -456,4 +456,19 @@
   <data name="General Component Error Message" xml:space="preserve">
     <value>Roedd gwall wrth ddangos y data hwn nad oeddem yn ei ddisgwyl. Ail-lwythwch y dudalen i geisio eto, neu cysylltwch â gweinyddwr eich system os yw'r broblem yn parhau.</value>
   </data>
+  <data name="X Metres Away Label" xml:space="preserve">
+    <value>{0}m i ffwrdd</value>
+  </data>
+  <data name="Add Nearby Infrastructure Label" xml:space="preserve">
+    <value>Ychwanegu seilwaith cyfagos</value>
+  </data>
+  <data name="Add Infrastructure Link Label" xml:space="preserve">
+    <value>Ychwanegu cyswllt seilwaith</value>
+  </data>
+  <data name="Infrastructure ID Label" xml:space="preserve">
+    <value>ID Seilwaith</value>
+  </data>
+  <data name="Infrastructure Type Label" xml:space="preserve">
+    <value>Math o seilwaith</value>
+  </data>
 </root>

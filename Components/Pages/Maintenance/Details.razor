@@ -125,6 +125,19 @@ else
                     </ChildContent>
                 </CollapsibleCard>
 
+                <CollapsibleCard Id="maint-infrastructure" Title="@localizer["Infrastructure Title",Job.JobInfrastructure.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <InfrastructureList JobInfrastructure="@Job.JobInfrastructure" JobId="@JobId" IsEditable="true"></InfrastructureList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
                 <CollapsibleCard Id="maint-media" Title="@localizer["Media Label",Job.JobMedia.Count]">
                     <ChildContent>
                         <ErrorBoundary>

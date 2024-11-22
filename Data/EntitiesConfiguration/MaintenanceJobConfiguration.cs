@@ -50,6 +50,10 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder
                 .Navigation(x => x.JobMedia)
                 .AutoInclude();
+
+            builder
+                .Navigation(x => x.JobInfrastructure)
+                .AutoInclude();
         }
     }
 }
