@@ -22,7 +22,7 @@
 
 @if (Job is null && !IsBusy)
 {
-    <PageTitle>@localizer["404 Error Title"]</PageTitle>
+    <PageTitle>@localizer["Maintenance Job Not Found Error Message", JobId]</PageTitle>
     <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message",JobId]</Alert>
 }
 else
@@ -125,7 +125,7 @@ else
                     </ChildContent>
                 </CollapsibleCard>
 
-                <CollapsibleCard Id="maint-infrastructure" Title="@localizer["Infrastructure Title",Job.JobInfrastructure.Count]">
+                <CollapsibleCard Id="maint-infrastructure" Title="@localizer["Infrastructure With Count Title",Job.JobInfrastructure.Count]">
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>

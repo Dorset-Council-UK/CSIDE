@@ -1,4 +1,9 @@
 ﻿namespace CSIDE.Data.Models.Infrastructure
 {
-    public record InfrastructureWithDistance(InfrastructureItem Infrastructure, double Distance);
+    public class InfrastructureWithDistance()
+    {
+        public required InfrastructureItem Infrastructure { get; init; }
+        public double Distance { get; init; } 
+        public bool AlreadyLinked { get; set; }
+    }
 }

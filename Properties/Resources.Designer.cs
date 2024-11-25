@@ -61,6 +61,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t find the page you were looking for. Check your link and try again, or get in touch with the system administrators..
+        /// </summary>
+        public static string _404_Error_Text {
+            get {
+                return ResourceManager.GetString("404 Error Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page not found.
+        /// </summary>
+        public static string _404_Error_Title {
+            get {
+                return ResourceManager.GetString("404 Error Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Looks like you don&apos;t have access to this page. Contact your system administrator to request access.
         /// </summary>
         public static string Access_Denied_Text {
@@ -106,6 +124,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add infrastructure by ID.
+        /// </summary>
+        public static string Add_Infrastructure_By_ID_Title {
+            get {
+                return ResourceManager.GetString("Add Infrastructure By ID Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add infrastructure link.
         /// </summary>
         public static string Add_Infrastructure_Link_Label {
@@ -117,9 +144,18 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Add nearby infrastructure.
         /// </summary>
-        public static string Add_Nearby_Infrastructure_Label {
+        public static string Add_Nearby_Infrastructure_Title {
             get {
-                return ResourceManager.GetString("Add Nearby Infrastructure Label", resourceCulture);
+                return ResourceManager.GetString("Add Nearby Infrastructure Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All nearby infrastructure has already been linked to this maintenance job.
+        /// </summary>
+        public static string All_Nearby_Infrastructure_Linked_Message {
+            get {
+                return ResourceManager.GetString("All Nearby Infrastructure Linked Message", resourceCulture);
             }
         }
         
@@ -295,11 +331,38 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this contact?.
+        /// </summary>
+        public static string Delete_Contact_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Contact Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to unlink this infrastructure from the maintenance job?.
+        /// </summary>
+        public static string Delete_Infra_Link_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Infra Link Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string Delete_Label {
             get {
                 return ResourceManager.GetString("Delete Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this file?.
+        /// </summary>
+        public static string Delete_Media_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Media Confirmation", resourceCulture);
             }
         }
         
@@ -363,6 +426,15 @@ namespace CSIDE.Properties {
         public static string Easting_Label {
             get {
                 return ResourceManager.GetString("Easting Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit contact details.
+        /// </summary>
+        public static string Edit_Contact_Title {
+            get {
+                return ResourceManager.GetString("Edit Contact Title", resourceCulture);
             }
         }
         
@@ -439,6 +511,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The location you chose is outside of the UK.
+        /// </summary>
+        public static string Geometry_Outside_UK_Validation_Message {
+            get {
+                return ResourceManager.GetString("Geometry Outside UK Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home_Title {
@@ -453,6 +534,15 @@ namespace CSIDE.Properties {
         public static string Images_Label {
             get {
                 return ResourceManager.GetString("Images Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No infrastructure with that ID could be found.
+        /// </summary>
+        public static string Infrastructure_Does_Not_Exist_Validation_Message {
+            get {
+                return ResourceManager.GetString("Infrastructure Does Not Exist Validation Message", resourceCulture);
             }
         }
         
@@ -480,6 +570,15 @@ namespace CSIDE.Properties {
         public static string Infrastructure_Type_Label {
             get {
                 return ResourceManager.GetString("Infrastructure Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infrastructure ({0}).
+        /// </summary>
+        public static string Infrastructure_With_Count_Title {
+            get {
+                return ResourceManager.GetString("Infrastructure With Count Title", resourceCulture);
             }
         }
         
@@ -691,11 +790,56 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to None of your files were uploaded.
+        /// </summary>
+        public static string No_Files_Uploaded_Error {
+            get {
+                return ResourceManager.GetString("No Files Uploaded Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No infrastructure could be found nearby.
+        /// </summary>
+        public static string No_Infrastructure_Nearby_Message {
+            get {
+                return ResourceManager.GetString("No Infrastructure Nearby Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No infrastructure is linked to this job.
+        /// </summary>
+        public static string No_Job_Infra_Message {
+            get {
+                return ResourceManager.GetString("No Job Infra Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No comments for this maintenance item..
         /// </summary>
         public static string No_Maintenance_Comments_Message {
             get {
                 return ResourceManager.GetString("No Maintenance Comments Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No contacts for this maintenance job.
+        /// </summary>
+        public static string No_Maintenance_Contacts_Message {
+            get {
+                return ResourceManager.GetString("No Maintenance Contacts Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no related media.
+        /// </summary>
+        public static string No_Media_Message {
+            get {
+                return ResourceManager.GetString("No Media Message", resourceCulture);
             }
         }
         
@@ -754,11 +898,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Organisation.
+        /// </summary>
+        public static string Organisation_Name_Label {
+            get {
+                return ResourceManager.GetString("Organisation Name Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parish.
         /// </summary>
         public static string Parish_Label {
             get {
                 return ResourceManager.GetString("Parish Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some of your files were not uploaded.
+        /// </summary>
+        public static string Partial_File_Upload_Error {
+            get {
+                return ResourceManager.GetString("Partial File Upload Error", resourceCulture);
             }
         }
         
@@ -1042,6 +1204,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not uploaded.
+        /// </summary>
+        public static string Upload_Failure_Message {
+            get {
+                return ResourceManager.GetString("Upload Failure Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Upload File.
         /// </summary>
         public static string Upload_File_Label {
@@ -1080,9 +1251,9 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Videos.
         /// </summary>
-        public static string Videos_Label_ {
+        public static string Videos_Label {
             get {
-                return ResourceManager.GetString("Videos Label ", resourceCulture);
+                return ResourceManager.GetString("Videos Label", resourceCulture);
             }
         }
         

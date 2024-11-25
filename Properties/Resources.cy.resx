@@ -414,7 +414,7 @@
   <data name="Images Label" xml:space="preserve">
     <value>Delweddau</value>
   </data>
-  <data name="Videos Label " xml:space="preserve">
+  <data name="Videos Label" xml:space="preserve">
     <value>Fideos</value>
   </data>
   <data name="Documents Label" xml:space="preserve">
@@ -459,7 +459,7 @@
   <data name="X Metres Away Label" xml:space="preserve">
     <value>{0}m i ffwrdd</value>
   </data>
-  <data name="Add Nearby Infrastructure Label" xml:space="preserve">
+  <data name="Add Nearby Infrastructure Title" xml:space="preserve">
     <value>Ychwanegu seilwaith cyfagos</value>
   </data>
   <data name="Add Infrastructure Link Label" xml:space="preserve">
@@ -470,5 +470,62 @@
   </data>
   <data name="Infrastructure Type Label" xml:space="preserve">
     <value>Math o seilwaith</value>
+  </data>
+  <data name="Add Infrastructure By ID Title" xml:space="preserve">
+    <value>Ychwanegu seilwaith yn ôl ID</value>
+  </data>
+  <data name="All Nearby Infrastructure Linked Message" xml:space="preserve">
+    <value>Mae'r holl seilwaith cyfagos eisoes wedi'i gysylltu â'r gwaith cynnal a chadw hwn</value>
+  </data>
+  <data name="No Infrastructure Nearby Message" xml:space="preserve">
+    <value>Ni ellid dod o hyd i seilwaith gerllaw</value>
+  </data>
+  <data name="Delete Infra Link Confirmation" xml:space="preserve">
+    <value>A ydych yn siŵr eich bod am ddatgysylltu’r seilwaith hwn o’r swydd?</value>
+  </data>
+  <data name="Infrastructure Does Not Exist Validation Message" xml:space="preserve">
+    <value>Nid oedd modd dod o hyd i unrhyw seilwaith gyda'r ID hwnnw</value>
+  </data>
+  <data name="Infrastructure With Count Title" xml:space="preserve">
+    <value>Seilwaith ({0})</value>
+  </data>
+  <data name="No Maintenance Contacts Message" xml:space="preserve">
+    <value>Nid oes unrhyw gysylltiadau ar gyfer y swydd cynnal a chadw hon</value>
+  </data>
+  <data name="Organisation Name Label" xml:space="preserve">
+    <value>Sefydliad</value>
+  </data>
+  <data name="No Job Infra Message" xml:space="preserve">
+    <value>Nid oes unrhyw seilwaith yn gysylltiedig â'r swydd hon</value>
+  </data>
+  <data name="No Media Message" xml:space="preserve">
+    <value>Nid oes unrhyw gyfryngau cysylltiedig</value>
+  </data>
+  <data name="Edit Contact Title" xml:space="preserve">
+    <value>Golygu manylion cyswllt</value>
+  </data>
+  <data name="404 Error Title" xml:space="preserve">
+    <value>Tudalen heb ei chanfod</value>
+  </data>
+  <data name="404 Error Text" xml:space="preserve">
+    <value>Nid oeddem yn gallu dod o hyd i'r dudalen roeddech yn chwilio amdani. Gwiriwch eich dolen a rhowch gynnig arall arni, neu cysylltwch â gweinyddwyr y system.</value>
+  </data>
+  <data name="Upload Failure Message" xml:space="preserve">
+    <value>Ni uwchlwythwyd y ffeil '{0}'</value>
+  </data>
+  <data name="No Files Uploaded Error" xml:space="preserve">
+    <value>Ni uwchlwythwyd unrhyw un o'ch ffeiliau</value>
+  </data>
+  <data name="Partial File Upload Error" xml:space="preserve">
+    <value>Ni chafodd rhai o'ch ffeiliau eu huwchlwytho</value>
+  </data>
+  <data name="Geometry Outside UK Validation Message" xml:space="preserve">
+    <value>Mae'r lleoliad a ddewisoch y tu allan i'r DU</value>
+  </data>
+  <data name="Delete Contact Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r manylion cyswllt hyn?</value>
+  </data>
+  <data name="Delete Media Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r ffeil hon?</value>
   </data>
 </root>

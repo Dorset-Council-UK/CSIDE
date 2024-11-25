@@ -1,3 +1,5 @@
-﻿<h3>Page not found</h3>
+﻿@inject IStringLocalizer localizer
 
-<p>We couldn't find the page you were looking for</p>
+<h3>@localizer["404 Error Title"]</h3>
+
+<p>@localizer["404 Error Text"]</p>
