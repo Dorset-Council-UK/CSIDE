@@ -961,6 +961,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Problem types.
+        /// </summary>
+        public static string Problem_Types_Label {
+            get {
+                return ResourceManager.GetString("Problem Types Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This comment will be visible to members of the public and (if new) will be emailed to subscribers. Make sure personal details are removed and the comment is appropriately written..
         /// </summary>
         public static string Public_Comment_Warning_Text {

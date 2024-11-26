@@ -34,6 +34,7 @@ namespace CSIDE.Data.Models.Maintenance
         public ICollection<JobContact> JobContacts { get; } = [];
         public ICollection<JobMedia> JobMedia { get; } = [];
         public ICollection<JobInfrastructure> JobInfrastructure { get; } = [];
+        public ICollection<JobProblemType> ProblemTypes { get; } = [];
 
         //Concurrency token
         public uint Version { get; set; }

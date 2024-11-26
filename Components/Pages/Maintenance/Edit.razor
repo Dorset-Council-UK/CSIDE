@@ -37,17 +37,24 @@ else
     <div class="row mt-2">
         <div class="col-md-8">
             <JobEditForm 
-                Job="@Job"
-                JobStatuses="@JobStatuses"
-                JobPriorities="@JobPriorities"
-                MaintenanceTeams="@MaintenanceTeams"
-                IsBusy="@IsBusy"
-                IsEdit="true"
-                OnSubmit="SubmitFormAsync"
-                OnCancel="NavigateBackToJobDetailsPage"
-                @ref="childJobEditForm"/>
+            Job="@Job"
+            JobStatuses="@JobStatuses"
+            JobPriorities="@JobPriorities"
+            MaintenanceTeams="@MaintenanceTeams"
+            ProblemTypes="@ProblemTypes"
+            SelectedProblemTypes="@SelectedProblemTypes"
+            IsBusy="@IsBusy"
+            IsEdit="true"
+            OnSubmit="SubmitFormAsync"
+            OnCancel="NavigateBackToJobDetailsPage"
+            @ref="childJobEditForm"/>
         </div>
     </div>
+
+    if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
+    }
 }
 
 @*TODO - These are duplicated in Create.razor - Componentize them? Or make it part of the EditForm?*@
@@ -80,8 +87,10 @@ else
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
     private MaintenanceTeam[]? MaintenanceTeams{ get; set; }
+    private ProblemType[]? ProblemTypes { get; set; }
 
     private JobEditForm? childJobEditForm;
+    private List<int> SelectedProblemTypes { get; set; } = [];
 
     private List<BreadcrumbItem>? NavItems;
     private Modal routeValidationModal = default!;
@@ -106,7 +115,9 @@ else
             JobStatuses = await context.JobStatuses.AsNoTracking().OrderBy(s => s.SortOrder).ToArrayAsync();
             JobPriorities = await context.JobPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
             MaintenanceTeams = await context.MaintenanceTeams.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-            Job = await context.MaintenanceJobs.AsNoTracking().IgnoreAutoIncludes().FirstOrDefaultAsync(j => j.Id == JobId);
+            ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
+            Job = await context.MaintenanceJobs.IgnoreAutoIncludes().Include(j => j.ProblemTypes).FirstOrDefaultAsync(j => j.Id == JobId);
+            SelectedProblemTypes = Job!.ProblemTypes.Select(j => j.ProblemTypeId).ToList();
         }
         finally
         {
@@ -130,6 +141,7 @@ else
                 {
                     using var context = contextFactory.CreateDbContext();
                     context.Update(Job);
+                    await UpdateMaintenanceProblemTypes(SelectedProblemTypes, context);
                     await context.SaveChangesAsync();
                     //redirect
                     NavigateBackToJobDetailsPage();
@@ -149,6 +161,30 @@ else
             }
         }
     }
+
+    private async Task UpdateMaintenanceProblemTypes(List<int> selectedProblemTypes, ApplicationDbContext context)
+    {
+        if (Job is null) return;
+        if (selectedProblemTypes == null)
+        {
+            await context.JobProblemTypes.Where(c => c.JobId == Job.Id).ExecuteDeleteAsync();
+            return;
+        }
+
+        //delete problems not needed anymore
+        await context.JobProblemTypes.Where(c => c.JobId == Job.Id && !selectedProblemTypes.Contains(c.ProblemTypeId)).ExecuteDeleteAsync();
+
+        //add new problem types
+        foreach (int problemType in selectedProblemTypes)
+        {
+            if (!context.JobProblemTypes.Where(c => c.JobId == Job.Id && c.ProblemTypeId == problemType).Any())
+            {
+                context.JobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = Job.Id });
+            }
+        }
+        return;
+    }
+
     private void NavigateBackToJobDetailsPage()
     {
         navigationManager.NavigateTo($"/Maintenance/Details/{JobId}");

@@ -528,4 +528,7 @@
   <data name="Delete Media Confirmation" xml:space="preserve">
     <value>Ydych chi'n siŵr eich bod am ddileu'r ffeil hon?</value>
   </data>
+  <data name="Problem Types Label" xml:space="preserve">
+    <value>Mathau o broblemau</value>
+  </data>
 </root>

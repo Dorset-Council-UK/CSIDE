@@ -3,6 +3,7 @@ using System;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241126085248_AddWorkTypesToMaint")]
+    partial class AddWorkTypesToMaint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -328,21 +331,6 @@ namespace CSIDE.Migrations
                     b.ToTable("JobPriorities", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobProblemType", b =>
-                {
-                    b.Property<int>("JobId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProblemTypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("JobId", "ProblemTypeId");
-
-                    b.HasIndex("ProblemTypeId");
-
-                    b.ToTable("JobProblemTypes", "cside");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -373,6 +361,21 @@ namespace CSIDE.Migrations
                     b.ToTable("JobStatuses", "cside");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobWorkType", b =>
+                {
+                    b.Property<int>("JobId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("JobId", "WorkTypeId");
+
+                    b.HasIndex("WorkTypeId");
+
+                    b.ToTable("JobWorkTypes", "cside");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.MaintenanceTeam", b =>
                 {
                     b.Property<int>("Id")
@@ -398,7 +401,7 @@ namespace CSIDE.Migrations
                     b.ToTable("MaintenanceTeams", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.Maintenance.ProblemType", b =>
+            modelBuilder.Entity("CSIDE.Data.Models.Maintenance.WorkType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -407,17 +410,15 @@ namespace CSIDE.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProblemTypes", "cside");
+                    b.ToTable("WorkTypes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RoW.Route", b =>
@@ -649,7 +650,7 @@ namespace CSIDE.Migrations
                     b.Navigation("Media");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobProblemType", b =>
+            modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobWorkType", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Maintenance.Job", "Job")
                         .WithMany("WorkTypes")
@@ -657,15 +658,15 @@ namespace CSIDE.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CSIDE.Data.Models.Maintenance.ProblemType", "ProblemType")
+                    b.HasOne("CSIDE.Data.Models.Maintenance.WorkType", "WorkType")
                         .WithMany()
-                        .HasForeignKey("ProblemTypeId")
+                        .HasForeignKey("WorkTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Job");
 
-                    b.Navigation("ProblemType");
+                    b.Navigation("WorkType");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>

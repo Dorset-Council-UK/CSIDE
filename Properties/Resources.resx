@@ -528,4 +528,7 @@
   <data name="Delete Media Confirmation" xml:space="preserve">
     <value>Are you sure you want to delete this file?</value>
   </data>
+  <data name="Problem Types Label" xml:space="preserve">
+    <value>Problem types</value>
+  </data>
 </root>

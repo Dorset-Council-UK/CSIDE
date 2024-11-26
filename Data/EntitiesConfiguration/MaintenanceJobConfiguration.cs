@@ -54,6 +54,10 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder
                 .Navigation(x => x.JobInfrastructure)
                 .AutoInclude();
+
+            builder
+                .Navigation(x => x.ProblemTypes)
+                .AutoInclude();
         }
     }
 }

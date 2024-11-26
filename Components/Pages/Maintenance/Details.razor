@@ -60,6 +60,19 @@ else
                                             <td class="text-break comment-field">@Job.ProblemDescription</td>
                                         </tr>
                                         <tr>
+                                            <th>@localizer["Problem Types Label"]</th>
+                                            <td>
+                                                @if (Job.ProblemTypes.Count != 0)
+                                                {
+                                                    <ul class="list-unstyled">
+                                                    @foreach(var problem in Job.ProblemTypes){
+                                                        <li>@problem.ProblemType?.Name</li>
+                                                    }
+                                                    </ul>
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <th>@localizer["Assigned To Team Label"]</th>
                                             <td>@Job.MaintenanceTeam?.Name</td>
                                         </tr>

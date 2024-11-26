@@ -107,6 +107,23 @@
             </div>
         </div>
 
+        @if(ProblemTypes is not null && ProblemTypes.Length != 0){
+            <div class="mb-3">
+                @foreach (var ProblemType in ProblemTypes)
+                {
+                    var selected = Job.ProblemTypes.Select(j => j.ProblemTypeId).Contains(ProblemType.Id);
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="@ProblemType.Id" checked="@selected" id="ProblemType__@ProblemType.Id" @onchange="(e) => {ProblemTypeChanged(ProblemType, e);}">
+                        <label class="form-check-label" for="ProblemType__@ProblemType.Id">
+                            @ProblemType.Name
+                        </label>
+                    </div>
+
+                }
+            </div>
+        }
+
         <div class="mb-3">
             <label class="form-label" for="work-done">@localizer["Work Done Label"]</label>
             <InputTextArea id="work-done" class="form-control" @bind-Value="Job.WorkDone"></InputTextArea>
@@ -122,7 +139,7 @@
         {
             <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
         }
-        
+
     </EditForm>
 
 }
@@ -137,6 +154,8 @@
     [Parameter]
     public MaintenanceTeam[]? MaintenanceTeams { get; set; }
     [Parameter]
+    public ProblemType[]? ProblemTypes{ get; set; }
+    [Parameter]
     public bool IsBusy { get; set; }
     [Parameter]
     public bool CompleteDateShown { get; set; }
@@ -148,6 +167,8 @@
     public EventCallback OnSubmit{ get; set; }
     [Parameter]
     public EventCallback OnCancel { get; set; }
+    [Parameter]
+    public List<int> SelectedProblemTypes { get; set; } = [];
 
     private FluentValidationValidator? fluentValidationValidator;
 
@@ -223,6 +244,24 @@
         if (OnCancel.HasDelegate)
         {
             await OnCancel.InvokeAsync();
+        }
+    }
+
+    private void ProblemTypeChanged(ProblemType ProblemType, ChangeEventArgs eventArgs){
+
+        if (Convert.ToBoolean(eventArgs.Value))
+        {
+            if (!SelectedProblemTypes.ToList().Contains(ProblemType.Id))
+            {
+                SelectedProblemTypes.Add(ProblemType.Id);
+            }
+        }
+        else
+        {
+            if (SelectedProblemTypes.ToList().Contains(ProblemType.Id))
+            {
+                SelectedProblemTypes.Remove(ProblemType.Id);
+            }
         }
     }
 }
