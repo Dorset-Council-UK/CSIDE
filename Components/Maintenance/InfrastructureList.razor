@@ -79,7 +79,7 @@
                 
             }
             <h4 class="mt-2">@localizer["Add Infrastructure By ID Title"]</h4>
-            <EditForm Model="NewJobInfrastructure" onsubmit="SubmitFormAsync">
+            <EditForm Model="NewJobInfrastructure" OnSubmit="SubmitFormAsync">
                 <FluentValidationValidator @ref="JobInfrastructureValidator" />
                 <ValidationSummary />
                 <div class="mb-3">
@@ -88,7 +88,7 @@
                     <ValidationMessage For="() => NewJobInfrastructure.InfrastructureId" />
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-sm" @onsubmit="SubmitFormAsync" disabled="@IsBusy">@localizer["Add Infrastructure Link Label"]</button>
+                <button type="submit" class="btn btn-primary btn-sm" disabled="@IsBusy">@localizer["Add Infrastructure Link Label"]</button>
 
 
             </EditForm>
