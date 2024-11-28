@@ -109,18 +109,22 @@
 
         @if(ProblemTypes is not null && ProblemTypes.Length != 0){
             <div class="mb-3">
-                @foreach (var ProblemType in ProblemTypes)
-                {
-                    var selected = Job.ProblemTypes.Select(j => j.ProblemTypeId).Contains(ProblemType.Id);
+                <fieldset>
+                    <legend class="form-label fs-6">@localizer["Problem Types Label"]</legend>
+                
+                    @foreach (var ProblemType in ProblemTypes)
+                    {
+                        var selected = Job.ProblemTypes.Select(j => j.ProblemTypeId).Contains(ProblemType.Id);
 
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="@ProblemType.Id" checked="@selected" id="ProblemType__@ProblemType.Id" @onchange="(e) => {ProblemTypeChanged(ProblemType, e);}">
-                        <label class="form-check-label" for="ProblemType__@ProblemType.Id">
-                            @ProblemType.Name
-                        </label>
-                    </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@ProblemType.Id" checked="@selected" id="ProblemType__@ProblemType.Id" @onchange="(e) => {ProblemTypeChanged(ProblemType, e);}">
+                            <label class="form-check-label" for="ProblemType__@ProblemType.Id">
+                                @ProblemType.Name
+                            </label>
+                        </div>
 
-                }
+                    }
+                </fieldset>
             </div>
         }
 

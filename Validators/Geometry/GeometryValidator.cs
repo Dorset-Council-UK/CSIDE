@@ -51,7 +51,7 @@ namespace CSIDE.Validators.Geometry
             point.SRID = 27700;
             using var context = _contextFactory.CreateDbContext();
             //TODO - Spatial check for nearest route
-            var Route = await context.Routes.Where(r => r.Geom.Distance(point) < 10).OrderBy(r => r.Geom.Distance(point)).FirstOrDefaultAsync(cancellationToken: token);
+            var Route = await context.Routes.Where(r => r.Geom.Distance(point) < 20).OrderBy(r => r.Geom.Distance(point)).FirstOrDefaultAsync(cancellationToken: token);
 
             return (Route is not null);
         }

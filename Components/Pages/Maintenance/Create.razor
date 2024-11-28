@@ -17,19 +17,26 @@
 </div>
 
 <div class="row mt-2">
+    @if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
     <div class="col-md-8">
-        @if(ErrorMessage is not null)
-        {
-            <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
-        }
+
         <JobEditForm 
-            Job="@Job" 
-            JobPriorities="@JobPriorities"
-            JobStatuses="@JobStatuses"
-            IsBusy="@IsBusy"
-            OnSubmit="@SubmitFormAsync"
-            @ref="@childJobEditForm" />
+        Job="@Job" 
+        JobPriorities="@JobPriorities"
+        JobStatuses="@JobStatuses"
+        ProblemTypes="@ProblemTypes"
+        SelectedProblemTypes="@SelectedProblemTypes"
+        IsBusy="@IsBusy"
+        OnSubmit="@SubmitFormAsync"
+        @ref="@childJobEditForm" />
     </div>
+    @if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
 </div>
 
 @*TODO - These are duplicated in Edit.razor - Componentize them? Or make it part of the EditForm?*@
@@ -42,7 +49,7 @@
         <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">@localizer["Route ID Manual Entry Label"]</Button>
         <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
     </FooterTemplate>
-    
+
 </Modal>
 
 <Modal @ref="errorModal" Title="@localizer["Error Title"]">
@@ -66,10 +73,12 @@
     private Job? Job { get; set; }
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
+    private ProblemType[]? ProblemTypes { get; set; }
 
     private bool IsBusy{ get; set; }
     private string? ErrorMessage { get; set; }
     private bool CompleteDateShown { get; set; } = false;
+    private List<int> SelectedProblemTypes { get; set; } = [];
 
     private JobEditForm? childJobEditForm;
 
@@ -85,6 +94,7 @@
         using var context = contextFactory.CreateDbContext();
         JobStatuses = await context.JobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
         JobPriorities = await context.JobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
+        ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
         Job = new()
         {
             JobStatusId = JobStatuses.FirstOrDefault()?.Id,
@@ -116,6 +126,9 @@
                     var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(Job.Geom)).FirstOrDefaultAsync();
                     Job.MaintenanceTeamId = team?.Id;
                     context.MaintenanceJobs.Add(Job);
+
+                    await context.SaveChangesAsync();
+                    await CreateMaintenanceProblemTypes(SelectedProblemTypes, Job.Id, context);
                     await context.SaveChangesAsync();
                     //redirect
                     navigationManager.NavigateTo($"/Maintenance/Details/{Job.Id}");
@@ -132,6 +145,17 @@
         }
     }
 
+    private async Task CreateMaintenanceProblemTypes(List<int> selectedProblemTypes, int JobId, ApplicationDbContext context)
+    {
+        //add new problem types
+        foreach (int problemType in selectedProblemTypes)
+        {
+
+            context.JobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = JobId });
+            
+        }
+        return;
+    }
 
 
     //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)
@@ -154,7 +178,7 @@
                 Job.Geom.SRID = 27700;
                 using var context = contextFactory.CreateDbContext();
                 //TODO - Move this to shared location
-                var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 10).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
+                var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 20).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
                 if(Route is not null)
                 {
                     Job.RouteId = Route.RouteCode;
