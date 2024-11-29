@@ -3,6 +3,7 @@
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Models.Shared
 @using System.Web
 @using System.Collections
 @using NodaTime
@@ -68,6 +69,21 @@
                         }
                     </InputSelect>
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="parish-search">@localizer["Parish Label"]</label>
+                    <InputSelect id="parish-search" class="form-select" @bind-Value="SearchParams.ParishId">
+                        @if (Parishes is not null)
+                        {
+                            <option value=""></option>
+                            @foreach (var parish in Parishes)
+                            {
+                                <option value="@parish.ParishId">@parish.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+
 
                 <div class="mb-3">
                     <label class="form-label" for="priority-search">@localizer["Job Priority Label"]</label>
@@ -144,6 +160,7 @@
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
     private MaintenanceTeam[]? MaintenanceTeams { get; set; }
+    private Parish[]? Parishes{ get; set; }
     private string? JobIDSearchErrorMessage{ get; set; }
     private FluentValidationValidator? _fluentValidationValidator;
 
@@ -161,6 +178,7 @@
         JobStatuses = await context.JobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
         JobPriorities = await context.JobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
         MaintenanceTeams = await context.MaintenanceTeams.OrderBy(p => p.Name).ToArrayAsync();
+        Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
         SearchParams = new();
     }
 

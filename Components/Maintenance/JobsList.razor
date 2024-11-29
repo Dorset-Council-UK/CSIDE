@@ -36,8 +36,8 @@ else
                     <td><a href="/Maintenance/Details/@job.Id">@job.Id</a></td>
                     <td>@job.RouteId</td>
                     <td>@(job.LogDate.HasValue ? job.LogDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
-                    <td>[No data yet]</td>
-                    <td>@job.ProblemDescription</td>
+                    <td>@job.Parish?.Name</td>
+                    <td class="comment-field">@job.ProblemDescription</td>
                     <td>@job.JobPriority?.Description</td>
                     <td>@job.JobStatus?.Description</td>
                 </tr>

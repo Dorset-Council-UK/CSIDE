@@ -1,12 +1,18 @@
 ﻿using CSIDE.Data.EntitiesConfiguration;
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace CSIDE.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDbContextFactory<ApplicationDbContext> contextFactory, IHttpContextAccessor httpContextAccessor) : DbContext(options)
     {
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
         public DbSet<ApplicationUserRole> ApplicationUserRoles { get; set; }
 
@@ -21,12 +27,13 @@ namespace CSIDE.Data
         public DbSet<JobProblemType> JobProblemTypes { get; set; }
 
         public DbSet<Models.RoW.Route> Routes { get; set; }
-        public DbSet<Models.Shared.Contact> Contacts { get; set; }
-        public DbSet<Models.Shared.ContactType> ContactTypes { get; set; }
-        public DbSet<Models.Shared.Media> Media { get; set; }
-        public DbSet<Models.Infrastructure.InfrastructureItem> Infrastructure { get; set; }
-        public DbSet<Models.Infrastructure.InfrastructureType> InfrastructureTypes { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<ContactType> ContactTypes { get; set; }
+        public DbSet<Media> Media { get; set; }
+        public DbSet<InfrastructureItem> Infrastructure { get; set; }
+        public DbSet<InfrastructureType> InfrastructureTypes { get; set; }
         public DbSet<ProblemType> ProblemTypes { get; set; }
+        public DbSet<Parish> Parishes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,6 +47,7 @@ namespace CSIDE.Data
                 new ApplicationRole { Id = 4, RoleName = "Survey Validator" },
                 new ApplicationRole { Id = 5, RoleName = "RoW Statement Editor" }
             );
+            
             // DbSet configurations
             modelBuilder.ApplyConfiguration(new ApplicationUserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new MaintenanceJobConfiguration());
@@ -55,6 +63,93 @@ namespace CSIDE.Data
             modelBuilder.ApplyConfiguration(new InfrastructureItemConfiguration());
             modelBuilder.ApplyConfiguration(new InfrastructureTypeConfiguration());
             modelBuilder.ApplyConfiguration(new JobProblemTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ParishConfiguration());
+
+        }
+
+        public override int SaveChanges()
+        {
+            if(ChangeTracker.Entries<Job>().Any())
+            {
+                UpdateParishIds().Wait();
+                SetMaintenanceTeam().Wait();
+                SetLoggedByUser();
+            }
+
+            //TODO - Add to audit log
+
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            if (ChangeTracker.Entries<Job>().Any())
+            {
+                await UpdateParishIds();
+                await SetMaintenanceTeam();
+                SetLoggedByUser();
+            }
+
+            //TODO - Add to audit log
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the Parish ID of a new or updated job based on a spatial contains query
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateParishIds()
+        {
+            var jobs = ChangeTracker.Entries<Job>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity);
+
+            using var context = contextFactory.CreateDbContext();
+            foreach (var job in jobs)
+            {
+                var parish = await context.Parishes.SingleOrDefaultAsync(p => p.Geom.Contains(job.Geom));
+                job.ParishId = parish?.ParishId;
+            }
+        }
+
+        /// <summary>
+        /// Sets the LoggedById and LoggedByName of a newly added job to the currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        private void SetLoggedByUser()
+        {
+            var jobs = ChangeTracker.Entries<Job>()
+                .Where(e => e.State == EntityState.Added)
+                .Select(e => e.Entity);
+            var user = httpContextAccessor.HttpContext?.User;
+            if (user is not null)
+            {
+                using var context = contextFactory.CreateDbContext();
+                foreach (var job in jobs)
+                {
+                    job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                    job.LoggedByName = user.Identity?.Name;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the Maintenance Team ID of a newly created job based on a spatial contains query
+        /// </summary>
+        /// <returns></returns>
+        private async Task SetMaintenanceTeam()
+        {
+            var jobs = ChangeTracker.Entries<Job>()
+                .Where(e => e.State == EntityState.Added)
+                .Select(e => e.Entity);
+
+            using var context = contextFactory.CreateDbContext();
+            foreach (var job in jobs)
+            {
+                var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(job.Geom)).FirstOrDefaultAsync();
+                job.MaintenanceTeamId = team?.Id;
+            }
         }
     }
 }

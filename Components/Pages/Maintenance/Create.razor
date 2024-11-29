@@ -119,12 +119,6 @@
                 {
                     using var context = contextFactory.CreateDbContext();
 
-                    var user = (await authenticationStateTask).User;
-                    Job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                    Job.LoggedByName = user.Identity?.Name;
-                    //get maintenance team
-                    var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(Job.Geom)).FirstOrDefaultAsync();
-                    Job.MaintenanceTeamId = team?.Id;
                     context.MaintenanceJobs.Add(Job);
 
                     await context.SaveChangesAsync();

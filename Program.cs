@@ -18,6 +18,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
     options.UseNpgsql("name=ConnectionStrings:CSIDE", x =>
@@ -32,6 +33,7 @@ builder.Services.AddLocalization();
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddBlazorBootstrap();
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
                 {

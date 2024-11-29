@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.Shared;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
@@ -58,6 +59,13 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder
                 .Navigation(x => x.ProblemTypes)
                 .AutoInclude();
+
+            builder
+                .Navigation(x => x.Parish)
+                .AutoInclude();
+
+            builder.HasOne(j => j.Parish).WithMany().HasForeignKey(j => j.ParishId).HasPrincipalKey(p => p.ParishId);
+
         }
     }
 }

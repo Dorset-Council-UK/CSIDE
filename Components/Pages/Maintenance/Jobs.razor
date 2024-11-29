@@ -64,6 +64,17 @@
         {
             query = query.Where(j => j.RouteId == RouteId);
         }
+        if (ParishId is not null && ParishId.Length != 0)
+        {
+            var parsedParishIds = ParishId
+                .Where(id => int.TryParse(id, out _))
+                .Select(id => int.Parse(id))
+                .ToList();
+            if(parsedParishIds.Any()){
+                query = query.Where(j => j.ParishId != null && parsedParishIds.Contains(j.ParishId.Value));
+            }
+            
+        }
         if (AssignedToTeamId is not null && int.TryParse(AssignedToTeamId, out int parsedAssignedToTeamId))
         {
             query = query.Where(j => j.MaintenanceTeamId == parsedAssignedToTeamId);
