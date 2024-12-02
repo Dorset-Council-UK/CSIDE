@@ -2,7 +2,7 @@
 
 namespace CSIDE.Data.Models.Maintenance
 {
-    public class MaintenanceTeam
+    public class Team
     {
         public int Id { get; set; }
         public required string Name { get; set; }

@@ -4,9 +4,9 @@ using CSIDE.Data.Models.Maintenance;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
-    internal class MaintenanceTeamConfiguration : IEntityTypeConfiguration<MaintenanceTeam>
+    internal class MaintenanceTeamConfiguration : IEntityTypeConfiguration<Team>
     {
-        public void Configure(EntityTypeBuilder<MaintenanceTeam> builder)
+        public void Configure(EntityTypeBuilder<Team> builder)
         {
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (polygon)");
         }

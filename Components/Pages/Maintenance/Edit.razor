@@ -86,7 +86,7 @@ else
     private Job? Job{ get; set; }
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
-    private MaintenanceTeam[]? MaintenanceTeams{ get; set; }
+    private Team[]? MaintenanceTeams{ get; set; }
     private ProblemType[]? ProblemTypes { get; set; }
 
     private JobEditForm? childJobEditForm;
@@ -112,8 +112,8 @@ else
         try
         {
             using var context = contextFactory.CreateDbContext();
-            JobStatuses = await context.JobStatuses.AsNoTracking().OrderBy(s => s.SortOrder).ToArrayAsync();
-            JobPriorities = await context.JobPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
+            JobStatuses = await context.MaintenanceJobStatuses.AsNoTracking().OrderBy(s => s.SortOrder).ToArrayAsync();
+            JobPriorities = await context.MaintenanceJobPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
             MaintenanceTeams = await context.MaintenanceTeams.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
             ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
             Job = await context.MaintenanceJobs.IgnoreAutoIncludes().Include(j => j.ProblemTypes).FirstOrDefaultAsync(j => j.Id == JobId);
@@ -167,19 +167,19 @@ else
         if (Job is null) return;
         if (selectedProblemTypes == null)
         {
-            await context.JobProblemTypes.Where(c => c.JobId == Job.Id).ExecuteDeleteAsync();
+            await context.MaintenanceJobProblemTypes.Where(c => c.JobId == Job.Id).ExecuteDeleteAsync();
             return;
         }
 
         //delete problems not needed anymore
-        await context.JobProblemTypes.Where(c => c.JobId == Job.Id && !selectedProblemTypes.Contains(c.ProblemTypeId)).ExecuteDeleteAsync();
+        await context.MaintenanceJobProblemTypes.Where(c => c.JobId == Job.Id && !selectedProblemTypes.Contains(c.ProblemTypeId)).ExecuteDeleteAsync();
 
         //add new problem types
         foreach (int problemType in selectedProblemTypes)
         {
-            if (!context.JobProblemTypes.Where(c => c.JobId == Job.Id && c.ProblemTypeId == problemType).Any())
+            if (!context.MaintenanceJobProblemTypes.Where(c => c.JobId == Job.Id && c.ProblemTypeId == problemType).Any())
             {
-                context.JobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = Job.Id });
+                context.MaintenanceJobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = Job.Id });
             }
         }
         return;

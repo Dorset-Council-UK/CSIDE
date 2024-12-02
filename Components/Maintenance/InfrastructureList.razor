@@ -188,7 +188,7 @@
         if (ConfirmDelete)
         {
             using var context = contextFactory.CreateDbContext();
-            var infraToDelete = await context.JobInfrastructure.FindAsync([JobId, InfrastructureId]);
+            var infraToDelete = await context.MaintenanceJobInfrastructure.FindAsync([JobId, InfrastructureId]);
             if (infraToDelete is not null)
             {
                 context.Remove(infraToDelete);
@@ -202,7 +202,7 @@
     private async Task RefreshComponent()
     {
         using var context = contextFactory.CreateDbContext();
-        JobInfrastructure = await context.JobInfrastructure.Where(j => j.JobId == JobId).ToListAsync();
+        JobInfrastructure = await context.MaintenanceJobInfrastructure.Where(j => j.JobId == JobId).ToListAsync();
     }
 
 }

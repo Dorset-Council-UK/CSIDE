@@ -17,14 +17,14 @@ namespace CSIDE.Data
         public DbSet<ApplicationUserRole> ApplicationUserRoles { get; set; }
 
         public DbSet<Job> MaintenanceJobs { get; set; }
-        public DbSet<JobPriority> JobPriorities { get; set; }
-        public DbSet<JobStatus> JobStatuses { get; set; }
-        public DbSet<MaintenanceTeam> MaintenanceTeams { get; set; }
+        public DbSet<JobPriority> MaintenanceJobPriorities { get; set; }
+        public DbSet<JobStatus> MaintenanceJobStatuses { get; set; }
+        public DbSet<Team> MaintenanceTeams { get; set; }
         public DbSet<Comment> MaintenanceComments { get; set; }
-        public DbSet<JobContact> JobContact { get; set; }
-        public DbSet<JobMedia> JobMedia { get; set; }
-        public DbSet<JobInfrastructure> JobInfrastructure { get; set; }
-        public DbSet<JobProblemType> JobProblemTypes { get; set; }
+        public DbSet<JobContact> MaintenanceJobContact { get; set; }
+        public DbSet<JobMedia> MaintenanceJobMedia { get; set; }
+        public DbSet<JobInfrastructure> MaintenanceJobInfrastructure { get; set; }
+        public DbSet<JobProblemType> MaintenanceJobProblemTypes { get; set; }
 
         public DbSet<Models.RoW.Route> Routes { get; set; }
         public DbSet<Contact> Contacts { get; set; }

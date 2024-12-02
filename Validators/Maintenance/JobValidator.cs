@@ -52,7 +52,7 @@ namespace CSIDE.Validators.Maintenance
         private async Task<bool> JobStatusIsComplete(Job job, CancellationToken ct)
         {
             using var context = _contextFactory.CreateDbContext();
-            var JobStatus = await context.JobStatuses.FindAsync([job.JobStatusId], cancellationToken: ct);
+            var JobStatus = await context.MaintenanceJobStatuses.FindAsync([job.JobStatusId], cancellationToken: ct);
             if(JobStatus is not null)
             {
                 return JobStatus.IsComplete;
@@ -63,7 +63,7 @@ namespace CSIDE.Validators.Maintenance
         private async Task<bool> JobStatusIsDuplicate(Job job, CancellationToken ct)
         {
             using var context = _contextFactory.CreateDbContext();
-            var JobStatus = await context.JobStatuses.FindAsync([job.JobStatusId], cancellationToken: ct);
+            var JobStatus = await context.MaintenanceJobStatuses.FindAsync([job.JobStatusId], cancellationToken: ct);
             if (JobStatus is not null)
             {
                 return JobStatus.IsDuplicate;

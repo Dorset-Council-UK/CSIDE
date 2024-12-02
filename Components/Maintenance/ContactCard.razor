@@ -145,7 +145,7 @@
         if (ConfirmDelete)
         {
             using var context = contextFactory.CreateDbContext();
-            var contactToDelete = await context.JobContact.FindAsync([JobId, ContactId]);
+            var contactToDelete = await context.MaintenanceJobContact.FindAsync([JobId, ContactId]);
             if (contactToDelete is not null)
             {
                 context.Remove(contactToDelete);

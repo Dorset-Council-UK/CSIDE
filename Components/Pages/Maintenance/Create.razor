@@ -92,8 +92,8 @@
         };
 
         using var context = contextFactory.CreateDbContext();
-        JobStatuses = await context.JobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
-        JobPriorities = await context.JobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
+        JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
+        JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
         ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
         Job = new()
         {
@@ -145,7 +145,7 @@
         foreach (int problemType in selectedProblemTypes)
         {
 
-            context.JobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = JobId });
+            context.MaintenanceJobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = JobId });
             
         }
         return;

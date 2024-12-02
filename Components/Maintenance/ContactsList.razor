@@ -90,7 +90,7 @@
 
                     context.Contacts.Add(NewContact);
                     await context.SaveChangesAsync();
-                    context.JobContact.Add(new JobContact { ContactId = NewContact.Id, JobId = Job.Id }); //UHRMMMM?
+                    context.MaintenanceJobContact.Add(new JobContact { ContactId = NewContact.Id, JobId = Job.Id }); //UHRMMMM?
                     await context.SaveChangesAsync();
                     await HideAddContactModal();
                     //refresh component

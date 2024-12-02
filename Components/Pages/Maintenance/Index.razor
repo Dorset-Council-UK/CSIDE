@@ -159,7 +159,7 @@
     private string? JobIDSearch;
     private JobStatus[]? JobStatuses { get; set; }
     private JobPriority[]? JobPriorities { get; set; }
-    private MaintenanceTeam[]? MaintenanceTeams { get; set; }
+    private Team[]? MaintenanceTeams { get; set; }
     private Parish[]? Parishes{ get; set; }
     private string? JobIDSearchErrorMessage{ get; set; }
     private FluentValidationValidator? _fluentValidationValidator;
@@ -175,8 +175,8 @@
             new BreadcrumbItem{ Text = localizer["Maintenance Title"], IsCurrentPage = true }
         };
         using var context = contextFactory.CreateDbContext();
-        JobStatuses = await context.JobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
-        JobPriorities = await context.JobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
+        JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
+        JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
         MaintenanceTeams = await context.MaintenanceTeams.OrderBy(p => p.Name).ToArrayAsync();
         Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
         SearchParams = new();
