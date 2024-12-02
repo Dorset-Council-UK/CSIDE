@@ -1,0 +1,106 @@
+﻿using BlazorBootstrap;
+using CSIDE.Data;
+using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.Shared;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
+
+namespace CSIDE.Components.Maintenance
+{
+    public partial class ContactCard(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS)
+    {
+        [Parameter]
+        public required JobContact JobContact { get; set; }
+        [Parameter]
+        public bool IsEditable { get; set; }
+        [Parameter]
+        public EventCallback OnRefresh { get; set; }
+
+        public bool IsBusy { get; set; }
+
+        private string? ErrorMessage { get; set; }
+        private Modal EditContactModal = default!;
+        private ContactType[]? ContactTypes { get; set; }
+
+        private ContactEditForm? EditContactForm;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            using var context = contextFactory.CreateDbContext();
+            ContactTypes = await context.ContactTypes.OrderBy(c => c.Id).ToArrayAsync();
+        }
+
+        private async Task SubmitFormAsync()
+        {
+            if (IsBusy)
+            {
+                ErrorMessage = null;
+                return;
+            }
+            if (await EditContactForm!.ValidateAsync())
+            {
+                IsBusy = true;
+
+                try
+                {
+                    if (JobContact is not null && JobContact.Contact is not null)
+                    {
+                        using var context = contextFactory.CreateDbContext();
+                        //clear the 'ContactType' navigation property, otherwise ef core uses that which hasn't changed
+                        JobContact.Contact.ContactType = null;
+                        context.Update(JobContact);
+                        await context.SaveChangesAsync();
+
+                        await HideEditContactModal();
+                        //refresh component
+                        await RefreshComponent();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = localizer["Save Error Message"];
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+            }
+        }
+
+        private async Task ShowEditContactModal()
+        {
+            await EditContactModal.ShowAsync();
+        }
+        private async Task HideEditContactModal()
+        {
+            await EditContactModal.HideAsync();
+        }
+
+        private async Task DeleteContact(int ContactId, int JobId)
+        {
+            IsBusy = true;
+            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Contact Confirmation"].Value);
+            if (ConfirmDelete)
+            {
+                using var context = contextFactory.CreateDbContext();
+                var contactToDelete = await context.MaintenanceJobContact.FindAsync([JobId, ContactId]);
+                if (contactToDelete is not null)
+                {
+                    context.Remove(contactToDelete);
+                    await context.SaveChangesAsync();
+                    await RefreshComponent();
+                }
+            }
+            IsBusy = false;
+        }
+
+        private async Task RefreshComponent()
+        {
+            if (OnRefresh.HasDelegate)
+            {
+                await OnRefresh.InvokeAsync();
+            }
+        }
+    }
+}
