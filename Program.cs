@@ -21,7 +21,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql("name=ConnectionStrings:CSIDE", x =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("CSIDE"), x =>
     {
         x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
         x.UseNodaTime();
