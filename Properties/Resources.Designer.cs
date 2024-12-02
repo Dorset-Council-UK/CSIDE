@@ -22,7 +22,7 @@ namespace CSIDE.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace CSIDE.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CSIDE.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace CSIDE.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,27 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t find the page you were looking for. Check your link and try again, or get in touch with the system administrators..
+        /// </summary>
+        public static string _404_Error_Text {
+            get {
+                return ResourceManager.GetString("404 Error Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page not found.
+        /// </summary>
+        public static string _404_Error_Title {
+            get {
+                return ResourceManager.GetString("404 Error Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Looks like you don&apos;t have access to this page. Contact your system administrator to request access.
         /// </summary>
-        internal static string Access_Denied_Text {
+        public static string Access_Denied_Text {
             get {
                 return ResourceManager.GetString("Access Denied Text", resourceCulture);
             }
@@ -72,7 +90,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Access Denied.
         /// </summary>
-        internal static string Access_Denied_Title {
+        public static string Access_Denied_Title {
             get {
                 return ResourceManager.GetString("Access Denied Title", resourceCulture);
             }
@@ -81,16 +99,277 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Your account details and password are managed by your identity provider..
         /// </summary>
-        internal static string Account_Details_Text {
+        public static string Account_Details_Text {
             get {
                 return ResourceManager.GetString("Account Details Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add comment.
+        /// </summary>
+        public static string Add_Comment_Label {
+            get {
+                return ResourceManager.GetString("Add Comment Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add contact.
+        /// </summary>
+        public static string Add_Contact_Label {
+            get {
+                return ResourceManager.GetString("Add Contact Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add infrastructure by ID.
+        /// </summary>
+        public static string Add_Infrastructure_By_ID_Title {
+            get {
+                return ResourceManager.GetString("Add Infrastructure By ID Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add infrastructure link.
+        /// </summary>
+        public static string Add_Infrastructure_Link_Label {
+            get {
+                return ResourceManager.GetString("Add Infrastructure Link Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add nearby infrastructure.
+        /// </summary>
+        public static string Add_Nearby_Infrastructure_Title {
+            get {
+                return ResourceManager.GetString("Add Nearby Infrastructure Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All nearby infrastructure has already been linked to this maintenance job.
+        /// </summary>
+        public static string All_Nearby_Infrastructure_Linked_Message {
+            get {
+                return ResourceManager.GetString("All Nearby Infrastructure Linked Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assigned to team.
+        /// </summary>
+        public static string Assigned_To_Team_Label {
+            get {
+                return ResourceManager.GetString("Assigned To Team Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to fill in at least one contact detail.
+        /// </summary>
+        public static string At_Least_One_Contact_Property_Validation_Message {
+            get {
+                return ResourceManager.GetString("At Least One Contact Property Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Basic Details.
+        /// </summary>
+        public static string Basic_Details_Label {
+            get {
+                return ResourceManager.GetString("Basic Details Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel_Label {
+            get {
+                return ResourceManager.GetString("Cancel Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} at {1}.
+        /// </summary>
+        public static string Comment_Author_Title {
+            get {
+                return ResourceManager.GetString("Comment Author Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comment.
+        /// </summary>
+        public static string Comment_Label {
+            get {
+                return ResourceManager.GetString("Comment Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comments ({0}).
+        /// </summary>
+        public static string Comments_Label {
+            get {
+                return ResourceManager.GetString("Comments Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed date from.
+        /// </summary>
+        public static string Completed_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Completed Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed date to.
+        /// </summary>
+        public static string Completed_Date_To_Label {
+            get {
+                return ResourceManager.GetString("Completed Date To Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completion date.
+        /// </summary>
+        public static string Completion_Date_Label {
+            get {
+                return ResourceManager.GetString("Completion Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not update {0}. The data has been modified by another user. Please reload the page..
+        /// </summary>
+        public static string Concurrency_Error_Message {
+            get {
+                return ResourceManager.GetString("Concurrency Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact.
+        /// </summary>
+        public static string Contact_Label {
+            get {
+                return ResourceManager.GetString("Contact Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Organisation.
+        /// </summary>
+        public static string Contact_Organisation_Label {
+            get {
+                return ResourceManager.GetString("Contact Organisation Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact type.
+        /// </summary>
+        public static string Contact_Type_Label {
+            get {
+                return ResourceManager.GetString("Contact Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contacts ({0}).
+        /// </summary>
+        public static string Contacts_Label {
+            get {
+                return ResourceManager.GetString("Contacts Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Create_Label {
+            get {
+                return ResourceManager.GetString("Create Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new job.
+        /// </summary>
+        public static string Create_New_Job_Label {
+            get {
+                return ResourceManager.GetString("Create New Job Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a job to the maintenance database by adding it to the map and filling in the relevant details..
+        /// </summary>
+        public static string Create_New_Job_Text {
+            get {
+                return ResourceManager.GetString("Create New Job Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this comment?.
+        /// </summary>
+        public static string Delete_Comment_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Comment Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this contact?.
+        /// </summary>
+        public static string Delete_Contact_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Contact Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to unlink this infrastructure from the maintenance job?.
+        /// </summary>
+        public static string Delete_Infra_Link_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Infra Link Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Delete_Label {
+            get {
+                return ResourceManager.GetString("Delete Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this file?.
+        /// </summary>
+        public static string Delete_Media_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Media Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Display name.
         /// </summary>
-        internal static string Display_Name_Label {
+        public static string Display_Name_Label {
             get {
                 return ResourceManager.GetString("Display Name Label", resourceCulture);
             }
@@ -99,7 +378,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DMMO.
         /// </summary>
-        internal static string DMMO_Abbreviation {
+        public static string DMMO_Abbreviation {
             get {
                 return ResourceManager.GetString("DMMO Abbreviation", resourceCulture);
             }
@@ -108,16 +387,79 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Definitive Map Modification Orders.
         /// </summary>
-        internal static string DMMO_Full_Text {
+        public static string DMMO_Full_Text {
             get {
                 return ResourceManager.GetString("DMMO Full Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Documents.
+        /// </summary>
+        public static string Documents_Label {
+            get {
+                return ResourceManager.GetString("Documents Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string Download_Label {
+            get {
+                return ResourceManager.GetString("Download Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate of.
+        /// </summary>
+        public static string Duplicate_Job_ID_Label {
+            get {
+                return ResourceManager.GetString("Duplicate Job ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Easting.
+        /// </summary>
+        public static string Easting_Label {
+            get {
+                return ResourceManager.GetString("Easting Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit contact details.
+        /// </summary>
+        public static string Edit_Contact_Title {
+            get {
+                return ResourceManager.GetString("Edit Contact Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string Edit_Label {
+            get {
+                return ResourceManager.GetString("Edit Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address.
+        /// </summary>
+        public static string Email_Label {
+            get {
+                return ResourceManager.GetString("Email Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sorry! Something went wrong.
         /// </summary>
-        internal static string Error_Header_Text {
+        public static string Error_Header_Text {
             get {
                 return ResourceManager.GetString("Error Header Text", resourceCulture);
             }
@@ -126,7 +468,7 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to There was an error dealing with your request. If this continues to happen, get in touch with your system administrator.
         /// </summary>
-        internal static string Error_Text {
+        public static string Error_Text {
             get {
                 return ResourceManager.GetString("Error Text", resourceCulture);
             }
@@ -135,34 +477,160 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
-        internal static string Error_Title {
+        public static string Error_Title {
             get {
                 return ResourceManager.GetString("Error Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max file size of {0}MB exceeded for file &apos;{1}&apos;.
+        /// </summary>
+        public static string File_Too_Large_Upload_Error {
+            get {
+                return ResourceManager.GetString("File Too Large Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error showing this data that we weren&apos;t expecting. Reload the page to try again, or contact your system administrator if the problem persists..
+        /// </summary>
+        public static string General_Component_Error_Message {
+            get {
+                return ResourceManager.GetString("General Component Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred that we weren&apos;t expecting. Reload the page to try again..
+        /// </summary>
+        public static string General_Error_Message {
+            get {
+                return ResourceManager.GetString("General Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The location you chose is outside of the UK.
+        /// </summary>
+        public static string Geometry_Outside_UK_Validation_Message {
+            get {
+                return ResourceManager.GetString("Geometry Outside UK Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
-        internal static string Home_Title {
+        public static string Home_Title {
             get {
                 return ResourceManager.GetString("Home Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Images.
+        /// </summary>
+        public static string Images_Label {
+            get {
+                return ResourceManager.GetString("Images Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No infrastructure with that ID could be found.
+        /// </summary>
+        public static string Infrastructure_Does_Not_Exist_Validation_Message {
+            get {
+                return ResourceManager.GetString("Infrastructure Does Not Exist Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infrastructure ID.
+        /// </summary>
+        public static string Infrastructure_ID_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Infrastructure.
         /// </summary>
-        internal static string Infrastructure_Title {
+        public static string Infrastructure_Title {
             get {
                 return ResourceManager.GetString("Infrastructure Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Infrastructure type.
+        /// </summary>
+        public static string Infrastructure_Type_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infrastructure ({0}).
+        /// </summary>
+        public static string Infrastructure_With_Count_Title {
+            get {
+                return ResourceManager.GetString("Infrastructure With Count Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your geometry is not valid. Redraw your geometry, and if you still have issues, contact your system administrator.
+        /// </summary>
+        public static string Invalid_Geometry_Validation_Message {
+            get {
+                return ResourceManager.GetString("Invalid Geometry Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publicly viewable?.
+        /// </summary>
+        public static string Is_Public_Label {
+            get {
+                return ResourceManager.GetString("Is Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Job ID.
+        /// </summary>
+        public static string Job_ID_Label {
+            get {
+                return ResourceManager.GetString("Job ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Priority.
+        /// </summary>
+        public static string Job_Priority_Label {
+            get {
+                return ResourceManager.GetString("Job Priority Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Job_Status_Label {
+            get {
+                return ResourceManager.GetString("Job Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Landowner Deposits.
         /// </summary>
-        internal static string Landowner_Deposits_Title {
+        public static string Landowner_Deposits_Title {
             get {
                 return ResourceManager.GetString("Landowner Deposits Title", resourceCulture);
             }
@@ -171,25 +639,97 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading.
         /// </summary>
-        internal static string Loading_Text {
+        public static string Loading_Text {
             get {
                 return ResourceManager.GetString("Loading Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Log date from.
+        /// </summary>
+        public static string Log_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Log Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log date.
+        /// </summary>
+        public static string Log_Date_Label {
+            get {
+                return ResourceManager.GetString("Log Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log date to.
+        /// </summary>
+        public static string Log_Date_To_Label {
+            get {
+                return ResourceManager.GetString("Log Date To Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logged by.
+        /// </summary>
+        public static string Logged_By_Label {
+            get {
+                return ResourceManager.GetString("Logged By Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logout.
         /// </summary>
-        internal static string Logout_Label {
+        public static string Logout_Label {
             get {
                 return ResourceManager.GetString("Logout Label", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new maintenance job.
+        /// </summary>
+        public static string Maintenance_Create_Title {
+            get {
+                return ResourceManager.GetString("Maintenance Create Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maintenance Job {0}.
+        /// </summary>
+        public static string Maintenance_Details_Title {
+            get {
+                return ResourceManager.GetString("Maintenance Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Maintenance Job {0}.
+        /// </summary>
+        public static string Maintenance_Edit_Title {
+            get {
+                return ResourceManager.GetString("Maintenance Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maintenance job with ID &apos;{0}&apos; was not found in the database.
+        /// </summary>
+        public static string Maintenance_Job_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("Maintenance Job Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance.
         /// </summary>
-        internal static string Maintenance_Title {
+        public static string Maintenance_Title {
             get {
                 return ResourceManager.GetString("Maintenance Title", resourceCulture);
             }
@@ -198,16 +738,25 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Manage application.
         /// </summary>
-        internal static string Manage_Application_Label {
+        public static string Manage_Application_Label {
             get {
                 return ResourceManager.GetString("Manage Application Label", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Media ({0}).
+        /// </summary>
+        public static string Media_Label {
+            get {
+                return ResourceManager.GetString("Media Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My account.
         /// </summary>
-        internal static string My_Account_Label {
+        public static string My_Account_Label {
             get {
                 return ResourceManager.GetString("My Account Label", resourceCulture);
             }
@@ -216,25 +765,169 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to My roles.
         /// </summary>
-        internal static string My_Roles_Header {
+        public static string My_Roles_Header {
             get {
                 return ResourceManager.GetString("My Roles Header", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Name_Label {
+            get {
+                return ResourceManager.GetString("Name Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add new comment.
+        /// </summary>
+        public static string New_Comment_Label {
+            get {
+                return ResourceManager.GetString("New Comment Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None of your files were uploaded.
+        /// </summary>
+        public static string No_Files_Uploaded_Error {
+            get {
+                return ResourceManager.GetString("No Files Uploaded Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No infrastructure could be found nearby.
+        /// </summary>
+        public static string No_Infrastructure_Nearby_Message {
+            get {
+                return ResourceManager.GetString("No Infrastructure Nearby Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No infrastructure is linked to this job.
+        /// </summary>
+        public static string No_Job_Infra_Message {
+            get {
+                return ResourceManager.GetString("No Job Infra Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No comments for this maintenance item..
+        /// </summary>
+        public static string No_Maintenance_Comments_Message {
+            get {
+                return ResourceManager.GetString("No Maintenance Comments Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No contacts for this maintenance job.
+        /// </summary>
+        public static string No_Maintenance_Contacts_Message {
+            get {
+                return ResourceManager.GetString("No Maintenance Contacts Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no related media.
+        /// </summary>
+        public static string No_Media_Message {
+            get {
+                return ResourceManager.GetString("No Media Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string No_Results_Found_Label {
+            get {
+                return ResourceManager.GetString("No Results Found Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can either redraw your point nearer to a route, or fill in the Route ID manually..
+        /// </summary>
+        public static string No_Rights_of_Way_Near_Geometry_Options_Text {
+            get {
+                return ResourceManager.GetString("No Rights of Way Near Geometry Options Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no routes near where you clicked. .
+        /// </summary>
+        public static string No_Rights_of_Way_Near_Geometry_Validation_Message {
+            get {
+                return ResourceManager.GetString("No Rights of Way Near Geometry Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have any roles assigned to you.
         /// </summary>
-        internal static string No_Roles_Text {
+        public static string No_Roles_Text {
             get {
                 return ResourceManager.GetString("No Roles Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Northing.
+        /// </summary>
+        public static string Northing_Label {
+            get {
+                return ResourceManager.GetString("Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Private.
+        /// </summary>
+        public static string Not_Public_Label {
+            get {
+                return ResourceManager.GetString("Not Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Organisation.
+        /// </summary>
+        public static string Organisation_Name_Label {
+            get {
+                return ResourceManager.GetString("Organisation Name Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parish.
+        /// </summary>
+        public static string Parish_Label {
+            get {
+                return ResourceManager.GetString("Parish Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some of your files were not uploaded.
+        /// </summary>
+        public static string Partial_File_Upload_Error {
+            get {
+                return ResourceManager.GetString("Partial File Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PPO.
         /// </summary>
-        internal static string PPO_Abbreviation {
+        public static string PPO_Abbreviation {
             get {
                 return ResourceManager.GetString("PPO Abbreviation", resourceCulture);
             }
@@ -243,25 +936,79 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Public Path Orders.
         /// </summary>
-        internal static string PPO_Full_Text {
+        public static string PPO_Full_Text {
             get {
                 return ResourceManager.GetString("PPO Full Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Primary email address.
+        ///   Looks up a localized string similar to Primary contact number.
         /// </summary>
-        internal static string Primary_Email_Label {
+        public static string Primary_Contact_Number_Label {
             get {
-                return ResourceManager.GetString("Primary Email Label", resourceCulture);
+                return ResourceManager.GetString("Primary Contact Number Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Problem description.
+        /// </summary>
+        public static string Problem_Description_Label {
+            get {
+                return ResourceManager.GetString("Problem Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Problem types.
+        /// </summary>
+        public static string Problem_Types_Label {
+            get {
+                return ResourceManager.GetString("Problem Types Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This comment will be visible to members of the public and (if new) will be emailed to subscribers. Make sure personal details are removed and the comment is appropriately written..
+        /// </summary>
+        public static string Public_Comment_Warning_Text {
+            get {
+                return ResourceManager.GetString("Public Comment Warning Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Public.
+        /// </summary>
+        public static string Public_Label {
+            get {
+                return ResourceManager.GetString("Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redraw.
+        /// </summary>
+        public static string Redraw_Label {
+            get {
+                return ResourceManager.GetString("Redraw Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload.
+        /// </summary>
+        public static string Reload_Label {
+            get {
+                return ResourceManager.GetString("Reload Label", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Rights of Way.
         /// </summary>
-        internal static string Rights_of_Way_Title {
+        public static string Rights_of_Way_Title {
             get {
                 return ResourceManager.GetString("Rights of Way Title", resourceCulture);
             }
@@ -270,36 +1017,288 @@ namespace CSIDE.Properties {
         /// <summary>
         ///   Looks up a localized string similar to These are the roles that have been assigned to you by your system administrator. They control what you can and can&apos;t do in the app..
         /// </summary>
-        internal static string Roles_List_Text {
+        public static string Roles_List_Text {
             get {
                 return ResourceManager.GetString("Roles List Text", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rotate clockwise.
+        /// </summary>
+        public static string Rotate_Clockwise_Label {
+            get {
+                return ResourceManager.GetString("Rotate Clockwise Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rotate counter clockwise.
+        /// </summary>
+        public static string Rotate_Counter_Clockwise_Label {
+            get {
+                return ResourceManager.GetString("Rotate Counter Clockwise Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Route &apos;{0}&apos; does not exist in the database.
+        /// </summary>
+        public static string Route_Does_Not_Exist_Validation_Message {
+            get {
+                return ResourceManager.GetString("Route Does Not Exist Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Route code.
+        /// </summary>
+        public static string Route_ID_Label {
+            get {
+                return ResourceManager.GetString("Route ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Route ID manually.
+        /// </summary>
+        public static string Route_ID_Manual_Entry_Label {
+            get {
+                return ResourceManager.GetString("Route ID Manual Entry Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was a problem saving this data. Try again or contact your system administrator..
+        /// </summary>
+        public static string Save_Error_Message {
+            get {
+                return ResourceManager.GetString("Save Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save_Label {
+            get {
+                return ResourceManager.GetString("Save Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search again.
+        /// </summary>
+        public static string Search_Again_Label {
+            get {
+                return ResourceManager.GetString("Search Again Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for maintenance jobs.
+        /// </summary>
+        public static string Search_Jobs_Title {
+            get {
+                return ResourceManager.GetString("Search Jobs Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Search_Label {
+            get {
+                return ResourceManager.GetString("Search Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search results.
+        /// </summary>
+        public static string Search_Results_Title {
+            get {
+                return ResourceManager.GetString("Search Results Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one search field should be filled in.
+        /// </summary>
+        public static string Search_Validation_At_Least_One_Message {
+            get {
+                return ResourceManager.GetString("Search Validation At Least One Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; must not be in the future.
+        /// </summary>
+        public static string Search_Validation_Date_Not_In_Future_Message {
+            get {
+                return ResourceManager.GetString("Search Validation Date Not In Future Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary contact number.
+        /// </summary>
+        public static string Secondary_Contact_Number_Label {
+            get {
+                return ResourceManager.GetString("Secondary Contact Number Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Surveys.
         /// </summary>
-        internal static string Surveys_Title {
+        public static string Surveys_Title {
             get {
                 return ResourceManager.GetString("Surveys Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Title_Label {
+            get {
+                return ResourceManager.GetString("Title Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle.
+        /// </summary>
+        public static string Toggle_Label {
+            get {
+                return ResourceManager.GetString("Toggle Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only upload a maximum of {0} files at once.
+        /// </summary>
+        public static string Too_Many_Files_Upload_Error {
+            get {
+                return ResourceManager.GetString("Too Many Files Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        public static string Update_Label {
+            get {
+                return ResourceManager.GetString("Update Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploaded.
+        /// </summary>
+        public static string Upload_Date_Label {
+            get {
+                return ResourceManager.GetString("Upload Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click or drag and drop files into the box below to upload. You can add up to {0} files at once, maximum {1}MB per file. If you are on a mobile device you can take a photo or video directly from the button below..
+        /// </summary>
+        public static string Upload_Explanatory_Text {
+            get {
+                return ResourceManager.GetString("Upload Explanatory Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not uploaded.
+        /// </summary>
+        public static string Upload_Failure_Message {
+            get {
+                return ResourceManager.GetString("Upload Failure Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload File.
+        /// </summary>
+        public static string Upload_File_Label {
+            get {
+                return ResourceManager.GetString("Upload File Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} file(s) successfully uploaded.
+        /// </summary>
+        public static string Upload_Success_Message {
+            get {
+                return ResourceManager.GetString("Upload Success Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading.
+        /// </summary>
+        public static string Uploading_Text {
+            get {
+                return ResourceManager.GetString("Uploading Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User ID.
         /// </summary>
-        internal static string User_ID_Label {
+        public static string User_ID_Label {
             get {
                 return ResourceManager.GetString("User ID Label", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Videos.
+        /// </summary>
+        public static string Videos_Label {
+            get {
+                return ResourceManager.GetString("Videos Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View all recent unactioned jobs.
+        /// </summary>
+        public static string View_All_Recent_Jobs_Label {
+            get {
+                return ResourceManager.GetString("View All Recent Jobs Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Welcome to {0}.
         /// </summary>
-        internal static string Welcome_Text {
+        public static string Welcome_Text {
             get {
                 return ResourceManager.GetString("Welcome Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Work done.
+        /// </summary>
+        public static string Work_Done_Label {
+            get {
+                return ResourceManager.GetString("Work Done Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}m away.
+        /// </summary>
+        public static string X_Metres_Away_Label {
+            get {
+                return ResourceManager.GetString("X Metres Away Label", resourceCulture);
             }
         }
     }

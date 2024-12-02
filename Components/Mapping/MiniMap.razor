@@ -1,0 +1,47 @@
+﻿@inject IJSRuntime JS
+@implements IAsyncDisposable
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.IO
+
+<div id="@MapId" style="width:100%;height:300px;"></div>
+
+@code {
+    [Parameter]
+    public double CenterX { get; set; }
+    [Parameter]
+    public double CenterY { get; set; }
+    [Parameter]
+    public int Zoom{ get; set; }
+    [Parameter]
+    public Geometry? Geometry{ get; set; }
+
+    private string MapId = $"mini-map-{new Random().Next()}";
+
+    private IJSObjectReference? _jsModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        GeoJsonWriter _geoJsonWriter = new GeoJsonWriter();
+        var GeoJson = _geoJsonWriter.Write(Geometry);
+        // For testing below
+        @* GeoJson = @"{""type"": ""FeatureCollection"",""features"": [{""type"": ""Feature"",""geometry"": {""coordinates"": [[361648, 90563],[361650, 90633],[361649, 90694],[361657, 90751]],""type"": ""LineString""}}]}"; *@
+        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Mapping/MiniMap.razor.js");
+        if (firstRender)
+        {
+            await _jsModule.InvokeVoidAsync("initMap", MapId, CenterX, CenterY, Zoom, GeoJson);
+        }
+        else
+        {
+            await _jsModule.InvokeVoidAsync("updateMap", GeoJson, Zoom);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+        await _jsModule.DisposeAsync();
+        }
+    }
+}

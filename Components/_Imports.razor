@@ -8,6 +8,7 @@
 @using Microsoft.JSInterop
 @using CSIDE
 @using CSIDE.Components
+@using CSIDE.Components.Shared
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
@@ -15,4 +16,14 @@
 @using CSIDE.Data.Models
 @using CSIDE.Data.Models.Authorization
 @using Microsoft.Extensions.Localization
+@using BlazorBootstrap
+@using Blazored.FluentValidation
+@using NodaTime
+@using NetTopologySuite
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.Features
+@using NetTopologySuite.IO
+@using FluentValidation
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+
 @attribute [Authorize("CanAccessApp")]

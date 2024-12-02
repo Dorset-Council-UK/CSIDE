@@ -192,10 +192,343 @@
   <data name="Display Name Label" xml:space="preserve">
     <value>Enw arddangos</value>
   </data>
-  <data name="Primary Email Label" xml:space="preserve">
-    <value>Prif gyfeiriad e-bost</value>
-  </data>
   <data name="User ID Label" xml:space="preserve">
     <value>ID Defnyddiwr</value>
+  </data>
+  <data name="Maintenance Create Title" xml:space="preserve">
+    <value>Creu swydd cynnal a chadw newydd</value>
+  </data>
+  <data name="Create New Job Label" xml:space="preserve">
+    <value>Creu swydd newydd</value>
+  </data>
+  <data name="Maintenance Details Title" xml:space="preserve">
+    <value>Swydd cynnal {0}</value>
+  </data>
+  <data name="Problem Description Label" xml:space="preserve">
+    <value>Disgrifiad o'r broblem</value>
+  </data>
+  <data name="Completion Date Label" xml:space="preserve">
+    <value>Dyddiad cwblhau</value>
+  </data>
+  <data name="Job ID Label" xml:space="preserve">
+    <value>ID Swydd</value>
+  </data>
+  <data name="Log Date Label" xml:space="preserve">
+    <value>Dyddiad log</value>
+  </data>
+  <data name="Logged By Label" xml:space="preserve">
+    <value>Wedi'i logio gan</value>
+  </data>
+  <data name="Route ID Label" xml:space="preserve">
+    <value>Cod llwybr</value>
+  </data>
+  <data name="Job Priority Label" xml:space="preserve">
+    <value>Blaenoriaeth</value>
+  </data>
+  <data name="Job Status Label" xml:space="preserve">
+    <value>Statws</value>
+  </data>
+  <data name="Work Done Label" xml:space="preserve">
+    <value>Gwaith a wnaed</value>
+  </data>
+  <data name="Easting Label" xml:space="preserve">
+    <value>Cyfesuryn X</value>
+  </data>
+  <data name="Northing Label" xml:space="preserve">
+    <value>Cyfesuryn Y</value>
+  </data>
+  <data name="Create Label" xml:space="preserve">
+    <value>Creu</value>
+  </data>
+  <data name="Search Label" xml:space="preserve">
+    <value>Chwiliwch</value>
+  </data>
+  <data name="Create New Job Text" xml:space="preserve">
+    <value>Ychwanegwch swydd i'r gronfa ddata cynnal a chadw trwy ei hychwanegu at y map a llenwi'r manylion perthnasol.</value>
+  </data>
+  <data name="View All Recent Jobs Label" xml:space="preserve">
+    <value>Gweld yr holl swyddi diweddar sydd heb eu gweithredu</value>
+  </data>
+  <data name="Search Jobs Title" xml:space="preserve">
+    <value>Dod o hyd i swyddi cynnal a chadw</value>
+  </data>
+  <data name="Search Results Title" xml:space="preserve">
+    <value>Canlyniadau chwilio</value>
+  </data>
+  <data name="Search Validation Date Not In Future Message" xml:space="preserve">
+    <value>Rhaid i '{0}' beidio â bod yn y dyfodol</value>
+  </data>
+  <data name="Log Date From Label" xml:space="preserve">
+    <value>Dyddiad wedi'i logio o</value>
+  </data>
+  <data name="Completed Date From Label" xml:space="preserve">
+    <value>Dyddiad wedi ei gwblhau o</value>
+  </data>
+  <data name="Completed Date To Label" xml:space="preserve">
+    <value>Dyddiad wedi ei gwblhau i</value>
+  </data>
+  <data name="Log Date To Label" xml:space="preserve">
+    <value>Dyddiad wedi'i logio i</value>
+  </data>
+  <data name="Assigned To Team Label" xml:space="preserve">
+    <value>Wedi'i neilltuo i</value>
+  </data>
+  <data name="No Results Found Label" xml:space="preserve">
+    <value>Heb ganfod canlyniadau</value>
+  </data>
+  <data name="Search Again Label" xml:space="preserve">
+    <value>Chwiliwch eto</value>
+  </data>
+  <data name="Search Validation At Least One Message" xml:space="preserve">
+    <value>Dylid llenwi o leiaf un maes chwilio</value>
+  </data>
+  <data name="Parish Label" xml:space="preserve">
+    <value>Cymuned</value>
+  </data>
+  <data name="Route Does Not Exist Validation Message" xml:space="preserve">
+    <value>Nid yw llwybr '{0}' yn bodoli yn y gronfa ddata</value>
+  </data>
+  <data name="No Rights of Way Near Geometry Validation Message" xml:space="preserve">
+    <value>Nid oes unrhyw lwybrau yn agos at y lle y gwnaethoch glicio.</value>
+  </data>
+  <data name="No Rights of Way Near Geometry Options Text" xml:space="preserve">
+    <value>Gallwch naill ai ail-lunio eich pwynt yn nes at lwybr, neu lenwi Rhif Adnabod y Llwybr â llaw.</value>
+  </data>
+  <data name="Invalid Geometry Validation Message" xml:space="preserve">
+    <value>Nid yw eich geometreg yn ddilys. Ail-luniwch eich geometreg, ac os oes gennych broblemau o hyd, cysylltwch â gweinyddwr eich system</value>
+  </data>
+  <data name="Maintenance Edit Title" xml:space="preserve">
+    <value>Golygu swydd cynnal a chadw {0}</value>
+  </data>
+  <data name="Edit Label" xml:space="preserve">
+    <value>Golygu</value>
+  </data>
+  <data name="Maintenance Job Not Found Error Message" xml:space="preserve">
+    <value>Ni chanfuwyd swydd cynnal a chadw gydag ID '{0}' yn y gronfa ddata</value>
+  </data>
+  <data name="Update Label" xml:space="preserve">
+    <value>Diweddaru</value>
+  </data>
+  <data name="Cancel Label" xml:space="preserve">
+    <value>Canslo</value>
+  </data>
+  <data name="Concurrency Error Message" xml:space="preserve">
+    <value>Nid oedd modd diweddaru {0}. Mae'r data wedi'i addasu gan ddefnyddiwr arall. Ail-lwythwch y dudalen os gwelwch yn dda.</value>
+  </data>
+  <data name="Public Label" xml:space="preserve">
+    <value>Cyhoeddus</value>
+  </data>
+  <data name="Not Public Label" xml:space="preserve">
+    <value>Preifat</value>
+  </data>
+  <data name="Comment Author Title" xml:space="preserve">
+    <value>{0} ar {1}</value>
+  </data>
+  <data name="Delete Comment Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r sylw hwn?</value>
+  </data>
+  <data name="Add Comment Label" xml:space="preserve">
+    <value>Ychwanegu sylw</value>
+  </data>
+  <data name="Is Public Label" xml:space="preserve">
+    <value>Yn weladwy i'r cyhoedd?</value>
+  </data>
+  <data name="Public Comment Warning Text" xml:space="preserve">
+    <value>Bydd y sylw hwn yn weladwy i aelodau'r cyhoedd ac (os yw'n newydd) yn cael ei e-bostio at danysgrifwyr. Sicrhewch fod manylion personol yn cael eu dileu a bod y sylw wedi'i ysgrifennu'n briodol.</value>
+  </data>
+  <data name="No Maintenance Comments Message" xml:space="preserve">
+    <value>Dim sylwadau ar gyfer yr eitem cynnal a chadw hon.</value>
+  </data>
+  <data name="Delete Label" xml:space="preserve">
+    <value>Dileu</value>
+  </data>
+  <data name="New Comment Label" xml:space="preserve">
+    <value>Ychwanegu sylw newydd</value>
+  </data>
+  <data name="Toggle Label" xml:space="preserve">
+    <value>Toglo</value>
+  </data>
+  <data name="Basic Details Label" xml:space="preserve">
+    <value>Manylion Sylfaenol</value>
+  </data>
+  <data name="Comments Label" xml:space="preserve">
+    <value>Sylwadau ({0})</value>
+  </data>
+  <data name="Duplicate Job ID Label" xml:space="preserve">
+    <value>Dyblyg o</value>
+  </data>
+  <data name="Contact Label" xml:space="preserve">
+    <value>Cyswllt</value>
+  </data>
+  <data name="Contacts Label" xml:space="preserve">
+    <value>Cysylltiadau ({0})</value>
+  </data>
+  <data name="Add Contact Label" xml:space="preserve">
+    <value>Ychwanegwch gyswllt</value>
+  </data>
+  <data name="At Least One Contact Property Validation Message" xml:space="preserve">
+    <value>Mae angen i chi lenwi o leiaf un manylion cyswllt</value>
+  </data>
+  <data name="Comment Label" xml:space="preserve">
+    <value>Sylw</value>
+  </data>
+  <data name="Email Label" xml:space="preserve">
+    <value>Cyfeiriad e-bost</value>
+  </data>
+  <data name="Name Label" xml:space="preserve">
+    <value>Enw</value>
+  </data>
+  <data name="Primary Contact Number Label" xml:space="preserve">
+    <value>Prif rif cyswllt</value>
+  </data>
+  <data name="Secondary Contact Number Label" xml:space="preserve">
+    <value>Rhif cyswllt eilaidd</value>
+  </data>
+  <data name="Contact Organisation Label" xml:space="preserve">
+    <value>Sefydliad</value>
+  </data>
+  <data name="Contact Type Label" xml:space="preserve">
+    <value>Math o gyswllt</value>
+  </data>
+  <data name="Redraw Label" xml:space="preserve">
+    <value>Aildynnu</value>
+  </data>
+  <data name="Route ID Manual Entry Label" xml:space="preserve">
+    <value>Rhowch ID y Llwybr â llaw</value>
+  </data>
+  <data name="Save Error Message" xml:space="preserve">
+    <value>Roedd problem wrth gadw'r data hwn. Ceisiwch eto neu cysylltwch â gweinyddwr eich system.</value>
+  </data>
+  <data name="Save Label" xml:space="preserve">
+    <value>Arbed</value>
+  </data>
+  <data name="Media Label" xml:space="preserve">
+    <value>Cyfryngau ({0})</value>
+  </data>
+  <data name="Title Label" xml:space="preserve">
+    <value>Teitl</value>
+  </data>
+  <data name="Upload Date Label" xml:space="preserve">
+    <value>Dyddiad Uwchlwytho</value>
+  </data>
+  <data name="Images Label" xml:space="preserve">
+    <value>Delweddau</value>
+  </data>
+  <data name="Videos Label" xml:space="preserve">
+    <value>Fideos</value>
+  </data>
+  <data name="Documents Label" xml:space="preserve">
+    <value>Dogfennau</value>
+  </data>
+  <data name="Upload File Label" xml:space="preserve">
+    <value>Llwythwch Ffeil i fyny</value>
+  </data>
+  <data name="Download Label" xml:space="preserve">
+    <value>Lawrlwythwch</value>
+  </data>
+  <data name="Rotate Clockwise Label" xml:space="preserve">
+    <value>Cylchdroi clocwedd</value>
+  </data>
+  <data name="Rotate Counter Clockwise Label" xml:space="preserve">
+    <value>Cylchdroi cownter clocwedd</value>
+  </data>
+  <data name="Uploading Text" xml:space="preserve">
+    <value>Wrthi'n uwchlwytho</value>
+  </data>
+  <data name="Upload Success Message" xml:space="preserve">
+    <value>{0} ffeil(iau) wedi'u huwchlwytho'n llwyddiannus</value>
+  </data>
+  <data name="Too Many Files Upload Error" xml:space="preserve">
+    <value>Dim ond uchafswm o {0} o ffeiliau y gallwch chi uwchlwytho ar unwaith</value>
+  </data>
+  <data name="File Too Large Upload Error" xml:space="preserve">
+    <value>Mwy na maint ffeil o {0}MB ar gyfer ffeil '{1}'</value>
+  </data>
+  <data name="Upload Explanatory Text" xml:space="preserve">
+    <value>Cliciwch neu llusgo a gollwng ffeiliau i'r blwch isod i'w huwchlwytho. Gallwch ychwanegu hyd at {0} ffeil ar unwaith, uchafswm o {1}MB y ffeil. Os ydych ar ddyfais symudol gallwch dynnu llun neu fideo yn uniongyrchol o'r botwm isod.</value>
+  </data>
+  <data name="General Error Message" xml:space="preserve">
+    <value>Digwyddodd gwall nad oeddem yn ei ddisgwyl. Ail-lwythwch y dudalen i geisio eto.</value>
+  </data>
+  <data name="Reload Label" xml:space="preserve">
+    <value>Ail-lwytho</value>
+  </data>
+  <data name="General Component Error Message" xml:space="preserve">
+    <value>Roedd gwall wrth ddangos y data hwn nad oeddem yn ei ddisgwyl. Ail-lwythwch y dudalen i geisio eto, neu cysylltwch â gweinyddwr eich system os yw'r broblem yn parhau.</value>
+  </data>
+  <data name="X Metres Away Label" xml:space="preserve">
+    <value>{0}m i ffwrdd</value>
+  </data>
+  <data name="Add Nearby Infrastructure Title" xml:space="preserve">
+    <value>Ychwanegu seilwaith cyfagos</value>
+  </data>
+  <data name="Add Infrastructure Link Label" xml:space="preserve">
+    <value>Ychwanegu cyswllt seilwaith</value>
+  </data>
+  <data name="Infrastructure ID Label" xml:space="preserve">
+    <value>ID Seilwaith</value>
+  </data>
+  <data name="Infrastructure Type Label" xml:space="preserve">
+    <value>Math o seilwaith</value>
+  </data>
+  <data name="Add Infrastructure By ID Title" xml:space="preserve">
+    <value>Ychwanegu seilwaith yn ôl ID</value>
+  </data>
+  <data name="All Nearby Infrastructure Linked Message" xml:space="preserve">
+    <value>Mae'r holl seilwaith cyfagos eisoes wedi'i gysylltu â'r gwaith cynnal a chadw hwn</value>
+  </data>
+  <data name="No Infrastructure Nearby Message" xml:space="preserve">
+    <value>Ni ellid dod o hyd i seilwaith gerllaw</value>
+  </data>
+  <data name="Delete Infra Link Confirmation" xml:space="preserve">
+    <value>A ydych yn siŵr eich bod am ddatgysylltu’r seilwaith hwn o’r swydd?</value>
+  </data>
+  <data name="Infrastructure Does Not Exist Validation Message" xml:space="preserve">
+    <value>Nid oedd modd dod o hyd i unrhyw seilwaith gyda'r ID hwnnw</value>
+  </data>
+  <data name="Infrastructure With Count Title" xml:space="preserve">
+    <value>Seilwaith ({0})</value>
+  </data>
+  <data name="No Maintenance Contacts Message" xml:space="preserve">
+    <value>Nid oes unrhyw gysylltiadau ar gyfer y swydd cynnal a chadw hon</value>
+  </data>
+  <data name="Organisation Name Label" xml:space="preserve">
+    <value>Sefydliad</value>
+  </data>
+  <data name="No Job Infra Message" xml:space="preserve">
+    <value>Nid oes unrhyw seilwaith yn gysylltiedig â'r swydd hon</value>
+  </data>
+  <data name="No Media Message" xml:space="preserve">
+    <value>Nid oes unrhyw gyfryngau cysylltiedig</value>
+  </data>
+  <data name="Edit Contact Title" xml:space="preserve">
+    <value>Golygu manylion cyswllt</value>
+  </data>
+  <data name="404 Error Title" xml:space="preserve">
+    <value>Tudalen heb ei chanfod</value>
+  </data>
+  <data name="404 Error Text" xml:space="preserve">
+    <value>Nid oeddem yn gallu dod o hyd i'r dudalen roeddech yn chwilio amdani. Gwiriwch eich dolen a rhowch gynnig arall arni, neu cysylltwch â gweinyddwyr y system.</value>
+  </data>
+  <data name="Upload Failure Message" xml:space="preserve">
+    <value>Ni uwchlwythwyd y ffeil '{0}'</value>
+  </data>
+  <data name="No Files Uploaded Error" xml:space="preserve">
+    <value>Ni uwchlwythwyd unrhyw un o'ch ffeiliau</value>
+  </data>
+  <data name="Partial File Upload Error" xml:space="preserve">
+    <value>Ni chafodd rhai o'ch ffeiliau eu huwchlwytho</value>
+  </data>
+  <data name="Geometry Outside UK Validation Message" xml:space="preserve">
+    <value>Mae'r lleoliad a ddewisoch y tu allan i'r DU</value>
+  </data>
+  <data name="Delete Contact Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r manylion cyswllt hyn?</value>
+  </data>
+  <data name="Delete Media Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r ffeil hon?</value>
+  </data>
+  <data name="Problem Types Label" xml:space="preserve">
+    <value>Mathau o broblemau</value>
   </data>
 </root>

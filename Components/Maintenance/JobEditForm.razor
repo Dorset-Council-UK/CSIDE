@@ -1,0 +1,271 @@
+﻿@using CSIDE.Data.Models.Maintenance
+
+@if(Job is not null){
+    <EditForm Model="Job" OnSubmit="@SubmitFormAsync">
+
+        <FluentValidationValidator @ref="fluentValidationValidator" />
+        <ValidationSummary />
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
+                <InputText id="route-code" class="form-control" @bind-Value="Job.RouteId"></InputText>
+            </div>
+            <ValidationMessage For="() => Job.RouteId" />
+        </div>
+
+        @if (IsEdit)
+        {
+            <div class="mb-3 row">
+                <div class="col-sm-8 col-lg-6">
+                    <label class="form-label" for="priority">@localizer["Assigned To Team Label"]</label>
+                    <InputSelect id="priority" class="form-select" @bind-Value="Job.MaintenanceTeamId">
+                        @if (MaintenanceTeams is not null)
+                        {
+                            @foreach (var team in MaintenanceTeams.OrderBy(s => s.Name))
+                            {
+                                <option value="@team.Id">@team.Name</option>
+                            }
+                        }
+
+                    </InputSelect>
+                </div>
+                <ValidationMessage For="() => Job.MaintenanceTeamId" />
+            </div>
+        }
+        <div class="mb-3">
+            <label class="form-label" for="problem-description">@localizer["Problem Description Label"]</label>
+            <InputTextArea id="problem-description" class="form-control" @bind-Value="Job.ProblemDescription"></InputTextArea>
+            <ValidationMessage For="() => Job.ProblemDescription" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="priority">@localizer["Job Priority Label"]</label>
+                <InputSelect id="priority" class="form-select" @bind-Value="Job.JobPriorityId">
+                    @if (JobPriorities is not null)
+                    {
+                        @foreach (var priority in JobPriorities.OrderBy(s => s.SortOrder))
+                        {
+                            <option value="@priority.Id">@priority.Description</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => Job.JobPriorityId" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="status">@localizer["Job Status Label"]</label>
+                <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
+                    @if (JobStatuses is not null)
+                    {
+                        @foreach (var status in JobStatuses.OrderBy(s => s.SortOrder))
+                        {
+                            if (Job.JobStatusId == status.Id)
+                            {
+                                <option value="@status.Id" selected>@status.Description</option>
+                            }
+                            else
+                            {
+                                <option value="@status.Id">@status.Description</option>
+                            }
+
+                        }
+                    }
+                </select>
+            </div>
+            <ValidationMessage For="() => Job.JobStatusId" />
+        </div>
+
+        <div class="ps-2 border-start border-2 @(CompleteDateShown ? "d-block" : "d-none")">
+            <div class="mb-3 row">
+                <div class=" col-sm-4 col-md-6 col-lg-4">
+                    <label class="form-label" for="completion-date">@localizer["Completion Date Label"]</label>
+                    @{
+                        string CompleteDateStringRepresentation = "";
+                        if (Job.CompletionDate.HasValue)
+                        {
+                            CompleteDateStringRepresentation = Job.CompletionDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                        }
+                    }
+                    <input type="date" class="form-control" value="@CompleteDateStringRepresentation" @onchange="UpdateCompletionDateProperty" />
+                </div>
+                <ValidationMessage For="() => Job.CompletionDate" />
+            </div>
+        </div>
+
+        <div class="ps-2 border-start border-2 @(DuplicateOfShown ? "d-block" : "d-none")">
+            <div class="mb-3 row">
+                <div class=" col-sm-4 col-md-6 col-lg-4">
+                    <label class="form-label" for="duplicate-of-id">@localizer["Duplicate Job ID Label"]</label>
+                    <NumberInput id="duplicate-of-id" class="form-control" @bind-Value="Job.DuplicateJobId"></NumberInput>
+                </div>
+                <ValidationMessage For="() => Job.DuplicateJobId" />
+            </div>
+        </div>
+
+        @if(ProblemTypes is not null && ProblemTypes.Length != 0){
+            <div class="mb-3">
+                <fieldset>
+                    <legend class="form-label fs-6">@localizer["Problem Types Label"]</legend>
+                
+                    @foreach (var ProblemType in ProblemTypes)
+                    {
+                        var selected = Job.ProblemTypes.Select(j => j.ProblemTypeId).Contains(ProblemType.Id);
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@ProblemType.Id" checked="@selected" id="ProblemType__@ProblemType.Id" @onchange="(e) => {ProblemTypeChanged(ProblemType, e);}">
+                            <label class="form-check-label" for="ProblemType__@ProblemType.Id">
+                                @ProblemType.Name
+                            </label>
+                        </div>
+
+                    }
+                </fieldset>
+            </div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label" for="work-done">@localizer["Work Done Label"]</label>
+            <InputTextArea id="work-done" class="form-control" @bind-Value="Job.WorkDone"></InputTextArea>
+            <ValidationMessage For="() => Job.WorkDone" />
+        </div>
+
+        @if (IsEdit)
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+            <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+        }
+
+    </EditForm>
+
+}
+
+@code{
+    [Parameter]
+    public Job? Job { get; set; }
+    [Parameter]
+    public JobStatus[]? JobStatuses { get; set; }
+    [Parameter]
+    public JobPriority[]? JobPriorities { get; set; }
+    [Parameter]
+    public Team[]? MaintenanceTeams { get; set; }
+    [Parameter]
+    public ProblemType[]? ProblemTypes{ get; set; }
+    [Parameter]
+    public bool IsBusy { get; set; }
+    [Parameter]
+    public bool CompleteDateShown { get; set; }
+    [Parameter]
+    public bool DuplicateOfShown { get; set; }
+    [Parameter]
+    public bool IsEdit{ get; set; }
+    [Parameter]
+    public EventCallback OnSubmit{ get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+    [Parameter]
+    public List<int> SelectedProblemTypes { get; set; } = [];
+
+    private FluentValidationValidator? fluentValidationValidator;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (Job is not null && Job.JobStatusId.HasValue)
+        {
+            ShowOrHideCompletionDate(Job.JobStatusId.Value);
+            ShowOrHideDuplicateOf(Job.JobStatusId.Value);
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitFormAsync()
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync();
+        }
+    }
+
+    public async Task<bool> ValidateAsync()
+    {
+        return await fluentValidationValidator!.ValidateAsync();
+    }
+
+    private void UpdateCompletionDateProperty(ChangeEventArgs eventArgs)
+    {
+        if (Job is not null && eventArgs.Value is not null)
+        {
+            var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
+            var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
+            Job.CompletionDate = parseResult.Value;
+        }
+    }
+
+    private void ShowOrHideCompletionDate(ChangeEventArgs eventArgs)
+    {
+        int NewJobStatusId;
+        if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
+        {
+            ShowOrHideCompletionDate(NewJobStatusId);
+        }
+    }
+    private void ShowOrHideDuplicateOf(ChangeEventArgs eventArgs)
+    {
+        int NewJobStatusId;
+        if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
+        {
+            ShowOrHideDuplicateOf(NewJobStatusId);
+        }
+    }
+    private void ShowOrHideCompletionDate(int NewJobStatusId)
+    {
+        if (Job is not null)
+        {
+            CompleteDateShown = JobStatuses!.Where(s => s.Id == NewJobStatusId).First().IsComplete;
+            Job.JobStatusId = NewJobStatusId;
+        }
+    }
+
+    private void ShowOrHideDuplicateOf(int NewJobStatusId)
+    {
+        if (Job is not null)
+        {
+            DuplicateOfShown = JobStatuses!.Where(s => s.Id == NewJobStatusId).First().IsDuplicate;
+            Job.JobStatusId = NewJobStatusId;
+        }
+    }
+
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+
+    private void ProblemTypeChanged(ProblemType ProblemType, ChangeEventArgs eventArgs){
+
+        if (Convert.ToBoolean(eventArgs.Value))
+        {
+            if (!SelectedProblemTypes.ToList().Contains(ProblemType.Id))
+            {
+                SelectedProblemTypes.Add(ProblemType.Id);
+            }
+        }
+        else
+        {
+            if (SelectedProblemTypes.ToList().Contains(ProblemType.Id))
+            {
+                SelectedProblemTypes.Remove(ProblemType.Id);
+            }
+        }
+    }
+}

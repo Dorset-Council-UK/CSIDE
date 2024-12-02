@@ -192,10 +192,343 @@
   <data name="Display Name Label" xml:space="preserve">
     <value>Display name</value>
   </data>
-  <data name="Primary Email Label" xml:space="preserve">
-    <value>Primary email address</value>
-  </data>
   <data name="User ID Label" xml:space="preserve">
     <value>User ID</value>
+  </data>
+  <data name="Maintenance Create Title" xml:space="preserve">
+    <value>Create new maintenance job</value>
+  </data>
+  <data name="Create New Job Label" xml:space="preserve">
+    <value>Create new job</value>
+  </data>
+  <data name="Maintenance Details Title" xml:space="preserve">
+    <value>Maintenance Job {0}</value>
+  </data>
+  <data name="Problem Description Label" xml:space="preserve">
+    <value>Problem description</value>
+  </data>
+  <data name="Completion Date Label" xml:space="preserve">
+    <value>Completion date</value>
+  </data>
+  <data name="Job ID Label" xml:space="preserve">
+    <value>Job ID</value>
+  </data>
+  <data name="Log Date Label" xml:space="preserve">
+    <value>Log date</value>
+  </data>
+  <data name="Logged By Label" xml:space="preserve">
+    <value>Logged by</value>
+  </data>
+  <data name="Route ID Label" xml:space="preserve">
+    <value>Route code</value>
+  </data>
+  <data name="Job Priority Label" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Job Status Label" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Work Done Label" xml:space="preserve">
+    <value>Work done</value>
+  </data>
+  <data name="Easting Label" xml:space="preserve">
+    <value>Easting</value>
+  </data>
+  <data name="Northing Label" xml:space="preserve">
+    <value>Northing</value>
+  </data>
+  <data name="Create Label" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Search Label" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Create New Job Text" xml:space="preserve">
+    <value>Add a job to the maintenance database by adding it to the map and filling in the relevant details.</value>
+  </data>
+  <data name="View All Recent Jobs Label" xml:space="preserve">
+    <value>View all recent unactioned jobs</value>
+  </data>
+  <data name="Search Jobs Title" xml:space="preserve">
+    <value>Search for maintenance jobs</value>
+  </data>
+  <data name="Search Results Title" xml:space="preserve">
+    <value>Search results</value>
+  </data>
+  <data name="Search Validation Date Not In Future Message" xml:space="preserve">
+    <value>'{0}' must not be in the future</value>
+  </data>
+  <data name="Log Date From Label" xml:space="preserve">
+    <value>Log date from</value>
+  </data>
+  <data name="Completed Date From Label" xml:space="preserve">
+    <value>Completed date from</value>
+  </data>
+  <data name="Completed Date To Label" xml:space="preserve">
+    <value>Completed date to</value>
+  </data>
+  <data name="Log Date To Label" xml:space="preserve">
+    <value>Log date to</value>
+  </data>
+  <data name="Assigned To Team Label" xml:space="preserve">
+    <value>Assigned to team</value>
+  </data>
+  <data name="No Results Found Label" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Search Again Label" xml:space="preserve">
+    <value>Search again</value>
+  </data>
+  <data name="Search Validation At Least One Message" xml:space="preserve">
+    <value>At least one search field should be filled in</value>
+  </data>
+  <data name="Parish Label" xml:space="preserve">
+    <value>Parish</value>
+  </data>
+  <data name="Route Does Not Exist Validation Message" xml:space="preserve">
+    <value>Route '{0}' does not exist in the database</value>
+  </data>
+  <data name="No Rights of Way Near Geometry Validation Message" xml:space="preserve">
+    <value>There are no routes near where you clicked. </value>
+  </data>
+  <data name="No Rights of Way Near Geometry Options Text" xml:space="preserve">
+    <value>You can either redraw your point nearer to a route, or fill in the Route ID manually.</value>
+  </data>
+  <data name="Invalid Geometry Validation Message" xml:space="preserve">
+    <value>Your geometry is not valid. Redraw your geometry, and if you still have issues, contact your system administrator</value>
+  </data>
+  <data name="Maintenance Edit Title" xml:space="preserve">
+    <value>Edit Maintenance Job {0}</value>
+  </data>
+  <data name="Edit Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Maintenance Job Not Found Error Message" xml:space="preserve">
+    <value>Maintenance job with ID '{0}' was not found in the database</value>
+  </data>
+  <data name="Update Label" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Cancel Label" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Concurrency Error Message" xml:space="preserve">
+    <value>Could not update {0}. The data has been modified by another user. Please reload the page.</value>
+  </data>
+  <data name="Public Label" xml:space="preserve">
+    <value>Public</value>
+  </data>
+  <data name="Not Public Label" xml:space="preserve">
+    <value>Private</value>
+  </data>
+  <data name="Comment Author Title" xml:space="preserve">
+    <value>{0} at {1}</value>
+  </data>
+  <data name="Delete Comment Confirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this comment?</value>
+  </data>
+  <data name="Add Comment Label" xml:space="preserve">
+    <value>Add comment</value>
+  </data>
+  <data name="Is Public Label" xml:space="preserve">
+    <value>Publicly viewable?</value>
+  </data>
+  <data name="Public Comment Warning Text" xml:space="preserve">
+    <value>This comment will be visible to members of the public and (if new) will be emailed to subscribers. Make sure personal details are removed and the comment is appropriately written.</value>
+  </data>
+  <data name="No Maintenance Comments Message" xml:space="preserve">
+    <value>No comments for this maintenance item.</value>
+  </data>
+  <data name="Delete Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="New Comment Label" xml:space="preserve">
+    <value>Add new comment</value>
+  </data>
+  <data name="Toggle Label" xml:space="preserve">
+    <value>Toggle</value>
+  </data>
+  <data name="Basic Details Label" xml:space="preserve">
+    <value>Basic Details</value>
+  </data>
+  <data name="Comments Label" xml:space="preserve">
+    <value>Comments ({0})</value>
+  </data>
+  <data name="Duplicate Job ID Label" xml:space="preserve">
+    <value>Duplicate of</value>
+  </data>
+  <data name="Contact Label" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Contacts Label" xml:space="preserve">
+    <value>Contacts ({0})</value>
+  </data>
+  <data name="Add Contact Label" xml:space="preserve">
+    <value>Add contact</value>
+  </data>
+  <data name="At Least One Contact Property Validation Message" xml:space="preserve">
+    <value>You need to fill in at least one contact detail</value>
+  </data>
+  <data name="Comment Label" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="Email Label" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="Name Label" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Primary Contact Number Label" xml:space="preserve">
+    <value>Primary contact number</value>
+  </data>
+  <data name="Secondary Contact Number Label" xml:space="preserve">
+    <value>Secondary contact number</value>
+  </data>
+  <data name="Contact Organisation Label" xml:space="preserve">
+    <value>Organisation</value>
+  </data>
+  <data name="Contact Type Label" xml:space="preserve">
+    <value>Contact type</value>
+  </data>
+  <data name="Redraw Label" xml:space="preserve">
+    <value>Redraw</value>
+  </data>
+  <data name="Route ID Manual Entry Label" xml:space="preserve">
+    <value>Enter Route ID manually</value>
+  </data>
+  <data name="Save Error Message" xml:space="preserve">
+    <value>There was a problem saving this data. Try again or contact your system administrator.</value>
+  </data>
+  <data name="Save Label" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Media Label" xml:space="preserve">
+    <value>Media ({0})</value>
+  </data>
+  <data name="Title Label" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Upload Date Label" xml:space="preserve">
+    <value>Uploaded</value>
+  </data>
+  <data name="Images Label" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="Videos Label" xml:space="preserve">
+    <value>Videos</value>
+  </data>
+  <data name="Documents Label" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="Upload File Label" xml:space="preserve">
+    <value>Upload File</value>
+  </data>
+  <data name="Download Label" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Rotate Clockwise Label" xml:space="preserve">
+    <value>Rotate clockwise</value>
+  </data>
+  <data name="Rotate Counter Clockwise Label" xml:space="preserve">
+    <value>Rotate counter clockwise</value>
+  </data>
+  <data name="Uploading Text" xml:space="preserve">
+    <value>Uploading</value>
+  </data>
+  <data name="Upload Success Message" xml:space="preserve">
+    <value>{0} file(s) successfully uploaded</value>
+  </data>
+  <data name="Too Many Files Upload Error" xml:space="preserve">
+    <value>You can only upload a maximum of {0} files at once</value>
+  </data>
+  <data name="File Too Large Upload Error" xml:space="preserve">
+    <value>Max file size of {0}MB exceeded for file '{1}'</value>
+  </data>
+  <data name="Upload Explanatory Text" xml:space="preserve">
+    <value>Click or drag and drop files into the box below to upload. You can add up to {0} files at once, maximum {1}MB per file. If you are on a mobile device you can take a photo or video directly from the button below.</value>
+  </data>
+  <data name="General Error Message" xml:space="preserve">
+    <value>An error occurred that we weren't expecting. Reload the page to try again.</value>
+  </data>
+  <data name="Reload Label" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="General Component Error Message" xml:space="preserve">
+    <value>There was an error showing this data that we weren't expecting. Reload the page to try again, or contact your system administrator if the problem persists.</value>
+  </data>
+  <data name="X Metres Away Label" xml:space="preserve">
+    <value>{0}m away</value>
+  </data>
+  <data name="Add Nearby Infrastructure Title" xml:space="preserve">
+    <value>Add nearby infrastructure</value>
+  </data>
+  <data name="Add Infrastructure Link Label" xml:space="preserve">
+    <value>Add infrastructure link</value>
+  </data>
+  <data name="Infrastructure ID Label" xml:space="preserve">
+    <value>Infrastructure ID</value>
+  </data>
+  <data name="Infrastructure Type Label" xml:space="preserve">
+    <value>Infrastructure type</value>
+  </data>
+  <data name="Add Infrastructure By ID Title" xml:space="preserve">
+    <value>Add infrastructure by ID</value>
+  </data>
+  <data name="All Nearby Infrastructure Linked Message" xml:space="preserve">
+    <value>All nearby infrastructure has already been linked to this maintenance job</value>
+  </data>
+  <data name="No Infrastructure Nearby Message" xml:space="preserve">
+    <value>No infrastructure could be found nearby</value>
+  </data>
+  <data name="Delete Infra Link Confirmation" xml:space="preserve">
+    <value>Are you sure you want to unlink this infrastructure from the maintenance job?</value>
+  </data>
+  <data name="Infrastructure Does Not Exist Validation Message" xml:space="preserve">
+    <value>No infrastructure with that ID could be found</value>
+  </data>
+  <data name="Infrastructure With Count Title" xml:space="preserve">
+    <value>Infrastructure ({0})</value>
+  </data>
+  <data name="No Maintenance Contacts Message" xml:space="preserve">
+    <value>No contacts for this maintenance job</value>
+  </data>
+  <data name="Organisation Name Label" xml:space="preserve">
+    <value>Organisation</value>
+  </data>
+  <data name="No Job Infra Message" xml:space="preserve">
+    <value>No infrastructure is linked to this job</value>
+  </data>
+  <data name="No Media Message" xml:space="preserve">
+    <value>There is no related media</value>
+  </data>
+  <data name="Edit Contact Title" xml:space="preserve">
+    <value>Edit contact details</value>
+  </data>
+  <data name="404 Error Title" xml:space="preserve">
+    <value>Page not found</value>
+  </data>
+  <data name="404 Error Text" xml:space="preserve">
+    <value>We couldn't find the page you were looking for. Check your link and try again, or get in touch with the system administrators.</value>
+  </data>
+  <data name="Upload Failure Message" xml:space="preserve">
+    <value>The file '{0}' was not uploaded</value>
+  </data>
+  <data name="No Files Uploaded Error" xml:space="preserve">
+    <value>None of your files were uploaded</value>
+  </data>
+  <data name="Partial File Upload Error" xml:space="preserve">
+    <value>Some of your files were not uploaded</value>
+  </data>
+  <data name="Geometry Outside UK Validation Message" xml:space="preserve">
+    <value>The location you chose is outside of the UK</value>
+  </data>
+  <data name="Delete Contact Confirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this contact?</value>
+  </data>
+  <data name="Delete Media Confirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this file?</value>
+  </data>
+  <data name="Problem Types Label" xml:space="preserve">
+    <value>Problem types</value>
   </data>
 </root>

@@ -1,0 +1,19 @@
+﻿@inject IHostEnvironment HostEnvironment
+
+<Alert Color="AlertColor.Danger">
+    @(Message is not null ? Message : localizer["General Component Error Message"])
+    @if (!HostEnvironment.IsProduction() && Exception is not null)
+    {
+        <hr/><pre>@Exception?.Message</pre>
+        <pre>@Exception?.StackTrace</pre>
+    }
+</Alert>
+
+
+
+@code {
+    [Parameter]
+    public string? Message{ get; set; }
+    [Parameter]
+    public Exception? Exception{ get; set; }
+}

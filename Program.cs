@@ -1,6 +1,7 @@
 using CSIDE.Authorization;
 using CSIDE.Components;
 using CSIDE.Data;
+using CSIDE.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
@@ -17,18 +18,22 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
     options.UseNpgsql("name=ConnectionStrings:CSIDE", x =>
     {
         x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
         x.UseNodaTime();
+        x.UseNetTopologySuite();
     });
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 });
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
+builder.Services.AddBlazorBootstrap();
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
                 {
@@ -63,6 +68,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 });
 
 builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));

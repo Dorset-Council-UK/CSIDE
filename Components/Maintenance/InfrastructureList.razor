@@ -1,0 +1,208 @@
+﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Models.Infrastructure
+@using CSIDE.Data.Models.Shared
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IJSRuntime JS
+
+@if(IsEditable){
+    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="OpenAddInfraLinkModal">@localizer["Add Infrastructure Link Label"]</button>
+}
+
+
+@if (JobInfrastructure is not null && JobInfrastructure.Count != 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@localizer["Infrastructure ID Label"]</th>
+                <th>@localizer["Infrastructure Type Label"]</th>
+                @if (IsEditable)
+                {
+                    <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var infra in JobInfrastructure){
+                <tr>
+                    <td>
+                        <a href="/Infrastructure/Details/@infra.Infrastructure.Id">@infra.Infrastructure.Id</a>
+                    </td>
+                    <td>
+                        @infra.Infrastructure.InfrastructureType?.Name
+                    </td>
+                    @if(IsEditable){
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteInfraLink(infra.InfrastructureId, infra.JobId)">@localizer["Delete Label"]</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}else{
+    <Alert Color="AlertColor.Info">@localizer["No Job Infra Message"]</Alert>
+}
+
+@if(IsEditable){
+    <Modal @ref="AddInfraLinkModal" Title="@localizer["Add Infrastructure Link Label"]">
+
+        <BodyTemplate>
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+            <h4>@localizer["Add Nearby Infrastructure Title"]</h4>
+            @if (nearbyInfra is not null && nearbyInfra.Count != 0 && nearbyInfra.Any(i => i.AlreadyLinked == false))
+            {
+                
+                <div class="list-group">
+                    @foreach (var infra in nearbyInfra)
+                    {
+                        <button 
+                            type="button"
+                            class="list-group-item list-group-item-action" 
+                            @onclick="async () => await AddSingleInfraLink(infra)" 
+                            disabled="@(IsBusy || @infra.AlreadyLinked)">
+                            <i class="bi bi-@(infra.AlreadyLinked ? "check-circle" : "plus-circle") @(infra.AlreadyLinked ? "text-success" : "")"></i> 
+                            @infra.Infrastructure.Id - @infra.Infrastructure.InfrastructureType?.Name (@(localizer["X Metres Away Label", @Math.Round(infra.Distance, 0)]))
+                        </button>
+                    }
+                </div>
+            }else{
+                if(nearbyInfra is null || nearbyInfra.Count == 0){
+                    <Alert Color="AlertColor.Info">@localizer["No Infrastructure Nearby Message"]</Alert>
+                }else{
+                    <Alert Color="AlertColor.Info">@localizer["All Nearby Infrastructure Linked Message"]</Alert>
+                }
+                
+            }
+            <h4 class="mt-2">@localizer["Add Infrastructure By ID Title"]</h4>
+            <EditForm Model="NewJobInfrastructure" OnSubmit="SubmitFormAsync">
+                <FluentValidationValidator @ref="JobInfrastructureValidator" />
+                <ValidationSummary />
+                <div class="mb-3">
+                    <label class="form-label" for="infra-id">@localizer["Infrastructure ID Label"]</label>
+                    <InputNumber id="contact-name" class="form-control" @bind-Value="NewJobInfrastructure!.InfrastructureId"></InputNumber>
+                    <ValidationMessage For="() => NewJobInfrastructure.InfrastructureId" />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm" disabled="@IsBusy">@localizer["Add Infrastructure Link Label"]</button>
+
+
+            </EditForm>
+
+        </BodyTemplate>
+
+    </Modal>
+}
+
+@code {
+    [Parameter]
+    public ICollection<JobInfrastructure>? JobInfrastructure { get; set; }
+    [Parameter]
+    public required int JobId{ get; init; }
+    [Parameter]
+    public bool IsEditable { get; set; }
+
+    public bool IsBusy{ get; set; }
+    private string? ErrorMessage{ get; set; }
+
+    private List<InfrastructureWithDistance> nearbyInfra { get; set; } = [];
+    private JobInfrastructure NewJobInfrastructure { get; set; } = default!;
+    private Modal AddInfraLinkModal = default!;
+    private FluentValidationValidator? JobInfrastructureValidator;
+
+    private async Task OpenAddInfraLinkModal(){
+        NewJobInfrastructure = new() { JobId = JobId };
+        await GetNearbyInfra();
+        await AddInfraLinkModal.ShowAsync();
+    }
+
+    private async Task GetNearbyInfra(){
+        //get job location
+        using var context = contextFactory.CreateDbContext();
+        var job = await context.MaintenanceJobs.IgnoreAutoIncludes().Where(j => j.Id == JobId).FirstOrDefaultAsync();
+        if (job is not null){
+            //get nearest 10 infra items within 50m of job
+            var existingIds = JobInfrastructure?.Select(j => j.InfrastructureId);
+            nearbyInfra = await context.Infrastructure
+                .Where(i => i.Geom.IsWithinDistance(job.Geom, 50))
+                .OrderBy(i => i.Geom.Distance(job.Geom))
+                .Select(i => new InfrastructureWithDistance() { Infrastructure = i, Distance = i.Geom.Distance(job.Geom), AlreadyLinked = existingIds == null || (existingIds.Contains(i.Id)) })
+                .ToListAsync();
+        }
+    }
+
+    private async Task SubmitFormAsync(){
+        IsBusy = true;
+        ErrorMessage = null;
+        try
+        {
+            if (await JobInfrastructureValidator!.ValidateAsync())
+            {
+                //submit
+                using var context = contextFactory.CreateDbContext();
+                context.Add(NewJobInfrastructure);
+                await context.SaveChangesAsync();
+                await AddInfraLinkModal.HideAsync();
+                await RefreshComponent();
+            }
+        }catch(Exception ex){
+            ErrorMessage = localizer["Save Error Message"];
+        }finally{
+            IsBusy = false;
+        }
+    }
+
+    private async Task AddSingleInfraLink(InfrastructureWithDistance infra){
+        IsBusy = true;
+        ErrorMessage = null;
+        try
+        {
+            await Task.Delay(3000);
+            //submit
+            var InfraJobToAdd = new JobInfrastructure() { InfrastructureId = infra.Infrastructure.Id, JobId = JobId };
+            using var context = contextFactory.CreateDbContext();
+            context.Add(InfraJobToAdd);
+            await context.SaveChangesAsync();
+            infra.AlreadyLinked = true;
+            await RefreshComponent();
+            
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = localizer["Save Error Message"];
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task DeleteInfraLink(int InfrastructureId, int JobId)
+    {
+        IsBusy = true;
+        bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Infra Link Confirmation"].Value);
+        if (ConfirmDelete)
+        {
+            using var context = contextFactory.CreateDbContext();
+            var infraToDelete = await context.MaintenanceJobInfrastructure.FindAsync([JobId, InfrastructureId]);
+            if (infraToDelete is not null)
+            {
+                context.Remove(infraToDelete);
+                await context.SaveChangesAsync();
+                await RefreshComponent();
+            }
+        }
+        IsBusy = false;
+    }
+
+    private async Task RefreshComponent()
+    {
+        using var context = contextFactory.CreateDbContext();
+        JobInfrastructure = await context.MaintenanceJobInfrastructure.Where(j => j.JobId == JobId).ToListAsync();
+    }
+
+}

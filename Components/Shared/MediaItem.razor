@@ -1,0 +1,126 @@
+﻿@using CSIDE.Data.Models.Shared
+@using CSIDE.Services
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IBlobStorageService blobStorageService
+@inject IJSRuntime JS
+
+@if (Media is not null)
+{
+    @if(Media.Format == MediaType.Image)
+    {
+        <div class="card my-2 bg-light">
+            <a href="@Media.URL" class="blueimp-img">
+                <img src="@Media.URL" class="img-fluid" />
+            </a>
+            <div class="card-body">
+                @if (IsEditable)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Counter Clockwise Label"]"><i class="bi bi-arrow-counterclockwise"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Clockwise Label"]"><i class="bi bi-arrow-clockwise"></i></button>
+                }
+                <a href="@Media.URL" download target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></a>
+                <div class="mt-2 pt-2 border-1 border-top">
+                    @if (!string.IsNullOrEmpty(Media.Title))
+                    {
+                        <p>@Media.Title</p>
+                    }
+                    <small><strong>@localizer["Upload Date Label"]:</strong> @(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</small>
+                </div>
+            </div>
+        </div>
+    }
+    else if(Media.Format == MediaType.Video)
+    {
+        <div class="card">
+            <div class="card-body">
+                <video src="@Media.URL" class="my-2" style="max-width:100%;height:300px;max-height:80vh" controls preload="metadata"></video>
+                <div class="my-2">
+                    @if (IsEditable)
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                    }
+                    <a href="@Media.URL" download target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></a>
+
+                    <div class="mt-2 pt-2 border-1 border-top">
+                        @if (!string.IsNullOrEmpty(Media.Title))
+                        {
+                            <p>@Media.Title</p>
+                        }
+                        <small><strong>@localizer["Upload Date Label"]:</strong> @(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        var icon = "bi-fil-earmark";
+        if(Media.Format == MediaType.Word_Document)
+        {
+            icon = "bi-filetype-docx";
+        }else if(Media.Format == MediaType.Excel_Spreadsheet)
+        {
+            icon = "bi-filetype-xlsx";
+        }else if(Media.Format == MediaType.PDF_Document)
+        {
+            icon = "bi-filetype-pdf";
+        }
+
+        <tr>
+            
+            <td>
+                <a href="@Media.URL" download target="_blank"><i class="bi @icon"></i> 
+                    @(string.IsNullOrEmpty(Media.Title) ? new System.IO.FileInfo(Media.URL).Name : Media.Title)
+                </a>
+            </td>
+            <td>@(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
+            @if (IsEditable)
+            {
+                <td> <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button></td>
+            }
+            
+        </tr>
+        }
+
+}
+@code{
+    [Parameter]
+    public required Media Media { get; set; }
+    [Parameter]
+    public bool IsEditable { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshComponent{ get; set; }
+
+    private async Task DeleteMedia(int MediaId)
+    {
+        bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Media Confirmation"].Value);
+        if (ConfirmDelete)
+        {
+            try
+            {
+                using var context = contextFactory.CreateDbContext();
+                var mediaToDelete = await context.Media.FindAsync([MediaId]);
+                if (mediaToDelete is not null)
+                {
+
+                    context.Remove(mediaToDelete);
+                    await context.SaveChangesAsync();
+                    if (!await blobStorageService.DeleteFileFromBlobByURLAsync(mediaToDelete.URL))
+                    {
+                        //TODO - Log storage deletion failure for administators. Users need not know.
+                    }
+                    if (OnRefreshComponent.HasDelegate)
+                    {
+                        await OnRefreshComponent.InvokeAsync();
+                    }
+                }
+            }catch(Exception e)
+            {
+                
+            }
+        }
+    }
+}

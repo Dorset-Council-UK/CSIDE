@@ -1,23 +1,77 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
 
 a, .btn-link {
     color: #006bb7;
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: var(--primary-color);
-    border-color: #1861ac;
+  color: #fff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color-dark);
+}
+.btn-primary:hover {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+.btn-primary:focus-visible {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+.btn-primary:focus, .btn-primary:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--primary-color-dark);
+}
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color-dark);
+}
+.btn-outline-primary:hover {
+  color:#fff;
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn-outline-primary:focus-visible {
+  color:#fff;
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
 }
 
+.btn-outline-primary:focus, .btn-primary:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--primary-color-dark);
+}
+.btn-primary.active, .btn-primary.show, .btn-primary:first-child:active, :not(.btn-check) + .btn-primary:active,
+.btn-outline-primary.active, .btn-outline-primary.show, .btn-outline-primary:first-child:active, :not(.btn-check) + .btn-outline-primary:active {
+  background-color: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+.form-label{
+  font-weight:500;
+}
+.form-switch > label{
+  cursor:pointer;
+}
+.form-switch > input{
+  cursor:pointer;
+}
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border: var(--primary-color-dark);
+}
+.comment-field {
+  white-space: pre-line;
+}
 .content {
     padding-top: 1.1rem;
+}
+.loading-indicator input, .loading-indicator label {
+  filter: opacity(0.4);
+  cursor: progress;
+}
+.loading-indicator-overlay {
+  z-index: 10;
+  background-color: rgba(255,255,255,0.8);
+}
+.loading-indicator-overlay p {
+  background-color: rgba(255,255,255,0.8);
 }
 
 h1:focus {

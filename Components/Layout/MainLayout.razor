@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+@inject IHostEnvironment HostEnvironment
+
 
 <div class="page flex-row">
     <div class="sidebar">
@@ -33,23 +35,25 @@
 
                     </ul>
 
-                        
-
-
-
-
                 </Authorized>
             </AuthorizeView>
         </div>
-
-        <article class="content px-4">
+        <article class="content px-4 pb-5">
             @Body
         </article>
     </main>
 </div>
 
 <div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    @if (HostEnvironment.IsProduction())
+    {
+        <span>@localizer["General Error Message"] </span>
+    }
+    else
+    {
+        <span>An unhandled exception occurred. </span>
+    }
+    <a href="" class="reload btn btn-lg btn-dark ms-3"><i class="bi bi-arrow-clockwise"></i> @localizer["Reload Label"]</a>
     <a class="dismiss">🗙</a>
 </div>
