@@ -1,10 +1,11 @@
 ﻿@using CSIDE.Data.Models.Maintenance
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
-@inject IJSRuntime JS
 
 @if(Job is not null)
 {
+    @if(ErrorMessage is not null){
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
     //add comment section
     @if (NewComment is not null && IsEditable)
     {
@@ -37,94 +38,11 @@
     {
         @foreach (Comment comment in Job.Comments.OrderByDescending(c => c.CreatedAt))
         {
-            <SingleComment comment="@comment" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></SingleComment>
+            <SingleComment Comment="@comment" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></SingleComment>
         }
     }
     else
     {
         <Alert Color="AlertColor.Info">@localizer["No Maintenance Comments Message"]</Alert>
-    }
-}
-
-
-
-@code {
-    [Parameter]
-    public Job? Job{ get; set; }
-    [Parameter]
-    public bool IsEditable{ get; set; }
-
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-    private FluentValidationValidator? newCommentValidator;
-
-    private bool IsBusy{ get; set; }
-    private bool IsEditing { get; set; }
-    private Comment? NewComment{ get; set; }
-    private string? ErrorMessage{ get; set; }
-
-    protected override void OnParametersSet()
-    {
-        NewComment = new()
-            {
-                JobId = Job!.Id,
-                CommentText = string.Empty
-            };
-        
-    }
-
-    private async Task SubmitFormAsync()
-    {
-        if (IsBusy)
-        {
-            ErrorMessage = null;
-            return;
-        }
-        if (await newCommentValidator!.ValidateAsync())
-        {
-            IsBusy = true;
-
-            try
-            {
-                if (NewComment is not null)
-                {
-                    using var context = contextFactory.CreateDbContext();
-
-                    var user = (await authenticationStateTask).User;
-                    NewComment.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                    NewComment.AuthorName = user.Identity?.Name;
-
-                    context.MaintenanceComments.Add(NewComment);
-                    await context.SaveChangesAsync();
-                    await RefreshComponent();
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = localizer["Save Error Message"];
-                //TODO log error
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-    }
-
-    
-
-    private async Task RefreshComponent()
-    {
-        if (Job is not null)
-        {
-            NewComment = new()
-                {
-                    JobId = Job.Id,
-                    CommentText = string.Empty
-                };
-            using var context = contextFactory.CreateDbContext();
-            Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
-            StateHasChanged();
-        }
     }
 }

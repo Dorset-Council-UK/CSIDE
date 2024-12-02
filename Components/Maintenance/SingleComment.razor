@@ -1,26 +1,24 @@
 ﻿@using CSIDE.Data.Models.Maintenance
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
-@inject IJSRuntime JS
 
-<div class="card comment-card bg-light mb-1" id="comment-@comment.Id">
+<div class="card comment-card bg-light mb-1" id="comment-@Comment.Id">
     <div class="card-header d-flex justify-content-between">
         <span>
-            @localizer["Comment Author Title", (string.IsNullOrEmpty(comment.AuthorName) ? "" : comment.AuthorName), comment.CreatedAt.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)]
+            @localizer["Comment Author Title", (string.IsNullOrEmpty(Comment.AuthorName) ? "" : Comment.AuthorName), Comment.CreatedAt.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)]
         </span>
-        <span class="text-@(comment.IsPublic ? "success" : "danger")">
-            <span class="bi bi-eye@(comment.IsPublic ? "-slash" : "")"></span> @(comment.IsPublic ? localizer["Public Label"] : localizer["Not Public Label"])
+        <span class="text-@(Comment.IsPublic ? "success" : "danger")">
+            <span class="bi bi-eye@(Comment.IsPublic ? "-slash" : "")"></span> @(Comment.IsPublic ? localizer["Public Label"] : localizer["Not Public Label"])
         </span>
 
     </div>
     <div class="card-body py-1">
         <div class="">
-            <span class="comment-field @(IsEditing ? "visually-hidden":"")">@comment.CommentText</span>
+            <span class="comment-field @(IsEditing ? "visually-hidden":"")">@Comment.CommentText</span>
             <div class="@(IsEditing ? "":"visually-hidden")">
-                <EditForm Model="comment" OnSubmit="() => EditComment(comment)" class="border-start border-2 ps-3">
+                <EditForm Model="Comment" OnSubmit="() => EditComment(Comment)" class="border-start border-2 ps-3">
                     <FluentValidationValidator @ref="editCommentValidator" />
                     <ValidationSummary />
-                    <InputTextArea @bind-Value="comment.CommentText" class="form-control" />
+                    <InputTextArea @bind-Value="Comment.CommentText" class="form-control" />
                     <button type="submit" disabled="@IsBusy" class="btn btn-sm btn-outline-primary mt-1">@localizer["Update Label"]</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary mt-1" @onclick="CancelUpdate">@localizer["Cancel Label"]</button>
                 </EditForm>
@@ -32,97 +30,8 @@
         @if (IsEditable)
         {
             <button class="btn btn-sm btn-outline-primary" type="button" disabled="@(IsEditing || IsBusy)" @onclick="() => IsEditing = true">@localizer["Edit Label"]</button>
-            <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsEditing || IsBusy)" @onclick="() => DeleteComment(comment.Id)">@localizer["Delete Label"]</button>
+            <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsEditing || IsBusy)" @onclick="() => DeleteComment(Comment.Id)">@localizer["Delete Label"]</button>
         }
     </div>
     
 </div>
-@code {
-    [Parameter]
-    public required Comment comment{ get; set; }
-    [Parameter]
-    public bool IsEditable{ get; set; }
-    [Parameter]
-    public EventCallback OnRefresh { get; set; }
-
-    private FluentValidationValidator? editCommentValidator;
-
-    private bool IsBusy { get; set; }
-    private bool IsEditing { get; set; }
-    private string? ErrorMessage{ get; set; }
-    private string? OriginalValue { get; set; }
-
-    protected override void OnParametersSet()
-    {
-        OriginalValue = comment.CommentText;
-    }
-
-    private async Task DeleteComment(int CommentId)
-    {
-        bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Comment Confirmation"].Value);
-        if (ConfirmDelete)
-        {
-            using var context = contextFactory.CreateDbContext();
-            var commentToDelete = await context.MaintenanceComments.FindAsync([CommentId]);
-            if (commentToDelete is not null)
-            {
-                context.Remove(commentToDelete);
-                await context.SaveChangesAsync();
-                await RefreshComponent();
-            }
-        }
-    }
-
-    private async Task EditComment(Comment comment)
-    {
-        if (IsBusy)
-        {
-            ErrorMessage = null;
-            return;
-        }
-        if (await editCommentValidator!.ValidateAsync())
-        {
-            IsBusy = true;
-
-            try
-            {
-                if (comment is not null)
-                {
-                    using var context = contextFactory.CreateDbContext();
-                    context.MaintenanceComments.Update(comment);
-                    await context.SaveChangesAsync();
-                    //refresh component by simply switching off editing mode. We don't need to refetch the data, its already there!
-                    IsEditing = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = localizer["Save Error Message"];
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-    }
-
-    private void CancelUpdate()
-    {
-        IsEditing = false;
-        //reset
-        if (OriginalValue is not null)
-        {
-            comment.CommentText = OriginalValue;
-        }
-    }
-
-    private async Task RefreshComponent()
-    {
-        if (OnRefresh.HasDelegate)
-        {
-            await OnRefresh.InvokeAsync();
-        }
-    }
-
-
-}
