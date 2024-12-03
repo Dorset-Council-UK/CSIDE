@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<Parish> builder)
         {
-            builder.Property(x => x.ParishId).HasColumnName("feature_serial_number");
+            builder.Property(x => x.ParishId).HasColumnName("admin_unit_id");
             builder.Property(x => x.Name).HasColumnName("name");
             builder.Property(x => x.Geom).HasColumnName("geom").IsRequired().HasColumnType("geometry (multipolygon)");
 

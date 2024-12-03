@@ -30,7 +30,7 @@ namespace CSIDE.Migrations
                 column: "ParishId",
                 principalSchema: "cside",
                 principalTable: "Parishes",
-                principalColumn: "feature_serial_number");
+                principalColumn: "admin_unit_id");
         }
 
         /// <inheritdoc />

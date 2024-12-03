@@ -532,7 +532,7 @@ namespace CSIDE.Migrations
                     b.Property<int>("ParishId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("feature_serial_number");
+                        .HasColumnName("admin_unit_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ParishId"));
 
