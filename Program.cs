@@ -5,11 +5,7 @@ using CSIDE.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
-using System;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,7 +86,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();

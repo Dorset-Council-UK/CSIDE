@@ -1,17 +1,15 @@
 ﻿@inject IJSRuntime JS
 @implements IAsyncDisposable
+@using CSIDE.Data.Models.Shared
 @using NetTopologySuite.Geometries
 @using NetTopologySuite.IO
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IConfiguration config;
 
 <div id="@MapId" class="" style="width:100%;height:400px"></div>
 
 @code {
-    [Parameter]
-    public double CenterX { get; set; }
-    [Parameter]
-    public double CenterY { get; set; }
-    [Parameter]
-    public int Zoom { get; set; }
     [Parameter]
     public string GeomType{ get; set; }
     [Parameter] 
@@ -30,7 +28,22 @@
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>(
                 "import", "/Components/Mapping/CreateMap.razor.js");
 
-            await _jsModule.InvokeVoidAsync("initMap", MapId, CenterX, CenterY, Zoom, GeomType, self);
+            var mappingConfig = config.GetSection("CSIDE:Mapping");
+            var boundsConfig = mappingConfig.GetSection("StartBounds");
+            var routeOverlay = new OverlayConfiguration() { MapServiceBaseURL = mappingConfig.GetValue<string>("MapServerRoot")!, LayerName = mappingConfig.GetValue<string>("RouteLayer") };
+            var mapConfigClass = new MapConfiguration() { 
+                    MapId = MapId,
+                    OSMapsAPIKey = mappingConfig.GetValue<string>("OSMapsAPIKey")!,
+                    OSLicenceNumber = mappingConfig.GetValue<string>("OSLicenceNumber")!,
+                    Basemap = BasemapLayer.Outdoor, 
+                    Bounds = [boundsConfig.GetValue<double>("MinX"), boundsConfig.GetValue<double>("MinY"), boundsConfig.GetValue<double>("MaxX"), boundsConfig.GetValue<double>("MaxY")],
+                    Overlays = [routeOverlay]
+            };
+            JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
+            opts.Converters.Add(new JsonStringEnumConverter());
+            var mapConfigJson = JsonSerializer.Serialize(mapConfigClass, opts);
+
+            await _jsModule.InvokeVoidAsync("initMap", GeomType, mapConfigJson, self);
         }
         await base.OnAfterRenderAsync(firstRender);
     }

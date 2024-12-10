@@ -82,7 +82,6 @@ namespace CSIDE.Components.Maintenance
             ErrorMessage = null;
             try
             {
-                await Task.Delay(3000);
                 //submit
                 var InfraJobToAdd = new JobInfrastructure() { InfrastructureId = infra.Infrastructure.Id, JobId = JobId };
                 using var context = contextFactory.CreateDbContext();

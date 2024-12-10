@@ -29,7 +29,7 @@ else
     if (Job is not null)
     {
         <div class="row">
-            <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" CenterX="366646" CenterY="101677" Zoom="18" GeomType="Point" Geometry="@Job.Geom"></EditMap>
+            <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" GeomType="Point" Geometry="@Job.Geom"></EditMap>
         </div>
     }
     <div class="row mt-2">

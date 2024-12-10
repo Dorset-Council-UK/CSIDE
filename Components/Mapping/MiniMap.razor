@@ -1,17 +1,15 @@
 ﻿@inject IJSRuntime JS
 @implements IAsyncDisposable
+@using CSIDE.Data.Models.Shared
 @using NetTopologySuite.Geometries
 @using NetTopologySuite.IO
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IConfiguration config;
 
 <div id="@MapId" style="width:100%;height:300px;"></div>
 
 @code {
-    [Parameter]
-    public double CenterX { get; set; }
-    [Parameter]
-    public double CenterY { get; set; }
-    [Parameter]
-    public int Zoom{ get; set; }
     [Parameter]
     public Geometry? Geometry{ get; set; }
 
@@ -26,13 +24,27 @@
         // For testing below
         @* GeoJson = @"{""type"": ""FeatureCollection"",""features"": [{""type"": ""Feature"",""geometry"": {""coordinates"": [[361648, 90563],[361650, 90633],[361649, 90694],[361657, 90751]],""type"": ""LineString""}}]}"; *@
         _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Mapping/MiniMap.razor.js");
+        var mappingConfig = config.GetSection("CSIDE:Mapping");
+        var boundsConfig = mappingConfig.GetSection("StartBounds");
+        var routeOverlay = new OverlayConfiguration() { MapServiceBaseURL = mappingConfig.GetValue<string>("MapServerRoot")!, LayerName = mappingConfig.GetValue<string>("RouteLayer") };
+        var mapConfigClass = new MapConfiguration()
+            {
+                MapId = MapId,
+                OSMapsAPIKey = mappingConfig.GetValue<string>("OSMapsAPIKey")!,
+                OSLicenceNumber = mappingConfig.GetValue<string>("OSLicenceNumber")!,
+                Basemap = BasemapLayer.Outdoor,
+                Overlays = [routeOverlay]
+            };
+        JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
+        opts.Converters.Add(new JsonStringEnumConverter());
+        var mapConfigJson = JsonSerializer.Serialize(mapConfigClass, opts);
         if (firstRender)
         {
-            await _jsModule.InvokeVoidAsync("initMap", MapId, CenterX, CenterY, Zoom, GeoJson);
+            await _jsModule.InvokeVoidAsync("initMap", GeoJson, mapConfigJson);
         }
         else
         {
-            await _jsModule.InvokeVoidAsync("updateMap", GeoJson, Zoom);
+            await _jsModule.InvokeVoidAsync("updateMap", GeoJson, mapConfigJson);
         }
         await base.OnAfterRenderAsync(firstRender);
     }

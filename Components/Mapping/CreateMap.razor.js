@@ -3,15 +3,6 @@
   "origin": [-238375.0, 1376256.0]
 });
 
-const roadBasemap = new ol.source.XYZ(
-  {
-    url: 'https://api.os.uk/maps/raster/v1/zxy/Road_27700/{z}/{x}/{y}.png?key=J3H6E7O9J3cZuUvkjdOASdbGDAmQxjZJ',
-    attributions: `© Crown copyright and database rights ${new Date().getFullYear()} <a href="https://os.uk" target="_blank">OS</a> AC0000830671.`,
-    attributionsCollapsible: false,
-    tileGrid: bngTilegrid,
-    projection: 'EPSG:27700'
-  });
-
 const computedStyles = window.getComputedStyle(document.body);
 const themeColor = computedStyles.getPropertyValue('--primary-color'); //get the primary color from the CSS variables
 const iconStyle = new ol.style.Style({
@@ -32,29 +23,45 @@ const lineStyle = new ol.style.Style({
 });
 let map;
 let editSource;
-export function initMap(mapId, x, y, z, geomType, component) {
-  //convert x/y from BNG to Spherical Mercator
-  proj4.defs(
-    'EPSG:27700',
-    '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 ' +
-    '+x_0=400000 +y_0=-100000 +ellps=airy ' +
-    '+towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 ' +
-    '+units=m +no_defs',
-  );
-  ol.proj.proj4.register(proj4);
+export function initMap(geomType, mapConfigJSON, component) {
+
+  setProj4Defs();
+
+  const mapConfig = JSON.parse(mapConfigJSON);
+
+  const basemap = new ol.source.XYZ(
+    {
+      url: `https://api.os.uk/maps/raster/v1/zxy/${mapConfig.basemap}_27700/{z}/{x}/{y}.png?key=${mapConfig.osMapsAPIKey}`,
+      attributions: `© Crown copyright and database rights ${new Date().getFullYear()} <a href="https://os.uk" target="_blank">OS</a> ${mapConfig.osLicenceNumber}.`,
+      attributionsCollapsible: false,
+      tileGrid: bngTilegrid,
+      projection: 'EPSG:27700'
+    });
+
   map = new ol.Map({
-    target: mapId,
+    target: mapConfig.mapId,
     layers: [
       new ol.layer.Tile({
-        source: roadBasemap
+        source: basemap
       }),
     ],
     view: new ol.View({
-      center: [x,y],
-      zoom: z,
       projection: 'EPSG:27700'
     })
   });
+  
+  map.getView().fit(mapConfig.bounds, { size: map.getSize() });
+
+  if (mapConfig.overlays) {
+    mapConfig.overlays.forEach(overlay => {
+      const overlaySource = new ol.source.TileWMS({
+        url: overlay.mapServiceBaseURL,
+        params: { 'LAYERS': overlay.layerName },
+      });
+      const layer = new ol.layer.Tile({ source: overlaySource });
+      map.addLayer(layer);
+    });
+  }
 
   editSource = new ol.source.Vector();
   switch (geomType) {
@@ -91,6 +98,17 @@ export function initMap(mapId, x, y, z, geomType, component) {
   }
 };
 
+function setProj4Defs() {
+  //convert x/y from BNG to Spherical Mercator
+  proj4.defs(
+    'EPSG:27700',
+    '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 ' +
+    '+x_0=400000 +y_0=-100000 +ellps=airy ' +
+    '+towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 ' +
+    '+units=m +no_defs',
+  );
+  ol.proj.proj4.register(proj4);
+}
 export function clearDrawnGeometries() {
   editSource.clear();
 };
