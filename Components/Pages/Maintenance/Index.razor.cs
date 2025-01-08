@@ -6,6 +6,7 @@ using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using System.Globalization;
 using System.Web;
 
 namespace CSIDE.Components.Pages.Maintenance
@@ -22,6 +23,7 @@ namespace CSIDE.Components.Pages.Maintenance
         private string? JobIDSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
 
+        private bool UseMultiParishSelect { get; set; }
         private bool IsBusy { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -47,8 +49,7 @@ namespace CSIDE.Components.Pages.Maintenance
                 JobIDSearchErrorMessage = null;
                 try
                 {
-                    int JobIDSearchInt;
-                    if (int.TryParse(JobIDSearch, out JobIDSearchInt))
+                    if (int.TryParse(JobIDSearch, CultureInfo.InvariantCulture, out int JobIDSearchInt))
                     {
                         using var context = contextFactory.CreateDbContext();
                         var jobExists = await context.MaintenanceJobs.AnyAsync(j => j.Id == JobIDSearchInt);
@@ -79,11 +80,19 @@ namespace CSIDE.Components.Pages.Maintenance
             if (SearchParams is not null)
             {
                 IsBusy = true;
+                if (UseMultiParishSelect)
+                {
+                    SearchParams.ParishId = null;
+                }
+                else
+                {
+                    SearchParams.ParishIds = [];
+                }
                 try
                 {
                     if (await _fluentValidationValidator!.ValidateAsync())
                     {
-                        var qs = GetQueryString(SearchParams);
+                        var qs = Helpers.QueryStringHelper.GetQueryString(SearchParams);
                         navigationManager.NavigateTo($"/Maintenance/Jobs?{qs}");
                     }
                 }
@@ -92,32 +101,6 @@ namespace CSIDE.Components.Pages.Maintenance
                     IsBusy = false;
                 }
             }
-        }
-
-        private string GetQueryString(object obj)
-        {
-            var result = new List<string>();
-            var props = obj.GetType().GetProperties().Where(p => p.GetValue(obj, null) != null);
-            foreach (var p in props)
-            {
-                var value = p.GetValue(obj, null);
-                var enumerable = value as ICollection;
-                if (enumerable != null)
-                {
-                    result.AddRange(from object v in enumerable select string.Format("{0}={1}", p.Name, HttpUtility.UrlEncode(v.ToString())));
-                }
-                else
-                {
-                    //TODO - Hacky way of forcing the date to convert into ISO date format
-                    if (p.PropertyType == typeof(DateOnly?) && value is not null)
-                    {
-                        value = (value as DateOnly?)?.ToString("yyyy-MM-dd");
-                    }
-                    result.Add(string.Format("{0}={1}", p.Name, HttpUtility.UrlEncode(value?.ToString())));
-                }
-            }
-
-            return string.Join("&", result.ToArray());
         }
     }
 }

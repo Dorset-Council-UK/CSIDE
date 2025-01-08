@@ -1,0 +1,51 @@
+﻿@rendermode InteractiveServer
+@using CSIDE.Data.Models.RightsOfWay
+@using NodaTime
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+@if (Routes is null)
+{
+    <p>@localizer["Loading Text"]</p>
+}
+else if (Routes.Count == 0)
+{
+    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="/rights-of-way#search-form">@localizer["Search Again Label"]</a></Alert>
+}
+else
+{
+    <a href="/rights-of-way#search-form">@localizer["Search Again Label"]</a>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>@localizer["Route ID Label"]</th>
+                    <th>@localizer["Parish Label"]</th>
+                    <th>@localizer["Maintenance Team Label"]</th>
+                    <th>@localizer["Name Label"]</th>
+                    <th>@localizer["Operational Status Label"]</th>
+                    <th>@localizer["Path Type Label"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var route in Routes)
+                {
+                    <tr>
+                        <td><a href="/rights-of-way/Details/@route.RouteCode">@route.RouteCode</a></td>
+                        <td>@route.Parish?.Name</td>
+                        <td>@route.MaintenanceTeam?.Name</td>
+                        <td>@route.Name</td>
+                        <td>@route.OperationalStatus?.Name</td>
+                        <td>@route.RouteType?.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<Route>? Routes{ get; set; }
+}

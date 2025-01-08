@@ -1,0 +1,153 @@
+﻿@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> _contextFactory
+@inject ILogger<StatementsList> logger
+
+@if(IsEditable){
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ShowEditStatementModal" Class="my-2">@localizer["Modify Statement Label"]</Button>
+
+    <Modal @ref="EditStatementModal" Title="@localizer["Edit Statement Title"]">
+
+        <BodyTemplate>
+            @if(ErrorMessage is not null){
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+            <StatementEditForm StatementToEdit="editableStatement"
+            OnSubmit="SubmitFormAsync"
+            OnCancel="HideEditStatementModal"
+            IsBusy="IsBusy"
+            @ref="EditStatementForm" />
+        </BodyTemplate>
+
+    </Modal>
+
+}
+
+@if (statements.Count == 0)
+{
+    <Alert Color="AlertColor.Info">@localizer["No Statements Message"]</Alert>
+}
+else
+{
+    var currentStatement = statements.OrderByDescending(s => s.Version).First();
+    <Statement statement="currentStatement"></Statement>
+
+    var olderStatements = statements.OrderByDescending(s => s.Version).Skip(1).ToList();
+    if(olderStatements is not null && olderStatements.Count != 0){
+        <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Outline="true" @onclick="ToggleStatementsAsync" Class="my-2">@ShowHideText</Button>
+
+        <Collapse @ref="HistoricStatementsCollapse">
+            @foreach(var statement in olderStatements){
+                <Statement statement="statement"></Statement>
+            }
+        </Collapse>
+    }
+
+}
+
+@code {
+    [Parameter]
+    public required ICollection<CSIDE.Data.Models.RightsOfWay.Statement> statements { get; set; } = [];
+    [Parameter]
+    public required string RouteId { get; set; }
+    [Parameter]
+    public bool IsEditable{ get; set; }
+
+    public string? ErrorMessage{ get; set; }
+    public bool IsBusy { get; set; }
+    private string ShowHideText = "";
+    private bool HistoricStatementsVisible = false;
+    Collapse HistoricStatementsCollapse = default!;
+    private CSIDE.Data.Models.RightsOfWay.Statement editableStatement = default!;
+
+    private Modal EditStatementModal = default!;
+
+    private StatementEditForm? EditStatementForm;
+
+    protected override Task OnInitializedAsync()
+    {
+        ShowHideText = localizer["Show Previous Statements Label"];
+        if (statements.Count != 0)
+        {
+            var existingStatementDetails = statements.OrderByDescending(s => s.Version).First();
+            editableStatement = new CSIDE.Data.Models.RightsOfWay.Statement() { 
+                RouteId = RouteId, 
+                StatementText = existingStatementDetails.StatementText,
+                StartGridRef = existingStatementDetails.StartGridRef,
+                EndGridRef = existingStatementDetails.EndGridRef,
+            };
+        }else{
+            editableStatement = new CSIDE.Data.Models.RightsOfWay.Statement() { RouteId = RouteId, StatementText = "" };
+        }
+        return base.OnInitializedAsync();
+    }
+
+
+    private async Task ToggleStatementsAsync(){
+
+        //toggle historicstatementsvisible boolean
+        HistoricStatementsVisible = !HistoricStatementsVisible;
+        ShowHideText = HistoricStatementsVisible ? localizer["Hide Previous Statements Label"] : localizer["Show Previous Statements Label"];
+
+        await HistoricStatementsCollapse.ToggleAsync();
+
+    }
+
+    private async Task SubmitFormAsync()
+    {
+        if (IsBusy)
+        {
+            ErrorMessage = null;
+            return;
+        }
+        if (await EditStatementForm!.ValidateAsync())
+        {
+            IsBusy = true;
+
+            try
+            {
+
+                using var context = _contextFactory.CreateDbContext();
+
+                context.Add(editableStatement);
+                await context.SaveChangesAsync();
+
+                await HideEditStatementModal();
+                //refresh component
+                await RefreshComponent();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Save Error Message"];
+                logger.LogError(ex, "An error occurred updating a legal statement");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+
+    private async Task ShowEditStatementModal()
+    {
+        await EditStatementModal.ShowAsync();
+    }
+    private async Task HideEditStatementModal()
+    {
+        await EditStatementModal.HideAsync();
+    }
+
+    private async Task RefreshComponent()
+    {
+        using var context = _contextFactory.CreateDbContext();
+        statements = await context.Statements.Where(s => s.RouteId == RouteId).ToArrayAsync();
+        var currentStatementDetails = statements.OrderByDescending(s => s.Version).First();
+        editableStatement = new CSIDE.Data.Models.RightsOfWay.Statement()
+            {
+                RouteId = RouteId,
+                StatementText = currentStatementDetails.StatementText,
+                StartGridRef = currentStatementDetails.StartGridRef,
+                EndGridRef = currentStatementDetails.EndGridRef,
+            };
+    }
+}

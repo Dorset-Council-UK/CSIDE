@@ -4,11 +4,12 @@ using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Maintenance
 {
-    public partial class ContactCard(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS)
+    public partial class ContactCard(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<ContactCard> logger)
     {
         [Parameter]
         public required JobContact JobContact { get; set; }
@@ -60,6 +61,7 @@ namespace CSIDE.Components.Maintenance
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "An error occurred updating a maintenance contact");
                 }
                 finally
                 {

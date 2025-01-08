@@ -18,7 +18,7 @@ namespace CSIDE.Data.Models.Infrastructure
         public string? RouteId { get; set; }
         public int InfrastructureTypeId {  get; set; }
 
-        public RoW.Route? Route { get; set; }
+        public RightsOfWay.Route? Route { get; set; }
         public InfrastructureType? InfrastructureType { get; set; }
 
     }

@@ -1,0 +1,32 @@
+﻿@using System.Globalization
+
+<div class="card statement-card bg-light mb-2" id="statement-@statement.Id">
+    <div class="card-header d-flex justify-content-between">
+        <span>
+            @statement.CreatedDate!.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)
+        </span>
+        <span>
+            v@(statement.Version)
+        </span>
+
+    </div>
+    <div class="card-body py-1">
+        <p>
+            @statement.StatementText
+        </p>
+        @if (statement.StartGridRef is not null || statement.EndGridRef is not null)
+        {
+            <p>
+                <strong>@localizer["Statement Start Grid Ref Label"]</strong>: @statement.StartGridRef
+                <br/>
+                <strong>@localizer["Statement End Grid Ref Label"]</strong>: @statement.EndGridRef
+            </p>
+        }
+    </div>
+
+</div>
+
+@code {
+    [Parameter]
+    public required CSIDE.Data.Models.RightsOfWay.Statement statement { get; set; }
+}

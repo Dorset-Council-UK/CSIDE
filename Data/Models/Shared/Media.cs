@@ -1,4 +1,5 @@
 ﻿using NodaTime;
+using System.Globalization;
 
 namespace CSIDE.Data.Models.Shared
 {
@@ -13,7 +14,7 @@ namespace CSIDE.Data.Models.Shared
         {
             get
             {
-                var extension = new System.IO.FileInfo(URL).Extension.ToLower();
+                var extension = new System.IO.FileInfo(URL).Extension.ToLower(CultureInfo.InvariantCulture);
                 switch (extension ?? "") // URL.Substring(URL.Length - 4).ToLower
                 {
                     case ".gif":

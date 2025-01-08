@@ -531,4 +531,127 @@
   <data name="Problem Types Label" xml:space="preserve">
     <value>Problem types</value>
   </data>
+  <data name="Create New Right of Way Text" xml:space="preserve">
+    <value>Create a new Right of Way by drawing the line on a map and adding the details.</value>
+  </data>
+  <data name="Create New Right of Way Label" xml:space="preserve">
+    <value>Create new Right of Way</value>
+  </data>
+  <data name="Search Rights of Way Title" xml:space="preserve">
+    <value>Search for a Right of Way</value>
+  </data>
+  <data name="Right of Way Not Found Error Message" xml:space="preserve">
+    <value>No Rights of Way with ID '{0}' could be found</value>
+  </data>
+  <data name="Rights of Way Details Title" xml:space="preserve">
+    <value>Right of Way {0}</value>
+  </data>
+  <data name="Start Easting Label" xml:space="preserve">
+    <value>Start Easting</value>
+  </data>
+  <data name="Start Northing Label" xml:space="preserve">
+    <value>Start Northing</value>
+  </data>
+  <data name="End Easting Label" xml:space="preserve">
+    <value>End Easting</value>
+  </data>
+  <data name="End Northing Label" xml:space="preserve">
+    <value>End Northing</value>
+  </data>
+  <data name="Approximate Length Label" xml:space="preserve">
+    <value>Approximate Length</value>
+  </data>
+  <data name="Legal Status Label" xml:space="preserve">
+    <value>Legal status</value>
+  </data>
+  <data name="Operational Status Label" xml:space="preserve">
+    <value>Operational status</value>
+  </data>
+  <data name="Path Type Label" xml:space="preserve">
+    <value>Path type</value>
+  </data>
+  <data name="Closure Start Date Label" xml:space="preserve">
+    <value>Closure start date</value>
+  </data>
+  <data name="Closure End Date Label" xml:space="preserve">
+    <value>Reopening date</value>
+  </data>
+  <data name="Closure End Date Passed Short Warning Text" xml:space="preserve">
+    <value>The reopening date has passed</value>
+  </data>
+  <data name="Closure End Date Passed Warning Text" xml:space="preserve">
+    <value>This path was supposed to reopen {0}. Reopen the path or update the reopening date</value>
+  </data>
+  <data name="X Days Ago Label" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
+  <data name="Maintenance Team Label" xml:space="preserve">
+    <value>Maintenance team</value>
+  </data>
+  <data name="Yesterday Label" xml:space="preserve">
+    <value>yesterday</value>
+  </data>
+  <data name="Rights of Way Edit Title" xml:space="preserve">
+    <value>Edit Right of Way {0}</value>
+  </data>
+  <data name="Route Code Not Unique Validation Message" xml:space="preserve">
+    <value>Route with ID '{0}' already exists</value>
+  </data>
+  <data name="Multiple Parish Codes Found Error Message" xml:space="preserve">
+    <value>This route goes across multiple parishes. We've set the route code based on which parish the route is most within, which is '{0}'. You may want to check this is what you want.</value>
+  </data>
+  <data name="No Parish Found Error Message" xml:space="preserve">
+    <value>No parishes could be found that contain this route</value>
+  </data>
+  <data name="Invalid Closure Dates Validation Message" xml:space="preserve">
+    <value>Closure end date must be after start date</value>
+  </data>
+  <data name="Route Closure Documents Label" xml:space="preserve">
+    <value>Closure notices</value>
+  </data>
+  <data name="Upload Closure Notification Document Title" xml:space="preserve">
+    <value>Upload closure notices</value>
+  </data>
+  <data name="Upload Other Media Title" xml:space="preserve">
+    <value>Upload other media</value>
+  </data>
+  <data name="Select Multiple Parishes Label" xml:space="preserve">
+    <value>Select multiple parishes</value>
+  </data>
+  <data name="Multi Select Instructions Text" xml:space="preserve">
+    <value>Select multiple entries by holding down Ctrl on your keyboard</value>
+  </data>
+  <data name="No Route Infra Message" xml:space="preserve">
+    <value>No infrastructure has been recorded on this route</value>
+  </data>
+  <data name="Identity Provider Label" xml:space="preserve">
+    <value>Identity provider</value>
+  </data>
+  <data name="Indefinite Closure Text" xml:space="preserve">
+    <value>This path is closed indefinitely</value>
+  </data>
+  <data name="Closure Is Indefinite Label" xml:space="preserve">
+    <value>Closed indefinitely?</value>
+  </data>
+  <data name="Statement Start Grid Ref Label" xml:space="preserve">
+    <value>Start Grid Ref</value>
+  </data>
+  <data name="Statement End Grid Ref Label" xml:space="preserve">
+    <value>End Grid Ref</value>
+  </data>
+  <data name="Statements Title" xml:space="preserve">
+    <value>Statement</value>
+  </data>
+  <data name="Show Previous Statements Label" xml:space="preserve">
+    <value>Show previous statements</value>
+  </data>
+  <data name="Hide Previous Statements Label" xml:space="preserve">
+    <value>Hide previous statements</value>
+  </data>
+  <data name="No Statements Message" xml:space="preserve">
+    <value>No statements found for this Right of Way</value>
+  </data>
+  <data name="Modify Statement Label" xml:space="preserve">
+    <value>Modify statement</value>
+  </data>
 </root>

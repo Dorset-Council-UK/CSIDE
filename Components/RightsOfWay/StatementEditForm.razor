@@ -1,0 +1,65 @@
+﻿@using CSIDE.Data.Models.Shared
+
+@if (StatementToEdit is not null)
+{
+
+    <EditForm Model="StatementToEdit" OnSubmit="@HandleSubmit">
+        <FluentValidationValidator @ref="statementValidator" />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label" for="statement-text">@localizer["Statement Text Label"]</label>
+            <InputTextArea id="statement-text" class="form-control" @bind-Value="StatementToEdit.StatementText"></InputTextArea>
+            <ValidationMessage For="() => StatementToEdit.StatementText" />
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label" for="statement-start-grid-ref">@localizer["Statement Start Grid Ref Label"]</label>
+            <InputText id="statement-start-grid-ref" class="form-control" @bind-Value="StatementToEdit.StartGridRef"></InputText>
+            <ValidationMessage For="() => StatementToEdit.StartGridRef" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="statement-end-grid-ref">@localizer["Statement End Grid Ref Label"]</label>
+            <InputText id="statement-end-grid-ref" class="form-control" @bind-Value="StatementToEdit.EndGridRef"></InputText>
+            <ValidationMessage For="() => StatementToEdit.EndGridRef" />
+        </div>
+        
+        <button type="button" class="btn btn-outline-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+        <button type="submit" class="btn btn-outline-primary" disabled="@IsBusy">@localizer["Save Label"]</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public CSIDE.Data.Models.RightsOfWay.Statement? StatementToEdit { get; set; }
+    
+    [Parameter]
+    public bool IsBusy { get; set; }
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private FluentValidationValidator? statementValidator;
+
+    private string? ErrorMessage { get; set; }
+
+    public async Task<bool> ValidateAsync()
+    {
+        return await statementValidator!.ValidateAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync();
+        }
+    }
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+}

@@ -13,9 +13,11 @@
     [Parameter]
     public Geometry? Geometry { get; set; }
     [Parameter]
-    public string GeomType{ get; set; }
+    public required string GeomType{ get; set; }
     [Parameter] 
     public EventCallback<string> OnDrawEndMethod { get; set; }
+    [Parameter]
+    public Func<double[], Task<string>>? OnGetSnappablesMethod { get; set; }
 
     private string MapId = $"edit-map-{new Random().Next()}";
 
@@ -29,8 +31,6 @@
             self ??= DotNetObjectReference.Create(this);
             GeoJsonWriter _geoJsonWriter = new GeoJsonWriter();
             var GeoJson = _geoJsonWriter.Write(Geometry);
-            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>(
-                "import", "/Components/Mapping/EditMap.razor.js");
 
             var mappingConfig = config.GetSection("CSIDE:Mapping");
             var boundsConfig = mappingConfig.GetSection("StartBounds");
@@ -46,7 +46,9 @@
             JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
             opts.Converters.Add(new JsonStringEnumConverter());
             var mapConfigJson = JsonSerializer.Serialize(mapConfigClass, opts);
-            await _jsModule.InvokeVoidAsync("initMap", GeoJson, GeomType, mapConfigJson, self);
+
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/editMap.js");
+            await _jsModule.InvokeVoidAsync("initMap", GeomType, GeoJson, mapConfigJson, self);
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -57,6 +59,20 @@
     {
         OnDrawEndMethod.InvokeAsync(features);
         //check validity of features
+    }
+
+    [JSInvokable]
+    public async Task<string> GetSnappables(double[] bbox)
+    {
+        if (OnGetSnappablesMethod != null)
+        {
+            if (bbox.Length != 4)
+            {
+                throw new ArgumentException("Bounding box must have 4 values");
+            }
+            return await OnGetSnappablesMethod.Invoke(bbox);
+        }
+        return "";
     }
 
     public async Task ClearDrawnGeometries()

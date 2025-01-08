@@ -51,14 +51,16 @@
             <div class="row my-4">
                 <h4>@localizer["Documents Label"]</h4>
                 <div class="col">
-                    <table class="table table-striped">
-                        <tbody>
-                            @foreach (JobMedia jobMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
-                        {
-                            <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
-                        }
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                                @foreach (JobMedia jobMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
+                            {
+                                <MediaItem Media="@jobMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         }

@@ -5,11 +5,12 @@ using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Maintenance
 {
-    public partial class InfrastructureList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS)
+    public partial class InfrastructureList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<InfrastructureList> logger)
     {
         [Parameter]
         public ICollection<JobInfrastructure>? JobInfrastructure { get; set; }
@@ -69,6 +70,7 @@ namespace CSIDE.Components.Maintenance
             catch (Exception ex)
             {
                 ErrorMessage = localizer["Save Error Message"];
+                logger.LogError(ex, "An error occurred linking a job to an infrastructure item");
             }
             finally
             {
@@ -94,6 +96,7 @@ namespace CSIDE.Components.Maintenance
             catch (Exception ex)
             {
                 ErrorMessage = localizer["Save Error Message"];
+                logger.LogError(ex, "An error occurred linking a job to an infrastructure item");
             }
             finally
             {

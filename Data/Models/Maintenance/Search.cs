@@ -6,7 +6,8 @@ namespace CSIDE.Data.Models.Maintenance
     {
         public string? RouteID { get; set; }
         public string? AssignedToTeamId { get; set; }
-        public string[]? ParishId { get; set; } = [];
+        public string[]? ParishIds { get; set; } = [];
+        public string? ParishId { get; set; }
         public DateOnly? LogDateFrom { get; set; }
         public DateOnly? LogDateTo { get; set; }
         public int? JobStatusId { get; set; }

@@ -4,10 +4,11 @@ using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Components.Maintenance
 {
-    public partial class ContactsList(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class ContactsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<ContactsList> logger)
     {
         [Parameter]
         public Job? Job { get; set; }
@@ -58,6 +59,7 @@ namespace CSIDE.Components.Maintenance
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "An error occurred creating a maintenance contact");
                 }
                 finally
                 {

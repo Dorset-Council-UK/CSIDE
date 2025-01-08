@@ -9,10 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO;
 using NetTopologySuite.Features;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Components.Pages.Maintenance
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
     {
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
@@ -75,7 +76,7 @@ namespace CSIDE.Components.Pages.Maintenance
                         context.MaintenanceJobs.Add(Job);
 
                         await context.SaveChangesAsync();
-                        await CreateMaintenanceProblemTypes(SelectedProblemTypes, Job.Id, context);
+                        CreateMaintenanceProblemTypes(SelectedProblemTypes, Job.Id, context);
                         await context.SaveChangesAsync();
                         //redirect
                         navigationManager.NavigateTo($"/Maintenance/Details/{Job.Id}");
@@ -84,6 +85,7 @@ namespace CSIDE.Components.Pages.Maintenance
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "An error occurred creating a maintenance job");
                 }
                 finally
                 {
@@ -92,14 +94,12 @@ namespace CSIDE.Components.Pages.Maintenance
             }
         }
 
-        private async Task CreateMaintenanceProblemTypes(List<int> selectedProblemTypes, int JobId, ApplicationDbContext context)
+        private static void CreateMaintenanceProblemTypes(List<int> selectedProblemTypes, int JobId, ApplicationDbContext context)
         {
             //add new problem types
             foreach (int problemType in selectedProblemTypes)
             {
-
                 context.MaintenanceJobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = JobId });
-
             }
             return;
         }
@@ -136,7 +136,10 @@ namespace CSIDE.Components.Pages.Maintenance
             {
                 // Check to see what the error is and show appropriate error message
                 // first check if the geometry was invalid
-                if (result.Errors.Any(failure => failure.ErrorCode == "GEOM_OUTSIDE_BOUNDS") || result.Errors.Any(failure => failure.ErrorCode == "INVALID_GEOM"))
+                if (result.Errors.Any(
+                    failure => string.Equals(failure.ErrorCode, "GEOM_OUTSIDE_BOUNDS", StringComparison.Ordinal)) || 
+                    result.Errors.Any(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.Ordinal))
+                    )
                 {
                     //show generic error
                     await ShowGeometryValidationErrorModal();
@@ -145,7 +148,7 @@ namespace CSIDE.Components.Pages.Maintenance
                 // NOTE I know it seems backwards to test this way round, but if you don't, 
                 // invalid geometries always come back saying 'no route found', which is not the right message
                 // TODO - Improve logic through use of conditional validation
-                else if (result.Errors.Any(failure => failure.ErrorCode == "NO_ROUTE_NEARBY"))
+                else if (result.Errors.Any(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.Ordinal)))
                 {
                     //we assigned the geom at this point in case the user goes ahead with overriding the route ID
                     if (Job is not null)

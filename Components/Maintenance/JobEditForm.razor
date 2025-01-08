@@ -18,8 +18,8 @@
         {
             <div class="mb-3 row">
                 <div class="col-sm-8 col-lg-6">
-                    <label class="form-label" for="priority">@localizer["Assigned To Team Label"]</label>
-                    <InputSelect id="priority" class="form-select" @bind-Value="Job.MaintenanceTeamId">
+                    <label class="form-label" for="maintenance-team">@localizer["Assigned To Team Label"]</label>
+                    <InputSelect id="maintenance-team" class="form-select" @bind-Value="Job.MaintenanceTeamId">
                         @if (MaintenanceTeams is not null)
                         {
                             @foreach (var team in MaintenanceTeams.OrderBy(s => s.Name))

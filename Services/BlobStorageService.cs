@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Services
 {
@@ -11,14 +12,16 @@ namespace CSIDE.Services
     public class BlobStorageService : IBlobStorageService
     {
         private IConfiguration _configuration;
+        private ILogger<BlobStorageService> logger;
         string blobStorageConnection = string.Empty;
         private string blobContainerName = string.Empty;
 
-        public BlobStorageService(IConfiguration configuration)
+        public BlobStorageService(IConfiguration configuration, ILogger<BlobStorageService> logger)
         {
             _configuration = configuration;
             blobStorageConnection = _configuration.GetValue<string>("AzureBlobStorage:ConnectionString");
             blobContainerName = _configuration.GetValue<string>("AzureBlobStorage:ContainerName");
+            this.logger = logger;
         }
 
         public async Task<bool> DeleteFileFromBlobAsync(string fileName)
@@ -35,7 +38,7 @@ namespace CSIDE.Services
             }
             catch (Exception ex)
             {
-                //_logger?.LogError(ex.ToString());
+                logger.LogError(ex, "An error occurred deleting a file from blob storage");
                 throw;
             }
         }
@@ -63,7 +66,7 @@ namespace CSIDE.Services
             }
             catch (Exception ex)
             {
-                //_logger?.LogError(ex.ToString());
+                logger.LogError(ex, "An error occurred uploading a media item to blob storage");
                 throw;
             }
         }

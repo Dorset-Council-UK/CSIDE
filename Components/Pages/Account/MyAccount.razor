@@ -1,6 +1,5 @@
 ﻿@page "/Account/MyAccount"
 @inject IDbContextFactory<ApplicationDbContext> ContextFactory;
-@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
 <PageTitle>@localizer["My Account Label"]</PageTitle>
 
@@ -9,9 +8,12 @@
 <p>@localizer["Account Details Text"]</p>
 
 <table class="table table-striped">
-    <tr><th>@localizer["Display Name Label"]</th><td>@UserDisplayName</td></tr>
-    <tr><th>@localizer["Email Label"]</th><td>@UserPrimaryEmailAddress</td></tr>
-    <tr><th>@localizer["User ID Label"]</th><td>@UserID</td></tr>
+    <tbody>
+        <tr><th>@localizer["Display Name Label"]</th><td>@UserDisplayName</td></tr>
+        <tr><th>@localizer["Email Label"]</th><td>@UserPrimaryEmailAddress</td></tr>
+        <tr><th>@localizer["Identity Provider Label"]</th><td>@UserIdentityProvider</td></tr>
+        <tr><th>@localizer["User ID Label"]</th><td>@UserID</td></tr>
+    </tbody>
 </table>
 
 <h3>@localizer["My Roles Header"]</h3>
@@ -42,6 +44,7 @@
     private string? UserID{ get; set; }
     private string? UserDisplayName{ get; set; }
     private string? UserPrimaryEmailAddress { get; set; }
+    private string? UserIdentityProvider{ get; set; }
     private List<ApplicationRole>? ApplicationRoles { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -52,6 +55,7 @@
         UserID = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
         UserDisplayName = user.Identity?.Name;
         UserPrimaryEmailAddress = user.FindFirst(u => u.Type.Contains("email"))?.Value;
+        UserIdentityProvider = user.FindFirst(u => u.Type.Contains("identityprovider"))?.Value;
 
         var userRoles = await context.ApplicationUserRoles
                 .Where(u => u.UserId == UserID)

@@ -1,0 +1,43 @@
+﻿@inject IDbContextFactory<ApplicationDbContext> _contextFactory
+
+@if (infrastructureItems.Length == 0)
+{
+    <Alert Color="AlertColor.Info">@localizer["No Route Infra Message"]</Alert>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@localizer["Infrastructure ID Label"]</th>
+                <th>@localizer["Infrastructure Type Label"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in infrastructureItems)
+            {
+                <tr>
+                    <td>
+                        <a href="/Infrastructure/Details/@item.Id">@item.Id</a>
+                    </td>
+                    <td>@item.InfrastructureType?.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public required string RouteId { get; set; }
+
+    private CSIDE.Data.Models.Infrastructure.InfrastructureItem[] infrastructureItems { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = _contextFactory.CreateDbContext();
+        infrastructureItems = await context.Infrastructure
+            .Where(i => i.RouteId == RouteId)
+            .ToArrayAsync();
+    }
+}

@@ -3,11 +3,12 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Maintenance
 {
-    public partial class SingleComment(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS)
+    public partial class SingleComment(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<SingleComment> logger)
     {
         [Parameter]
         public required Comment Comment { get; set; }
@@ -69,6 +70,7 @@ namespace CSIDE.Components.Maintenance
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "An error occurred updating a comment");
                 }
                 finally
                 {

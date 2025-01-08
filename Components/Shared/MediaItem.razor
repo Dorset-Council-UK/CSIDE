@@ -4,6 +4,7 @@
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject IBlobStorageService blobStorageService
 @inject IJSRuntime JS
+@inject ILogger<MediaItem> logger
 
 @if (Media is not null)
 {
@@ -70,7 +71,7 @@
         }
 
         <tr>
-            
+
             <td>
                 <a href="@Media.URL" download target="_blank"><i class="bi @icon"></i> 
                     @(string.IsNullOrEmpty(Media.Title) ? new System.IO.FileInfo(Media.URL).Name : Media.Title)
@@ -81,9 +82,9 @@
             {
                 <td> <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button></td>
             }
-            
+
         </tr>
-        }
+    }
 
 }
 @code{
@@ -111,15 +112,16 @@
                     if (!await blobStorageService.DeleteFileFromBlobByURLAsync(mediaToDelete.URL))
                     {
                         //TODO - Log storage deletion failure for administators. Users need not know.
+                        logger.LogWarning("An error occurred deleting media item with URL {0} from blob storage", mediaToDelete.URL);
                     }
                     if (OnRefreshComponent.HasDelegate)
                     {
                         await OnRefreshComponent.InvokeAsync();
                     }
                 }
-            }catch(Exception e)
+            }catch(Exception ex)
             {
-                
+                logger.LogError(ex, "An error occurred deleting a media item");
             }
         }
     }

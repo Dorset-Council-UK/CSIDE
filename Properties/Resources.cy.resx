@@ -531,4 +531,127 @@
   <data name="Problem Types Label" xml:space="preserve">
     <value>Mathau o broblemau</value>
   </data>
+  <data name="Create New Right of Way Text" xml:space="preserve">
+    <value>Creu Hawl Tramwy newydd trwy dynnu'r llinell ar fap ac ychwanegu'r manylion.</value>
+  </data>
+  <data name="Create New Right of Way Label" xml:space="preserve">
+    <value>Creu Hawl Tramwy newydd</value>
+  </data>
+  <data name="Search Rights of Way Title" xml:space="preserve">
+    <value>Chwilio am Hawl Tramwy</value>
+  </data>
+  <data name="Right of Way Not Found Error Message" xml:space="preserve">
+    <value>Nid oedd modd dod o hyd i unrhyw Hawliau Tramwy gyda ID '{0}'</value>
+  </data>
+  <data name="Rights of Way Details Title" xml:space="preserve">
+    <value>Hawl Tramwy {0}</value>
+  </data>
+  <data name="Start Easting Label" xml:space="preserve">
+    <value>Cychwyn X Cydlynu</value>
+  </data>
+  <data name="Start Northing Label" xml:space="preserve">
+    <value>Cychwyn Y Cydlynu</value>
+  </data>
+  <data name="End Easting Label" xml:space="preserve">
+    <value>Diwedd X Cyfesuryn</value>
+  </data>
+  <data name="End Northing Label" xml:space="preserve">
+    <value>Diwedd Y Cyfesuryn</value>
+  </data>
+  <data name="Approximate Length Label" xml:space="preserve">
+    <value>Hyd yn fras</value>
+  </data>
+  <data name="Legal Status Label" xml:space="preserve">
+    <value>Statws cyfreithiol</value>
+  </data>
+  <data name="Operational Status Label" xml:space="preserve">
+    <value>Statws gweithredol</value>
+  </data>
+  <data name="Path Type Label" xml:space="preserve">
+    <value>Math o lwybr</value>
+  </data>
+  <data name="Closure Start Date Label" xml:space="preserve">
+    <value>Dyddiad dechrau cau</value>
+  </data>
+  <data name="Closure End Date Label" xml:space="preserve">
+    <value>Dyddiad ailagor</value>
+  </data>
+  <data name="Closure End Date Passed Short Warning Text" xml:space="preserve">
+    <value>Mae'r dyddiad ailagor wedi mynd heibio</value>
+  </data>
+  <data name="Closure End Date Passed Warning Text" xml:space="preserve">
+    <value>Roedd y llwybr hwn i fod i ailagor {0}. Ailagor y llwybr neu ddiweddaru'r dyddiad ailagor</value>
+  </data>
+  <data name="X Days Ago Label" xml:space="preserve">
+    <value>{0} diwrnod yn ôl</value>
+  </data>
+  <data name="Maintenance Team Label" xml:space="preserve">
+    <value>Tîm cynnal a chadw</value>
+  </data>
+  <data name="Yesterday Label" xml:space="preserve">
+    <value>ddoe</value>
+  </data>
+  <data name="Rights of Way Edit Title" xml:space="preserve">
+    <value>Golygu Hawl Tramwy {0}</value>
+  </data>
+  <data name="Route Code Not Unique Validation Message" xml:space="preserve">
+    <value>Mae llwybr ag ID '{0}' eisoes yn bodoli</value>
+  </data>
+  <data name="Multiple Parish Codes Found Error Message" xml:space="preserve">
+    <value>Mae'r llwybr hwn yn mynd ar draws plwyfi lluosog. Rydym wedi gosod cod y llwybr yn seiliedig ar ba blwyf y mae'r llwybr mwyaf ynddo, sef '{0}'. Efallai y byddwch am wirio mai dyma beth rydych chi ei eisiau.</value>
+  </data>
+  <data name="No Parish Found Error Message" xml:space="preserve">
+    <value>Ni ddaethpwyd o hyd i unrhyw blwyfi a oedd yn cynnwys y llwybr hwn</value>
+  </data>
+  <data name="Invalid Closure Dates Validation Message" xml:space="preserve">
+    <value>Rhaid i'r dyddiad cau fod ar ôl y dyddiad cychwyn</value>
+  </data>
+  <data name="Route Closure Documents Label" xml:space="preserve">
+    <value>Hysbysiadau cau</value>
+  </data>
+  <data name="Upload Closure Notification Document Title" xml:space="preserve">
+    <value>Llwythwch i fyny dogfennau hysbysiad cau</value>
+  </data>
+  <data name="Upload Other Media Title" xml:space="preserve">
+    <value>Llwythwch i fyny cyfryngau eraill</value>
+  </data>
+  <data name="Select Multiple Parishes Label" xml:space="preserve">
+    <value>Dewiswch gymunedau lluosog</value>
+  </data>
+  <data name="Multi Select Instructions Text" xml:space="preserve">
+    <value>Dewiswch gofnodion lluosog trwy ddal Ctrl i lawr ar eich bysellfwrdd</value>
+  </data>
+  <data name="No Route Infra Message" xml:space="preserve">
+    <value>Nid oes unrhyw seilwaith wedi'i gofnodi ar y llwybr hwn</value>
+  </data>
+  <data name="Identity Provider Label" xml:space="preserve">
+    <value>Darparwr hunaniaeth</value>
+  </data>
+  <data name="Indefinite Closure Text" xml:space="preserve">
+    <value>Mae'r llwybr hwn wedi'i gau am gyfnod amhenodol</value>
+  </data>
+  <data name="Closure Is Indefinite Label" xml:space="preserve">
+    <value>Ar gau am gyfnod amhenodol?</value>
+  </data>
+  <data name="Statement Start Grid Ref Label" xml:space="preserve">
+    <value>Cyfeirnod grid cychwyn</value>
+  </data>
+  <data name="Statement End Grid Ref Label" xml:space="preserve">
+    <value>Cyfeirnod grid diwedd</value>
+  </data>
+  <data name="Statements Title" xml:space="preserve">
+    <value>Datganiad cyfreithiol</value>
+  </data>
+  <data name="Show Previous Statements Label" xml:space="preserve">
+    <value>Dangos datganiadau blaenorol</value>
+  </data>
+  <data name="Hide Previous Statements Label" xml:space="preserve">
+    <value>Cuddio datganiadau blaenorol</value>
+  </data>
+  <data name="No Statements Message" xml:space="preserve">
+    <value>Ni ddarganfuwyd unrhyw ddatganiadau cyfreithiol ar gyfer yr Hawl Tramwy hwn</value>
+  </data>
+  <data name="Modify Statement Label" xml:space="preserve">
+    <value>Addasu datganiad cyfreithiol</value>
+  </data>
 </root>

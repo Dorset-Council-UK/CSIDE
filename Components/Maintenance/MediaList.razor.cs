@@ -3,11 +3,12 @@ using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Maintenance
 {
-    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS) : IAsyncDisposable
+    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<MediaList> logger) : IAsyncDisposable
     {
         [Parameter]
         public Job? Job { get; set; }
@@ -55,10 +56,10 @@ namespace CSIDE.Components.Maintenance
                     await context.SaveChangesAsync();
                     UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     UploadErrorMessages.Add(localizer["Save Error Message"]);
-                    //TODO log error
+                    logger.LogError(ex, "An error attaching media to a job");
                 }
 
             }

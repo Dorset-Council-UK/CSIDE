@@ -27,7 +27,7 @@ namespace CSIDE.Data.Models.Maintenance
         //navigation properties
         public JobStatus? JobStatus { get; set; }
         public JobPriority? JobPriority { get; set; }
-        public RoW.Route? Route { get; set; }
+        public RightsOfWay.Route? Route { get; set; }
         public Team? MaintenanceTeam { get; set; }
         public Parish? Parish { get; set; }
 

@@ -1,10 +1,6 @@
 ﻿@page "/Maintenance"
 @using CSIDE.Data.Models.Maintenance
 @using CSIDE.Data.Models.Shared
-@using System.Web
-@using System.Collections
-@using NodaTime
-@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
 
 <PageTitle>@localizer["Maintenance Title"]</PageTitle>
@@ -69,20 +65,43 @@
                     </InputSelect>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="parish-search">@localizer["Parish Label"]</label>
-                    <InputSelect id="parish-search" class="form-select" @bind-Value="SearchParams.ParishId">
-                        @if (Parishes is not null)
-                        {
-                            <option value=""></option>
-                            @foreach (var parish in Parishes)
+                @if (UseMultiParishSelect)
+                {
+                    <div class="mb-3">
+                        <label class="form-label" for="parish-multi-search">@localizer["Parish Label"]</label>
+                        <div class="form-text">@localizer["Multi Select Instructions Text"]</div>
+                        <InputSelect id="parish-multi-search" class="form-select" @bind-Value="SearchParams.ParishIds">
+                            @if (Parishes is not null)
                             {
-                                <option value="@parish.ParishId">@parish.Name</option>
+                                <option value=""></option>
+                                @foreach (var parish in Parishes)
+                                {
+                                    <option value="@parish.ParishId">@parish.Name</option>
+                                }
                             }
-                        }
-                    </InputSelect>
+                        </InputSelect>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label" for="parish-search">@localizer["Parish Label"]</label>
+                        <InputSelect id="parish-search" class="form-select" @bind-Value="SearchParams.ParishId">
+                            @if (Parishes is not null)
+                            {
+                                <option value=""></option>
+                                @foreach (var parish in Parishes)
+                                {
+                                    <option value="@parish.ParishId">@parish.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                }
+                <div class="form-check form-switch mt-1 mb-2">
+                    <InputCheckbox @bind-Value="UseMultiParishSelect" class="form-check-input" id="use-multi-parish-select" />
+                    <label class="form-check-label" for="use-multi-parish-select">@localizer["Select Multiple Parishes Label"]</label>
                 </div>
-
 
                 <div class="mb-3">
                     <label class="form-label" for="priority-search">@localizer["Job Priority Label"]</label>

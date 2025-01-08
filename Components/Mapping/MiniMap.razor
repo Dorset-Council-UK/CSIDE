@@ -23,7 +23,6 @@
         var GeoJson = _geoJsonWriter.Write(Geometry);
         // For testing below
         @* GeoJson = @"{""type"": ""FeatureCollection"",""features"": [{""type"": ""Feature"",""geometry"": {""coordinates"": [[361648, 90563],[361650, 90633],[361649, 90694],[361657, 90751]],""type"": ""LineString""}}]}"; *@
-        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Mapping/MiniMap.razor.js");
         var mappingConfig = config.GetSection("CSIDE:Mapping");
         var boundsConfig = mappingConfig.GetSection("StartBounds");
         var routeOverlay = new OverlayConfiguration() { MapServiceBaseURL = mappingConfig.GetValue<string>("MapServerRoot")!, LayerName = mappingConfig.GetValue<string>("RouteLayer") };
@@ -38,13 +37,14 @@
         JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
         opts.Converters.Add(new JsonStringEnumConverter());
         var mapConfigJson = JsonSerializer.Serialize(mapConfigClass, opts);
+        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/miniMap.js");
         if (firstRender)
         {
             await _jsModule.InvokeVoidAsync("initMap", GeoJson, mapConfigJson);
         }
         else
         {
-            await _jsModule.InvokeVoidAsync("updateMap", GeoJson, mapConfigJson);
+            await _jsModule.InvokeVoidAsync("updateMap", GeoJson, 18);
         }
         await base.OnAfterRenderAsync(firstRender);
     }

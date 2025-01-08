@@ -2,6 +2,7 @@
 @using CSIDE.Data.Models.Shared
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject IBlobStorageService blobStorageService
+@inject ILogger<UploadFile> logger
 
 @if(UploadSuccessMessage is not null)
 {
@@ -21,7 +22,7 @@
 
 <div class="@(IsFileUploading ? "loading-indicator" :"")">
 
-    <label for="@_inputFileId" class="form-label h4">@localizer["Upload File Label"]</label>
+    <label for="@_inputFileId" class="form-label h4">@(string.IsNullOrEmpty(Title) ? localizer["Upload File Label"] : Title)</label>
     @if (IsFileUploading)
     {
         <div class="position-absolute loading-indicator-overlay start-50 translate-middle p-1">
@@ -47,7 +48,8 @@
     public required List<string> UploadErrorMessages{ get; set; }
     [Parameter]
     public string? UploadSuccessMessage{ get; set; }
-
+    [Parameter]
+    public string? Title{ get; set; }
     private string _inputFileId = Guid.NewGuid().ToString();
     private bool IsFileUploading;
     private long MaxFileSize = 20 * (1024 * 1024);
@@ -106,6 +108,7 @@
                 }
                 else{
                     UploadErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
+                    logger.LogError("An error occurred uploading a media item. No blob URL was returned from the storage service");
                 }
             }
             catch(ValidationException v)
@@ -115,7 +118,7 @@
             catch (Exception ex)
             {
                 UploadErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
-                //TODO log error
+                logger.LogError(ex, "An error occurred uploading a media item");
             }
         }
 

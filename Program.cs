@@ -1,3 +1,5 @@
+
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Authorization;
 using CSIDE.Components;
 using CSIDE.Data;
@@ -9,7 +11,12 @@ using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
+//add azure monitor
+builder.Services.AddOpenTelemetry().UseAzureMonitor(options => {
+    options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+});
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();

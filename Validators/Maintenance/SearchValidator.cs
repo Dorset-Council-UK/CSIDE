@@ -16,7 +16,8 @@ namespace CSIDE.Validators.Maintenance
             RuleFor(s => s).Must(s =>
                 !string.IsNullOrEmpty(s.RouteID) ||
                 !string.IsNullOrEmpty(s.AssignedToTeamId) ||
-                s.ParishId?.Length != 0 ||
+                !string.IsNullOrEmpty(s.ParishId) ||
+                s.ParishIds?.Length != 0 ||
                 s.JobStatusId.HasValue ||
                 s.JobPriorityId.HasValue ||
                 s.LogDateFrom.HasValue ||

@@ -8,10 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO;
 using NetTopologySuite.Features;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Components.Pages.Maintenance
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger)
     {
         [Parameter]
         public int JobId { get; set; }
@@ -81,13 +82,15 @@ namespace CSIDE.Components.Pages.Maintenance
                         NavigateBackToJobDetailsPage();
                     }
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     ErrorMessage = localizer["Concurrency Error Message", localizer["Maintenance Details Title", Job.Id]];
+                    logger.LogWarning(ex, "A concurrency conflict occurred when updating a maintenance job");
                 }
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "An error occurred updating a maintenance job");
                 }
                 finally
                 {
@@ -155,7 +158,10 @@ namespace CSIDE.Components.Pages.Maintenance
             {
                 // Check to see what the error is and show appropriate error message
                 // first check if the geometry was invalid
-                if (result.Errors.Any(failure => failure.ErrorCode == "GEOM_OUTSIDE_BOUNDS") || result.Errors.Any(failure => failure.ErrorCode == "INVALID_GEOM"))
+                if (result.Errors.Any(
+                    failure => string.Equals(failure.ErrorCode, "GEOM_OUTSIDE_BOUNDS", StringComparison.Ordinal)) || 
+                    result.Errors.Any(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.Ordinal))
+                    )
                 {
                     //show generic error
                     await ShowGeometryValidationErrorModal();
@@ -164,7 +170,7 @@ namespace CSIDE.Components.Pages.Maintenance
                 // NOTE I know it seems backwards to test this way round, but if you don't,
                 // invalid geometries always come back saying 'no route found', which is not the right message
                 // TODO - Improve logic through use of conditional validation
-                else if (result.Errors.Any(failure => failure.ErrorCode == "NO_ROUTE_NEARBY"))
+                else if (result.Errors.Any(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.Ordinal)))
                 {
                     //we assigned the geom at this point in case the user goes ahead with overriding the route ID
                     if (Job is not null)

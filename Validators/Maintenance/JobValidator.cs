@@ -4,6 +4,7 @@ using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using NodaTime;
 
 namespace CSIDE.Validators.Maintenance
 {
@@ -34,6 +35,7 @@ namespace CSIDE.Validators.Maintenance
                 
             RuleFor(job => job.CompletionDate)
                 .NotEmpty()
+                .LessThanOrEqualTo(LocalDate.FromDateTime(DateTime.Now))
                 .WhenAsync(JobStatusIsComplete)
                 .WithName(_localizer["Completion Date Label"]);
 

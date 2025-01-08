@@ -1,6 +1,7 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
 
 namespace CSIDE.Components.Maintenance
 {
@@ -29,7 +30,7 @@ namespace CSIDE.Components.Maintenance
         [Parameter]
         public EventCallback OnCancel { get; set; }
         [Parameter]
-        public List<int> SelectedProblemTypes { get; set; } = [];
+        public IList<int> SelectedProblemTypes { get; set; } = [];
 
         private FluentValidationValidator? fluentValidationValidator;
 
@@ -60,26 +61,24 @@ namespace CSIDE.Components.Maintenance
         {
             if (Job is not null && eventArgs.Value is not null)
             {
-                var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
-                var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
-                Job.CompletionDate = parseResult.Value;
+                try
+                {
+                    var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
+                    var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
+                    Job.CompletionDate = parseResult.Value;
+                }
+                catch (Exception)
+                {
+                    //unparsable date, don't update property
+                }
             }
         }
 
         private void ShowOrHideCompletionDate(ChangeEventArgs eventArgs)
         {
-            int NewJobStatusId;
-            if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
+            if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), CultureInfo.InvariantCulture, out int NewJobStatusId))
             {
                 ShowOrHideCompletionDate(NewJobStatusId);
-            }
-        }
-        private void ShowOrHideDuplicateOf(ChangeEventArgs eventArgs)
-        {
-            int NewJobStatusId;
-            if (Job is not null && int.TryParse(eventArgs.Value?.ToString(), out NewJobStatusId))
-            {
-                ShowOrHideDuplicateOf(NewJobStatusId);
             }
         }
         private void ShowOrHideCompletionDate(int NewJobStatusId)

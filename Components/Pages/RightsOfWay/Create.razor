@@ -1,0 +1,58 @@
+﻿@page "/rights-of-way/Create"
+@using CSIDE.Data.Models.RightsOfWay
+@using CSIDE.Components.RightsOfWay
+@using CSIDE.Components.Mapping
+
+<PageTitle>@localizer["Create New Right of Way Label"]</PageTitle>
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Create New Right of Way Label"]</h1>
+<p>@localizer["Create New Right of Way Text"]</p>
+@if (Route is null && !IsBusy)
+{
+    <Alert Color="AlertColor.Danger">@localizer["General Error Message"]</Alert>
+    <a href="/rights-of-way" class="btn btn-primary">@localizer["Search Rights of Way Title"]</a>
+}
+else
+{
+    if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
+
+    if (Route is not null)
+    {
+        <div class="row">
+            <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" OnGetSnappablesMethod="async (bbox) => await GetSnappables(bbox)" GeomType="Line"></CreateMap>
+            @if (ParishValidationMessage is not null)
+            {
+                <Alert Color="AlertColor.Info">@ParishValidationMessage</Alert>
+            }
+        </div>
+        @if(!GeometryIsValid){
+            <Alert Color="AlertColor.Danger">@localizer["Invalid Geometry Validation Message"]</Alert>
+        }
+    }
+    <div class="row mt-2">
+        <div class="col-md-8">
+            <RoWEditForm Route="@Route"
+                         RouteTypes="@RouteTypes"
+                         LegalStatuses="@LegalStatuses"
+                         MaintenanceTeams="@MaintenanceTeams"
+                         OperationalStatuses="@OperationalStatuses"
+                         IsBusy="@IsBusy"
+                         IsEdit="false"
+                         OnSubmit="SubmitFormAsync"
+                         OnCancel="NavigateBackToRouteSearchPage"
+                         @ref="childRouteEditForm" />
+        </div>
+    </div>
+
+    if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
+    }
+}

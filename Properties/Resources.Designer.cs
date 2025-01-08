@@ -160,6 +160,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Approximate Length.
+        /// </summary>
+        public static string Approximate_Length_Label {
+            get {
+                return ResourceManager.GetString("Approximate Length Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigned to team.
         /// </summary>
         public static string Assigned_To_Team_Label {
@@ -192,6 +201,51 @@ namespace CSIDE.Properties {
         public static string Cancel_Label {
             get {
                 return ResourceManager.GetString("Cancel Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reopening date.
+        /// </summary>
+        public static string Closure_End_Date_Label {
+            get {
+                return ResourceManager.GetString("Closure End Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The reopening date has passed.
+        /// </summary>
+        public static string Closure_End_Date_Passed_Short_Warning_Text {
+            get {
+                return ResourceManager.GetString("Closure End Date Passed Short Warning Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This path was supposed to reopen {0}. Reopen the path or update the reopening date.
+        /// </summary>
+        public static string Closure_End_Date_Passed_Warning_Text {
+            get {
+                return ResourceManager.GetString("Closure End Date Passed Warning Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed indefinitely?.
+        /// </summary>
+        public static string Closure_Is_Indefinite_Label {
+            get {
+                return ResourceManager.GetString("Closure Is Indefinite Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closure start date.
+        /// </summary>
+        public static string Closure_Start_Date_Label {
+            get {
+                return ResourceManager.GetString("Closure Start Date Label", resourceCulture);
             }
         }
         
@@ -318,6 +372,24 @@ namespace CSIDE.Properties {
         public static string Create_New_Job_Text {
             get {
                 return ResourceManager.GetString("Create New Job Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new Right of Way.
+        /// </summary>
+        public static string Create_New_Right_of_Way_Label {
+            get {
+                return ResourceManager.GetString("Create New Right of Way Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a new Right of Way by drawing the line on a map and adding the details..
+        /// </summary>
+        public static string Create_New_Right_of_Way_Text {
+            get {
+                return ResourceManager.GetString("Create New Right of Way Text", resourceCulture);
             }
         }
         
@@ -457,6 +529,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to End Easting.
+        /// </summary>
+        public static string End_Easting_Label {
+            get {
+                return ResourceManager.GetString("End Easting Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End Northing.
+        /// </summary>
+        public static string End_Northing_Label {
+            get {
+                return ResourceManager.GetString("End Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sorry! Something went wrong.
         /// </summary>
         public static string Error_Header_Text {
@@ -520,6 +610,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hide previous statements.
+        /// </summary>
+        public static string Hide_Previous_Statements_Label {
+            get {
+                return ResourceManager.GetString("Hide Previous Statements Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home_Title {
@@ -529,11 +628,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Identity provider.
+        /// </summary>
+        public static string Identity_Provider_Label {
+            get {
+                return ResourceManager.GetString("Identity Provider Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Images.
         /// </summary>
         public static string Images_Label {
             get {
                 return ResourceManager.GetString("Images Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This path is closed indefinitely.
+        /// </summary>
+        public static string Indefinite_Closure_Text {
+            get {
+                return ResourceManager.GetString("Indefinite Closure Text", resourceCulture);
             }
         }
         
@@ -579,6 +696,15 @@ namespace CSIDE.Properties {
         public static string Infrastructure_With_Count_Title {
             get {
                 return ResourceManager.GetString("Infrastructure With Count Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closure end date must be after start date.
+        /// </summary>
+        public static string Invalid_Closure_Dates_Validation_Message {
+            get {
+                return ResourceManager.GetString("Invalid Closure Dates Validation Message", resourceCulture);
             }
         }
         
@@ -633,6 +759,15 @@ namespace CSIDE.Properties {
         public static string Landowner_Deposits_Title {
             get {
                 return ResourceManager.GetString("Landowner Deposits Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal status.
+        /// </summary>
+        public static string Legal_Status_Label {
+            get {
+                return ResourceManager.GetString("Legal Status Label", resourceCulture);
             }
         }
         
@@ -727,6 +862,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maintenance team.
+        /// </summary>
+        public static string Maintenance_Team_Label {
+            get {
+                return ResourceManager.GetString("Maintenance Team Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance.
         /// </summary>
         public static string Maintenance_Title {
@@ -750,6 +894,33 @@ namespace CSIDE.Properties {
         public static string Media_Label {
             get {
                 return ResourceManager.GetString("Media Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify statement.
+        /// </summary>
+        public static string Modify_Statement_Label {
+            get {
+                return ResourceManager.GetString("Modify Statement Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select multiple entries by holding down Ctrl on your keyboard.
+        /// </summary>
+        public static string Multi_Select_Instructions_Text {
+            get {
+                return ResourceManager.GetString("Multi Select Instructions Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This route goes across multiple parishes. We&apos;ve set the route code based on which parish the route is most within, which is &apos;{0}&apos;. You may want to check this is what you want..
+        /// </summary>
+        public static string Multiple_Parish_Codes_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("Multiple Parish Codes Found Error Message", resourceCulture);
             }
         }
         
@@ -844,6 +1015,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No parishes could be found that contain this route.
+        /// </summary>
+        public static string No_Parish_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("No Parish Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No results found.
         /// </summary>
         public static string No_Results_Found_Label {
@@ -880,6 +1060,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No infrastructure has been recorded on this route.
+        /// </summary>
+        public static string No_Route_Infra_Message {
+            get {
+                return ResourceManager.GetString("No Route Infra Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No statements found for this Right of Way.
+        /// </summary>
+        public static string No_Statements_Message {
+            get {
+                return ResourceManager.GetString("No Statements Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Northing.
         /// </summary>
         public static string Northing_Label {
@@ -894,6 +1092,15 @@ namespace CSIDE.Properties {
         public static string Not_Public_Label {
             get {
                 return ResourceManager.GetString("Not Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operational status.
+        /// </summary>
+        public static string Operational_Status_Label {
+            get {
+                return ResourceManager.GetString("Operational Status Label", resourceCulture);
             }
         }
         
@@ -921,6 +1128,15 @@ namespace CSIDE.Properties {
         public static string Partial_File_Upload_Error {
             get {
                 return ResourceManager.GetString("Partial File Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path type.
+        /// </summary>
+        public static string Path_Type_Label {
+            get {
+                return ResourceManager.GetString("Path Type Label", resourceCulture);
             }
         }
         
@@ -1006,6 +1222,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Rights of Way with ID &apos;{0}&apos; could be found.
+        /// </summary>
+        public static string Right_of_Way_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("Right of Way Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Right of Way {0}.
+        /// </summary>
+        public static string Rights_of_Way_Details_Title {
+            get {
+                return ResourceManager.GetString("Rights of Way Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Right of Way {0}.
+        /// </summary>
+        public static string Rights_of_Way_Edit_Title {
+            get {
+                return ResourceManager.GetString("Rights of Way Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rights of Way.
         /// </summary>
         public static string Rights_of_Way_Title {
@@ -1038,6 +1281,24 @@ namespace CSIDE.Properties {
         public static string Rotate_Counter_Clockwise_Label {
             get {
                 return ResourceManager.GetString("Rotate Counter Clockwise Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closure notices.
+        /// </summary>
+        public static string Route_Closure_Documents_Label {
+            get {
+                return ResourceManager.GetString("Route Closure Documents Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Route with ID &apos;{0}&apos; already exists.
+        /// </summary>
+        public static string Route_Code_Not_Unique_Validation_Message {
+            get {
+                return ResourceManager.GetString("Route Code Not Unique Validation Message", resourceCulture);
             }
         }
         
@@ -1123,6 +1384,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search for a Right of Way.
+        /// </summary>
+        public static string Search_Rights_of_Way_Title {
+            get {
+                return ResourceManager.GetString("Search Rights of Way Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to At least one search field should be filled in.
         /// </summary>
         public static string Search_Validation_At_Least_One_Message {
@@ -1146,6 +1416,69 @@ namespace CSIDE.Properties {
         public static string Secondary_Contact_Number_Label {
             get {
                 return ResourceManager.GetString("Secondary Contact Number Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select multiple parishes.
+        /// </summary>
+        public static string Select_Multiple_Parishes_Label {
+            get {
+                return ResourceManager.GetString("Select Multiple Parishes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show previous statements.
+        /// </summary>
+        public static string Show_Previous_Statements_Label {
+            get {
+                return ResourceManager.GetString("Show Previous Statements Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Easting.
+        /// </summary>
+        public static string Start_Easting_Label {
+            get {
+                return ResourceManager.GetString("Start Easting Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Northing.
+        /// </summary>
+        public static string Start_Northing_Label {
+            get {
+                return ResourceManager.GetString("Start Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End Grid Ref.
+        /// </summary>
+        public static string Statement_End_Grid_Ref_Label {
+            get {
+                return ResourceManager.GetString("Statement End Grid Ref Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Grid Ref.
+        /// </summary>
+        public static string Statement_Start_Grid_Ref_Label {
+            get {
+                return ResourceManager.GetString("Statement Start Grid Ref Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statement.
+        /// </summary>
+        public static string Statements_Title {
+            get {
+                return ResourceManager.GetString("Statements Title", resourceCulture);
             }
         }
         
@@ -1195,6 +1528,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Upload closure notices.
+        /// </summary>
+        public static string Upload_Closure_Notification_Document_Title {
+            get {
+                return ResourceManager.GetString("Upload Closure Notification Document Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uploaded.
         /// </summary>
         public static string Upload_Date_Label {
@@ -1227,6 +1569,15 @@ namespace CSIDE.Properties {
         public static string Upload_File_Label {
             get {
                 return ResourceManager.GetString("Upload File Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload other media.
+        /// </summary>
+        public static string Upload_Other_Media_Title {
+            get {
+                return ResourceManager.GetString("Upload Other Media Title", resourceCulture);
             }
         }
         
@@ -1294,11 +1645,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} days ago.
+        /// </summary>
+        public static string X_Days_Ago_Label {
+            get {
+                return ResourceManager.GetString("X Days Ago Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}m away.
         /// </summary>
         public static string X_Metres_Away_Label {
             get {
                 return ResourceManager.GetString("X Metres Away Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to yesterday.
+        /// </summary>
+        public static string Yesterday_Label {
+            get {
+                return ResourceManager.GetString("Yesterday Label", resourceCulture);
             }
         }
     }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Components.Maintenance
 {
-    public partial class CommentsList(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class CommentsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<CommentsList> logger)
     {
         [Parameter]
         public Job? Job { get; set; }
@@ -61,7 +61,7 @@ namespace CSIDE.Components.Maintenance
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    //TODO log error
+                    logger.LogError(ex, "An error occurred creating a comment");
                 }
                 finally
                 {

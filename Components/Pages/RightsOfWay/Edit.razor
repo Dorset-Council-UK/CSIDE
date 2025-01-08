@@ -1,0 +1,54 @@
+﻿@page "/rights-of-way/Edit/{*RouteID}"
+@using CSIDE.Data.Models.RightsOfWay
+@using CSIDE.Components.RightsOfWay
+@using CSIDE.Components.Mapping
+
+<PageTitle>@localizer["Rights of Way Edit Title", RouteID]</PageTitle>
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Rights of Way Edit Title", RouteID]</h1>
+
+@if (Route is null && !IsBusy)
+{
+    <Alert Color="AlertColor.Danger">@localizer["Right of Way Not Found Error Message", RouteID]</Alert>
+    <a href="/rights-of-way" class="btn btn-primary">@localizer["Search Rights of Way Title"]</a>
+}
+else
+{
+    if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
+
+    if (Route is not null)
+    {
+        <div class="row">
+            <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" OnGetSnappablesMethod="async (bbox) => await GetSnappables(bbox)" GeomType="Line" Geometry="@Route.Geom"></EditMap>
+        </div>
+        @if(!GeometryIsValid){
+            <Alert Color="AlertColor.Danger">@localizer["Invalid Geometry Validation Message"]</Alert>
+        }
+    }
+    <div class="row mt-2">
+        <div class="col-md-8">
+            <RoWEditForm Route="@Route"
+                         RouteTypes="@RouteTypes"
+                         LegalStatuses="@LegalStatuses"
+                         MaintenanceTeams="@MaintenanceTeams"
+                         OperationalStatuses="@OperationalStatuses"
+                         IsBusy="@IsBusy"
+                         IsEdit="true"
+                         OnSubmit="SubmitFormAsync"
+                         OnCancel="NavigateBackToRouteDetailsPage"
+                         @ref="childRouteEditForm" />
+        </div>
+    </div>
+
+    if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
+    }
+}
