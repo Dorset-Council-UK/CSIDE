@@ -31,7 +31,7 @@ In user secrets add the below line of code and fill in your database name, usern
 
 You should now be able to test your connection and run migrations using Entity Framework commands.
 
-You can choose to use appSettings or Environment Variables to store your secrets if you prefer. Azure KeyVault is also available with a few configuration settings, and is recommended for production scenarios.
+You can choose to use appSettings or Environment Variables to store your secrets if you prefer. Azure KeyVault is also available with a few configuration settings, and is recommended for production scenarios. appSettings is NOT recommended for storing secret information such as connection strings.
 
 ### Setting up authentication
 Currently this app only supports Microsoft Azure AD B2C authentication. Refer to the official documentation to set this up in your Azure instance.
@@ -95,9 +95,37 @@ Additional columns can be included if this makes importing/referencing your data
 
 You will then need to import your Parish data from your data source.
 
+### Setting up the mapping
+To use the mapping, you should have
+- An OS DataHub API Key
+- A map server (such as GeoServer) that publishes your data
+
+You then needs to add the details of these to your user secrets.
+
+```
+"CSIDE": {
+    "Mapping": {
+      "OSMapsAPIKey": "<YOUR_OS_MAPS_API_KEY>",
+      "OSLicenceNumber": "<YOUR_OS_LICENCE_NUMBER>",
+      "MapServerRoot": "https://<YOUR_MAP_SERVER_WMS_ROOT>",
+      "RouteLayer": "<YOUR_RIGHTS_OF_WAY_LAYER_NAME>",
+      "InfrastructureLayer": "<YOUR_INFRASTRUCTURE_LAYER_NAME>"
+    }
+  }
+```
+
+Your OS DataHub API Key needs access to the OS Maps API.
+
 ### Running the application
 Once you’ve followed the steps above, you’re ready to run the application. 
 
+- Run an npm install to download the client-side dependencies
+    - In Visual Studio this can be done by installing the NPM Task Runner Extension and using Task Runner Explorer
+    - Alternatively just use the command line
+- Build the client-side scripts
+    - In Visual Studio this can be done by installing the NPM Task Runner Extension and using Task Runner Explorer to run the `watch` task
+    - Alternatively just use the command line `npm run watch`
+	- From now on, when opening the project in Visual Studio, `watch` will automatically run
 - Run the Entity Framework migrations
     - Using Visual Studio
         - `Update-Database`
@@ -112,13 +140,17 @@ When the app runs, you should be able to login, but you will be unable to do any
 Once logged in, click your name in the top right and choose 'My account'. Grab the 'User ID' GUID value from this page. Go to your database directly and find the table called 'ApplicationRoles'. This should have been automatically populated by Entity Framework with a few values. Take a note of the ID of the Adminstrator role, and the find the table called 'ApplicationUserRoles' and fill in the RoleId and UserId columns. Restart your app and you should now have permission.
 
 ### Adding required countryside data
-To use various parts of the system, you will need to make sure some datasets are imported before using it. Use pgAdmin or other database tool to import the data.
-You will need:
-- Your Rights of Way network in the `Routes` table
-- Your maintenance team areas in the `MaintenanceTeams` table
-- Your infrastructure types (e.g. Bridge, Stile etc.) in the `InfrastructureTypes` table
-- Your existing infrastructure (if any) in the `Infrastructure` table
-- All your possible job priority descriptions in the `MaintenanceJobPriorities` table.
-- All your possible job statuses in the `MaintenanceJobStatuses` table. You will need at least one with the `IsComplete` column set to true, and we recommend having at least one with the `IsDuplicate` column set to true.
-- All your possible contact types (e.g. Reporter, Landowner etc) in the `ContactTypes` table
-- All your possible problem types in the `ProblemTypes` table
+To use various parts of the system, you will need to make sure some datasets are imported before using it. Use pgAdmin or other database tool to import or create your data.
+
+- The `Parishes` table expects geospatial extents of your Parishes or Communities. This should ideally be a cut of OS BoundaryLine. 
+- The `ParishCodes` table is a lookup between your `Parishes` table and any codes you might use to identify a Right of Way within a Parish.
+- The `RouteLegalStatuses` table expects a simple list of the legal statuses that can be assigned to a Right of Way.
+- The `RouteOperationalStatuses` table expects a simple list of the operational statuses that can be assigned to a Right of Way. At least one of these should have `IsClosed` set to true.
+- The `RouteTypes` table expects a simple list of the different types of Right of Way you can have (Footpath, Bridleway etc.).
+- The `Routes` table expects geospatial Rights of Way data. The geometry is expected to be of type MultiLineString.
+- The `MaintenanceTeams` table expects geospatial extents of maintenance team areas. The geometry is expected to be of type Polygon.
+- The `MaintenanceJobPriorities` table expects a simple list of your priority classifications. 
+- The `MaintenanceJobStatuses` table expects a simple list of your status classifications.  At least one should have `IsComplete` set to true.
+- The `ProblemTypes` table expects a simple list of the different types of problem (overgrown vegetation, damaged infrastrcture etc.) that a maintenance job can have.
+- The `InfrastructureTypes` table expects a simple list of the different types of infrastructure (Gate, Fingerpost etc.) that can be recorded.
+- The `ContactTypes` table expects a simple list of all the types of people or organisations that you want to have contact details for.
