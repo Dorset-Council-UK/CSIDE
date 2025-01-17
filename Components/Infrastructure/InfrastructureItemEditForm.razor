@@ -1,0 +1,84 @@
+﻿@using CSIDE.Data.Models.Infrastructure
+
+@if(InfrastructureItem is not null) {
+
+	<EditForm Model="InfrastructureItem" OnSubmit="@SubmitFormAsync">
+		<FluentValidationValidator @ref="fluentValidationValidator" />
+		<ValidationSummary />
+
+		<div class="mb-3 row">
+			<div class=" col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
+				<InputText id="route-code" class="form-control" @bind-Value="InfrastructureItem.RouteId"></InputText>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.RouteId" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-8 col-lg-6">
+				<label class="form-label" for="infrastructure-type">@localizer["Infrastructure Type Label"]</label>
+				<InputSelect id="infrastructure-type" class="form-select" @bind-Value="InfrastructureItem.InfrastructureTypeId">
+					@if (InfrastructureTypes is not null)
+					{
+						@foreach (var type in InfrastructureTypes.OrderBy(s => s.Name))
+						{
+							<option value="@type.Id">@type.Name</option>
+						}
+					}
+				</InputSelect>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.InfrastructureTypeId" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="infrastructure-length">@localizer["Infrastructure Length Label"]</label>
+			<InputNumber id="infrastructure-length" class="form-control" @bind-Value="InfrastructureItem.Length"></InputNumber>
+			<ValidationMessage For="() => InfrastructureItem.Length" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="infrastructure-width">@localizer["Infrastructure Width Label"]</label>
+			<InputNumber id="infrastructure-width" class="form-control" @bind-Value="InfrastructureItem.Width"></InputNumber>
+			<ValidationMessage For="() => InfrastructureItem.Width" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="infrastructure-height">@localizer["Infrastructure Height Label"]</label>
+			<InputNumber id="infrastructure-height" class="form-control" @bind-Value="InfrastructureItem.Height"></InputNumber>
+			<ValidationMessage For="() => InfrastructureItem.Height" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="infrastructure-description">@localizer["Infrastructure Description Label"]</label>
+			<InputTextArea id="infrastructure-description" class="form-control" @bind-Value="InfrastructureItem.Description"></InputTextArea>
+			<ValidationMessage For="() => InfrastructureItem.Description" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class=" col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="installation-date">@localizer["Infrastructure Installation Date Label"]</label>
+				@{
+					string CompleteDateStringRepresentation = "";
+					if (InfrastructureItem.InstallationDate.HasValue)
+					{
+						CompleteDateStringRepresentation = InfrastructureItem.InstallationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" class="form-control" value="@CompleteDateStringRepresentation" @onchange="UpdateCompletionDateProperty" />
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.InstallationDate" />
+		</div>
+
+		@if (IsEdit)
+		{
+			<button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+			<button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+		}
+		else
+		{
+			<button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+		}
+
+	</EditForm>
+}
+

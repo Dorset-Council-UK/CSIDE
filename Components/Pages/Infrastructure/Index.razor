@@ -1,26 +1,136 @@
 ﻿@page "/Infrastructure"
 
+<PageTitle>@localizer["Infrastructure Title"]</PageTitle>
+
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
-<h1>@localizer["Infrastructure Title"]</h1>
+<h1 class="mb-3">@localizer["Infrastructure Title"]</h1>
 
+<p>@localizer["Create New Infrastructure Text"]</p>
+<a href="/Infrastructure/Create" class="btn btn-primary">@localizer["Create New Infrastructure Label"]</a>
 
+<hr />
 
-@code {
+<h2 class="mb-3">@localizer["Search Infrastructure Title"]</h2>
 
-    private List<BreadcrumbItem>? NavItems;
-
-
-    protected override void OnInitialized()
+<form method="post" @onsubmit="@OnInfrastructureIDSearchSubmit" @formname="InfrastructureIDSearch" class="mt-3">
+    @if (InfrastructureIDSearchErrorMessage is not null)
     {
-        NavItems = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-            new BreadcrumbItem{ Text = localizer["Infrastructure Title"], IsCurrentPage = true }
-        };
+        <Alert Color="AlertColor.Danger">@InfrastructureIDSearchErrorMessage</Alert>
     }
+    <div class="row">
+        <div class="col-sm-6 col-lg-4">
+            <label class="form-label" for="job-id-search">@localizer["Infrastructure ID Label"]</label>
+            <div class="input-group mb-3">
+                <InputText id="infrastructure-id-search" @bind-Value="InfrastructureIDSearch" class="form-control"></InputText>
+                <button class="btn btn-outline-secondary" type="submit" id="search-infrastructure-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
+            </div>
+        </div>
+    </div>
 
+</form>
+
+<hr />
+
+@if (SearchParams is not null)
+{
+    <EditForm Model="SearchParams" OnSubmit="@OnInfrastructureSearchSubmit" class="mt-3" id="search-form">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <ValidationSummary />
+        <div class="row">
+            <div class="col-md-10 col-lg-6">
+                <div class="mb-3">
+                    <label class="form-label" for="route-id-search">@localizer["Route ID Label"]</label>
+                    <InputText id="route-id-search" @bind-Value="SearchParams.RouteID" class="form-control"></InputText>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="team-search">@localizer["Maintenance Team Label"]</label>
+                    <InputSelect id="team-search" class="form-select" @bind-Value="SearchParams.MaintenanceTeamId">
+                        @if (MaintenanceTeams is not null)
+                        {
+                            <option value=""></option>
+                            @foreach (var team in MaintenanceTeams)
+                            {
+                                <option value="@team.Id">@team.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+
+                @if (UseMultiParishSelect)
+                {
+                    <div class="mb-3">
+                        <label class="form-label" for="parish-multi-search">@localizer["Parish Label"]</label>
+                        <div class="form-text">@localizer["Multi Select Instructions Text"]</div>
+                        <InputSelect id="parish-multi-search" class="form-select" @bind-Value="SearchParams.ParishIds">
+                            @if (Parishes is not null)
+                            {
+                                <option value=""></option>
+                                @foreach (var parish in Parishes)
+                                {
+                                    <option value="@parish.ParishId">@parish.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label" for="parish-search">@localizer["Parish Label"]</label>
+                        <InputSelect id="parish-search" class="form-select" @bind-Value="SearchParams.ParishId">
+                            @if (Parishes is not null)
+                            {
+                                <option value=""></option>
+                                @foreach (var parish in Parishes)
+                                {
+                                    <option value="@parish.ParishId">@parish.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                }
+                <div class="form-check form-switch mt-1 mb-2">
+                    <InputCheckbox @bind-Value="UseMultiParishSelect" class="form-check-input" id="use-multi-parish-select" />
+                    <label class="form-check-label" for="use-multi-parish-select">@localizer["Select Multiple Parishes Label"]</label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="type-search">@localizer["Infrastructure Type Label"]</label>
+                    <InputSelect id="type-search" class="form-select" @bind-Value="SearchParams.InfrastructureTypeId">
+                        @if (InfrastructureTypes is not null)
+                        {
+                            <option value=""></option>
+                            @foreach (var type in InfrastructureTypes.OrderBy(t => t.Name))
+                            {
+                                <option value="@type.Id">@type.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label" for="installation-date-from">@localizer["Installation Date From Label"]</label>
+                            <InputDate id="installation-date-from" Type="InputDateType.Date" @bind-Value="SearchParams.InstallationDateFrom" class="form-control"></InputDate>
+                            <ValidationMessage For="() => SearchParams.InstallationDateFrom" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="installation-date-to">@localizer["Installation Date To Label"]</label>
+                            <InputDate id="installation-date-to" Type="InputDateType.Date" @bind-Value="SearchParams.InstallationDateTo" class="form-control"></InputDate>
+                            <ValidationMessage For="() => SearchParams.InstallationDateTo" />
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-lg btn-outline-secondary" type="submit" id="search-job-button" disabled="@IsBusy"><span class="bi bi-search"></span> @localizer["Search Label"]</button>
+
+            </div>
+        </div>
+    </EditForm>
 
 }

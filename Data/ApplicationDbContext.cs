@@ -39,6 +39,7 @@ namespace CSIDE.Data
         public DbSet<Media> Media { get; set; }
         public DbSet<InfrastructureItem> Infrastructure { get; set; }
         public DbSet<InfrastructureType> InfrastructureTypes { get; set; }
+        public DbSet<InfrastructureMedia> InfrastructureMedia { get; set; }
         public DbSet<ProblemType> ProblemTypes { get; set; }
         public DbSet<Parish> Parishes { get; set; }
         public DbSet<ParishCode> ParishCodes { get; set; }
@@ -79,8 +80,9 @@ namespace CSIDE.Data
 
             modelBuilder.ApplyConfiguration(new InfrastructureItemConfiguration());
             modelBuilder.ApplyConfiguration(new InfrastructureTypeConfiguration());
-
-
+            modelBuilder.ApplyConfiguration(new InfrastructureMediaConfiguration());
+            modelBuilder.ApplyConfiguration(new JobProblemTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ParishConfiguration());
 
         }
 
@@ -91,6 +93,11 @@ namespace CSIDE.Data
                 UpdateMaintenanceJobParishIds().Wait();
                 SetMaintenanceTeamForJob().Wait();
                 SetLoggedByUser();
+            }
+            if (ChangeTracker.Entries<InfrastructureItem>().Any())
+            {
+                UpdateInfrastructureParishIds().Wait();
+                SetMaintenanceTeamForInfrastructureItem().Wait();
             }
             if (ChangeTracker.Entries<Models.RightsOfWay.Route>().Any())
             {
@@ -110,6 +117,12 @@ namespace CSIDE.Data
                 await UpdateMaintenanceJobParishIds();
                 await SetMaintenanceTeamForJob();
                 SetLoggedByUser();
+            }
+
+            if (ChangeTracker.Entries<InfrastructureItem>().Any())
+            {
+                await UpdateInfrastructureParishIds();
+                await SetMaintenanceTeamForInfrastructureItem();
             }
 
             if (ChangeTracker.Entries<Models.RightsOfWay.Route>().Any())
@@ -144,6 +157,24 @@ namespace CSIDE.Data
             {
                 var parish = await context.Parishes.SingleOrDefaultAsync(p => p.Geom.Contains(job.Geom));
                 job.ParishId = parish?.ParishId;
+            }
+        }
+
+        /// <summary>
+        /// Updates the Parish ID of a new or updated infrastructure item based on a spatial contains query
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateInfrastructureParishIds()
+        {
+            var infrastructureItems = ChangeTracker.Entries<InfrastructureItem>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity);
+
+            using var context = contextFactory.CreateDbContext();
+            foreach (var infrastructureItem in infrastructureItems)
+            {
+                var parish = await context.Parishes.SingleOrDefaultAsync(p => p.Geom.Contains(infrastructureItem.Geom));
+                infrastructureItem.ParishId = parish?.ParishId;
             }
         }
 
@@ -201,6 +232,24 @@ namespace CSIDE.Data
             {
                 var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(job.Geom)).FirstOrDefaultAsync();
                 job.MaintenanceTeamId = team?.Id;
+            }
+        }
+
+        /// <summary>
+        /// Sets the Maintenance Team ID of a new or updated infrastructure item based on a spatial contains query
+        /// </summary>
+        /// <returns></returns>
+        private async Task SetMaintenanceTeamForInfrastructureItem()
+        {
+            var infrastructureItems = ChangeTracker.Entries<InfrastructureItem>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity);
+
+            using var context = contextFactory.CreateDbContext();
+            foreach (var infrastructureItem in infrastructureItems)
+            {
+                var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(infrastructureItem.Geom)).FirstOrDefaultAsync();
+                infrastructureItem.MaintenanceTeamId = team?.Id;
             }
         }
 

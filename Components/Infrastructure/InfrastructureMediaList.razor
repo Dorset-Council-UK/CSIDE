@@ -1,0 +1,111 @@
+﻿@using CSIDE.Data.Models.Infrastructure
+@using CSIDE.Data.Models.Shared
+@using System.Globalization
+
+@if(InfrastructureItem is not null)
+{
+    
+    @if (InfrastructureItem.InfrastructureMedia is not null && InfrastructureItem.InfrastructureMedia.Count != 0)
+    {
+        
+        var images = from m in InfrastructureItem.InfrastructureMedia where m.Media.Format == MediaType.Image select m;
+        var videos = from m in InfrastructureItem.InfrastructureMedia where m.Media.Format == MediaType.Video select m;
+        var docs = 
+            from m in InfrastructureItem.InfrastructureMedia where (
+                m.Media.Format == MediaType.PDF_Document | 
+                m.Media.Format == MediaType.Word_Document |
+                m.Media.Format == MediaType.Excel_Spreadsheet |
+                m.Media.Format == MediaType.Unknown)
+            select m;
+
+        if (images.Count() != 0)
+        {
+            <div class="row my-4">
+                <h4>@localizer["Images Label"]</h4>
+                <div id="media-gallery">
+                    @foreach (InfrastructureMedia infrastructureMediaItem in images.OrderByDescending(i => i.Media.UploadDate))
+                    {
+                        <MediaItem Media="@infrastructureMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                    }
+                </div>
+                
+            </div>
+            <hr/>
+        }
+        if (videos.Count() != 0)
+        {
+            <div class="row my-4">
+                <h4>@localizer["Videos Label"]</h4>
+                @foreach (InfrastructureMedia infrastructureMediaItem in videos.OrderByDescending(i => i.Media.UploadDate))
+                {
+                    <div class="col-12">
+                        <MediaItem Media="@infrastructureMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                    </div>
+                }
+            </div>
+            <hr />
+        }
+
+        if (docs.Count() != 0)
+        {
+            <div class="row my-4">
+                <h4>@localizer["Documents Label"]</h4>
+                <div class="col">
+                    <table class="table table-striped">
+                        <tbody>
+                            @foreach (InfrastructureMedia infrastructureMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
+                        {
+                            <MediaItem Media="@infrastructureMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <Alert Color="AlertColor.Info">@localizer["No Media Message"]</Alert>
+    }
+}
+
+@if (IsEditable)
+{
+    <UploadFile 
+        MaxAllowedFiles="10" 
+        MaxFileSizeMB="50" 
+        OnUploadComplete="@AddMediaToInfrastructure" 
+        UploadErrorMessages="@UploadErrorMessages" 
+        UploadSuccessMessage="@UploadSuccessMessage">
+    </UploadFile>
+}
+
+<!--lightbox-->
+<div id="blueimp-gallery"
+class="blueimp-gallery blueimp-gallery-controls"
+aria-label="image gallery"
+aria-modal="true"
+role="dialog">
+    <div class="slides" aria-live="polite"></div>
+    <h3 class="title"></h3>
+    <a class="prev"
+    aria-controls="blueimp-gallery"
+    aria-label="previous slide"
+    aria-keyshortcuts="ArrowLeft"></a>
+    <a class="next"
+    aria-controls="blueimp-gallery"
+    aria-label="next slide"
+    aria-keyshortcuts="ArrowRight"></a>
+    <a class="close"
+    aria-controls="blueimp-gallery"
+    aria-label="close"
+    aria-keyshortcuts="Escape"></a>
+    <a class="play-pause"
+    aria-controls="blueimp-gallery"
+    aria-label="play slideshow"
+    aria-keyshortcuts="Space"
+    aria-pressed="false"
+    role="button"></a>
+    <ol class="indicator"></ol>
+</div>
+

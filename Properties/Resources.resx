@@ -531,6 +531,51 @@
   <data name="Problem Types Label" xml:space="preserve">
     <value>Problem types</value>
   </data>
+  <data name="Create New Infrastructure Text" xml:space="preserve">
+    <value>Add an infrastructure item to the database by adding it to the map and filling in the relevant details.</value>
+  </data>
+  <data name="Create New Infrastructure Label" xml:space="preserve">
+    <value>Create new infrastructure</value>
+  </data>
+  <data name="Infrastructure Create Title" xml:space="preserve">
+    <value>Create new infrastructure item</value>
+  </data>
+  <data name="Search Infrastructure Title" xml:space="preserve">
+    <value>Search infrastructure database</value>
+  </data>
+  <data name="Infrastructure Not Found Error Message" xml:space="preserve">
+    <value>Infrastructure with ID '{0}' was not found in the database</value>
+  </data>
+  <data name="Infrastructure Details Title" xml:space="preserve">
+    <value>Infrastructure Details {0}</value>
+  </data>
+  <data name="Infrastructure Name Label" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Infrastructure Installation Date Label" xml:space="preserve">
+    <value>Installation date</value>
+  </data>
+  <data name="Infrastructure Height Label" xml:space="preserve">
+    <value>Height (m)</value>
+  </data>
+  <data name="Infrastructure Width Label" xml:space="preserve">
+    <value>Width (m)</value>
+  </data>
+  <data name="Infrastructure Length Label" xml:space="preserve">
+    <value>Length (m)</value>
+  </data>
+  <data name="Installation Date From Label" xml:space="preserve">
+    <value>Installation date from</value>
+  </data>
+  <data name="Installation Date To Label" xml:space="preserve">
+    <value>Installation date to</value>
+  </data>
+  <data name="Infrastructure Edit Title" xml:space="preserve">
+    <value>Edit Infrastructure Item {0}</value>
+  </data>
+  <data name="Infrastructure Description Label" xml:space="preserve">
+    <value>Description</value>
+  </data>
   <data name="Create New Right of Way Text" xml:space="preserve">
     <value>Create a new Right of Way by drawing the line on a map and adding the details.</value>
   </data>

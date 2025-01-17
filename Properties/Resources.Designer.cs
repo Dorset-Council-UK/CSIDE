@@ -358,6 +358,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new infrastructure.
+        /// </summary>
+        public static string Create_New_Infrastructure_Label {
+            get {
+                return ResourceManager.GetString("Create New Infrastructure Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add an infrastructure item to the database by adding it to the map and filling in the relevant details..
+        /// </summary>
+        public static string Create_New_Infrastructure_Text {
+            get {
+                return ResourceManager.GetString("Create New Infrastructure Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new job.
         /// </summary>
         public static string Create_New_Job_Label {
@@ -655,6 +673,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new infrastructure item.
+        /// </summary>
+        public static string Infrastructure_Create_Title {
+            get {
+                return ResourceManager.GetString("Infrastructure Create Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string Infrastructure_Description_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infrastructure Details {0}.
+        /// </summary>
+        public static string Infrastructure_Details_Title {
+            get {
+                return ResourceManager.GetString("Infrastructure Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No infrastructure with that ID could be found.
         /// </summary>
         public static string Infrastructure_Does_Not_Exist_Validation_Message {
@@ -664,11 +709,65 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Infrastructure Item {0}.
+        /// </summary>
+        public static string Infrastructure_Edit_Title {
+            get {
+                return ResourceManager.GetString("Infrastructure Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Height (m).
+        /// </summary>
+        public static string Infrastructure_Height_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Height Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Infrastructure ID.
         /// </summary>
         public static string Infrastructure_ID_Label {
             get {
                 return ResourceManager.GetString("Infrastructure ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installation date.
+        /// </summary>
+        public static string Infrastructure_Installation_Date_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Installation Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length (m).
+        /// </summary>
+        public static string Infrastructure_Length_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Length Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Infrastructure_Name_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Name Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infrastructure with ID &apos;{0}&apos; was not found in the database.
+        /// </summary>
+        public static string Infrastructure_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("Infrastructure Not Found Error Message", resourceCulture);
             }
         }
         
@@ -691,11 +790,38 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Width (m).
+        /// </summary>
+        public static string Infrastructure_Width_Label {
+            get {
+                return ResourceManager.GetString("Infrastructure Width Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Infrastructure ({0}).
         /// </summary>
         public static string Infrastructure_With_Count_Title {
             get {
                 return ResourceManager.GetString("Infrastructure With Count Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installation date from.
+        /// </summary>
+        public static string Installation_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Installation Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installation date to.
+        /// </summary>
+        public static string Installation_Date_To_Label {
+            get {
+                return ResourceManager.GetString("Installation Date To Label", resourceCulture);
             }
         }
         
@@ -1353,6 +1479,15 @@ namespace CSIDE.Properties {
         public static string Search_Again_Label {
             get {
                 return ResourceManager.GetString("Search Again Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search infrastructure database.
+        /// </summary>
+        public static string Search_Infrastructure_Title {
+            get {
+                return ResourceManager.GetString("Search Infrastructure Title", resourceCulture);
             }
         }
         

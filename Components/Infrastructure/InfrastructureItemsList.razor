@@ -1,0 +1,44 @@
+﻿@rendermode InteractiveServer
+@using CSIDE.Data.Models.Infrastructure
+@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+@if (InfrastructureItems is null)
+{
+    <p>@localizer["Loading Text"]</p>
+}
+else if (InfrastructureItems.Count == 0)
+{
+    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="/Infrastructure#search-form">@localizer["Search Again Label"]</a></Alert>
+}
+else
+{
+    <a href="/Infrastructure#search-form">@localizer["Search Again Label"]</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@localizer["Infrastructure ID Label"]</th>
+                <th>@localizer["Parish Label"]</th>
+                <th>@localizer["Route ID Label"]</th>
+                <th>@localizer["Infrastructure Type Label"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in InfrastructureItems)
+            {
+                <tr>
+                    <td><a href="/Infrastructure/Details/@item.Id">@item.Id</a></td>
+                    <td>@item.Parish?.Name</td>
+                    <td>@item.RouteId</td>
+                    <td>@item.InfrastructureType?.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public List<InfrastructureItem>? InfrastructureItems { get; set; }
+}

@@ -2,6 +2,7 @@
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250108113650_AddMediaToInfrastructure")]
+    partial class AddMediaToInfrastructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -442,166 +445,21 @@ namespace CSIDE.Migrations
                     b.ToTable("MaintenanceTeams", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.LegalStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RouteLegalStatuses", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.OperationalStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RouteOperationalStatuses", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>
+            modelBuilder.Entity("CSIDE.Data.Models.RoW.Route", b =>
                 {
                     b.Property<string>("RouteCode")
                         .HasColumnType("text");
-
-                    b.Property<LocalDate?>("ClosureEndDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("ClosureIsIndefinite")
-                        .HasColumnType("boolean");
-
-                    b.Property<LocalDate?>("ClosureStartDate")
-                        .HasColumnType("date");
 
                     b.Property<MultiLineString>("Geom")
                         .IsRequired()
                         .HasColumnType("geometry (multilinestring)");
 
-                    b.Property<int>("LegalStatusId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("MaintenanceTeamId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
-
-                    b.Property<int>("OperationalStatusId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ParishId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RouteTypeId")
-                        .HasColumnType("integer");
 
                     b.HasKey("RouteCode");
 
-                    b.HasIndex("LegalStatusId");
-
-                    b.HasIndex("MaintenanceTeamId");
-
-                    b.HasIndex("OperationalStatusId");
-
-                    b.HasIndex("ParishId");
-
-                    b.HasIndex("RouteTypeId");
-
                     b.ToTable("Routes", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.RouteMedia", b =>
-                {
-                    b.Property<string>("RouteId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("MediaId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsClosureNotificationDocument")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("RouteId", "MediaId");
-
-                    b.HasIndex("MediaId");
-
-                    b.ToTable("RouteMedia", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.RouteType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RouteTypes", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Statement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<Instant>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("EndGridRef")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("RouteId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StartGridRef")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("StatementText")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RouteId");
-
-                    b.ToTable("Statements", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>
@@ -715,20 +573,6 @@ namespace CSIDE.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.Shared.ParishCode", b =>
-                {
-                    b.Property<int>("ParishId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("ParishId", "Code");
-
-                    b.ToTable("ParishCodes", "cside");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.Authorization.ApplicationUserRole", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Authorization.ApplicationRole", "Role")
@@ -754,7 +598,7 @@ namespace CSIDE.Migrations
                         .WithMany()
                         .HasForeignKey("ParishId");
 
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
+                    b.HasOne("CSIDE.Data.Models.RoW.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId");
 
@@ -819,7 +663,7 @@ namespace CSIDE.Migrations
                         .WithMany()
                         .HasForeignKey("ParishId");
 
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
+                    b.HasOne("CSIDE.Data.Models.RoW.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId");
 
@@ -910,75 +754,6 @@ namespace CSIDE.Migrations
                     b.Navigation("ProblemType");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.LegalStatus", "LegalStatus")
-                        .WithMany()
-                        .HasForeignKey("LegalStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.Maintenance.Team", "MaintenanceTeam")
-                        .WithMany()
-                        .HasForeignKey("MaintenanceTeamId");
-
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.OperationalStatus", "OperationalStatus")
-                        .WithMany()
-                        .HasForeignKey("OperationalStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
-                        .WithMany()
-                        .HasForeignKey("ParishId");
-
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.RouteType", "RouteType")
-                        .WithMany()
-                        .HasForeignKey("RouteTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LegalStatus");
-
-                    b.Navigation("MaintenanceTeam");
-
-                    b.Navigation("OperationalStatus");
-
-                    b.Navigation("Parish");
-
-                    b.Navigation("RouteType");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.RouteMedia", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
-                        .WithMany()
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
-                        .WithMany("RouteMedia")
-                        .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Media");
-
-                    b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Statement", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
-                        .WithMany("Statements")
-                        .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Route");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Shared.ContactType", "ContactType")
@@ -993,17 +768,6 @@ namespace CSIDE.Migrations
                     b.Navigation("InfrastructureMedia");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.Shared.ParishCode", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
-                        .WithMany()
-                        .HasForeignKey("ParishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Parish");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Job", b =>
                 {
                     b.Navigation("Comments");
@@ -1015,13 +779,6 @@ namespace CSIDE.Migrations
                     b.Navigation("JobMedia");
 
                     b.Navigation("ProblemTypes");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>
-                {
-                    b.Navigation("RouteMedia");
-
-                    b.Navigation("Statements");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>
