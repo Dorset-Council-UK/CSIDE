@@ -1,4 +1,5 @@
 
+using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Authorization;
 using CSIDE.Components;
@@ -8,15 +9,16 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ConfigureKeyVault(builder);
 
-// Add services to the container.
-//add azure monitor
 builder.Services.AddOpenTelemetry().UseAzureMonitor(options => {
     options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
 });
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();
@@ -102,3 +104,28 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+void ConfigureKeyVault(WebApplicationBuilder builder)
+{
+    // Set up Azure Key Vault if a KeyVault name is provided in the configuration
+    if (!string.IsNullOrEmpty(builder.Configuration.GetSection("KeyVault")["Name"]))
+    {
+        using var x509Store = new X509Store(StoreLocation.LocalMachine);
+        x509Store.Open(OpenFlags.ReadOnly);
+
+        var x509Certificate = x509Store.Certificates
+            .Find(
+                X509FindType.FindByThumbprint,
+                builder.Configuration.GetSection("KeyVault").GetSection("AzureAd")["CertificateThumbprint"],
+                validOnly: false)
+            .OfType<X509Certificate2>()
+            .Single();
+
+        builder.Configuration.AddAzureKeyVault(
+            new Uri($"https://{builder.Configuration.GetSection("KeyVault")["Name"]}.vault.azure.net/"),
+            new ClientCertificateCredential(
+                builder.Configuration.GetSection("KeyVault").GetSection("AzureAd")["DirectoryId"],
+                builder.Configuration.GetSection("KeyVault").GetSection("AzureAd")["ApplicationId"],
+                x509Certificate));
+    }
+}
