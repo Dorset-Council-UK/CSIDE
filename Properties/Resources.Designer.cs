@@ -1609,6 +1609,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Statement Text.
+        /// </summary>
+        public static string Statement_Text_Label {
+            get {
+                return ResourceManager.GetString("Statement Text Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Statement.
         /// </summary>
         public static string Statements_Title {

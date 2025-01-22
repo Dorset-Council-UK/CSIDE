@@ -40,7 +40,7 @@ namespace CSIDE.Components.Pages.Maintenance
             NavItems = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-            new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
+            new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
             new BreadcrumbItem{ Text = localizer["Maintenance Create Title"], IsCurrentPage = true }
         };
 
@@ -79,7 +79,7 @@ namespace CSIDE.Components.Pages.Maintenance
                         CreateMaintenanceProblemTypes(SelectedProblemTypes, Job.Id, context);
                         await context.SaveChangesAsync();
                         //redirect
-                        navigationManager.NavigateTo($"/Maintenance/Details/{Job.Id}");
+                        navigationManager.NavigateTo($"Maintenance/Details/{Job.Id}");
                     }
                 }
                 catch (Exception ex)

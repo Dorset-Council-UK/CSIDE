@@ -40,7 +40,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-                new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="/rights-of-way" },
+                new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
                 new BreadcrumbItem{ Text = localizer["Create New Right of Way Label"], IsCurrentPage = true }
             ];
             IsBusy = true;
@@ -86,7 +86,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
                         context.Add(Route);
                         await context.SaveChangesAsync();
                         //redirect
-                        navigationManager.NavigateTo($"/rights-of-way/Details/{Route.RouteCode}");
+                        navigationManager.NavigateTo($"rights-of-way/Details/{Route.RouteCode}");
                     }
                 }
                 catch (DbUpdateConcurrencyException ex)
@@ -108,7 +108,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
 
         private void NavigateBackToRouteSearchPage()
         {
-            navigationManager.NavigateTo($"/rights-of-way");
+            navigationManager.NavigateTo($"rights-of-way");
         }
 
         //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)

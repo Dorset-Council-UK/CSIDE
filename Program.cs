@@ -7,6 +7,7 @@ using CSIDE.Data;
 using CSIDE.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using System.Security.Cryptography.X509Certificates;
@@ -16,14 +17,19 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigureKeyVault(builder);
 
 builder.Services.AddOpenTelemetry().UseAzureMonitor(options => {
-    options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+    options.ConnectionString = builder.Configuration["CSIDE:ApplicationInsights:ConnectionString"];
+});
+
+// Configure forwarded headers options
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
 });
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("CSIDE"), x =>
@@ -33,7 +39,8 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         x.UseNetTopologySuite();
     });
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
-});
+ 
+}, lifetime: ServiceLifetime.Scoped);
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
@@ -42,7 +49,7 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
                 {
-                    builder.Configuration.Bind("AzureAd", options);
+                    builder.Configuration.Bind("CSIDE:AzureAd", options);
                     options.Events = new OpenIdConnectEvents
                     {
                         OnRedirectToIdentityProvider = async ctxt =>
@@ -79,6 +86,11 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));
 
 var app = builder.Build();
+
+app.UsePathBase($"/{builder.Configuration["CSIDE:PathBase"]}");
+
+app.UseForwardedHeaders();
+
 // add supported languages/cultures
 string[] supportedCultures = ["en-GB", "cy"];
 var localizationOptions = new RequestLocalizationOptions()
@@ -87,13 +99,16 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedUICultures(supportedCultures);
 
 app.UseRequestLocalization(localizationOptions);
-// Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
 
-app.UseHttpsRedirection();
+if (builder.Configuration.GetSection("CSIDE").GetValue<bool>("UseHttpsRedirection"))
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapStaticAssets();
 app.UseAuthentication();
@@ -108,7 +123,7 @@ app.Run();
 void ConfigureKeyVault(WebApplicationBuilder builder)
 {
     // Set up Azure Key Vault if a KeyVault name is provided in the configuration
-    if (!string.IsNullOrEmpty(builder.Configuration.GetSection("KeyVault")["Name"]))
+    if (!string.IsNullOrEmpty(builder.Configuration.GetSection("CSIDE").GetSection("KeyVault")["Name"]))
     {
         using var x509Store = new X509Store(StoreLocation.LocalMachine);
         x509Store.Open(OpenFlags.ReadOnly);
@@ -116,16 +131,16 @@ void ConfigureKeyVault(WebApplicationBuilder builder)
         var x509Certificate = x509Store.Certificates
             .Find(
                 X509FindType.FindByThumbprint,
-                builder.Configuration.GetSection("KeyVault").GetSection("AzureAd")["CertificateThumbprint"],
+                builder.Configuration.GetSection("CSIDE").GetSection("KeyVault").GetSection("AzureAd")["CertificateThumbprint"],
                 validOnly: false)
             .OfType<X509Certificate2>()
             .Single();
 
         builder.Configuration.AddAzureKeyVault(
-            new Uri($"https://{builder.Configuration.GetSection("KeyVault")["Name"]}.vault.azure.net/"),
+            new Uri($"https://{builder.Configuration.GetSection("CSIDE").GetSection("KeyVault")["Name"]}.vault.azure.net/"),
             new ClientCertificateCredential(
-                builder.Configuration.GetSection("KeyVault").GetSection("AzureAd")["DirectoryId"],
-                builder.Configuration.GetSection("KeyVault").GetSection("AzureAd")["ApplicationId"],
+                builder.Configuration.GetSection("CSIDE").GetSection("KeyVault").GetSection("AzureAd")["DirectoryId"],
+                builder.Configuration.GetSection("CSIDE").GetSection("KeyVault").GetSection("AzureAd")["ApplicationId"],
                 x509Certificate));
     }
 }

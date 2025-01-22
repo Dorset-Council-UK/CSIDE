@@ -52,7 +52,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
                     var routeExists = await context.Routes.AnyAsync(j => j.RouteCode == RouteIDSearch);
                     if (routeExists)
                     {
-                        navigationManager.NavigateTo($"/rights-of-way/Details/{RouteIDSearch}");
+                        navigationManager.NavigateTo($"rights-of-way/Details/{RouteIDSearch}");
                         return;
                     }
                     else
@@ -86,7 +86,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
                     if (await _fluentValidationValidator!.ValidateAsync())
                     {
                         var qs = Helpers.QueryStringHelper.GetQueryString(SearchParams);
-                        navigationManager.NavigateTo($"/rights-of-way/List?{qs}");
+                        navigationManager.NavigateTo($"rights-of-way/List?{qs}");
                     }
                 }
                 finally

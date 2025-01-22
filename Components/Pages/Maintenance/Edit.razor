@@ -13,7 +13,7 @@
 @if(Job is null && !IsBusy)
 {
     <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message", JobId]</Alert>
-    <a href="/Maintenance" class="btn btn-primary">@localizer["Search Jobs Title"]</a>
+    <a href="Maintenance" class="btn btn-primary">@localizer["Search Jobs Title"]</a>
 }
 else
 {

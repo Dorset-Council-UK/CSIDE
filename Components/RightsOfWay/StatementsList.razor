@@ -5,7 +5,7 @@
 @if(IsEditable){
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ShowEditStatementModal" Class="my-2">@localizer["Modify Statement Label"]</Button>
 
-    <Modal @ref="EditStatementModal" Title="@localizer["Edit Statement Title"]">
+    <Modal @ref="EditStatementModal" Title="@localizer["Modify Statement Label"]">
 
         <BodyTemplate>
             @if(ErrorMessage is not null){

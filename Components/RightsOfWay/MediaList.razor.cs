@@ -24,7 +24,7 @@ namespace CSIDE.Components.RightsOfWay
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Maintenance/MediaList.razor.js");
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Maintenance/MediaList.razor.js");
 
             await _jsModule.InvokeVoidAsync("initGallery");
 

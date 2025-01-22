@@ -12,13 +12,13 @@
 <h1 class="mb-3">@localizer["Maintenance Title"]</h1>
 
 <p>@localizer["Create New Job Text"]</p>
-<a href="/Maintenance/Create" class="btn btn-primary">@localizer["Create New Job Label"]</a>
+<a href="Maintenance/Create" class="btn btn-primary">@localizer["Create New Job Label"]</a>
 
 <hr/>
 
 <h2 class="mb-3">@localizer["Search Jobs Title"]</h2>
 
-<a href="/Maintenance/Jobs?LogDateFrom=@(DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"))" class="btn btn-primary">@localizer["View All Recent Jobs Label"]</a>
+<a href="Maintenance/Jobs?LogDateFrom=@(DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"))" class="btn btn-primary">@localizer["View All Recent Jobs Label"]</a>
 
 <form method="post" @onsubmit="@OnJobIDSearchSubmit" @formname="JobIDSearch" class="mt-3">
     @if (JobIDSearchErrorMessage is not null)

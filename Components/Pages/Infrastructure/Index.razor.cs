@@ -55,7 +55,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                         var infrastructureExists = await context.Infrastructure.AnyAsync(j => j.Id == InfrastructureIDSearchInt);
                         if (infrastructureExists)
                         {
-                            navigationManager.NavigateTo($"/Infrastructure/Details/{InfrastructureIDSearchInt}");
+                            navigationManager.NavigateTo($"Infrastructure/Details/{InfrastructureIDSearchInt}");
                             return;
                         }
                         else
@@ -93,7 +93,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                     if (await _fluentValidationValidator!.ValidateAsync())
                     {
                         var qs = Helpers.QueryStringHelper.GetQueryString(SearchParams);
-                        navigationManager.NavigateTo($"/Infrastructure/Items?{qs}");
+                        navigationManager.NavigateTo($"Infrastructure/Items?{qs}");
                     }
                 }
                 finally

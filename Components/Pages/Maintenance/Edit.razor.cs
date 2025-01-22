@@ -39,7 +39,7 @@ namespace CSIDE.Components.Pages.Maintenance
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-                new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="/Maintenance" },
+                new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
                 new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", JobId], IsCurrentPage = true }
             ];
             IsBusy = true;
@@ -124,7 +124,7 @@ namespace CSIDE.Components.Pages.Maintenance
 
         private void NavigateBackToJobDetailsPage()
         {
-            navigationManager.NavigateTo($"/Maintenance/Details/{JobId}");
+            navigationManager.NavigateTo($"Maintenance/Details/{JobId}");
         }
 
         //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)

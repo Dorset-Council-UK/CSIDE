@@ -699,4 +699,7 @@
   <data name="Modify Statement Label" xml:space="preserve">
     <value>Modify statement</value>
   </data>
+  <data name="Statement Text Label" xml:space="preserve">
+    <value>Statement Text</value>
+  </data>
 </root>

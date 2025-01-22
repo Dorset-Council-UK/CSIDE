@@ -19,8 +19,8 @@ namespace CSIDE.Services
         public BlobStorageService(IConfiguration configuration, ILogger<BlobStorageService> logger)
         {
             _configuration = configuration;
-            blobStorageConnection = _configuration.GetValue<string>("AzureBlobStorage:ConnectionString");
-            blobContainerName = _configuration.GetValue<string>("AzureBlobStorage:ContainerName");
+            blobStorageConnection = _configuration.GetValue<string>("CSIDE:AzureBlobStorage:ConnectionString");
+            blobContainerName = _configuration.GetValue<string>("CSIDE:AzureBlobStorage:ContainerName");
             this.logger = logger;
         }
 

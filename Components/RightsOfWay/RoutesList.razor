@@ -11,11 +11,11 @@
 }
 else if (Routes.Count == 0)
 {
-    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="/rights-of-way#search-form">@localizer["Search Again Label"]</a></Alert>
+    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="rights-of-way#search-form">@localizer["Search Again Label"]</a></Alert>
 }
 else
 {
-    <a href="/rights-of-way#search-form">@localizer["Search Again Label"]</a>
+    <a href="rights-of-way#search-form">@localizer["Search Again Label"]</a>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -32,7 +32,7 @@ else
                 @foreach(var route in Routes)
                 {
                     <tr>
-                        <td><a href="/rights-of-way/Details/@route.RouteCode">@route.RouteCode</a></td>
+                        <td><a href="rights-of-way/Details/@route.RouteCode">@route.RouteCode</a></td>
                         <td>@route.Parish?.Name</td>
                         <td>@route.MaintenanceTeam?.Name</td>
                         <td>@route.Name</td>

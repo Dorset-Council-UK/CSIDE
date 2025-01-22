@@ -15,6 +15,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: Npm@1
+  displayName: 'Install npm dependencies'
+  inputs:
+    command: 'install'
+
+- task: Npm@1
+  displayName: 'Webpack Build (prod)'
+  inputs:
+    command: 'custom'
+    customCommand: 'run build'
+
 - task: NuGetToolInstaller@1
   displayName: 'Install NuGet'
 

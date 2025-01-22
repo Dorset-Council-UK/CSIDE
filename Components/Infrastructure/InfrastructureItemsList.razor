@@ -10,11 +10,11 @@
 }
 else if (InfrastructureItems.Count == 0)
 {
-    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="/Infrastructure#search-form">@localizer["Search Again Label"]</a></Alert>
+    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="Infrastructure#search-form">@localizer["Search Again Label"]</a></Alert>
 }
 else
 {
-    <a href="/Infrastructure#search-form">@localizer["Search Again Label"]</a>
+    <a href="Infrastructure#search-form">@localizer["Search Again Label"]</a>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -28,7 +28,7 @@ else
             @foreach (var item in InfrastructureItems)
             {
                 <tr>
-                    <td><a href="/Infrastructure/Details/@item.Id">@item.Id</a></td>
+                    <td><a href="Infrastructure/Details/@item.Id">@item.Id</a></td>
                     <td>@item.Parish?.Name</td>
                     <td>@item.RouteId</td>
                     <td>@item.InfrastructureType?.Name</td>

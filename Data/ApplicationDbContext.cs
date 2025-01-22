@@ -10,10 +10,8 @@ using CSIDE.Data.Models.RightsOfWay;
 
 namespace CSIDE.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDbContextFactory<ApplicationDbContext> contextFactory, IHttpContextAccessor httpContextAccessor) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDbContextFactory<ApplicationDbContext> contextFactory, AuthenticationStateProvider authenticationStateProvider) : DbContext(options)
     {
-        private Task<AuthenticationState> authenticationStateTask { get; set; }
-
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
         public DbSet<ApplicationUserRole> ApplicationUserRoles { get; set; }
 
@@ -92,7 +90,7 @@ namespace CSIDE.Data
             {
                 UpdateMaintenanceJobParishIds().Wait();
                 SetMaintenanceTeamForJob().Wait();
-                SetLoggedByUser();
+                SetLoggedByUserAsync().Wait();
             }
             if (ChangeTracker.Entries<InfrastructureItem>().Any())
             {
@@ -116,7 +114,7 @@ namespace CSIDE.Data
             {
                 await UpdateMaintenanceJobParishIds();
                 await SetMaintenanceTeamForJob();
-                SetLoggedByUser();
+                await SetLoggedByUserAsync();
             }
 
             if (ChangeTracker.Entries<InfrastructureItem>().Any())
@@ -200,15 +198,15 @@ namespace CSIDE.Data
         /// Sets the LoggedById and LoggedByName of a newly added job to the currently logged in user
         /// </summary>
         /// <returns></returns>
-        private void SetLoggedByUser()
+        private async Task SetLoggedByUserAsync()
         {
             var jobs = ChangeTracker.Entries<Job>()
                 .Where(e => e.State == EntityState.Added)
                 .Select(e => e.Entity);
-            var user = httpContextAccessor.HttpContext?.User;
+            var stateProvider = await authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = stateProvider.User;
             if (user is not null)
             {
-                using var context = contextFactory.CreateDbContext();
                 foreach (var job in jobs)
                 {
                     job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;

@@ -41,7 +41,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-                new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="/rights-of-way" },
+                new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
                 new BreadcrumbItem{ Text = localizer["Rights of Way Edit Title", RouteID], IsCurrentPage = true }
             ];
             IsBusy = true;
@@ -103,7 +103,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
 
         private void NavigateBackToRouteDetailsPage()
         {
-            navigationManager.NavigateTo($"/rights-of-way/Details/{RouteID}");
+            navigationManager.NavigateTo($"rights-of-way/Details/{RouteID}");
         }
 
         //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)

@@ -20,7 +20,7 @@ namespace CSIDE.Components.Infrastructure
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Infrastructure/InfrastructureMediaList.razor.js");
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Infrastructure/InfrastructureMediaList.razor.js");
 
             await _jsModule.InvokeVoidAsync("initGallery");
 

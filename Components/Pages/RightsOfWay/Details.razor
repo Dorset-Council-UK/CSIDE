@@ -45,7 +45,7 @@ else
             }
         }
 
-        <a href="/rights-of-way/Edit/@(Uri.EscapeDataString(Route.RouteCode))" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        <a href="rights-of-way/Edit/@(Uri.EscapeDataString(Route.RouteCode))" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
 
         <div class="row">
             <div class="col-lg-8">
@@ -198,7 +198,7 @@ else
         NavItems = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-            new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="/rights-of-way" },
+            new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
             new BreadcrumbItem{ Text = localizer["Rights of Way Details Title", RouteId], IsCurrentPage = true }
         };
 

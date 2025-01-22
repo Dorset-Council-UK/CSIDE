@@ -32,7 +32,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-                new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="/rights-of-way" },
+                new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true }
             ];
             //fetch results

@@ -34,7 +34,7 @@ namespace CSIDE.Components.Pages.Infrastructure
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-                new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="/Infrastructure" },
+                new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
                 new BreadcrumbItem{ Text = localizer["Infrastructure Edit Title", InfrastructureId], IsCurrentPage = true }
             ];
             IsBusy = true;
@@ -89,7 +89,7 @@ namespace CSIDE.Components.Pages.Infrastructure
 
         private void NavigateBackToInfrastructureDetailsPage()
         {
-            navigationManager.NavigateTo($"/Infrastructure/Details/{InfrastructureId}");
+            navigationManager.NavigateTo($"Infrastructure/Details/{InfrastructureId}");
         }
 
         ////TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)

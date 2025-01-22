@@ -23,7 +23,7 @@ const iconStyle = new Style({
     anchorYUnits: "pixels",
     crossOrigin: 'anonymous',
     color: themeColor,
-    src: `/img/map-pin.svg`, //TODO this won't work in contexts where the app isn't running on root
+    src: `./img/map-pin.svg`, //TODO this won't work in contexts where the app isn't running on root
   }),
 });
 const lineStyle = new Style({
@@ -112,7 +112,7 @@ export function initMap(geomType: string, geometry: string, mapConfigJSON: strin
     mapConfig.overlays.forEach((overlay: { mapServiceBaseURL: any; layerName: any; }) => {
       const overlaySource = new TileWMS({
         url: overlay.mapServiceBaseURL,
-        params: { 'LAYERS': overlay.layerName },
+        params: { 'LAYERS': overlay.layerName, 'v': crypto.randomUUID() },
       });
       const layer = new TileLayer({ source: overlaySource });
       map.addLayer(layer);

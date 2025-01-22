@@ -531,6 +531,60 @@
   <data name="Problem Types Label" xml:space="preserve">
     <value>Mathau o broblemau</value>
   </data>
+  <data name="Create New Infrastructure Text" xml:space="preserve">
+    <value>Ychwanegwch eitem seilwaith i'r gronfa ddata drwy ei hychwanegu at y map a llenwi'r manylion perthnasol.</value>
+  </data>
+  <data name="Create New Infrastructure Label" xml:space="preserve">
+    <value>Creu seilwaith newydd</value>
+  </data>
+  <data name="Infrastructure Create Title" xml:space="preserve">
+    <value>Creu eitem seilwaith newydd</value>
+  </data>
+  <data name="Search Infrastructure Title" xml:space="preserve">
+    <value>Chwilio cronfa ddata seilwaith</value>
+  </data>
+  <data name="Infrastructure Not Found Error Message" xml:space="preserve">
+    <value>Ni ddaethpwyd o hyd i seilwaith gyda ID '{0}' yn y gronfa ddata</value>
+  </data>
+  <data name="Infrastructure Details Title" xml:space="preserve">
+    <value>Manylion Seilwaith {0}</value>
+  </data>
+  <data name="Infrastructure Name Label" xml:space="preserve">
+    <value>
+Enw</value>
+  </data>
+  <data name="Infrastructure Installation Date Label" xml:space="preserve">
+    <value>
+Dyddiad gosod</value>
+  </data>
+  <data name="Infrastructure Height Label" xml:space="preserve">
+    <value>
+Uchder (m)</value>
+  </data>
+  <data name="Infrastructure Width Label" xml:space="preserve">
+    <value>
+lled (m)</value>
+  </data>
+  <data name="Infrastructure Length Label" xml:space="preserve">
+    <value>
+Hyd (m)</value>
+  </data>
+  <data name="Installation Date From Label" xml:space="preserve">
+    <value>
+Dyddiad gosod o</value>
+  </data>
+  <data name="Installation Date To Label" xml:space="preserve">
+    <value>
+Dyddiad gosod i</value>
+  </data>
+  <data name="Infrastructure Edit Title" xml:space="preserve">
+    <value>
+Golygu Eitem Seilwaith {0}</value>
+  </data>
+  <data name="Infrastructure Description Label" xml:space="preserve">
+    <value>
+Disgrifiad</value>
+  </data>
   <data name="Create New Right of Way Text" xml:space="preserve">
     <value>Creu Hawl Tramwy newydd trwy dynnu'r llinell ar fap ac ychwanegu'r manylion.</value>
   </data>
@@ -654,58 +708,7 @@
   <data name="Modify Statement Label" xml:space="preserve">
     <value>Addasu datganiad cyfreithiol</value>
   </data>
-  <data name="Create New Infrastructure Text" xml:space="preserve">
-    <value>Ychwanegwch eitem seilwaith i'r gronfa ddata drwy ei hychwanegu at y map a llenwi'r manylion perthnasol.</value>
-  </data>
-  <data name="Create New Infrastructure Label" xml:space="preserve">
-    <value>Creu seilwaith newydd</value>
-  </data>
-  <data name="Infrastructure Create Title" xml:space="preserve">
-    <value>Creu eitem seilwaith newydd</value>
-  </data>
-  <data name="Search Infrastructure Title" xml:space="preserve">
-    <value>Chwilio cronfa ddata seilwaith</value>
-  </data>
-  <data name="Infrastructure Not Found Error Message" xml:space="preserve">
-    <value>Ni ddaethpwyd o hyd i seilwaith gyda ID '{0}' yn y gronfa ddata</value>
-  </data>
-  <data name="Infrastructure Details Title" xml:space="preserve">
-    <value>Manylion Seilwaith {0}</value>
-  </data>
-  <data name="Infrastructure Name Label" xml:space="preserve">
-    <value>
-Enw</value>
-  </data>
-  <data name="Infrastructure Installation Date Label" xml:space="preserve">
-    <value>
-Dyddiad gosod</value>
-  </data>
-  <data name="Infrastructure Height Label" xml:space="preserve">
-    <value>
-Uchder (m)</value>
-  </data>
-  <data name="Infrastructure Width Label" xml:space="preserve">
-    <value>
-lled (m)</value>
-  </data>
-  <data name="Infrastructure Length Label" xml:space="preserve">
-    <value>
-Hyd (m)</value>
-  </data>
-  <data name="Installation Date From Label" xml:space="preserve">
-    <value>
-Dyddiad gosod o</value>
-  </data>
-  <data name="Installation Date To Label" xml:space="preserve">
-    <value>
-Dyddiad gosod i</value>
-  </data>
-  <data name="Infrastructure Edit Title" xml:space="preserve">
-    <value>
-Golygu Eitem Seilwaith {0}</value>
-  </data>
-  <data name="Infrastructure Description Label" xml:space="preserve">
-    <value>
-Disgrifiad</value>
+  <data name="Statement Text Label" xml:space="preserve">
+    <value>Testun Datganiad Cyfreithiol</value>
   </data>
 </root>

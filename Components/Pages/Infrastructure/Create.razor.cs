@@ -69,7 +69,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                         await context.SaveChangesAsync();
                        
                         //redirect
-                        navigationManager.NavigateTo($"/Infrastructure/Details/{InfrastructureItem.Id}");
+                        navigationManager.NavigateTo($"Infrastructure/Details/{InfrastructureItem.Id}");
                     }
                 }
                 catch (Exception ex)

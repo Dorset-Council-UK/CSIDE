@@ -36,7 +36,7 @@ namespace CSIDE.Components.Pages.Infrastructure
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-                new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="/Infrastructure" },
+                new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true }
             ];
             //fetch results

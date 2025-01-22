@@ -55,7 +55,7 @@ namespace CSIDE.Components.Pages.Maintenance
                         var jobExists = await context.MaintenanceJobs.AnyAsync(j => j.Id == JobIDSearchInt);
                         if (jobExists)
                         {
-                            navigationManager.NavigateTo($"/Maintenance/Details/{JobIDSearchInt}");
+                            navigationManager.NavigateTo($"Maintenance/Details/{JobIDSearchInt}");
                             return;
                         }
                         else
@@ -93,7 +93,7 @@ namespace CSIDE.Components.Pages.Maintenance
                     if (await _fluentValidationValidator!.ValidateAsync())
                     {
                         var qs = Helpers.QueryStringHelper.GetQueryString(SearchParams);
-                        navigationManager.NavigateTo($"/Maintenance/Jobs?{qs}");
+                        navigationManager.NavigateTo($"Maintenance/Jobs?{qs}");
                     }
                 }
                 finally
