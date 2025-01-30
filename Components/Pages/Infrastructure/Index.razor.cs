@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using CSIDE.Data.Models.Maintenance;
+using System.Globalization;
 
 namespace CSIDE.Components.Pages.Infrastructure
 {
@@ -48,8 +49,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                 InfrastructureIDSearchErrorMessage = null;
                 try
                 {
-                    int InfrastructureIDSearchInt;
-                    if (int.TryParse(InfrastructureIDSearch, out InfrastructureIDSearchInt))
+                    if (int.TryParse(InfrastructureIDSearch, CultureInfo.InvariantCulture, out int InfrastructureIDSearchInt))
                     {
                         using var context = contextFactory.CreateDbContext();
                         var infrastructureExists = await context.Infrastructure.AnyAsync(j => j.Id == InfrastructureIDSearchInt);

@@ -12,10 +12,8 @@ using FluentValidation;
 
 namespace CSIDE.Components.Pages.Infrastructure
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
     {
-        [CascadingParameter]
-        private Task<AuthenticationState> AuthenticationStateTask { get; set; }
         private List<BreadcrumbItem>? NavItems;
         private Modal routeValidationModal = default!;
         private Modal errorModal = default!;
@@ -32,12 +30,12 @@ namespace CSIDE.Components.Pages.Infrastructure
 
         protected override async Task OnInitializedAsync()
         {
-            NavItems = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = localizer["Home Title"], Href = "/" },
-                new BreadcrumbItem { Text = localizer["Infrastructure Title"], Href = "/Infrastructure" },
-                new BreadcrumbItem { Text = localizer["Infrastructure Create Title"], IsCurrentPage = true }
-            };
+            NavItems =
+            [
+                new() { Text = localizer["Home Title"], Href = "/" },
+                new() { Text = localizer["Infrastructure Title"], Href = "/Infrastructure" },
+                new() { Text = localizer["Infrastructure Create Title"], IsCurrentPage = true }
+            ];
 
             using var context = contextFactory.CreateDbContext();
             InfrastructureTypes = await context.InfrastructureTypes.OrderBy(n => n.Name).ToArrayAsync();
@@ -75,6 +73,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "Error creating infrastructure item");
                 }
                 finally
                 {
@@ -88,7 +87,7 @@ namespace CSIDE.Components.Pages.Infrastructure
         private async Task ValidateGeometry(string features)
         {
             //check the geometry is a single point and is on a valid route
-            GeoJsonReader _geoJsonReader = new GeoJsonReader();
+            GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
             CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);

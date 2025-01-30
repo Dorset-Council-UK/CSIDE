@@ -8,7 +8,7 @@ using NodaTime;
 
 namespace CSIDE.Components.Pages.Infrastructure
 {
-    public partial class Items(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class Items(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<Items> logger)
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -31,6 +31,8 @@ namespace CSIDE.Components.Pages.Infrastructure
 
         private List<InfrastructureItem>? SearchResults;
 
+        private const int MaxResults = 1000;
+        private bool IsBusy { get; set; }
         protected override async Task OnParametersSetAsync()
         {
             NavItems =
@@ -39,49 +41,59 @@ namespace CSIDE.Components.Pages.Infrastructure
                 new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true }
             ];
-            //fetch results
-            using var context = contextFactory.CreateDbContext();
-
-            var query = context.Infrastructure.AsQueryable();
-
-            if (RouteId is not null)
+            try
             {
-                query = query.Where(i => i.RouteId == RouteId);
-            }
-            if (ParishIds is not null && ParishIds.Length != 0)
-            {
-                var parsedParishIds = ParishIds
-                    .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
-                    .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
-                    .ToList();
-                if (parsedParishIds.Count != 0)
+                IsBusy = true;
+                using var context = contextFactory.CreateDbContext();
+
+                var query = context.Infrastructure.AsQueryable();
+
+                if (RouteId is not null)
                 {
-                    query = query.Where(i => i.ParishId != null && parsedParishIds.Contains(i.ParishId.Value));
+                    query = query.Where(i => i.RouteId == RouteId);
                 }
-            }
-            else if (ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
-            {
-                query = query.Where(i => i.ParishId == parsedParishId);
-            }
-            if (MaintenanceTeamId is not null && int.TryParse(MaintenanceTeamId, CultureInfo.InvariantCulture, out int parsedAssignedToTeamId))
-            {
-                query = query.Where(j => j.MaintenanceTeamId == parsedAssignedToTeamId);
-            }
-            if (InfrastructureTypeId is not null && int.TryParse(InfrastructureTypeId, out int parsedStatusId))
-            {
-                query = query.Where(i => i.InfrastructureTypeId == parsedStatusId);
-            }
-            if (InstallationDateFrom is not null)
-            {
-                query = query.Where(i => i.InstallationDate >= LocalDate.FromDateOnly(InstallationDateFrom.Value));
-            }
-            if (InstallationDateTo is not null)
-            {
-                query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo.Value).PlusDays(1));
-            }
+                if (ParishIds is not null && ParishIds.Length != 0)
+                {
+                    var parsedParishIds = ParishIds
+                        .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
+                        .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
+                        .ToList();
+                    if (parsedParishIds.Count != 0)
+                    {
+                        query = query.Where(i => i.ParishId != null && parsedParishIds.Contains(i.ParishId.Value));
+                    }
+                }
+                else if (ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
+                {
+                    query = query.Where(i => i.ParishId == parsedParishId);
+                }
+                if (MaintenanceTeamId is not null && int.TryParse(MaintenanceTeamId, CultureInfo.InvariantCulture, out int parsedAssignedToTeamId))
+                {
+                    query = query.Where(j => j.MaintenanceTeamId == parsedAssignedToTeamId);
+                }
+                if (InfrastructureTypeId is not null && int.TryParse(InfrastructureTypeId, CultureInfo.InvariantCulture, out int parsedStatusId))
+                {
+                    query = query.Where(i => i.InfrastructureTypeId == parsedStatusId);
+                }
+                if (InstallationDateFrom is not null)
+                {
+                    query = query.Where(i => i.InstallationDate >= LocalDate.FromDateOnly(InstallationDateFrom.Value));
+                }
+                if (InstallationDateTo is not null)
+                {
+                    query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo.Value).PlusDays(1));
+                }
 
-            SearchResults = await query.OrderByDescending(i => i.InstallationDate).Take(500).ToListAsync();
-
+                SearchResults = await query.OrderByDescending(i => i.InstallationDate).Take(MaxResults).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred rendering the jobs list component");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

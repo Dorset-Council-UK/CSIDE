@@ -1,4 +1,3 @@
-
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Authorization;

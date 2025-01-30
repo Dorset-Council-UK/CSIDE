@@ -4,6 +4,7 @@ using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 
 namespace CSIDE.Components.Pages.Maintenance
@@ -19,8 +20,6 @@ namespace CSIDE.Components.Pages.Maintenance
         [SupplyParameterFromQuery]
         private string? ParishId { get; set; }
         [SupplyParameterFromQuery]
-        private string? LoggedById { get; set; }
-        [SupplyParameterFromQuery]
         private string? AssignedToTeamId { get; set; }
         [SupplyParameterFromQuery]
         private string? JobPriorityId { get; set; }
@@ -34,9 +33,13 @@ namespace CSIDE.Components.Pages.Maintenance
         private DateOnly? CompletedDateFrom { get; set; }
         [SupplyParameterFromQuery]
         private DateOnly? CompletedDateTo { get; set; }
+        [SupplyParameterFromQuery]
+        private bool? IsComplete { get; set; }
 
         private List<Job>? SearchResults;
 
+        private const int MaxResults = 1000;
+        private bool IsBusy { get; set; }
         protected override async Task OnParametersSetAsync()
         {
             NavItems =
@@ -47,6 +50,7 @@ namespace CSIDE.Components.Pages.Maintenance
             ];
             try
             {
+                IsBusy = true;
                 using var context = contextFactory.CreateDbContext();
 
                 var query = context.MaintenanceJobs.AsQueryable();
@@ -79,10 +83,21 @@ namespace CSIDE.Components.Pages.Maintenance
                 {
                     query = query.Where(j => j.JobPriorityId == parsedPriorityId);
                 }
-                if (JobStatusId is not null && int.TryParse(JobStatusId, CultureInfo.InvariantCulture, out int parsedStatusId))
+                if (IsComplete.HasValue)
                 {
-                    query = query.Where(j => j.JobStatusId == parsedStatusId);
+                    if (IsComplete.HasValue)
+                    {
+                        query = query.Where(j => j.JobStatus != null && j.JobStatus.IsComplete == IsComplete.Value);
+                    }
                 }
+                else
+                {
+                    if (JobStatusId is not null && int.TryParse(JobStatusId, CultureInfo.InvariantCulture, out int parsedStatusId))
+                    {
+                        query = query.Where(j => j.JobStatusId == parsedStatusId);
+                    }
+                }
+                
                 if (LogDateFrom is not null)
                 {
                     query = query.Where(j => j.LogDate >= ConvertDateToInstant(LogDateFrom.Value));
@@ -101,10 +116,14 @@ namespace CSIDE.Components.Pages.Maintenance
                     query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
                 }
 
-                SearchResults = await query.OrderByDescending(j => j.LogDate).Take(500).ToListAsync();
+                SearchResults = await query.OrderByDescending(j => j.LogDate).Take(MaxResults).ToListAsync();
             }catch(Exception ex)
             {
                 logger.LogError(ex, "An error occurred rendering the jobs list component");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

@@ -247,7 +247,7 @@
     <value>Add a job to the maintenance database by adding it to the map and filling in the relevant details.</value>
   </data>
   <data name="View All Recent Jobs Label" xml:space="preserve">
-    <value>View all recent unactioned jobs</value>
+    <value>View all recent incomplete jobs</value>
   </data>
   <data name="Search Jobs Title" xml:space="preserve">
     <value>Search for maintenance jobs</value>
@@ -701,5 +701,8 @@
   </data>
   <data name="Statement Text Label" xml:space="preserve">
     <value>Statement Text</value>
+  </data>
+  <data name="Search Results Limit Text" xml:space="preserve">
+    <value>The maximum number of results ({0}) are shown. To see all results of a search please narrow your search criteria.</value>
   </data>
 </root>

@@ -18,7 +18,7 @@
 
 <h2 class="mb-3">@localizer["Search Jobs Title"]</h2>
 
-<a href="Maintenance/Jobs?LogDateFrom=@(DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"))" class="btn btn-primary">@localizer["View All Recent Jobs Label"]</a>
+<a href="Maintenance/Jobs?LogDateFrom=@(DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"))&IsComplete=false" class="btn btn-primary">@localizer["View All Recent Jobs Label"]</a>
 
 <form method="post" @onsubmit="@OnJobIDSearchSubmit" @formname="JobIDSearch" class="mt-3">
     @if (JobIDSearchErrorMessage is not null)

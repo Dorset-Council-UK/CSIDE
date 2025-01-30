@@ -11,7 +11,7 @@ using FluentValidation;
 
 namespace CSIDE.Components.Pages.Infrastructure
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger)
     {
         [Parameter]
         public int InfrastructureId { get; set; }
@@ -79,6 +79,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
+                    logger.LogError(ex, "Error saving infrastructure item");
                 }
                 finally
                 {

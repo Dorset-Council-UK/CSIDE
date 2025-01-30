@@ -7,7 +7,7 @@ using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Infrastructure
 {
-    public partial class InfrastructureMediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS) : IAsyncDisposable
+    public partial class InfrastructureMediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<InfrastructureMediaList> logger) : IAsyncDisposable
     {
         [Parameter]
         public InfrastructureItem? InfrastructureItem { get; set; }
@@ -33,6 +33,7 @@ namespace CSIDE.Components.Infrastructure
             {
                 await _jsModule.DisposeAsync();
             }
+            GC.SuppressFinalize(this);
         }
 
         private async Task AddMediaToInfrastructure(List<Media> UploadedMedia)
@@ -58,7 +59,7 @@ namespace CSIDE.Components.Infrastructure
                 catch (Exception e)
                 {
                     UploadErrorMessages.Add(localizer["Save Error Message"]);
-                    //TODO log error
+                    logger.LogError(e, "Error adding media to infrastructure item");
                 }
 
             }

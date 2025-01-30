@@ -247,7 +247,7 @@
     <value>Ychwanegwch swydd i'r gronfa ddata cynnal a chadw trwy ei hychwanegu at y map a llenwi'r manylion perthnasol.</value>
   </data>
   <data name="View All Recent Jobs Label" xml:space="preserve">
-    <value>Gweld yr holl swyddi diweddar sydd heb eu gweithredu</value>
+    <value>Gweld yr holl swyddi anghyflawn diweddar</value>
   </data>
   <data name="Search Jobs Title" xml:space="preserve">
     <value>Dod o hyd i swyddi cynnal a chadw</value>
@@ -710,5 +710,8 @@ Disgrifiad</value>
   </data>
   <data name="Statement Text Label" xml:space="preserve">
     <value>Testun Datganiad Cyfreithiol</value>
+  </data>
+  <data name="Search Results Limit Text" xml:space="preserve">
+    <value>Dangosir uchafswm nifer y canlyniadau ({0}). I weld holl ganlyniadau chwiliad, a fyddech cystal â chyfyngu ar feini prawf eich chwiliad.</value>
   </data>
 </root>

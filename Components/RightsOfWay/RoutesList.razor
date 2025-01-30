@@ -1,51 +1,74 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.RightsOfWay
-@using NodaTime
-@using System.Globalization
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
-@if (Routes is null)
+<a href="rights-of-way#search-form">@localizer["Search Again Label"]</a>
+
+@if (Routes?.Count == MaxResults)
 {
-    <p>@localizer["Loading Text"]</p>
+    <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
 }
-else if (Routes.Count == 0)
-{
-    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="rights-of-way#search-form">@localizer["Search Again Label"]</a></Alert>
-}
-else
-{
-    <a href="rights-of-way#search-form">@localizer["Search Again Label"]</a>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>@localizer["Route ID Label"]</th>
-                    <th>@localizer["Parish Label"]</th>
-                    <th>@localizer["Maintenance Team Label"]</th>
-                    <th>@localizer["Name Label"]</th>
-                    <th>@localizer["Operational Status Label"]</th>
-                    <th>@localizer["Path Type Label"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var route in Routes)
-                {
-                    <tr>
-                        <td><a href="rights-of-way/Details/@route.RouteCode">@route.RouteCode</a></td>
-                        <td>@route.Parish?.Name</td>
-                        <td>@route.MaintenanceTeam?.Name</td>
-                        <td>@route.Name</td>
-                        <td>@route.OperationalStatus?.Name</td>
-                        <td>@route.RouteType?.Name</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+
+<Grid TItem="Route"
+        Class="table table-hover table-bordered table-striped mt-2"
+        DataProvider="RoutesDataProvider"
+        AllowFiltering="false"
+        AllowPaging="true"
+        PageSize="20"
+        AllowSorting="true"
+        AllowSelection="false"
+        AllowRowClick="true"
+        OnRowClick="OnRowClick"
+        AutoHidePaging="true"
+        Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Route" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteCode" SortKeySelector="item => item.RouteCode">
+            <a href="rights-of-way/Details/@context.RouteCode">@context.RouteCode</a>
+        </GridColumn>
+        <GridColumn TItem="Route" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty">
+            @context.Parish?.Name
+        </GridColumn>
+        <GridColumn TItem="Route" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="MaintenanceTeam" SortKeySelector="item => item.MaintenanceTeam != null ? item.MaintenanceTeam.Name : string.Empty">
+            @context.MaintenanceTeam?.Name
+        </GridColumn>
+        <GridColumn TItem="Route" HeaderText="@localizer["Name Label"]" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Route" HeaderText="@localizer["Operational Status Label"]" PropertyName="OperationalStatus" SortKeySelector="item => item.OperationalStatus != null ? item.OperationalStatus.Name : string.Empty">
+            @context.OperationalStatus?.Name
+        </GridColumn>
+        <GridColumn TItem="Route" HeaderText="@localizer["Path Type Label"]" PropertyName="RouteType" SortKeySelector="item => item.RouteType != null ? item.RouteType.Name : string.Empty">
+            @context.RouteType?.Name
+        </GridColumn>
+
+    </GridColumns>
+    <GridTemplates>
+        <GridEmptyDataTemplate TItem="Route">
+            <div class="text-center text-muted">
+                <span class="bi bi-inbox fs-2"></span>
+                <div>
+                    <p>@localizer["No Results Found Label"]</p>
+                    <p><a href="rights-of-way#search-form">@localizer["Search Again Label"]</a></p>
+                </div>
+            </div>
+        </GridEmptyDataTemplate>
+    </GridTemplates>
+</Grid>
+
 
 @code {
     [Parameter]
-    public List<Route>? Routes{ get; set; }
+    public required List<Route> Routes{ get; set; }
+    [Parameter]
+    public int MaxResults { get; set; }
+
+    private async Task<GridDataProviderResult<Route>> RoutesDataProvider(GridDataProviderRequest<Route> request)
+    {
+        var result = await Task.FromResult(request.ApplyTo(Routes));
+        return result;
+    }
+
+    private void OnRowClick(GridRowEventArgs<Route> args) => navigationManager.NavigateTo($"rights-of-way/Details/{args.Item.RouteCode}");
 }

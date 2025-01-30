@@ -7,7 +7,7 @@
         public int JobId { get; set; }
         public int ProblemTypeId { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is JobProblemType other)
             {

@@ -1,44 +1,69 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.Infrastructure
-@inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
-@if (InfrastructureItems is null)
+<a href="Infrastructure#search-form">@localizer["Search Again Label"]</a>
+
+@if (InfrastructureItems?.Count == MaxResults)
 {
-    <p>@localizer["Loading Text"]</p>
+    <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
 }
-else if (InfrastructureItems.Count == 0)
-{
-    <Alert Color="AlertColor.Warning">@localizer["No Results Found Label"]. <a href="Infrastructure#search-form">@localizer["Search Again Label"]</a></Alert>
-}
-else
-{
-    <a href="Infrastructure#search-form">@localizer["Search Again Label"]</a>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>@localizer["Infrastructure ID Label"]</th>
-                <th>@localizer["Parish Label"]</th>
-                <th>@localizer["Route ID Label"]</th>
-                <th>@localizer["Infrastructure Type Label"]</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in InfrastructureItems)
-            {
-                <tr>
-                    <td><a href="Infrastructure/Details/@item.Id">@item.Id</a></td>
-                    <td>@item.Parish?.Name</td>
-                    <td>@item.RouteId</td>
-                    <td>@item.InfrastructureType?.Name</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+
+<Grid TItem="InfrastructureItem"
+        Class="table table-hover table-bordered table-striped mt-2"
+        DataProvider="InfrastructureItemsDataProvider"
+        AllowFiltering="false"
+        AllowPaging="true"
+        PageSize="20"
+        AllowSorting="true"
+        AllowSelection="false"
+        AllowRowClick="true"
+        OnRowClick="OnRowClick"
+        AutoHidePaging="true"
+        Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+            <a href="Infrastructure/Details/@context.Id">@context.Id</a>
+        </GridColumn>
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty">
+            @context.Parish?.Name
+        </GridColumn>
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteId" SortKeySelector="item => item.RouteId">
+            @context.RouteId
+        </GridColumn>
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure Type Label"]" PropertyName="InfrastructureType" SortKeySelector="item => item.InfrastructureType != null ? item.InfrastructureType.Name : string.Empty">
+            @context.InfrastructureType?.Name
+        </GridColumn>
+
+    </GridColumns>
+    <GridTemplates>
+        <GridEmptyDataTemplate TItem="InfrastructureItem">
+            <div class="text-center text-muted">
+                <span class="bi bi-inbox fs-2"></span>
+                <div>
+                    <p>@localizer["No Results Found Label"]</p>
+                    <p><a href="Infrastructure#search-form">@localizer["Search Again Label"]</a></p>
+                </div>
+            </div>
+        </GridEmptyDataTemplate>
+    </GridTemplates>
+</Grid>
+
+
 
 @code {
     [Parameter]
-    public List<InfrastructureItem>? InfrastructureItems { get; set; }
+    public required List<InfrastructureItem> InfrastructureItems { get; set; }
+    [Parameter]
+    public int MaxResults { get; set; }
+
+    private async Task<GridDataProviderResult<InfrastructureItem>> InfrastructureItemsDataProvider(GridDataProviderRequest<InfrastructureItem> request)
+    {
+        var result = await Task.FromResult(request.ApplyTo(InfrastructureItems));
+        return result;
+    }
+
+    private void OnRowClick(GridRowEventArgs<InfrastructureItem> args) => navigationManager.NavigateTo($"Infrastructure/Details/{args.Item.Id}");
 }

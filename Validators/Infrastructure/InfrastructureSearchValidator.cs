@@ -4,10 +4,10 @@ using Microsoft.Extensions.Localization;
 
 namespace CSIDE.Validators.Infrastructure
 {
-    public class SearchValidator : AbstractValidator<InfrastructureSearch>
+    public class InfrastructureSearchValidator : AbstractValidator<InfrastructureSearch>
     {
         readonly IStringLocalizer<Properties.Resources> _localizer;
-        public SearchValidator(IStringLocalizer<Properties.Resources> localizer)
+        public InfrastructureSearchValidator(IStringLocalizer<Properties.Resources> localizer)
         {
             _localizer = localizer;
 

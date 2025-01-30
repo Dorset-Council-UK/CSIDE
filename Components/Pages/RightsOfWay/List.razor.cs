@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace CSIDE.Components.Pages.RightsOfWay
 {
-    public partial class List(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class List(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<List> logger)
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -27,6 +27,9 @@ namespace CSIDE.Components.Pages.RightsOfWay
 
         private List<Data.Models.RightsOfWay.Route>? SearchResults;
 
+        private const int MaxResults = 1000;
+        private bool IsBusy { get; set; }
+
         protected override async Task OnParametersSetAsync()
         {
             NavItems =
@@ -35,48 +38,57 @@ namespace CSIDE.Components.Pages.RightsOfWay
                 new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true }
             ];
-            //fetch results
-            using var context = contextFactory.CreateDbContext();
+            try {
+                IsBusy = true;
+                using var context = contextFactory.CreateDbContext();
 
-            var query = context.Routes.AsQueryable();
+                var query = context.Routes.AsQueryable();
 
-            if (RouteId is not null)
-            {
-                query = query.Where(j => j.RouteCode == RouteId);
-            }
-            if (Name is not null)
-            {
-                query = query.Where(j => EF.Functions.ILike(j.Name,$"%{Name}%"));
-            }
-            if (ParishIds is not null && ParishIds.Length != 0)
-            {
-                var parsedParishIds = ParishIds
-                    .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
-                    .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
-                    .ToList();
-                if (parsedParishIds.Count != 0)
+                if (RouteId is not null)
                 {
-                    query = query.Where(j => j.ParishId != null && parsedParishIds.Contains(j.ParishId.Value));
+                    query = query.Where(j => j.RouteCode == RouteId);
                 }
-            }else if(ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
-            {
-                query = query.Where(j => j.ParishId == parsedParishId);
-            }
-            if (MaintenanceTeamId is not null && int.TryParse(MaintenanceTeamId, CultureInfo.InvariantCulture, out int parsedMaintenanceTeamId))
-            {
-                query = query.Where(j => j.MaintenanceTeamId == parsedMaintenanceTeamId);
-            }
-            if (OperationalStatusId is not null && int.TryParse(OperationalStatusId, CultureInfo.InvariantCulture, out int parsedOperationalStatusId))
-            {
-                query = query.Where(j => j.OperationalStatusId == parsedOperationalStatusId);
-            }
-            if (RouteTypeId is not null && int.TryParse(RouteTypeId, CultureInfo.InvariantCulture, out int parsedRouteTypeId))
-            {
-                query = query.Where(j => j.RouteTypeId == parsedRouteTypeId);
-            }
+                if (Name is not null)
+                {
+                    query = query.Where(j => EF.Functions.ILike(j.Name!, $"%{Name}%"));
+                }
+                if (ParishIds is not null && ParishIds.Length != 0)
+                {
+                    var parsedParishIds = ParishIds
+                        .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
+                        .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
+                        .ToList();
+                    if (parsedParishIds.Count != 0)
+                    {
+                        query = query.Where(j => j.ParishId != null && parsedParishIds.Contains(j.ParishId.Value));
+                    }
+                }else if(ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
+                {
+                    query = query.Where(j => j.ParishId == parsedParishId);
+                }
+                if (MaintenanceTeamId is not null && int.TryParse(MaintenanceTeamId, CultureInfo.InvariantCulture, out int parsedMaintenanceTeamId))
+                {
+                    query = query.Where(j => j.MaintenanceTeamId == parsedMaintenanceTeamId);
+                }
+                if (OperationalStatusId is not null && int.TryParse(OperationalStatusId, CultureInfo.InvariantCulture, out int parsedOperationalStatusId))
+                {
+                    query = query.Where(j => j.OperationalStatusId == parsedOperationalStatusId);
+                }
+                if (RouteTypeId is not null && int.TryParse(RouteTypeId, CultureInfo.InvariantCulture, out int parsedRouteTypeId))
+                {
+                    query = query.Where(j => j.RouteTypeId == parsedRouteTypeId);
+                }
 
-            SearchResults = await query.OrderByDescending(r => r.RouteCode).Take(500).ToListAsync();
-
+                SearchResults = await query.OrderByDescending(r => r.RouteCode).Take(MaxResults).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred rendering the jobs list component");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

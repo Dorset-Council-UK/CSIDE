@@ -28,11 +28,11 @@ namespace CSIDE.Components.Pages.Maintenance
 
         protected override async Task OnInitializedAsync()
         {
-            NavItems = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-            new BreadcrumbItem{ Text = localizer["Maintenance Title"], IsCurrentPage = true }
-        };
+            NavItems =
+        [
+            new() { Text = localizer["Home Title"], Href ="/" },
+            new() { Text = localizer["Maintenance Title"], IsCurrentPage = true }
+        ];
             using var context = contextFactory.CreateDbContext();
             JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
             JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();

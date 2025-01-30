@@ -1510,6 +1510,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The maximum number of results ({0}) are shown. To see all results of a search please narrow your search criteria..
+        /// </summary>
+        public static string Search_Results_Limit_Text {
+            get {
+                return ResourceManager.GetString("Search Results Limit Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search results.
         /// </summary>
         public static string Search_Results_Title {
@@ -1762,7 +1771,7 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View all recent unactioned jobs.
+        ///   Looks up a localized string similar to View all recent incomplete jobs.
         /// </summary>
         public static string View_All_Recent_Jobs_Label {
             get {
