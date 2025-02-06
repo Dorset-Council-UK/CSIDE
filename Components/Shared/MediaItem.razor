@@ -17,7 +17,7 @@
             <div class="card-body">
                 @if (IsEditable)
                 {
-                    <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="DeleteMedia"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Counter Clockwise Label"]"><i class="bi bi-arrow-counterclockwise"></i></button>
                     <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Clockwise Label"]"><i class="bi bi-arrow-clockwise"></i></button>
                 }
@@ -40,7 +40,7 @@
                 <div class="my-2">
                     @if (IsEditable)
                     {
-                        <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="DeleteMedia"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
                     }
                     <a href="@Media.URL" download target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></a>
 
@@ -80,7 +80,7 @@
             <td>@(Media.UploadDate.HasValue ? Media.UploadDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
             @if (IsEditable)
             {
-                <td> <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => DeleteMedia(Media.Id)"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button></td>
+                <td> <button type="button" class="btn btn-sm btn-outline-danger" @onclick="DeleteMedia"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button></td>
             }
 
         </tr>
@@ -95,7 +95,7 @@
     [Parameter]
     public EventCallback OnRefreshComponent{ get; set; }
 
-    private async Task DeleteMedia(int MediaId)
+    private async Task DeleteMedia()
     {
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Media Confirmation"].Value);
         if (ConfirmDelete)
@@ -103,7 +103,7 @@
             try
             {
                 using var context = contextFactory.CreateDbContext();
-                var mediaToDelete = await context.Media.FindAsync([MediaId]);
+                var mediaToDelete = await context.Media.FindAsync([Media.Id]);
                 if (mediaToDelete is not null)
                 {
 
@@ -119,7 +119,8 @@
                         await OnRefreshComponent.InvokeAsync();
                     }
                 }
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 logger.LogError(ex, "An error occurred deleting a media item");
             }

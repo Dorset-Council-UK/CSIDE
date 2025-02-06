@@ -1,10 +1,13 @@
-﻿@inject IConfiguration config
+﻿@using CSIDE.Options
+@using Microsoft.Extensions.Options
+
+@inject IOptions<CSIDEOptions> CsideOptions
 
 <div class="top-row ps-1 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">
-            <img src="@(config.GetValue<string>("CSIDE:Theme:IconsRoot"))/brand_logo.svg" width="32" class="d-inline-block" alt="Logo">
-            <span class="d-none d-md-inline-block"> @(config.GetValue<string>("CSIDE:AppName"))</span>
+            <img src="@(_csideOptions.Theme.IconsRoot)/brand_logo.svg" width="32" class="d-inline-block" alt="Logo">
+            <span class="d-none d-md-inline-block"> @(_csideOptions.AppName)</span>
         </a>
     </div>
 </div>
@@ -69,6 +72,9 @@
         </div>
         
     </nav>
-    <div class="mt-auto p-2 small d-none d-md-flex nav-credit"><a href="https://github.com/Dorset-Council-UK"><i class="bi bi-github"></i> CSIDE v@(config.GetValue<string>("CSIDE:Version"))</a></div>
+    <div class="mt-auto p-2 small d-none d-md-flex nav-credit"><a href="https://github.com/Dorset-Council-UK"><i class="bi bi-github"></i> CSIDE v@(_csideOptions.Version)</a></div>
 </div>
 
+@code {
+    private CSIDEOptions _csideOptions => CsideOptions.Value;
+}

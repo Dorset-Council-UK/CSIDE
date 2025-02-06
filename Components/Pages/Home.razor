@@ -1,7 +1,13 @@
 ﻿@page "/"
-@inject IConfiguration config
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
 
+@inject IOptions<CSIDEOptions> CsideOptions
 
 <PageTitle>@localizer["Home Title"]</PageTitle>
 
-<h1>@localizer["Welcome Text", config.GetValue<string>("CSIDE:AppName")!]</h1>
+<h1>@localizer["Welcome Text", _csideOptions.AppName]</h1>
+
+@code {
+    private CSIDEOptions _csideOptions => CsideOptions.Value;
+}

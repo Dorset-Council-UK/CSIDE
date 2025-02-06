@@ -1,11 +1,15 @@
-﻿@inject IJSRuntime JS
-@implements IAsyncDisposable
-@using CSIDE.Data.Models.Shared
+﻿@using CSIDE.Data.Models.Shared
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
 @using NetTopologySuite.Geometries
 @using NetTopologySuite.IO
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@inject IConfiguration config;
+
+@inject IJSRuntime JS
+@inject IOptions<MappingOptions> MappingOptions
+
+@implements IAsyncDisposable
 
 <div id="@MapId" class="" style="width:100%;height:400px"></div>
 
@@ -23,6 +27,7 @@
 
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<EditMap>? self;
+    private MappingOptions _mappingOptions => MappingOptions.Value;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -32,17 +37,19 @@
             GeoJsonWriter _geoJsonWriter = new GeoJsonWriter();
             var GeoJson = _geoJsonWriter.Write(Geometry);
 
-            var mappingConfig = config.GetSection("CSIDE:Mapping");
-            var boundsConfig = mappingConfig.GetSection("StartBounds");
-            var routeOverlay = new OverlayConfiguration() { MapServiceBaseURL = mappingConfig.GetValue<string>("MapServerRoot")!, LayerName = mappingConfig.GetValue<string>("RouteLayer") };
             var mapConfigClass = new MapConfiguration()
-                {
-                    MapId = MapId,
-                    OSMapsAPIKey = mappingConfig.GetValue<string>("OSMapsAPIKey")!,
-                    OSLicenceNumber = mappingConfig.GetValue<string>("OSLicenceNumber")!,
-                    Basemap = BasemapLayer.Outdoor,
-                    Overlays = [routeOverlay]
-                };
+            {
+                MapId = MapId,
+                OSMapsAPIKey = _mappingOptions.OSMapsAPIKey,
+                OSLicenceNumber = _mappingOptions.OSLicenceNumber,
+                Basemap = BasemapLayer.Outdoor,
+                Overlays = [
+                    new() {
+                        MapServiceBaseURL = _mappingOptions.MapServerRoot,
+                        LayerName = _mappingOptions.RouteLayer,
+                    }
+                ]
+            };
             JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
             opts.Converters.Add(new JsonStringEnumConverter());
             var mapConfigJson = JsonSerializer.Serialize(mapConfigClass, opts);

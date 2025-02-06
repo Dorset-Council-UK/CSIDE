@@ -1,82 +1,29 @@
-using Azure.Identity;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Authorization;
 using CSIDE.Components;
-using CSIDE.Data;
+using CSIDE.Options;
 using CSIDE.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ConfigureKeyVault(builder);
+builder
+    .AddResilience()
+    .AddCountrysideOptions()
+    .AddCountrysideTelemetry()
+    .AddCountrysideAzureKeyVault()
+    .AddCountrysideAuthentication()
+    .AddCountrysideDatabase();
 
-builder.Services.AddOpenTelemetry().UseAzureMonitor(options => {
-    options.ConnectionString = builder.Configuration["CSIDE:ApplicationInsights:ConnectionString"];
-});
-
-// Configure forwarded headers options
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
-});
-
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("CSIDE"), x =>
-    {
-        x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
-        x.UseNodaTime();
-        x.UseNetTopologySuite();
-    });
-    options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
- 
-}, lifetime: ServiceLifetime.Scoped);
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddBlazorBootstrap();
-
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(options =>
-                {
-                    builder.Configuration.Bind("CSIDE:AzureAd", options);
-                    options.Events = new OpenIdConnectEvents
-                    {
-                        OnRedirectToIdentityProvider = async ctxt =>
-                        {
-                            // Invoked before redirecting to the identity provider to authenticate. 
-                            // This can be used to set ProtocolMessage.State
-                            // that will be persisted through the authentication process. 
-                            // The ProtocolMessage can also be used to add or customize
-                            // parameters sent to the identity provider.
-                            await Task.Yield();
-                        },
-                        OnAuthenticationFailed = async ctxt =>
-                        {
-                            // They tried to log in but it failed
-                            await Task.Yield();
-                        },
-                        OnSignedOutCallbackRedirect = async ctxt =>
-                        {
-                            ctxt.HttpContext.Response.Redirect(ctxt.Options.SignedOutRedirectUri);
-                            ctxt.HandleResponse();
-                            await Task.Yield();
-                        },
-                        OnTicketReceived = async ctxt =>
-                        {
-                            await Task.Yield();
-                        },
-                    };
-                });
 
 builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
@@ -84,9 +31,11 @@ builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));
 
+var options = builder.Configuration.GetSection(CSIDEOptions.SectionName).Get<CSIDEOptions>();
+
 var app = builder.Build();
 
-app.UsePathBase($"/{builder.Configuration["CSIDE:PathBase"]}");
+app.UsePathBase($"/{options.PathBase}");
 
 app.UseForwardedHeaders();
 
@@ -104,7 +53,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
 
-if (builder.Configuration.GetSection("CSIDE").GetValue<bool>("UseHttpsRedirection"))
+if (options.UseHttpsRedirection)
 {
     app.UseHttpsRedirection();
 }
@@ -118,28 +67,3 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
-
-void ConfigureKeyVault(WebApplicationBuilder builder)
-{
-    // Set up Azure Key Vault if a KeyVault name is provided in the configuration
-    if (!string.IsNullOrEmpty(builder.Configuration.GetSection("CSIDE").GetSection("KeyVault")["Name"]))
-    {
-        using var x509Store = new X509Store(StoreLocation.LocalMachine);
-        x509Store.Open(OpenFlags.ReadOnly);
-
-        var x509Certificate = x509Store.Certificates
-            .Find(
-                X509FindType.FindByThumbprint,
-                builder.Configuration.GetSection("CSIDE").GetSection("KeyVault").GetSection("AzureAd")["CertificateThumbprint"],
-                validOnly: false)
-            .OfType<X509Certificate2>()
-            .Single();
-
-        builder.Configuration.AddAzureKeyVault(
-            new Uri($"https://{builder.Configuration.GetSection("CSIDE").GetSection("KeyVault")["Name"]}.vault.azure.net/"),
-            new ClientCertificateCredential(
-                builder.Configuration.GetSection("CSIDE").GetSection("KeyVault").GetSection("AzureAd")["DirectoryId"],
-                builder.Configuration.GetSection("CSIDE").GetSection("KeyVault").GetSection("AzureAd")["ApplicationId"],
-                x509Certificate));
-    }
-}

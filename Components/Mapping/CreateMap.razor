@@ -1,11 +1,15 @@
-﻿@inject IJSRuntime JS
-@implements IAsyncDisposable
-@using CSIDE.Data.Models.Shared
+﻿@using CSIDE.Data.Models.Shared
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
 @using NetTopologySuite.Geometries
 @using NetTopologySuite.IO
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@inject IConfiguration config;
+
+@inject IJSRuntime JS
+@inject IOptions<MappingOptions> MappingOptions
+
+@implements IAsyncDisposable
 
 <div id="@MapId" class="" style="width:100%;height:400px"></div>
 
@@ -21,6 +25,7 @@
 
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<CreateMap>? self;
+    private MappingOptions _mappingOptions => MappingOptions.Value;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -28,16 +33,19 @@
         {
             self ??= DotNetObjectReference.Create(this);
 
-            var mappingConfig = config.GetSection("CSIDE:Mapping");
-            var boundsConfig = mappingConfig.GetSection("StartBounds");
-            var routeOverlay = new OverlayConfiguration() { MapServiceBaseURL = mappingConfig.GetValue<string>("MapServerRoot")!, LayerName = mappingConfig.GetValue<string>("RouteLayer") };
-            var mapConfigClass = new MapConfiguration() { 
-                    MapId = MapId,
-                    OSMapsAPIKey = mappingConfig.GetValue<string>("OSMapsAPIKey")!,
-                    OSLicenceNumber = mappingConfig.GetValue<string>("OSLicenceNumber")!,
-                    Basemap = BasemapLayer.Outdoor, 
-                    Bounds = [boundsConfig.GetValue<double>("MinX"), boundsConfig.GetValue<double>("MinY"), boundsConfig.GetValue<double>("MaxX"), boundsConfig.GetValue<double>("MaxY")],
-                    Overlays = [routeOverlay]
+            var mapConfigClass = new MapConfiguration()
+            {
+                MapId = MapId,
+                OSMapsAPIKey = _mappingOptions.OSMapsAPIKey,
+                OSLicenceNumber = _mappingOptions.OSLicenceNumber,
+                Basemap = BasemapLayer.Outdoor,
+                Bounds = [_mappingOptions.StartBounds.MinX, _mappingOptions.StartBounds.MinY, _mappingOptions.StartBounds.MaxX, _mappingOptions.StartBounds.MaxY],
+                Overlays = [
+                    new() {
+                        MapServiceBaseURL = _mappingOptions.MapServerRoot,
+                        LayerName = _mappingOptions.RouteLayer,
+                    }
+                ]
             };
             JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
             opts.Converters.Add(new JsonStringEnumConverter());

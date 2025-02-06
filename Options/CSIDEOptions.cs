@@ -1,0 +1,19 @@
+﻿namespace CSIDE.Options;
+
+internal record CSIDEOptions
+{
+    public const string SectionName = "CSIDE";
+    public const string ConnectionStringName = "CSIDE";
+
+    public required MappingOptions Mapping { get; init; }
+    public required ApplicationInsightsOptions ApplicationInsights { get; init; }
+    public required AzureAdOptions AzureAd { get; init; }
+    public required AzureBlobStorageOptions AzureBlobStorage { get; init; }
+    public required KeyVaultOptions KeyVault { get; init; }
+    public ThemeOptions Theme { get; init; } = new();
+
+    public string AppName { get; init; } = "CSIDE";
+    public string Version { get; init; } = "0.1 ALPHA";
+    public string PathBase { get; init; } = "";
+    public bool UseHttpsRedirection { get; init; }
+}

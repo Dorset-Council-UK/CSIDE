@@ -1,9 +1,8 @@
-﻿namespace CSIDE.Services
+﻿namespace CSIDE.Services;
+
+public interface IBlobStorageService
 {
-    public interface IBlobStorageService
-    {
-        Task<string> UploadFileToBlobAsync(string strFileName, string contecntType, Stream fileStream);
-        Task<bool> DeleteFileFromBlobAsync(string strFileName);
-        Task<bool> DeleteFileFromBlobByURLAsync(string url);
-    }
+    Task<string> UploadFileToBlobAsync(string fileName, string contentType, Stream fileStream);
+    Task<bool> DeleteFileFromBlobAsync(string fileName);
+    Task<bool> DeleteFileFromBlobByURLAsync(string url);
 }
