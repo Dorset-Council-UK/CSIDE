@@ -1,192 +1,210 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Components.Maintenance;
 using CSIDE.Components.Mapping;
-using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.IO;
-using NetTopologySuite.Features;
+using CSIDE.Data.Models.Maintenance;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Features;
+using NetTopologySuite.IO;
+using System.Globalization;
 
-namespace CSIDE.Components.Pages.Maintenance
+namespace CSIDE.Components.Pages.Maintenance;
+
+public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    private List<BreadcrumbItem>? NavItems;
+    private Modal routeValidationModal = default!;
+    private Modal errorModal = default!;
+
+    private CreateMap? createMap;
+
+    private Job? Job { get; set; }
+    private JobStatus[]? JobStatuses { get; set; }
+    private JobPriority[]? JobPriorities { get; set; }
+    private ProblemType[]? ProblemTypes { get; set; }
+
+    private bool IsBusy { get; set; }
+    private string? ErrorMessage { get; set; }
+    private bool CompleteDateShown { get; set; } = false;
+    private List<int> SelectedProblemTypes { get; set; } = [];
+
+    private JobEditForm? childJobEditForm;
+
+    protected override async Task OnInitializedAsync()
     {
-        [CascadingParameter]
-        private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-        private List<BreadcrumbItem>? NavItems;
-        private Modal routeValidationModal = default!;
-        private Modal errorModal = default!;
+        NavItems = [
+            new() { Text = localizer["Home Title"], Href ="/" },
+            new() { Text = localizer["Maintenance Title"], Href="Maintenance" },
+            new() { Text = localizer["Maintenance Create Title"], IsCurrentPage = true },
+        ];
 
-        private CreateMap? createMap;
-
-        private Job? Job { get; set; }
-        private JobStatus[]? JobStatuses { get; set; }
-        private JobPriority[]? JobPriorities { get; set; }
-        private ProblemType[]? ProblemTypes { get; set; }
-
-        private bool IsBusy { get; set; }
-        private string? ErrorMessage { get; set; }
-        private bool CompleteDateShown { get; set; } = false;
-        private List<int> SelectedProblemTypes { get; set; } = [];
-
-        private JobEditForm? childJobEditForm;
-
-        protected override async Task OnInitializedAsync()
+        await using var context = contextFactory.CreateDbContext();
+        JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
+        JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
+        ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
+        Job = new()
         {
-            NavItems = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
-            new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
-            new BreadcrumbItem{ Text = localizer["Maintenance Create Title"], IsCurrentPage = true }
+            JobStatusId = JobStatuses?.FirstOrDefault()?.Id,
+            JobPriorityId = JobPriorities?.FirstOrDefault()?.Id,
         };
+    }
 
-            using var context = contextFactory.CreateDbContext();
-            JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
-            JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
-            ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-            Job = new()
-            {
-                JobStatusId = JobStatuses.FirstOrDefault()?.Id,
-                JobPriorityId = JobPriorities.FirstOrDefault()?.Id
-            };
-        }
-
-
-        private async Task SubmitFormAsync()
+    private async Task SubmitFormAsync()
+    {
+        if (IsBusy)
         {
-            if (IsBusy)
-            {
-                ErrorMessage = null;
-                return;
-            }
-            if (await childJobEditForm!.ValidateAsync())
-            {
-                IsBusy = true;
-                StateHasChanged();
-                try
-                {
-                    if (Job is not null)
-                    {
-                        using var context = contextFactory.CreateDbContext();
-
-                        context.MaintenanceJobs.Add(Job);
-
-                        await context.SaveChangesAsync();
-                        CreateMaintenanceProblemTypes(SelectedProblemTypes, Job.Id, context);
-                        await context.SaveChangesAsync();
-                        //redirect
-                        navigationManager.NavigateTo($"Maintenance/Details/{Job.Id}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred creating a maintenance job");
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
-            }
-        }
-
-        private static void CreateMaintenanceProblemTypes(List<int> selectedProblemTypes, int JobId, ApplicationDbContext context)
-        {
-            //add new problem types
-            foreach (int problemType in selectedProblemTypes)
-            {
-                context.MaintenanceJobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = JobId });
-            }
+            ErrorMessage = null;
             return;
         }
-
-
-        //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)
-
-        private async Task ValidateGeometry(string features)
+        if (await childJobEditForm!.ValidateAsync())
         {
-            //check the geometry is a single point and is on a valid route
-            GeoJsonReader _geoJsonReader = new GeoJsonReader();
-            FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
-
-            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
-
-            var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
-            if (result.IsValid)
+            IsBusy = true;
+            StateHasChanged();
+            try
             {
-                //get route code and update Job.Geom
+                if (Job is not null)
+                {
+                    using var context = contextFactory.CreateDbContext();
+
+                    context.MaintenanceJobs.Add(Job);
+
+                    await context.SaveChangesAsync();
+                    CreateMaintenanceProblemTypes(SelectedProblemTypes, Job.Id, context);
+                    await context.SaveChangesAsync();
+                    //redirect
+                    navigationManager.NavigateTo($"Maintenance/Details/{Job.Id}");
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Save Error Message"];
+                logger.LogError(ex, "An error occurred creating a maintenance job");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+
+    private static void CreateMaintenanceProblemTypes(List<int> selectedProblemTypes, int JobId, ApplicationDbContext context)
+    {
+        //add new problem types
+        foreach (int problemType in selectedProblemTypes)
+        {
+            context.MaintenanceJobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = JobId });
+        }
+        return;
+    }
+
+    /// <summary>
+    ///     <para>Validate the geometry of the drawn feature</para>
+    ///     <para>TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)</para>
+    /// </summary>
+    private async Task ValidateGeometry(string features)
+    {
+        //check the geometry is a single point and is on a valid route
+        GeoJsonReader _geoJsonReader = new GeoJsonReader();
+        FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
+
+        CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+
+        var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
+        if (result.IsValid)
+        {
+            //get route code and update Job.Geom
+            if (Job is not null)
+            {
+                Job.Geom = featureCollection.First().Geometry.Centroid;
+                Job.Geom.SRID = 27700;
+                using var context = contextFactory.CreateDbContext();
+                // TODO - Move this to shared location
+                var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 20).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
+                if (Route is not null)
+                {
+                    Job.RouteId = Route.RouteCode;
+                }
+            }
+        }
+        else
+        {
+            // Check to see what the error is and show appropriate error message
+            // first check if the geometry was invalid
+            if (result.Errors.Any(
+                failure => string.Equals(failure.ErrorCode, "GEOM_OUTSIDE_BOUNDS", StringComparison.Ordinal)) ||
+                result.Errors.Any(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.Ordinal))
+                )
+            {
+                //show generic error
+                await ShowGeometryValidationErrorModal();
+            }
+            // if its valid, check to see if there was no route nearby
+            // NOTE I know it seems backwards to test this way round, but if you don't, 
+            // invalid geometries always come back saying 'no route found', which is not the right message
+            // TODO - Improve logic through use of conditional validation
+            else if (result.Errors.Any(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.Ordinal)))
+            {
+                //we assigned the geom at this point in case the user goes ahead with overriding the route ID
                 if (Job is not null)
                 {
                     Job.Geom = featureCollection.First().Geometry.Centroid;
                     Job.Geom.SRID = 27700;
-                    using var context = contextFactory.CreateDbContext();
-                    //TODO - Move this to shared location
-                    var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 20).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
-                    if (Route is not null)
-                    {
-                        Job.RouteId = Route.RouteCode;
-                    }
                 }
+                await ShowRouteValidationModal();
             }
-            else
-            {
-                // Check to see what the error is and show appropriate error message
-                // first check if the geometry was invalid
-                if (result.Errors.Any(
-                    failure => string.Equals(failure.ErrorCode, "GEOM_OUTSIDE_BOUNDS", StringComparison.Ordinal)) || 
-                    result.Errors.Any(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.Ordinal))
-                    )
-                {
-                    //show generic error
-                    await ShowGeometryValidationErrorModal();
-                }
-                // if its valid, check to see if there was no route nearby
-                // NOTE I know it seems backwards to test this way round, but if you don't, 
-                // invalid geometries always come back saying 'no route found', which is not the right message
-                // TODO - Improve logic through use of conditional validation
-                else if (result.Errors.Any(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.Ordinal)))
-                {
-                    //we assigned the geom at this point in case the user goes ahead with overriding the route ID
-                    if (Job is not null)
-                    {
-                        Job.Geom = featureCollection.First().Geometry.Centroid;
-                        Job.Geom.SRID = 27700;
-                    }
-                    await ShowRouteValidationModal();
-                }
-            }
-            StateHasChanged();
+        }
+        StateHasChanged();
+    }
+
+    private async Task ShowRouteValidationModal()
+    {
+        await routeValidationModal.ShowAsync();
+    }
+
+    private async Task ShowGeometryValidationErrorModal()
+    {
+        await errorModal.ShowAsync();
+    }
+
+    private async Task HideRouteValidationModal()
+    {
+        await routeValidationModal.HideAsync();
+    }
+
+    private async Task ClearDrawnGeometries()
+    {
+        if (Job is not null)
+        {
+            Job.Geom = null;
+            Job.RouteId = null;
+        }
+        await createMap!.ClearDrawnGeometries();
+        await routeValidationModal.HideAsync();
+        await errorModal.HideAsync();
+    }
+
+    /// <summary>Generate a key attribute for the JobEditForm component to help with efficient re-renders when data changes</summary>
+    /// <remarks>This can return any type, I went with string for clarity</remarks>
+    private string CreateJobKey()
+    {
+        // When the job is not initialised, use a simple component key
+        if (Job is null)
+        {
+            return "MaintenanceCreateJob";
         }
 
-        private async Task ShowRouteValidationModal()
+        // When the job is new, return a unique component key
+        if (Job.Id == 0)
         {
-            await routeValidationModal.ShowAsync();
+            return $"MaintenanceCreateJob-New-{Job.GetHashCode().ToString(CultureInfo.InvariantCulture)}";
         }
 
-        private async Task ShowGeometryValidationErrorModal()
-        {
-            await errorModal.ShowAsync();
-        }
-
-        private async Task HideRouteValidationModal()
-        {
-            await routeValidationModal.HideAsync();
-        }
-
-        private async Task ClearDrawnGeometries()
-        {
-            if (Job is not null)
-            {
-                Job.Geom = null;
-                Job.RouteId = null;
-            }
-            await createMap!.ClearDrawnGeometries();
-            await routeValidationModal.HideAsync();
-            await errorModal.HideAsync();
-        }
+        // When the job is initialised, return a component key based on the job ID
+        return $"MaintenanceCreateJob-{Job.Id.ToString(CultureInfo.InvariantCulture)}";
     }
 }

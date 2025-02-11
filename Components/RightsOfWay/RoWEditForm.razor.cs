@@ -1,7 +1,6 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.RightsOfWay;
 using Microsoft.AspNetCore.Components;
-using System.Globalization;
 
 namespace CSIDE.Components.RightsOfWay
 {
@@ -29,15 +28,6 @@ namespace CSIDE.Components.RightsOfWay
         public EventCallback OnCancel { get; set; }
 
         private FluentValidationValidator? fluentValidationValidator;
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            if (Route is not null)
-            {
-                ShowOrHideClosureDates(Route.OperationalStatusId);
-                StateHasChanged();
-            }
-        }
 
         private async Task SubmitFormAsync()
         {
@@ -90,23 +80,26 @@ namespace CSIDE.Components.RightsOfWay
             }
         }
 
-        private void ShowOrHideClosureDates(ChangeEventArgs eventArgs)
+        /// <summary>
+        /// Triggered after OperationalStatusId changes. When it has a different value.
+        /// </summary>
+        private void AfterOperationalStatusIdChanged()
         {
-            if (Route is not null && int.TryParse(eventArgs.Value?.ToString(), CultureInfo.InvariantCulture, out int NewOperationalStatusId))
+            if (Route is null || OperationalStatuses is null)
             {
-                ShowOrHideClosureDates(NewOperationalStatusId);
+                return;
             }
+            
+            var operationalStatus = OperationalStatuses.FirstOrDefault(s => s.Id == Route.OperationalStatusId);
+            if (operationalStatus is null)
+            {
+                ClosureDatesShown = false;
+                return;
+            }
+
+            ClosureDatesShown = operationalStatus.IsClosed;
         }
 
-        private void ShowOrHideClosureDates(int NewOperationalStatusId)
-        {
-            if (Route is not null)
-            {
-                var status = OperationalStatuses!.Where(s => s.Id == NewOperationalStatusId).FirstOrDefault();
-                ClosureDatesShown = status != null && status.IsClosed;
-                Route.OperationalStatusId = NewOperationalStatusId;
-            }
-        }
         private async Task HandleCancel()
         {
             if (OnCancel.HasDelegate)

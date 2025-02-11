@@ -2,7 +2,6 @@
 
 @if(Job is not null){
     <EditForm Model="Job" OnSubmit="@SubmitFormAsync">
-
         <FluentValidationValidator @ref="fluentValidationValidator" />
         <ValidationSummary />
 
@@ -59,20 +58,13 @@
         <div class="mb-3 row">
             <div class="col-sm-8 col-lg-6">
                 <label class="form-label" for="status">@localizer["Job Status Label"]</label>
-                <select id="status" class="form-select" @onchange="ShowOrHideCompletionDate">
+                <select id="status" class="form-select" @bind="Job.JobStatusId" @bind:after="AfterStatusIdChanged">
                     @if (JobStatuses is not null)
                     {
                         @foreach (var status in JobStatuses.OrderBy(s => s.SortOrder))
                         {
-                            if (Job.JobStatusId == status.Id)
-                            {
-                                <option value="@status.Id" selected>@status.Description</option>
-                            }
-                            else
-                            {
-                                <option value="@status.Id">@status.Description</option>
-                            }
-
+                            var key = $"JobStatus-{status.Id}";
+                            <option @key="@key" value="@status.Id" selected="@(Job.JobStatusId == status.Id)">@status.Description</option>
                         }
                     }
                 </select>
@@ -143,7 +135,5 @@
         {
             <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
         }
-
     </EditForm>
-
 }

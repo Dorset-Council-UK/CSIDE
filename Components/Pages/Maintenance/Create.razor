@@ -20,16 +20,17 @@
         <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
     }
     <div class="col-md-8">
-
-        <JobEditForm 
-        Job="@Job" 
-        JobPriorities="@JobPriorities"
-        JobStatuses="@JobStatuses"
-        ProblemTypes="@ProblemTypes"
-        SelectedProblemTypes="@SelectedProblemTypes"
-        IsBusy="@IsBusy"
-        OnSubmit="@SubmitFormAsync"
-        @ref="@childJobEditForm" />
+        <JobEditForm
+            @ref="childJobEditForm"
+            @key="CreateJobKey()"
+            Job="Job"
+            JobStatuses="JobStatuses"
+            JobPriorities="JobPriorities"
+            ProblemTypes="ProblemTypes"
+            SelectedProblemTypes="SelectedProblemTypes"
+            IsBusy="IsBusy"
+            OnSubmit="SubmitFormAsync"
+        />
     </div>
     @if (ErrorMessage is not null)
     {
@@ -47,7 +48,6 @@
         <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">@localizer["Route ID Manual Entry Label"]</Button>
         <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
     </FooterTemplate>
-
 </Modal>
 
 <Modal @ref="errorModal" Title="@localizer["Error Title"]">

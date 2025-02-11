@@ -56,19 +56,13 @@
         <div class="mb-3 row">
             <div class="col-sm-8 col-lg-6">
                 <label class="form-label" for="operational-status">@localizer["Operational Status Label"]</label>
-                <select id="operational-status" class="form-select" @onchange="ShowOrHideClosureDates">
+                <select id="operational-status" class="form-select" @bind="Route.OperationalStatusId" @bind:after="AfterOperationalStatusIdChanged">
                     @if (OperationalStatuses is not null)
                     {
                         @foreach (var status in OperationalStatuses.OrderBy(s => s.Id))
                         {
-                            if (Route.OperationalStatusId == status.Id)
-                            {
-                                <option value="@status.Id" selected>@status.Name</option>
-                            }
-                            else
-                            {
-                                <option value="@status.Id">@status.Name</option>
-                            }
+                            var key = $"OperationalStatus-{status.Id}";
+                            <option @key="@key" value="@status.Id" selected="@(Route.OperationalStatusId == status.Id)">@status.Name</option>
                         }
                     }
                 </select>
