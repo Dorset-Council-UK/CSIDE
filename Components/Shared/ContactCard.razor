@@ -1,0 +1,70 @@
+﻿@using CSIDE.Data.Models.Shared
+@using System.Globalization
+
+<div class="col-md-6 my-2">
+    <div class="card bg-light h-100" id="contact-@Contact.Id">
+        <div class="card-header">
+            <strong>
+            @if (!string.IsNullOrEmpty(Contact.ContactType?.Name))
+            {
+                @Contact.ContactType.Name
+            }
+            else
+            {
+                 @localizer["Contact Label"]   
+            }
+            </strong>
+        </div>
+        <div class="card-body">
+            <ul class="list-unstyled">
+                @if (!string.IsNullOrEmpty(Contact.Name))
+                {
+                    <li>@Contact.Name</li>
+                }
+                @if (!string.IsNullOrEmpty(Contact.Email))
+                {
+                    <li><i class="bi bi-envelope"></i> @Contact.Email</li>
+                }
+                @if (!string.IsNullOrEmpty(Contact.PrimaryContactNo))
+                {
+                    <li><i class="bi bi-telephone"></i> @Contact.PrimaryContactNo</li>
+                }
+                @if (!string.IsNullOrEmpty(Contact.SecondaryContactNo))
+                {
+                    <li><i class="bi bi-telephone"></i> @Contact.SecondaryContactNo</li>
+                }
+                @if (!string.IsNullOrEmpty(Contact.OrganisationName))
+                {
+                    <li><i class="bi bi-building"></i> @Contact.OrganisationName</li>
+                }
+            </ul>
+        </div>
+        <div class="card-footer">
+            @if (IsEditable)
+            {
+                <button class="btn btn-sm btn-outline-primary" type="button" @onclick="ShowEditContactModal">@localizer["Edit Label"]</button>
+                <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsBusy)" @onclick="() => DeleteContact(Contact.Id)">@localizer["Delete Label"]</button>
+            }
+        </div>
+    </div>
+    
+</div>
+
+@if (Contact is not null && IsEditable)
+{
+    <Modal @ref="EditContactModal" Title="@localizer["Edit Contact Title"]">
+
+        <BodyTemplate>
+            @if(ErrorMessage is not null){
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+            <ContactEditForm ContactToEdit="Contact"
+                             ContactTypes="ContactTypes"
+                             OnSubmit="SubmitFormAsync"
+                             OnCancel="HideEditContactModal"
+                             IsBusy="IsBusy"
+                             @ref="EditContactForm" />
+        </BodyTemplate>
+
+    </Modal>
+}

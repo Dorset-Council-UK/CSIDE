@@ -106,6 +106,51 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add address.
+        /// </summary>
+        public static string Add_Address_Label {
+            get {
+                return ResourceManager.GetString("Add Address Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draw an area on the map then choose which addresses to add.
+        /// </summary>
+        public static string Add_Addresses_From_Map_Help_Text {
+            get {
+                return ResourceManager.GetString("Add Addresses From Map Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add addresses from map.
+        /// </summary>
+        public static string Add_Addresses_From_Map_Label {
+            get {
+                return ResourceManager.GetString("Add Addresses From Map Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add all addresses and search for another location.
+        /// </summary>
+        public static string Add_All_Addresses_And_Continue_Label {
+            get {
+                return ResourceManager.GetString("Add All Addresses And Continue Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add all addresses and go back to details page.
+        /// </summary>
+        public static string Add_All_Addresses_And_Go_Back_Label {
+            get {
+                return ResourceManager.GetString("Add All Addresses And Go Back Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add comment.
         /// </summary>
         public static string Add_Comment_Label {
@@ -120,6 +165,15 @@ namespace CSIDE.Properties {
         public static string Add_Contact_Label {
             get {
                 return ResourceManager.GetString("Add Contact Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Or add individual addresses by selecting them below.
+        /// </summary>
+        public static string Add_Individual_Addresses_Label {
+            get {
+                return ResourceManager.GetString("Add Individual Addresses Label", resourceCulture);
             }
         }
         
@@ -142,6 +196,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add linked route.
+        /// </summary>
+        public static string Add_Linked_Route_Label {
+            get {
+                return ResourceManager.GetString("Add Linked Route Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link a route by selecting it on the map. Unlink a route by clicking the highlighted route on the map..
+        /// </summary>
+        public static string Add_Linked_Routes_From_Map_Help_Text {
+            get {
+                return ResourceManager.GetString("Add Linked Routes From Map Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add linked routes using map.
+        /// </summary>
+        public static string Add_Linked_Routes_From_Map_Label {
+            get {
+                return ResourceManager.GetString("Add Linked Routes From Map Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add nearby infrastructure.
         /// </summary>
         public static string Add_Nearby_Infrastructure_Title {
@@ -151,11 +232,110 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add nearby routes.
+        /// </summary>
+        public static string Add_Nearby_Routes_Label {
+            get {
+                return ResourceManager.GetString("Add Nearby Routes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add linked route by ID.
+        /// </summary>
+        public static string Add_Route_By_ID_Label {
+            get {
+                return ResourceManager.GetString("Add Route By ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Address.
+        /// </summary>
+        public static string Address_Label {
+            get {
+                return ResourceManager.GetString("Address Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter a postcode, UPRN or house/street name.
+        /// </summary>
+        public static string Address_Search_Help_Text {
+            get {
+                return ResourceManager.GetString("Address Search Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for an address.
+        /// </summary>
+        public static string Address_Search_Label {
+            get {
+                return ResourceManager.GetString("Address Search Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Affected addresses ({0}).
+        /// </summary>
+        public static string Affected_Addresses_Label {
+            get {
+                return ResourceManager.GetString("Affected Addresses Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All nearby infrastructure has already been linked to this maintenance job.
         /// </summary>
         public static string All_Nearby_Infrastructure_Linked_Message {
             get {
                 return ResourceManager.GetString("All Nearby Infrastructure Linked Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application date from.
+        /// </summary>
+        public static string Application_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Application Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application date.
+        /// </summary>
+        public static string Application_Date_Label {
+            get {
+                return ResourceManager.GetString("Application Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application date to.
+        /// </summary>
+        public static string Application_Date_To_Label {
+            get {
+                return ResourceManager.GetString("Application Date To Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application details.
+        /// </summary>
+        public static string Application_Details_Label {
+            get {
+                return ResourceManager.GetString("Application Details Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application type.
+        /// </summary>
+        public static string Application_Type_Label {
+            get {
+                return ResourceManager.GetString("Application Type Label", resourceCulture);
             }
         }
         
@@ -187,6 +367,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to These parishes are automatically derived from the geometry.
+        /// </summary>
+        public static string Automatic_Parishes_Information_Message {
+            get {
+                return ResourceManager.GetString("Automatic Parishes Information Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to DMMO.
+        /// </summary>
+        public static string Back_To_DMMO_Label {
+            get {
+                return ResourceManager.GetString("Back To DMMO Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Basic Details.
         /// </summary>
         public static string Basic_Details_Label {
@@ -201,6 +399,33 @@ namespace CSIDE.Properties {
         public static string Cancel_Label {
             get {
                 return ResourceManager.GetString("Cancel Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case officer.
+        /// </summary>
+        public static string Case_Officer_Label {
+            get {
+                return ResourceManager.GetString("Case Officer Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case status.
+        /// </summary>
+        public static string Case_Status_Label {
+            get {
+                return ResourceManager.GetString("Case Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Claimed status.
+        /// </summary>
+        public static string Claimed_Status_Label {
+            get {
+                return ResourceManager.GetString("Claimed Status Label", resourceCulture);
             }
         }
         
@@ -358,6 +583,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add DMMO.
+        /// </summary>
+        public static string Create_New_DMMO_Label {
+            get {
+                return ResourceManager.GetString("Create New DMMO Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new DMMO application to the database by drawing it on the map and filling in the relevant details..
+        /// </summary>
+        public static string Create_New_DMMO_Text {
+            get {
+                return ResourceManager.GetString("Create New DMMO Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new infrastructure.
         /// </summary>
         public static string Create_New_Infrastructure_Label {
@@ -430,6 +673,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this address from the DMMO?.
+        /// </summary>
+        public static string Delete_DMMO_Address_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete DMMO Address Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this linked route?.
+        /// </summary>
+        public static string Delete_DMMO_Linked_Route_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete DMMO Linked Route Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to unlink this infrastructure from the maintenance job?.
         /// </summary>
         public static string Delete_Infra_Link_Confirmation {
@@ -475,11 +736,38 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DMMO {0}.
+        /// </summary>
+        public static string DMMO_Details_Title {
+            get {
+                return ResourceManager.GetString("DMMO Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Definitive Map Modification Orders.
         /// </summary>
         public static string DMMO_Full_Text {
             get {
                 return ResourceManager.GetString("DMMO Full Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DMMO reference no..
+        /// </summary>
+        public static string DMMO_ID_Label {
+            get {
+                return ResourceManager.GetString("DMMO ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DMMO with reference number &apos;{0}&apos; not found.
+        /// </summary>
+        public static string DMMO_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("DMMO Not Found Error Message", resourceCulture);
             }
         }
         
@@ -525,6 +813,15 @@ namespace CSIDE.Properties {
         public static string Edit_Contact_Title {
             get {
                 return ResourceManager.GetString("Edit Contact Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit DMMO {0}.
+        /// </summary>
+        public static string Edit_DMMO_Label {
+            get {
+                return ResourceManager.GetString("Edit DMMO Label", resourceCulture);
             }
         }
         
@@ -898,11 +1195,56 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to That route has already been linked.
+        /// </summary>
+        public static string Linked_Route_Already_Exists_Validation_Message {
+            get {
+                return ResourceManager.GetString("Linked Route Already Exists Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linked routes ({0}).
+        /// </summary>
+        public static string Linked_Routes_Label {
+            get {
+                return ResourceManager.GetString("Linked Routes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading.
         /// </summary>
         public static string Loading_Text {
             get {
                 return ResourceManager.GetString("Loading Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location description.
+        /// </summary>
+        public static string Location_Description_Label {
+            get {
+                return ResourceManager.GetString("Location Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to e.g. Town or Village.
+        /// </summary>
+        public static string Location_Help_Text {
+            get {
+                return ResourceManager.GetString("Location Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Location_Label {
+            get {
+                return ResourceManager.GetString("Location Label", resourceCulture);
             }
         }
         
@@ -1015,6 +1357,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter an address manually.
+        /// </summary>
+        public static string Manual_Address_Search_Text {
+            get {
+                return ResourceManager.GetString("Manual Address Search Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve added the max number of files ({0}) to this category. If you want to replace a file, delete it first..
+        /// </summary>
+        public static string Max_Allowed_Files_For_Type_Warning_Message {
+            get {
+                return ResourceManager.GetString("Max Allowed Files For Type Warning Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Media ({0}).
         /// </summary>
         public static string Media_Label {
@@ -1114,6 +1474,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No linked routes.
+        /// </summary>
+        public static string No_Linked_Routes_Message {
+            get {
+                return ResourceManager.GetString("No Linked Routes Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No comments for this maintenance item..
         /// </summary>
         public static string No_Maintenance_Comments_Message {
@@ -1146,6 +1515,15 @@ namespace CSIDE.Properties {
         public static string No_Parish_Found_Error_Message {
             get {
                 return ResourceManager.GetString("No Parish Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No parishes linked to this item.
+        /// </summary>
+        public static string No_Parishes_Found_Message {
+            get {
+                return ResourceManager.GetString("No Parishes Found Message", resourceCulture);
             }
         }
         
@@ -1191,6 +1569,24 @@ namespace CSIDE.Properties {
         public static string No_Route_Infra_Message {
             get {
                 return ResourceManager.GetString("No Route Infra Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No routes found where you clicked. Try zooming closer if you are having trouble..
+        /// </summary>
+        public static string No_Routes_Found_At_Click_Error_Message {
+            get {
+                return ResourceManager.GetString("No Routes Found At Click Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No routes could be found nearby.
+        /// </summary>
+        public static string No_Routes_Nearby_Message {
+            get {
+                return ResourceManager.GetString("No Routes Nearby Message", resourceCulture);
             }
         }
         
@@ -1249,6 +1645,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parishes ({0}).
+        /// </summary>
+        public static string Parishes_Label {
+            get {
+                return ResourceManager.GetString("Parishes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Some of your files were not uploaded.
         /// </summary>
         public static string Partial_File_Upload_Error {
@@ -1285,11 +1690,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Primary contact.
+        /// </summary>
+        public static string Primary_Contact_Label {
+            get {
+                return ResourceManager.GetString("Primary Contact Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Primary contact number.
         /// </summary>
         public static string Primary_Contact_Number_Label {
             get {
                 return ResourceManager.GetString("Primary Contact Number Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Private comments.
+        /// </summary>
+        public static string Private_Comments_Label {
+            get {
+                return ResourceManager.GetString("Private Comments Label", resourceCulture);
             }
         }
         
@@ -1321,6 +1744,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Public comments.
+        /// </summary>
+        public static string Public_Comments_Label {
+            get {
+                return ResourceManager.GetString("Public Comments Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Public.
         /// </summary>
         public static string Public_Label {
@@ -1330,11 +1762,47 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Received date from.
+        /// </summary>
+        public static string Received_Date_From_Label {
+            get {
+                return ResourceManager.GetString("Received Date From Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Received date.
+        /// </summary>
+        public static string Received_Date_Label {
+            get {
+                return ResourceManager.GetString("Received Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Received date to.
+        /// </summary>
+        public static string Received_Date_To {
+            get {
+                return ResourceManager.GetString("Received Date To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redraw.
         /// </summary>
         public static string Redraw_Label {
             get {
                 return ResourceManager.GetString("Redraw Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference no..
+        /// </summary>
+        public static string Reference_Number_Label {
+            get {
+                return ResourceManager.GetString("Reference Number Label", resourceCulture);
             }
         }
         
@@ -1479,6 +1947,15 @@ namespace CSIDE.Properties {
         public static string Search_Again_Label {
             get {
                 return ResourceManager.GetString("Search Again Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for a DMMO.
+        /// </summary>
+        public static string Search_DMMO_Title {
+            get {
+                return ResourceManager.GetString("Search DMMO Title", resourceCulture);
             }
         }
         
@@ -1722,6 +2199,15 @@ namespace CSIDE.Properties {
         public static string Upload_File_Label {
             get {
                 return ResourceManager.GetString("Upload File Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload {0}.
+        /// </summary>
+        public static string Upload_Media_Type {
+            get {
+                return ResourceManager.GetString("Upload Media Type", resourceCulture);
             }
         }
         

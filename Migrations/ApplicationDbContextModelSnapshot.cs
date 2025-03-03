@@ -85,6 +85,238 @@ namespace CSIDE.Migrations
                     b.ToTable("ApplicationUserRoles", "cside");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.Application", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<LocalDate?>("ApplicationDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ApplicationDetails")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ApplicationTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CaseOfficer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CaseOfficerUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CaseStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ClaimedStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<MultiLineString>("Geom")
+                        .IsRequired()
+                        .HasColumnType("geometry (multilinestring)");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LocationDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContact")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrivateComments")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicComments")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate?>("ReceivedDate")
+                        .HasColumnType("date");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationTypeId");
+
+                    b.HasIndex("CaseStatusId");
+
+                    b.HasIndex("ClaimedStatusId");
+
+                    b.ToTable("DMMOApplication", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationCaseStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DMMOApplicationCaseStatuses", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationClaimedStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DMMOApplicationClaimedStatuses", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DMMOApplicationTypes", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOAddress", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UPRN")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.HasKey("ApplicationId", "UPRN");
+
+                    b.ToTable("DMMOAddresses", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOContact", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationId", "ContactId");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("DMMOContact", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOLinkedRoute", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RouteId")
+                        .HasColumnType("text");
+
+                    b.HasKey("ApplicationId", "RouteId");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("DMMOLinkedRoutes", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOMedia", b =>
+                {
+                    b.Property<int>("DMMOId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DMMOApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DMMOId", "MediaId");
+
+                    b.HasIndex("DMMOApplicationId");
+
+                    b.HasIndex("MediaId");
+
+                    b.HasIndex("MediaTypeId");
+
+                    b.ToTable("DMMOMedia", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOMediaType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileTypesLimit")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumFilesLimit")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DMMOMediaType", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOParish", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ParishId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationId", "ParishId");
+
+                    b.HasIndex("ParishId");
+
+                    b.ToTable("DMMOParish", "cside");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureItem", b =>
                 {
                     b.Property<int>("Id")
@@ -740,6 +972,128 @@ namespace CSIDE.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.Application", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.ApplicationType", "ApplicationType")
+                        .WithMany()
+                        .HasForeignKey("ApplicationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.DMMO.ApplicationCaseStatus", "CaseStatus")
+                        .WithMany()
+                        .HasForeignKey("CaseStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.DMMO.ApplicationClaimedStatus", "ClaimedStatus")
+                        .WithMany()
+                        .HasForeignKey("ClaimedStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationType");
+
+                    b.Navigation("CaseStatus");
+
+                    b.Navigation("ClaimedStatus");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOAddress", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
+                        .WithMany("DMMOAddresses")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DMMOApplication");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOContact", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
+                        .WithMany("DMMOContacts")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("DMMOApplication");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOLinkedRoute", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
+                        .WithMany("DMMOLinkedRoutes")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DMMOApplication");
+
+                    b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOMedia", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
+                        .WithMany("DMMOMedia")
+                        .HasForeignKey("DMMOApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
+                        .WithMany()
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.DMMO.DMMOMediaType", "MediaType")
+                        .WithMany()
+                        .HasForeignKey("MediaTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DMMOApplication");
+
+                    b.Navigation("Media");
+
+                    b.Navigation("MediaType");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOParish", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
+                        .WithMany("DMMOParishes")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
+                        .WithMany()
+                        .HasForeignKey("ParishId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DMMOApplication");
+
+                    b.Navigation("Parish");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureItem", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Infrastructure.InfrastructureType", "InfrastructureType")
@@ -837,7 +1191,7 @@ namespace CSIDE.Migrations
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobContact", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Shared.Contact", "Contact")
-                        .WithMany("JobContacts")
+                        .WithMany()
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -988,11 +1342,6 @@ namespace CSIDE.Migrations
                     b.Navigation("ContactType");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureItem", b =>
-                {
-                    b.Navigation("InfrastructureMedia");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.Shared.ParishCode", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
@@ -1002,6 +1351,24 @@ namespace CSIDE.Migrations
                         .IsRequired();
 
                     b.Navigation("Parish");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.Application", b =>
+                {
+                    b.Navigation("DMMOAddresses");
+
+                    b.Navigation("DMMOContacts");
+
+                    b.Navigation("DMMOLinkedRoutes");
+
+                    b.Navigation("DMMOMedia");
+
+                    b.Navigation("DMMOParishes");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureItem", b =>
+                {
+                    b.Navigation("InfrastructureMedia");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Job", b =>
@@ -1022,11 +1389,6 @@ namespace CSIDE.Migrations
                     b.Navigation("RouteMedia");
 
                     b.Navigation("Statements");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>
-                {
-                    b.Navigation("JobContacts");
                 });
 #pragma warning restore 612, 618
         }

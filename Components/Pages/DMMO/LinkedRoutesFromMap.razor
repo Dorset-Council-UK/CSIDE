@@ -1,0 +1,44 @@
+﻿@page "/DMMO/LinkedRoutesFromMap/{Id:int}"
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.Shared
+@using CSIDE.Components.DMMO
+@using CSIDE.Data.Models.DMMO
+@using CSIDE.Services
+@using CSIDE.Data.Models.Shared
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<PageTitle>@localizer["Add Linked Routes From Map Label"]</PageTitle>
+
+<h1>@localizer["Add Linked Routes From Map Label"]</h1>
+<a href="DMMO/Details/@Id" class="my-2"><Icon Name="IconName.ArrowLeftCircle"></Icon> @localizer["Back To DMMO Label"]</a>
+<p>@localizer["Add Linked Routes From Map Help Text"]</p>
+
+@if(ErrorMessage is not null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
+
+@if (DMMOApplication is not null)
+{
+    <RouteSelectorMap 
+        ExistingRoutes="ExistingLinkedRoutes?.Select(r => r.Route).ToArray()" 
+        Geometry="DMMOApplication.Geom"
+        OnAddOrRemoveRouteMethod="async(coordinates) => await AddOrRemoveRouteAtCoordinate(coordinates)"></RouteSelectorMap>
+
+    if(SelectionErrorMessage is not null){
+        <p class="text-danger">@SelectionErrorMessage</p>
+    }
+    @if (IsBusy)
+    {
+        <p class="my-3"><Spinner Size="SpinnerSize.Small" Class="me-1" /> @localizer["Loading Text"]</p>
+    }
+    <DMMOLinkedRoutesList @ref="linkedRoutesComponent"
+        LinkedRoutes="DMMOApplication.DMMOLinkedRoutes" 
+        ApplicationId="DMMOApplication.Id" 
+        IsEditable="false"/>
+}

@@ -1,0 +1,131 @@
+﻿@using CSIDE.Data.Models.DMMO
+@using CSIDE.Data.Models.Shared
+@using System.Globalization
+
+@if (DMMOApplication is not null)
+{
+    @if (MediaTypes is not null)
+    {
+        foreach (var mediaType in MediaTypes)
+        {
+            <h4>@mediaType.Name</h4>
+            //show the existing files
+            var mediaOfType = DMMOApplication.DMMOMedia?.Where(m => m.MediaTypeId == mediaType.Id);
+            if(mediaOfType is not null){
+
+                var images = from m in mediaOfType where m.Media.Format == MediaType.Image select m;
+                var videos = from m in mediaOfType where m.Media.Format == MediaType.Video select m;
+                var docs =
+                    from m in mediaOfType
+                    where (
+                        m.Media.Format == MediaType.PDF_Document |
+                        m.Media.Format == MediaType.Word_Document |
+                        m.Media.Format == MediaType.Excel_Spreadsheet |
+                        m.Media.Format == MediaType.Unknown)
+                    select m;
+
+                if (docs.Count() != 0)
+                {
+                    <div class="row my-4">
+                        <h5>@localizer["Documents Label"]</h5>
+                        <div class="col">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        @foreach (DMMOMedia dmmoMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
+                                        {
+                                            <MediaItem Media="@dmmoMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                if (images.Count() != 0)
+                {
+                    <div class="row my-4">
+                        <h5>@localizer["Images Label"]</h5>
+                        <div id="media-gallery">
+                            @foreach (DMMOMedia dmmoMediaItem in images.OrderByDescending(i => i.Media.UploadDate))
+                            {
+                                <MediaItem Media="@dmmoMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                            }
+                        </div>
+
+                    </div>
+                    <hr />
+                }
+                if (videos.Count() != 0)
+                {
+                    <div class="row my-4">
+                        <h5>@localizer["Videos Label"]</h5>
+                        @foreach (DMMOMedia dmmoMediaItem in videos.OrderByDescending(i => i.Media.UploadDate))
+                        {
+                            <div class="col-12">
+                                <MediaItem Media="@dmmoMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                            </div>
+                        }
+                    </div>
+                    <hr />
+                }
+            }
+            if(IsEditable){
+                //check to see if we've hit the max number of files for this media type
+                var mediaTypeCount = DMMOApplication.DMMOMedia?.Count(m => m.MediaTypeId == mediaType.Id) ?? 0;
+                var mediaItemsRemaining = mediaType.NumFilesLimit - mediaTypeCount;
+                if (mediaType.NumFilesLimit > 0 && mediaItemsRemaining <= 0)
+                {
+                    //no files left to upload
+                    <Alert Color="AlertColor.Info">@localizer["Max Allowed Files For Type Warning Message", mediaType.NumFilesLimit]</Alert>
+                }
+                else
+                {
+                    int maxAllowedFiles = (mediaType.NumFilesLimit == 0 ? 10 : int.Min(mediaItemsRemaining, 10));
+                    <UploadFile MaxAllowedFiles="@maxAllowedFiles"
+                                MaxFileSizeMB="50"
+                                OnUploadComplete="@((mediaItemsUploaded) => AddMediaToDMMO(mediaItemsUploaded, mediaType))"
+                                Title="@localizer["Upload Media Type", mediaType.Name]">
+                    </UploadFile>
+                }
+            }
+
+            <hr/>
+        }
+    }
+}
+else
+{
+    <Alert Color="AlertColor.Info">@localizer["No Media Message"]</Alert>
+}
+
+<!--lightbox-->
+<div id="blueimp-gallery"
+     class="blueimp-gallery blueimp-gallery-controls"
+     aria-label="image gallery"
+     aria-modal="true"
+     role="dialog">
+    <div class="slides" aria-live="polite"></div>
+    <h3 class="title"></h3>
+    <a class="prev"
+       aria-controls="blueimp-gallery"
+       aria-label="previous slide"
+       aria-keyshortcuts="ArrowLeft"></a>
+    <a class="next"
+       aria-controls="blueimp-gallery"
+       aria-label="next slide"
+       aria-keyshortcuts="ArrowRight"></a>
+    <a class="close"
+       aria-controls="blueimp-gallery"
+       aria-label="close"
+       aria-keyshortcuts="Escape"></a>
+    <a class="play-pause"
+       aria-controls="blueimp-gallery"
+       aria-label="play slideshow"
+       aria-keyshortcuts="Space"
+       aria-pressed="false"
+       role="button"></a>
+    <ol class="indicator"></ol>
+</div>
+

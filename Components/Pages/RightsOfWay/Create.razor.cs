@@ -13,10 +13,11 @@ using CSIDE.Data.Models.RightsOfWay;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using CSIDE.Components.Maintenance;
+using CSIDE.Services;
 
 namespace CSIDE.Components.Pages.RightsOfWay
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
+    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService geometryValidationService)
     {
         private Data.Models.RightsOfWay.Route? Route { get; set; }
         private LegalStatus[]? LegalStatuses { get; set; }
@@ -118,7 +119,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)

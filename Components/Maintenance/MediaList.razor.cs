@@ -15,8 +15,6 @@ namespace CSIDE.Components.Maintenance
         [Parameter]
         public bool IsEditable { get; set; }
 
-        private string? UploadSuccessMessage { get; set; }
-        private List<string> UploadErrorMessages { get; set; } = [];
         private IJSObjectReference? _jsModule;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -30,15 +28,25 @@ namespace CSIDE.Components.Maintenance
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            if (_jsModule is not null)
+            try
             {
-                await _jsModule.DisposeAsync();
+                if (_jsModule != null)
+                {
+                    await _jsModule.DisposeAsync();
+                }
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore as it doesn't matter
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
             }
         }
 
         private async Task AddMediaToJob(List<Media> UploadedMedia)
         {
-            UploadSuccessMessage = null;
             if (Job is not null && UploadedMedia.Count != 0)
             {
                 try
@@ -54,11 +62,9 @@ namespace CSIDE.Components.Maintenance
                         });
                     }
                     await context.SaveChangesAsync();
-                    UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
                 }
                 catch (Exception ex)
                 {
-                    UploadErrorMessages.Add(localizer["Save Error Message"]);
                     logger.LogError(ex, "An error attaching media to a job");
                 }
 
@@ -71,8 +77,6 @@ namespace CSIDE.Components.Maintenance
             {
                 using var context = contextFactory.CreateDbContext();
                 Job = await context.MaintenanceJobs.FindAsync([Job.Id]);
-                UploadErrorMessages = [];
-                UploadSuccessMessage = null;
                 StateHasChanged();
             }
         }

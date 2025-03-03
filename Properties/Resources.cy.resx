@@ -714,4 +714,166 @@ Disgrifiad</value>
   <data name="Search Results Limit Text" xml:space="preserve">
     <value>Dangosir uchafswm nifer y canlyniadau ({0}). I weld holl ganlyniadau chwiliad, a fyddech cystal â chyfyngu ar feini prawf eich chwiliad.</value>
   </data>
+  <data name="Create New DMMO Text" xml:space="preserve">
+    <value>Ychwanegu cais GAMD newydd i'r gronfa ddata trwy ei dynnu ar y map a llenwi'r manylion perthnasol.</value>
+  </data>
+  <data name="Create New DMMO Label" xml:space="preserve">
+    <value>Ychwanegu GAMD</value>
+  </data>
+  <data name="Search DMMO Title" xml:space="preserve">
+    <value>Chwilio am GAMD</value>
+  </data>
+  <data name="DMMO ID Label" xml:space="preserve">
+    <value>rhif cyfeirnod GAMD</value>
+  </data>
+  <data name="Case Status Label" xml:space="preserve">
+    <value>Statws achos</value>
+  </data>
+  <data name="Application Type Label" xml:space="preserve">
+    <value>Math o gais</value>
+  </data>
+  <data name="Claimed Status Label" xml:space="preserve">
+    <value>Statws hawlio</value>
+  </data>
+  <data name="Application Date From Label" xml:space="preserve">
+    <value>Dyddiad ymgeisio - dechrau</value>
+  </data>
+  <data name="Application Date To Label" xml:space="preserve">
+    <value>Dyddiad cais - diwedd</value>
+  </data>
+  <data name="Received Date From Label" xml:space="preserve">
+    <value>Dyddiad derbyn y cais - dechrau</value>
+  </data>
+  <data name="Received Date To" xml:space="preserve">
+    <value>Dyddiad derbyn y cais - gorffen</value>
+  </data>
+  <data name="DMMO Not Found Error Message" xml:space="preserve">
+    <value>GAMD gyda'r cyfeirnod '{0}' heb ei ganfod</value>
+  </data>
+  <data name="Reference Number Label" xml:space="preserve">
+    <value>Rhif cyfeirnod</value>
+  </data>
+  <data name="Application Details Label" xml:space="preserve">
+    <value>Manylion cais</value>
+  </data>
+  <data name="Location Description Label" xml:space="preserve">
+    <value>Disgrifiad lleoliad</value>
+  </data>
+  <data name="Application Date Label" xml:space="preserve">
+    <value>Dyddiad cais</value>
+  </data>
+  <data name="Received Date Label" xml:space="preserve">
+    <value>Dyddiad derbyn</value>
+  </data>
+  <data name="Case Officer Label" xml:space="preserve">
+    <value>Swyddog achos</value>
+  </data>
+  <data name="Primary Contact Label" xml:space="preserve">
+    <value>Cyswllt cynradd</value>
+  </data>
+  <data name="Private Comments Label" xml:space="preserve">
+    <value>Sylwadau preifat</value>
+  </data>
+  <data name="Public Comments Label" xml:space="preserve">
+    <value>Sylwadau'r cyhoedd</value>
+  </data>
+  <data name="Upload Media Type" xml:space="preserve">
+    <value>Llwythwch {0}</value>
+  </data>
+  <data name="DMMO Details Title" xml:space="preserve">
+    <value>GAMD {0}</value>
+  </data>
+  <data name="Edit DMMO Label" xml:space="preserve">
+    <value>Golygu GAMD {0}</value>
+  </data>
+  <data name="Parishes Label" xml:space="preserve">
+    <value>Cymunedau ({0})</value>
+  </data>
+  <data name="Automatic Parishes Information Message" xml:space="preserve">
+    <value>Mae'r cymunedau hyn yn deillio'n awtomatig o'r geometreg</value>
+  </data>
+  <data name="No Parishes Found Message" xml:space="preserve">
+    <value>Dim cymunedau sy'n gysylltiedig â'r eitem hon</value>
+  </data>
+  <data name="Max Allowed Files For Type Warning Message" xml:space="preserve">
+    <value>Rydych chi wedi ychwanegu'r uchafswm o ffeiliau ({0}) i'r categori hwn. Os ydych am ddisodli ffeil, dilëwch hi yn gyntaf.</value>
+  </data>
+  <data name="Address Label" xml:space="preserve">
+    <value>Cyfeiriad</value>
+  </data>
+  <data name="Affected Addresses Label" xml:space="preserve">
+    <value>Cyfeiriadau yr effeithir arnynt ({0})</value>
+  </data>
+  <data name="Add Address Label" xml:space="preserve">
+    <value>Ychwanegu cyfeiriad</value>
+  </data>
+  <data name="Add Addresses From Map Label" xml:space="preserve">
+    <value>Ychwanegu cyfeiriadau o'r map</value>
+  </data>
+  <data name="Delete DMMO Address Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod am ddileu'r cyfeiriad hwn o'r GAMD?</value>
+  </data>
+  <data name="Add Addresses From Map Help Text" xml:space="preserve">
+    <value>Tynnwch lun ardal ar y map yna dewiswch pa gyfeiriadau i'w hychwanegu</value>
+  </data>
+  <data name="Back To DMMO Label" xml:space="preserve">
+    <value>Yn ôl i GAMD</value>
+  </data>
+  <data name="Add All Addresses And Go Back Label" xml:space="preserve">
+    <value>Ychwanegwch bob cyfeiriad ac ewch yn ôl i'r dudalen fanylion</value>
+  </data>
+  <data name="Add All Addresses And Continue Label" xml:space="preserve">
+    <value>Ychwanegu pob cyfeiriad a chwilio am leoliad arall</value>
+  </data>
+  <data name="Add Individual Addresses Label" xml:space="preserve">
+    <value>Neu ychwanegwch gyfeiriadau unigol trwy eu dewis isod</value>
+  </data>
+  <data name="Address Search Label" xml:space="preserve">
+    <value>Chwiliwch am gyfeiriad</value>
+  </data>
+  <data name="Address Search Help Text" xml:space="preserve">
+    <value>Rhowch god post, UPRN neu enw tŷ/stryd</value>
+  </data>
+  <data name="Manual Address Search Text" xml:space="preserve">
+    <value>Rhowch gyfeiriad â llaw</value>
+  </data>
+  <data name="Location Label" xml:space="preserve">
+    <value>Lleoliad</value>
+  </data>
+  <data name="Location Help Text" xml:space="preserve">
+    <value>e.e. Tref neu Bentref</value>
+  </data>
+  <data name="Add Linked Routes From Map Label" xml:space="preserve">
+    <value>Ychwanegu llwybrau cysylltiedig gan ddefnyddio map</value>
+  </data>
+  <data name="Add Linked Routes From Map Help Text" xml:space="preserve">
+    <value>Ychwanegwch lwybr cysylltiedig trwy ei ddewis ar y map. Dileu llwybr cysylltiedig trwy glicio ar y llwybr a amlygwyd ar y map.</value>
+  </data>
+  <data name="Linked Routes Label" xml:space="preserve">
+    <value>Llwybrau cysylltiedig ({0})</value>
+  </data>
+  <data name="Add Linked Route Label" xml:space="preserve">
+    <value>Ychwanegu llwybr cysylltiedig</value>
+  </data>
+  <data name="Add Nearby Routes Label" xml:space="preserve">
+    <value>Ychwanegu llwybrau cyfagos</value>
+  </data>
+  <data name="Add Route By ID Label" xml:space="preserve">
+    <value>Ychwanegu llwybr cysylltiedig yn ôl ID</value>
+  </data>
+  <data name="No Linked Routes Message" xml:space="preserve">
+    <value>Dim llwybrau cysylltiedig</value>
+  </data>
+  <data name="No Routes Nearby Message" xml:space="preserve">
+    <value>Dim llwybrau cyfagos</value>
+  </data>
+  <data name="Linked Route Already Exists Validation Message" xml:space="preserve">
+    <value>Mae’r llwybr hwnnw eisoes yn gysylltiedig</value>
+  </data>
+  <data name="Delete DMMO Linked Route Confirmation" xml:space="preserve">
+    <value>A ydych yn siŵr eich bod am ddileu'r llwybr cysylltiedig hwn?</value>
+  </data>
+  <data name="No Routes Found At Click Error Message" xml:space="preserve">
+    <value>Ni chanfuwyd unrhyw lwybrau lle gwnaethoch glicio. Ceisiwch chwyddo'n agosach os ydych chi'n cael trafferth.</value>
+  </data>
 </root>

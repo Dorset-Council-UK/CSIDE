@@ -51,10 +51,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Components\DMMO\DMMOLinkedRoutesList.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Components\Mapping\EditMap.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Components\RightsOfWay\MediaList.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Components\Shared\ContactCard.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

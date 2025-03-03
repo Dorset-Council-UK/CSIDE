@@ -1,0 +1,83 @@
+﻿@if (IsEditable)
+{
+    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="OpenAddLinkedRoutesModal">@localizer["Add Linked Route Label"]</button>
+    <a href="DMMO/LinkedRoutesFromMap/@ApplicationId" class="btn btn-sm btn-outline-primary">@localizer["Add Linked Routes From Map Label"]</a>
+}
+
+@if (LinkedRoutes is not null && LinkedRoutes.Count != 0)
+{
+    <table class="table table-striped mt-2">
+        <thead>
+            <tr>
+                <th>@localizer["Route ID Label"]</th>
+                <th>@localizer["Path Type Label"]</th>
+                <th>@localizer["Name Label"]</th>
+                @if (IsEditable)
+                {
+                <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var route in LinkedRoutes)
+            {
+                <tr>
+                    <td>@route.RouteId</td>
+                    <td>@route.Route?.RouteType?.Name</td>
+                    <td>@route.Route?.Name</td>
+                    @if (IsEditable)
+                    {
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteLinkedRoute(route.ApplicationId, route.RouteId)">@localizer["Delete Label"]</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <Alert Color="AlertColor.Warning" Class="mt-2">@localizer["No Linked Routes Message"]</Alert>
+}
+
+@if (IsEditable)
+{
+    <Modal @ref="AddLinkedRouteModal" Title="@localizer["Add Linked Route Label"]">
+        <BodyTemplate>
+            <h4>@localizer["Add Nearby Routes Label"]</h4>
+            @if (NearbyRoutes is not null && NearbyRoutes.Count != 0)
+            {
+                <div class="list-group">
+                    @foreach (var route in NearbyRoutes)
+                    {
+                        bool AlreadyLinked = LinkedRoutes is not null && LinkedRoutes.Any(l => l.RouteId == route.RouteCode);
+                        <button type="button"
+                                class="list-group-item list-group-item-action"
+                                @onclick="async () => await AddSingleRoute(route.RouteCode)"
+                                disabled="@(IsBusy || AlreadyLinked)">
+                            <i class="bi bi-@(AlreadyLinked ? "check-circle" : "plus-circle") @(AlreadyLinked ? "text-success" : "")"></i>
+                            @route.RouteCode - @route.RouteType?.Name
+                        </button>
+                    }
+                </div>
+            }
+            else
+            {
+                <Alert Color="AlertColor.Info">@localizer["No Routes Nearby Message"]</Alert>
+
+            }
+            <hr/>
+            <h4 class="mt-2">@localizer["Add Route By ID Label"]</h4>
+            <EditForm Model="NewDMMOLinkedRoute" OnSubmit="SubmitFormAsync">
+                <FluentValidationValidator @ref="DMMOLinkedRouteValidator" />
+                <ValidationSummary />
+                <div class="mb-3">
+                    <label class="form-label" for="linked-route">@localizer["Route ID Label"]</label>
+                    <InputText id="linked-route" class="form-control" @bind-Value="NewDMMOLinkedRoute!.RouteId"></InputText>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm" disabled="@IsBusy">@localizer["Add Linked Route Label"]</button>
+            </EditForm>
+        </BodyTemplate>
+    </Modal>
+}

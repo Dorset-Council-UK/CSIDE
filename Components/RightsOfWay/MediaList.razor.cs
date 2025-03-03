@@ -1,10 +1,8 @@
-﻿using CSIDE.Components.Maintenance;
-using CSIDE.Data;
+﻿using CSIDE.Data;
 using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.RightsOfWay
@@ -15,11 +13,6 @@ namespace CSIDE.Components.RightsOfWay
         public Data.Models.RightsOfWay.Route? Route { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
-
-        private string? UploadSuccessMessage { get; set; }
-        private List<string> UploadErrorMessages { get; set; } = [];
-        private string? UploadSuccessMessage_ClosureDocs { get; set; }
-        private List<string> UploadErrorMessages_ClosureDocs { get; set; } = [];
         private IJSObjectReference? _jsModule;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -33,15 +26,25 @@ namespace CSIDE.Components.RightsOfWay
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            if (_jsModule is not null)
+            try
             {
-                await _jsModule.DisposeAsync();
+                if (_jsModule != null)
+                {
+                    await _jsModule.DisposeAsync();
+                }
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore as it doesn't matter
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
             }
         }
 
-        private async Task AddMediaToJob(List<Media> UploadedMedia, bool IsClosureNotificationDocument)
+        private async Task AddMediaToRoute(List<Media> UploadedMedia, bool IsClosureNotificationDocument)
         {
-            UploadSuccessMessage = null;
             if (Route is not null && UploadedMedia.Count != 0)
             {
                 try
@@ -58,37 +61,21 @@ namespace CSIDE.Components.RightsOfWay
                         });
                     }
                     await context.SaveChangesAsync();
-                    if (IsClosureNotificationDocument)
-                    {
-                        UploadSuccessMessage_ClosureDocs = localizer["Upload Success Message", UploadedMedia.Count];
-                    }
-                    else
-                    {
-                        UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
-                    }
                 }
                 catch (Exception ex)
                 {
-                    if (IsClosureNotificationDocument)
-                    {
-                        UploadErrorMessages_ClosureDocs.Add(localizer["Save Error Message"]);
-                    }
-                    else
-                    {
-                        UploadErrorMessages.Add(localizer["Save Error Message"]);
-                    }
                     logger.LogError(ex, "An error occurred adding media to a Right of Way");
                 }
 
             }
         }
-        private async Task AddMediaToJob(List<Media> UploadedMedia)
+        private async Task AddMediaToRoute(List<Media> UploadedMedia)
         {
-            await AddMediaToJob(UploadedMedia, false);
+            await AddMediaToRoute(UploadedMedia, false);
         }
-        private async Task AddRouteClosureMediaToJob(List<Media> UploadedMedia)
+        private async Task AddRouteClosureMediaToRoute(List<Media> UploadedMedia)
         {
-            await AddMediaToJob(UploadedMedia, true);
+            await AddMediaToRoute(UploadedMedia, true);
         }
 
         private async Task RefreshComponent()
@@ -97,10 +84,6 @@ namespace CSIDE.Components.RightsOfWay
             {
                 using var context = contextFactory.CreateDbContext();
                 Route = await context.Routes.FindAsync([Route.RouteCode]);
-                UploadErrorMessages = [];
-                UploadSuccessMessage = null;
-                UploadErrorMessages_ClosureDocs = [];
-                UploadSuccessMessage_ClosureDocs = null;
                 StateHasChanged();
             }
         }

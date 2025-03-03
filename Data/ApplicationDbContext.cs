@@ -2,9 +2,9 @@
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Components.Authorization;
 using CSIDE.Data.Models.RightsOfWay;
 
@@ -32,6 +32,15 @@ namespace CSIDE.Data
         public DbSet<LegalStatus> RouteLegalStatuses { get; set; }
         public DbSet<RouteMedia> RouteMedia { get; set; }
 
+        public DbSet<Application> DMMOApplication { get; set; }
+        public DbSet<ApplicationCaseStatus> DMMOApplicationCaseStatuses { get; set; }
+        public DbSet<ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
+        public DbSet<ApplicationType> DMMOApplicationTypes { get; set; }
+        public DbSet<DMMOMedia> DMMOMedia { get; set; }
+        public DbSet<DMMOContact> DMMOContact { get; set; }
+        public DbSet<DMMOAddress> DMMOAddresses { get; set; }
+        public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
+
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<ContactType> ContactTypes { get; set; }
         public DbSet<Media> Media { get; set; }
@@ -41,6 +50,7 @@ namespace CSIDE.Data
         public DbSet<ProblemType> ProblemTypes { get; set; }
         public DbSet<Parish> Parishes { get; set; }
         public DbSet<ParishCode> ParishCodes { get; set; }
+        public DbSet<DMMOMediaType> DMMOMediaType { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -76,6 +86,13 @@ namespace CSIDE.Data
             modelBuilder.ApplyConfiguration(new StatementConfiguration());
             modelBuilder.ApplyConfiguration(new RouteMediaConfiguration());
 
+            modelBuilder.ApplyConfiguration(new DMMOApplicationConfiguration());
+            modelBuilder.ApplyConfiguration(new DMMOMediaConfiguration());
+            modelBuilder.ApplyConfiguration(new DMMOContactConfiguration());
+            modelBuilder.ApplyConfiguration(new DMMOParishConfiguration());
+            modelBuilder.ApplyConfiguration(new DMMOAddressConfiguration());
+            modelBuilder.ApplyConfiguration(new DMMOLinkedRouteConfiguration());
+
             modelBuilder.ApplyConfiguration(new InfrastructureItemConfiguration());
             modelBuilder.ApplyConfiguration(new InfrastructureTypeConfiguration());
             modelBuilder.ApplyConfiguration(new InfrastructureMediaConfiguration());
@@ -102,6 +119,10 @@ namespace CSIDE.Data
                 UpdateRouteParishIds().Wait();
                 SetMaintenanceTeamForRoute().Wait();
                 FixClosureData().Wait();
+            }
+            if (ChangeTracker.Entries<Models.DMMO.Application>().Any())
+            {
+                UpdateDMMOParishIds().Wait();
             }
             //TODO - Add to audit log
 
@@ -135,6 +156,10 @@ namespace CSIDE.Data
                 await UpdateVersionOfStatement();
             }
 
+            if (ChangeTracker.Entries<Models.DMMO.Application>().Any())
+            {
+                await UpdateDMMOParishIds();
+            }
             //TODO - Add to audit log
 
             return await base.SaveChangesAsync(cancellationToken);
@@ -191,6 +216,24 @@ namespace CSIDE.Data
             {
                 var bestParish = await context.Parishes.Where(p => p.Geom.Intersects(route.Geom)).OrderByDescending(p => p.Geom.Intersection(route.Geom).Length).FirstOrDefaultAsync();
                 route.ParishId = bestParish?.ParishId;
+            }
+        }
+
+        private async Task UpdateDMMOParishIds()
+        {
+            var applications = ChangeTracker.Entries<Models.DMMO.Application>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity);
+
+            using var context = contextFactory.CreateDbContext();
+            foreach (var application in applications)
+            {
+                var parishes = await context.Parishes.Where(p => p.Geom.Intersects(application.Geom)).ToArrayAsync();
+                application.DMMOParishes.Clear();
+                foreach (var parish in parishes)
+                {
+                    application.DMMOParishes.Add(new DMMOParish { ParishId = parish.ParishId, ApplicationId = application.Id });
+                }
             }
         }
 

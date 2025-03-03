@@ -3,7 +3,7 @@ import EditBar from "ol-ext/control/EditBar";
 import Feature from "ol/Feature";
 import { extend } from "ol/extent";
 import { GeoJSON } from "ol/format";
-import { GeometryCollection, LineString, MultiLineString, MultiPoint, SimpleGeometry } from "ol/geom";
+import { GeometryCollection, LineString, MultiLineString, MultiPoint, Point, SimpleGeometry } from "ol/geom";
 import { Draw, Select, Snap } from "ol/interaction";
 import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
 import { register } from "ol/proj/proj4";
@@ -30,6 +30,15 @@ const lineStyle = new Style({
   stroke: new Stroke({
     color: '#ffff00',
     width: 4
+  })
+});
+const polySelectionStyle = new Style({
+  stroke: new Stroke({
+    color: '#ff0000',
+    width: 4
+  }),
+  fill: new Fill({
+    color: 'rgba(0,0,0,0.1)'
   })
 });
 const vertexStyle = new Style({
@@ -121,38 +130,7 @@ export function initMap(geomType: string, geometry: string, mapConfigJSON: strin
 
   initEditing(geomType, component);
 
-  if (geometry) {
-    const features = new GeoJSON().readFeatures(geometry);
-    if (features) {
-      const mapExtent = features[0].getGeometry()!.getExtent();
-      features.forEach(feature => {
-        extend(mapExtent, feature.getGeometry()!.getExtent())
-      });
-      map.getView().fit(mapExtent, {
-        padding: [20, 20, 20, 20],
-        maxZoom: 16
-      });
-
-      // Split MultiLineString into individual LineString features
-      features.forEach(feature => {
-        const geom = feature.getGeometry();
-        if (geom) {
-          if (geom.getType() === 'MultiLineString') {
-            const lineStrings = (geom as MultiLineString).getLineStrings();
-            lineStrings.forEach(lineString => {
-              const lineFeature = new Feature({
-                geometry: lineString
-              });
-              editSource.addFeature(lineFeature);
-            });
-          } else {
-            editSource.addFeature(feature);
-          }
-        }
-        });
-    
-    }
-  }
+  initGeometry(geometry);
 }
 
 function initEditing(geomType: string, component: any) {
@@ -182,6 +160,7 @@ function initEditing(geomType: string, component: any) {
       //create point editing tools
       break;
     case "Line":
+    case "Line+RoutePicker":
       //create line editing tools
       const lineVectorLayer = new VectorLayer({
         source: editSource,
@@ -191,6 +170,19 @@ function initEditing(geomType: string, component: any) {
 
       // Add the editbar
       var select = new Select({ style: selectedStyle });
+
+      //Add the route picker (will only be enabled if Line+RoutePicker geom type is chosen)
+      var pickRoute = new PickRoute();
+      pickRoute.on('drawend', async (e) => {
+        const selectedRoute: string = await component.invokeMethodAsync('GetRoute', (e.feature.getGeometry() as Point).getCoordinates());
+        if (selectedRoute != null) {
+          editSource.addFeatures(new GeoJSON().readFeatures(selectedRoute));
+        }
+        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
+        component.invokeMethodAsync('OnDrawEnd', geoJson);
+      });
+      
+      
       var edit = new EditBar({
         interactions: {
           // Use our own interaction > set the title inside
@@ -198,12 +190,12 @@ function initEditing(geomType: string, component: any) {
           // Define button title
           DrawLine: 'Draw line',
           DrawPolygon: false,
-          DrawPoint: false,
+          DrawPoint: (geomType === 'Line+RoutePicker' ? pickRoute : false) ,
           DrawRegular: false,
           DrawHole: false,
           Info: false,
           Offset: false,
-          Split: false
+          Split: false,
         } as any,
         source: editSource
       });
@@ -229,6 +221,11 @@ function initEditing(geomType: string, component: any) {
         const geoJson = new GeoJSON().writeFeatures([...editSource.getFeatures(), (e as any).feature]);
         component.invokeMethodAsync('OnDrawEnd', geoJson);
       });
+      edit.getInteraction('Delete').on('deleteend' as any, (e) => {
+        editSource.removeFeatures((e as any).features);
+        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
+        component.invokeMethodAsync('OnDrawEnd', geoJson);
+      });
 
       map.on('moveend', async (e) => {
         const view = map.getView();
@@ -247,13 +244,70 @@ function initEditing(geomType: string, component: any) {
       });
 
       break;
-    case "Polygon":
+    case "PolygonSelector":
       //create polygon editing tools
+      const dmmoLayer = new VectorLayer({
+        source: editSource,
+        style: lineStyle
+      });
+      map.addLayer(dmmoLayer);
+      let selectorSource = new VectorSource();
+      const polyVectorLayer = new VectorLayer({
+        source: selectorSource,
+        style: polySelectionStyle
+      });
+      map.addLayer(polyVectorLayer);
+      const polySelectionInteraction = new Draw({
+        source: selectorSource,
+        type: 'Polygon',
+      });
+      map.addInteraction(polySelectionInteraction);
+      polySelectionInteraction.on('drawend', (e) => {
+        selectorSource.clear();
+        //convert to GeoJSON
+        const geoJson = new GeoJSON().writeFeature(e.feature);
+        component.invokeMethodAsync('OnDrawEnd', geoJson);
+      })
+      map.getViewport().style.cursor = 'crosshair';
       break;
 
   }
 }
 
+function initGeometry(geometry:string) {
+  if (geometry) {
+    const features = new GeoJSON().readFeatures(geometry);
+    if (features) {
+      const mapExtent = features[0].getGeometry()!.getExtent();
+      features.forEach(feature => {
+        extend(mapExtent, feature.getGeometry()!.getExtent())
+      });
+      map.getView().fit(mapExtent, {
+        padding: [20, 20, 20, 20],
+        maxZoom: 16
+      });
+
+      // Split MultiLineString into individual LineString features
+      features.forEach(feature => {
+        const geom = feature.getGeometry();
+        if (geom) {
+          if (geom.getType() === 'MultiLineString') {
+            const lineStrings = (geom as MultiLineString).getLineStrings();
+            lineStrings.forEach(lineString => {
+              const lineFeature = new Feature({
+                geometry: lineString
+              });
+              editSource.addFeature(lineFeature);
+            });
+          } else {
+            editSource.addFeature(feature);
+          }
+        }
+      });
+
+    }
+  }
+}
 function setProj4Defs() {
 //convert x/y from BNG to Spherical Mercator
   proj4.defs(
@@ -264,6 +318,16 @@ function setProj4Defs() {
     '+units=m +no_defs',
   );
   register(proj4);
+}
+
+/**Custom interaction that slightly abuses the OpenLayers 'Draw' control to allow arbitrary selection of routes*/
+class PickRoute extends Draw {
+  constructor() {
+    super({
+      type: 'Point',
+      style: {}
+    });
+  }
 }
 
 export function clearDrawnGeometries() {

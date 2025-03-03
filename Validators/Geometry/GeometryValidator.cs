@@ -1,5 +1,7 @@
 ﻿using CSIDE.Data;
+using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -13,10 +15,12 @@ namespace CSIDE.Validators.Geometry
     {
         readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         readonly IStringLocalizer<Properties.Resources> _localizer;
-        public GeometryValidator(IDbContextFactory<ApplicationDbContext> contextFactory, IStringLocalizer<Properties.Resources> localizer)
+        readonly IRightsOfWayHelperService _geometryValidationService;
+        public GeometryValidator(IDbContextFactory<ApplicationDbContext> contextFactory, IStringLocalizer<Properties.Resources> localizer, IRightsOfWayHelperService geometryValidationService)
         {
             _localizer = localizer;
             _contextFactory = contextFactory;
+            _geometryValidationService = geometryValidationService;
 
             RuleSet("Single Point", () =>
             {
@@ -75,10 +79,10 @@ namespace CSIDE.Validators.Geometry
         {
             var point = features.First().Geometry.Centroid;
             point.SRID = 27700;
-            using var context = _contextFactory.CreateDbContext();
-            var Route = await context.Routes.Where(r => r.Geom.Distance(point) < 20).OrderBy(r => r.Geom.Distance(point)).FirstOrDefaultAsync(cancellationToken: token);
+            
+            var NearestRoute = await _geometryValidationService.GetNearestRouteAsync(point);
 
-            return (Route is not null);
+            return (NearestRoute is not null);
         }
 
     }

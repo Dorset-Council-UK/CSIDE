@@ -22,7 +22,7 @@
 
 <div class="@(IsFileUploading ? "loading-indicator" :"")">
 
-    <label for="@_inputFileId" class="form-label h4">@(string.IsNullOrEmpty(Title) ? localizer["Upload File Label"] : Title)</label>
+    <label for="@_inputFileId" class="form-label h5">@(string.IsNullOrEmpty(Title) ? localizer["Upload File Label"] : Title)</label>
     @if (IsFileUploading)
     {
         <div class="position-absolute loading-indicator-overlay start-50 translate-middle p-1">
@@ -44,9 +44,7 @@
     public int MaxAllowedFiles { get; set; } = 10;
     [Parameter]
     public EventCallback<List<Media>> OnUploadComplete { get; set; }
-    [Parameter]
-    public required List<string> UploadErrorMessages{ get; set; }
-    [Parameter]
+    public List<string> UploadErrorMessages { get; set; } = [];
     public string? UploadSuccessMessage{ get; set; }
     [Parameter]
     public string? Title{ get; set; }
@@ -101,8 +99,8 @@
                             Title = originalFileName
                         };
                     context.Media.Add(mediaItem);
-                    UploadedMediaItems.Add(mediaItem);
                     await context.SaveChangesAsync();
+                    UploadedMediaItems.Add(mediaItem);
                     successfullyUploadedFiles += 1;
 
                 }

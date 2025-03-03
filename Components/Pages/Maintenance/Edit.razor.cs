@@ -9,10 +9,12 @@ using NetTopologySuite.IO;
 using NetTopologySuite.Features;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Services;
 
 namespace CSIDE.Components.Pages.Maintenance
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger)
+    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayHelperService geometryValidationService)
     {
         [Parameter]
         public int JobId { get; set; }
@@ -135,7 +137,7 @@ namespace CSIDE.Components.Pages.Maintenance
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
             if (result.IsValid)
@@ -145,12 +147,11 @@ namespace CSIDE.Components.Pages.Maintenance
                 {
                     Job.Geom = featureCollection.First().Geometry.Centroid;
                     Job.Geom.SRID = 27700;
-                    using var context = contextFactory.CreateDbContext();
-                    //TODO - Move this to shared location
-                    var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 10).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
-                    if (Route is not null)
+
+                    var NearestRoute = await geometryValidationService.GetNearestRouteAsync(Job.Geom);
+                    if (NearestRoute is not null)
                     {
-                        Job.RouteId = Route.RouteCode;
+                        Job.RouteId = NearestRoute.RouteCode;
                     }
                 }
             }

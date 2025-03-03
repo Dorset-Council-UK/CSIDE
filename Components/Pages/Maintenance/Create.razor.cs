@@ -3,6 +3,7 @@ using CSIDE.Components.Maintenance;
 using CSIDE.Components.Mapping;
 using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -13,10 +14,8 @@ using System.Globalization;
 
 namespace CSIDE.Components.Pages.Maintenance;
 
-public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
+public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService geometryValidationService)
 {
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
     private List<BreadcrumbItem>? NavItems;
     private Modal routeValidationModal = default!;
     private Modal errorModal = default!;
@@ -112,7 +111,7 @@ public partial class Create(IDbContextFactory<ApplicationDbContext> contextFacto
         GeoJsonReader _geoJsonReader = new GeoJsonReader();
         FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-        CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+        CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
 
         var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
         if (result.IsValid)
@@ -122,12 +121,10 @@ public partial class Create(IDbContextFactory<ApplicationDbContext> contextFacto
             {
                 Job.Geom = featureCollection.First().Geometry.Centroid;
                 Job.Geom.SRID = 27700;
-                using var context = contextFactory.CreateDbContext();
-                // TODO - Move this to shared location
-                var Route = await context.Routes.Where(r => r.Geom.Distance(Job.Geom) < 20).OrderBy(r => r.Geom.Distance(Job.Geom)).FirstOrDefaultAsync();
-                if (Route is not null)
+                var NearestRoute = await geometryValidationService.GetNearestRouteAsync(Job.Geom);
+                if (NearestRoute is not null)
                 {
-                    Job.RouteId = Route.RouteCode;
+                    Job.RouteId = NearestRoute.RouteCode;
                 }
             }
         }
@@ -135,9 +132,9 @@ public partial class Create(IDbContextFactory<ApplicationDbContext> contextFacto
         {
             // Check to see what the error is and show appropriate error message
             // first check if the geometry was invalid
-            if (result.Errors.Any(
+            if (result.Errors.Exists(
                 failure => string.Equals(failure.ErrorCode, "GEOM_OUTSIDE_BOUNDS", StringComparison.Ordinal)) ||
-                result.Errors.Any(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.Ordinal))
+                result.Errors.Exists(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.Ordinal))
                 )
             {
                 //show generic error
@@ -147,7 +144,7 @@ public partial class Create(IDbContextFactory<ApplicationDbContext> contextFacto
             // NOTE I know it seems backwards to test this way round, but if you don't, 
             // invalid geometries always come back saying 'no route found', which is not the right message
             // TODO - Improve logic through use of conditional validation
-            else if (result.Errors.Any(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.Ordinal)))
+            else if (result.Errors.Exists(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.Ordinal)))
             {
                 //we assigned the geom at this point in case the user goes ahead with overriding the route ID
                 if (Job is not null)

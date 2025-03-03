@@ -12,10 +12,11 @@ using NetTopologySuite.Geometries;
 using CSIDE.Data.Models.RightsOfWay;
 using Microsoft.Extensions.Logging;
 using CSIDE.Components.Maintenance;
+using CSIDE.Services;
 
 namespace CSIDE.Components.Pages.RightsOfWay
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger)
+    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayHelperService geometryValidationService)
     {
         [Parameter]
         public required string RouteID { get; set; }
@@ -113,7 +114,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)

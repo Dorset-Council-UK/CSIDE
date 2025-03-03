@@ -1,31 +1,31 @@
-﻿@using CSIDE.Data.Models.Maintenance
-@using CSIDE.Data.Models.Shared
+﻿@using CSIDE.Data.Models.Shared
 @using System.Globalization
 
-@if(Job is not null)
+@if(Contacts is not null)
 {
     if (IsEditable)
     {
+        //TODO add delegated onclick event
         <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ShowAddContactModal">@localizer["Add Contact Label"]</button>
     }
     
-    @if (Job.JobContacts is not null && Job.JobContacts.Count != 0)
+    @if (Contacts.Length != 0)
     {
         <div class="row">
             @*defined contact types first, then generic contact types*@
-            @foreach (JobContact contact in Job.JobContacts.Where(c => c.Contact.ContactType != null).OrderBy(c => c.Contact.ContactType?.Id))
+            @foreach (Contact contact in Contacts.Where(c => c.ContactType != null).OrderBy(c => c.ContactType?.Id))
             {
-                <ContactCard JobContact="@contact" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></ContactCard>
+                <ContactCard Contact="@contact" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></ContactCard>
             }
-            @foreach (JobContact contact in Job.JobContacts.Where(c => c.Contact.ContactType == null).OrderBy(c => c.Contact.Id))
+            @foreach (Contact contact in Contacts.Where(c => c.ContactType == null).OrderBy(c => c.Id))
             {
-                <ContactCard JobContact="@contact" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></ContactCard>
+                <ContactCard Contact="@contact" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></ContactCard>
             }
         </div>
     }
     else
     {
-        <Alert Color="AlertColor.Info">@localizer["No Maintenance Contacts Message"]</Alert>
+        <Alert Color="AlertColor.Info">@localizer["No Contacts Message"]</Alert>
     }
 }
 

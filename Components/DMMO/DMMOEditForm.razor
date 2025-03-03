@@ -1,0 +1,145 @@
+﻿@using CSIDE.Data.Models.DMMO
+
+@if(DMMOApplication is not null){
+    <EditForm Model="DMMOApplication" OnSubmit="@SubmitFormAsync">
+
+        <FluentValidationValidator @ref="fluentValidationValidator" />
+        <ValidationSummary />
+
+        <div class="form-check form-switch my-2">
+            <InputCheckbox @bind-Value="DMMOApplication.IsPublic" class="form-check-input" id="is-public" />
+            <label class="form-check-label" for="is-public">@localizer["Is Public Label"]</label>
+        </div>
+
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="app-type">@localizer["Application Type Label"]</label>
+                <InputSelect id="app-type" class="form-select" @bind-Value="DMMOApplication.ApplicationTypeId">
+                    @if (ApplicationTypes is not null)
+                    {
+                        @foreach (var type in ApplicationTypes.OrderBy(r => r.Name))
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => DMMOApplication.ApplicationTypeId" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="claimed-status">@localizer["Claimed Status Label"]</label>
+                <InputSelect id="claimed-status" class="form-select" @bind-Value="DMMOApplication.ClaimedStatusId">
+                    @if (ClaimedStatuses is not null)
+                    {
+                        @foreach (var status in ClaimedStatuses.OrderBy(r => r.Name))
+                        {
+                            <option value="@status.Id">@status.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => DMMOApplication.ClaimedStatusId" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="case-status">@localizer["Case Status Label"]</label>
+
+                <InputSelect id="case-status" class="form-select" @bind-Value="DMMOApplication.CaseStatusId">
+                    @if (CaseStatuses is not null)
+                    {
+                        @foreach (var status in CaseStatuses.OrderBy(r => r.Name))
+                        {
+                            <option value="@status.Id">@status.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => DMMOApplication.CaseStatusId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="app-details">@localizer["Application Details Label"]</label>
+            <InputTextArea id="app-details" class="form-control" @bind-Value="DMMOApplication.ApplicationDetails"></InputTextArea>
+            <ValidationMessage For="() => DMMOApplication.ApplicationDetails" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="location-description">@localizer["Location Description Label"]</label>
+            <InputTextArea id="location-description" class="form-control" @bind-Value="DMMOApplication.LocationDescription"></InputTextArea>
+            <ValidationMessage For="() => DMMOApplication.LocationDescription" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="app-date">@localizer["Application Date Label"]</label>
+                @{
+                    string ApplicationDateStringRepresentation = "";
+                    if(DMMOApplication.ApplicationDate.HasValue){
+                        ApplicationDateStringRepresentation = DMMOApplication.ApplicationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="app-date" type="date" class="form-control" value="@ApplicationDateStringRepresentation" @onchange="UpdateApplicationDateProperty" />
+            </div>
+            <ValidationMessage For="() => DMMOApplication.ApplicationDate" />
+        </div>
+
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="received-date">@localizer["Received Date Label"]</label>
+                @{
+                    string ReceivedDateStringRepresentation = "";
+                    if (DMMOApplication.ReceivedDate.HasValue)
+                    {
+                        ReceivedDateStringRepresentation = DMMOApplication.ReceivedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="received-date" type="date" class="form-control" value="@ReceivedDateStringRepresentation" @onchange="UpdateReceivedDateProperty" />
+            </div>
+            <ValidationMessage For="() => DMMOApplication.ReceivedDate" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="primary-contact">@localizer["Primary Contact Label"]</label>
+            <InputText id="primary-contact" class="form-control" @bind-Value="DMMOApplication.PrimaryContact"></InputText>
+            <ValidationMessage For="() => DMMOApplication.PrimaryContact" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="case-officer">@localizer["Case Officer Label"]</label>
+            <InputText id="case-officer" class="form-control" @bind-Value="DMMOApplication.CaseOfficer"></InputText>
+            <ValidationMessage For="() => DMMOApplication.CaseOfficer" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="private-comments">@localizer["Private Comments Label"]</label>
+            <InputTextArea id="private-comments" class="form-control" @bind-Value="DMMOApplication.PrivateComments"></InputTextArea>
+            <ValidationMessage For="() => DMMOApplication.PrivateComments" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="public-comments">@localizer["Public Comments Label"]</label>
+            <InputTextArea id="public-comments" class="form-control" @bind-Value="DMMOApplication.PublicComments"></InputTextArea>
+            <ValidationMessage For="() => DMMOApplication.PublicComments" />
+        </div>
+
+        @if (IsEdit)
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+            <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+        }
+
+    </EditForm>
+
+}

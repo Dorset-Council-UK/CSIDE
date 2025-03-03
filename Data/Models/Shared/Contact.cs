@@ -12,6 +12,5 @@ namespace CSIDE.Data.Models.Shared
         public string? OrganisationName { get; set; }
         public int? ContactTypeId { get; set; }
         public ContactType? ContactType { get; set; }
-        public ICollection<JobContact> JobContacts { get; set; } = [];
     }
 }

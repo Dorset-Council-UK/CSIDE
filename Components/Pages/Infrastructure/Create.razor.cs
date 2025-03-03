@@ -9,10 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using FluentValidation;
+using CSIDE.Services;
 
 namespace CSIDE.Components.Pages.Infrastructure
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger)
+    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService geometryValidationService)
     {
         private List<BreadcrumbItem>? NavItems;
         private Modal routeValidationModal = default!;
@@ -90,7 +91,7 @@ namespace CSIDE.Components.Pages.Infrastructure
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer);
+            CSIDE.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
             if (result.IsValid)
@@ -100,12 +101,10 @@ namespace CSIDE.Components.Pages.Infrastructure
                 {
                     InfrastructureItem.Geom = featureCollection.First().Geometry.Centroid;
                     InfrastructureItem.Geom.SRID = 27700;
-                    using var context = contextFactory.CreateDbContext();
-                    //TODO - Move this to shared location
-                    var Route = await context.Routes.Where(r => r.Geom.Distance(InfrastructureItem.Geom) < 20).OrderBy(r => r.Geom.Distance(InfrastructureItem.Geom)).FirstOrDefaultAsync();
-                    if (Route is not null)
+                    var NearestRoute = await geometryValidationService.GetNearestRouteAsync(InfrastructureItem.Geom);
+                    if (NearestRoute is not null)
                     {
-                        InfrastructureItem.RouteId = Route.RouteCode;
+                        InfrastructureItem.RouteId = NearestRoute.RouteCode;
                     }
                 }
             }
@@ -113,7 +112,8 @@ namespace CSIDE.Components.Pages.Infrastructure
             {
                 // Check to see what the error is and show appropriate error message
                 // first check if the geometry was invalid
-                if (result.Errors.Any(failure => failure.ErrorCode == "GEOM_OUTSIDE_BOUNDS") || result.Errors.Any(failure => failure.ErrorCode == "INVALID_GEOM"))
+                if (result.Errors.Exists(failure => string.Equals(failure.ErrorCode, "GEOM_OUTSIDE_BOUNDS", StringComparison.OrdinalIgnoreCase)) || 
+                    result.Errors.Exists(failure => string.Equals(failure.ErrorCode, "INVALID_GEOM", StringComparison.OrdinalIgnoreCase)))
                 {
                     //show generic error
                     await ShowGeometryValidationErrorModal();
@@ -122,7 +122,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                 // NOTE I know it seems backwards to test this way round, but if you don't, 
                 // invalid geometries always come back saying 'no route found', which is not the right message
                 // TODO - Improve logic through use of conditional validation
-                else if (result.Errors.Any(failure => failure.ErrorCode == "NO_ROUTE_NEARBY"))
+                else if (result.Errors.Exists(failure => string.Equals(failure.ErrorCode, "NO_ROUTE_NEARBY", StringComparison.OrdinalIgnoreCase)))
                 {
                     //we assigned the geom at this point in case the user goes ahead with overriding the route ID
                     if (InfrastructureItem is not null)

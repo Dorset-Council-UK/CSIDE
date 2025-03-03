@@ -20,6 +20,8 @@
     public EventCallback<string> OnDrawEndMethod { get; set; }
     [Parameter]
     public Func<double[], Task<string>>? OnGetSnappablesMethod { get; set; }
+    [Parameter]
+    public Func<double[], Task<string>>? OnGetRouteMethod { get; set; }
 
     private string MapId = $"create-map-{new Random().Next()}";
 
@@ -79,6 +81,20 @@
         return "";
     }
 
+    [JSInvokable]
+    public async Task<string> GetRoute(double[] coordinates)
+    {
+        if (OnGetRouteMethod != null)
+        {
+            if (coordinates.Length != 2)
+            {
+                throw new ArgumentException("Coordinates must be supplied as an array of 2 values");
+            }
+            return await OnGetRouteMethod.Invoke(coordinates);
+        }
+        return "";
+    }
+
     public async Task ClearDrawnGeometries()
     {
         await _jsModule!.InvokeVoidAsync("clearDrawnGeometries");
@@ -86,9 +102,20 @@
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        if (_jsModule is not null)
+        try
         {
-            await _jsModule.DisposeAsync();
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
         }
     }
 }

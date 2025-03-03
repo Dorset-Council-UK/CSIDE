@@ -73,13 +73,14 @@
                     <Alert Color="AlertColor.Info">@localizer["All Nearby Infrastructure Linked Message"]</Alert>
                 }
             }
+            <hr/>
             <h4 class="mt-2">@localizer["Add Infrastructure By ID Title"]</h4>
             <EditForm Model="NewJobInfrastructure" OnSubmit="SubmitFormAsync">
                 <FluentValidationValidator @ref="JobInfrastructureValidator" />
                 <ValidationSummary />
                 <div class="mb-3">
                     <label class="form-label" for="infra-id">@localizer["Infrastructure ID Label"]</label>
-                    <InputNumber id="contact-name" class="form-control" @bind-Value="NewJobInfrastructure!.InfrastructureId"></InputNumber>
+                    <InputNumber id="infra-id" class="form-control" @bind-Value="NewJobInfrastructure!.InfrastructureId"></InputNumber>
                     <ValidationMessage For="() => NewJobInfrastructure.InfrastructureId" />
                 </div>
 

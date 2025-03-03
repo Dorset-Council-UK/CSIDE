@@ -29,5 +29,6 @@ namespace CSIDE.Data.Models.Infrastructure
         public InfrastructureType? InfrastructureType { get; set; }
         public Parish? Parish { get; set; }
         public Team? MaintenanceTeam { get; set; }
+        /*TODO - Add concurrency token*/
     }
 }

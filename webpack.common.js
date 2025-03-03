@@ -1,9 +1,10 @@
 ﻿const path = require('path');
 
 module.exports = {
-    entry: {
-      editMap: './Scripts/EditMap.ts',
-      miniMap: './Scripts/MiniMap.ts',
+  entry: {
+    editMap: './Scripts/EditMap.ts',
+    miniMap: './Scripts/MiniMap.ts',
+    routeSelectorMap: './Scripts/RouteSelectorMap.ts',
   },
   experiments: {
     outputModule: true,

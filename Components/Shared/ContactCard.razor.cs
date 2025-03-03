@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
-namespace CSIDE.Components.Maintenance
+namespace CSIDE.Components.Shared
 {
     public partial class ContactCard(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<ContactCard> logger)
     {
         [Parameter]
-        public required JobContact JobContact { get; set; }
+        public required Contact Contact { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
         [Parameter]
@@ -45,12 +45,12 @@ namespace CSIDE.Components.Maintenance
 
                 try
                 {
-                    if (JobContact is not null && JobContact.Contact is not null)
+                    if (Contact is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
                         //clear the 'ContactType' navigation property, otherwise ef core uses that which hasn't changed
-                        JobContact.Contact.ContactType = null;
-                        context.Update(JobContact);
+                        Contact.ContactType = null;
+                        context.Update(Contact);
                         await context.SaveChangesAsync();
 
                         await HideEditContactModal();
@@ -61,7 +61,7 @@ namespace CSIDE.Components.Maintenance
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred updating a maintenance contact");
+                    logger.LogError(ex, "An error occurred updating a contact");
                 }
                 finally
                 {
@@ -79,14 +79,14 @@ namespace CSIDE.Components.Maintenance
             await EditContactModal.HideAsync();
         }
 
-        private async Task DeleteContact(int ContactId, int JobId)
+        private async Task DeleteContact(int ContactId)
         {
             IsBusy = true;
             bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Contact Confirmation"].Value);
             if (ConfirmDelete)
             {
                 using var context = contextFactory.CreateDbContext();
-                var contactToDelete = await context.MaintenanceJobContact.FindAsync([JobId, ContactId]);
+                var contactToDelete = await context.Contacts.FindAsync(ContactId);
                 if (contactToDelete is not null)
                 {
                     context.Remove(contactToDelete);

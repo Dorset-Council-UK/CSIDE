@@ -27,6 +27,8 @@ builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+builder.Services.AddScoped<IRightsOfWayHelperService, RightsOfWayHelperService>();
+builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));

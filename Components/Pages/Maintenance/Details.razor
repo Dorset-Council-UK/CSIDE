@@ -4,6 +4,7 @@
 @using CSIDE.Components.Mapping
 @using CSIDE.Components.Layout
 @using System.Globalization
+@using CSIDE.Data.Models.Shared
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
@@ -133,7 +134,11 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <ContactsList Job="@Job" IsEditable="true"></ContactsList>
+                                <ContactsList 
+                                    Contacts="@Job.JobContacts.Select(c => c.Contact).ToArray()" 
+                                    IsEditable="true" 
+                                    OnSubmit="AddContact"
+                                    OnRefresh="RefreshContactsList"></ContactsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -220,5 +225,23 @@ else
         {
             IsBusy = false;
         }
+    }
+    private async Task AddContact(Contact NewContact){
+        
+        if (NewContact is not null && Job is not null)
+        {
+            using var context = contextFactory.CreateDbContext();
+
+            context.Contacts.Add(NewContact);
+            await context.SaveChangesAsync();
+            context.MaintenanceJobContact.Add(new JobContact { ContactId = NewContact.Id, JobId = Job.Id }); //UHRMMMM?
+            await context.SaveChangesAsync();
+        } 
+    }
+    private async Task RefreshContactsList()
+    {
+        using var context = contextFactory.CreateDbContext();
+        Job = await context.MaintenanceJobs.FindAsync(JobId);
+        StateHasChanged();
     }
 }

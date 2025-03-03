@@ -1,0 +1,98 @@
+﻿@if (IsEditable)
+{
+    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="OpenAddAddressModal">@localizer["Add Address Label"]</button>
+    <a href="DMMO/AddressesFromMap/@ApplicationId" class="btn btn-sm btn-outline-primary">@localizer["Add Addresses From Map Label"]</a>
+}
+
+@if (Addresses is not null && Addresses.Count != 0)
+{
+
+    <table class="table table-striped mt-2">
+        <thead>
+            <tr>
+                <th>UPRN</th>
+                <th>@localizer["Address Label"]</th>
+                @if (IsEditable)
+                {
+                <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var address in Addresses)
+            {
+                <tr>
+                    <td>@address.UPRN</td>
+                    <td>@address.Address</td>
+                    @if (IsEditable)
+                    {
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteDMMOAddress(address.ApplicationId, address.UPRN)">@localizer["Delete Label"]</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+else
+{
+    <Alert Color="AlertColor.Warning">@localizer["No Affected Addresses Message"]</Alert>
+}
+
+@if (IsEditable)
+{
+    <Modal @ref="AddAddressModal" Title="@localizer["Add Address Label"]">
+
+        <BodyTemplate>
+            <label for="Address_Search_Input" class="form-label">@localizer["Address Search Label"]</label>
+            <div class="input-group mb-3">
+                <InputText @bind-Value="AddressSearchInput" id="Address_Search_Input" class="form-control"></InputText>
+                <button class="btn btn-outline-secondary" type="button" disabled="@IsBusy" id="Address_Search_Input_Search_Button" @onclick="DoAddressSearch">@localizer["Search Label"]</button>
+            </div>
+            <div class="form-text">@localizer["Address Search Help Text"]</div>
+            <div class="form-text text-danger">@ErrorMessage</div>
+
+            @if (AddressSearchAddresses is not null && AddressSearchAddresses.Count != 0)
+            {
+                <div class="list-group">
+                    @foreach (var address in AddressSearchAddresses)
+                    {
+                        bool exists = Addresses is not null ? Addresses.Any(a => a.UPRN == address.UPRN) : false;
+                        <button type="button"
+                                class="list-group-item list-group-item-action"
+                                @onclick="async () => await AddSingleAddress(address)"
+                                disabled="@(IsBusy || exists)">
+                            <i class="bi bi-@(exists ? "check-circle" : "plus-circle") @(exists ? "text-success" : "")"></i>
+                            @address.Address
+                        </button>
+                    }
+                </div>
+            }
+            <hr />
+            @if(!ManualAddressFormShown){
+                <p><button class="btn btn-link" @onclick="() => {ManualAddressFormShown = true;}">@localizer["Manual Address Search Text"]</button></p>
+            }else{
+
+                <EditForm Model="NewDMMOAddress" OnSubmit="SubmitFormAsync">
+                    <FluentValidationValidator @ref="DMMOAddressValidator" />
+                    <ValidationSummary />
+                    <div class="mb-3">
+                        <label class="form-label" for="manual-address-uprn">UPRN</label>
+                        <InputNumber id="manual-address-uprn" class="form-control" @bind-Value="NewDMMOAddress!.UPRN"></InputNumber>
+                        <ValidationMessage For="() => NewDMMOAddress.UPRN" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="manual-address-string">@localizer["Address Label"]</label>
+                        <InputTextArea id="manual-address-string" class="form-control" @bind-Value="NewDMMOAddress!.Address"></InputTextArea>
+                        <ValidationMessage For="() => NewDMMOAddress.Address" />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm" disabled="@IsBusy">@localizer["Add Address Label"]</button>
+                </EditForm>
+            }
+            
+        </BodyTemplate>
+
+    </Modal>
+}

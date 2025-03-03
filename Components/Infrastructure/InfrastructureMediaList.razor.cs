@@ -14,8 +14,6 @@ namespace CSIDE.Components.Infrastructure
         [Parameter]
         public bool IsEditable { get; set; }
 
-        private string? UploadSuccessMessage { get; set; }
-        private List<string> UploadErrorMessages { get; set; } = [];
         private IJSObjectReference? _jsModule;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -29,16 +27,25 @@ namespace CSIDE.Components.Infrastructure
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            if (_jsModule is not null)
+            try
             {
-                await _jsModule.DisposeAsync();
+                if (_jsModule != null)
+                {
+                    await _jsModule.DisposeAsync();
+                }
             }
-            GC.SuppressFinalize(this);
+            catch (JSDisconnectedException)
+            {
+                // Ignore as it doesn't matter
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         private async Task AddMediaToInfrastructure(List<Media> UploadedMedia)
         {
-            UploadSuccessMessage = null;
             if (InfrastructureItem is not null && UploadedMedia.Count != 0)
             {
                 try
@@ -54,11 +61,9 @@ namespace CSIDE.Components.Infrastructure
                         });
                     }
                     await context.SaveChangesAsync();
-                    UploadSuccessMessage = localizer["Upload Success Message", UploadedMedia.Count];
                 }
                 catch (Exception e)
                 {
-                    UploadErrorMessages.Add(localizer["Save Error Message"]);
                     logger.LogError(e, "Error adding media to infrastructure item");
                 }
 
@@ -71,8 +76,6 @@ namespace CSIDE.Components.Infrastructure
             {
                 using var context = contextFactory.CreateDbContext();
                 InfrastructureItem = await context.Infrastructure.FindAsync([InfrastructureItem.Id]);
-                UploadErrorMessages = [];
-                UploadSuccessMessage = null;
                 StateHasChanged();
             }
         }
