@@ -37,8 +37,6 @@ namespace CSIDE.Components.DMMO
             await base.OnAfterRenderAsync(firstRender);
         }
 
-
-
         private async Task AddMediaToDMMO(List<Media> UploadedMedia, DMMOMediaType mediaType)
         {
             if (DMMOApplication is not null && UploadedMedia.Count != 0)

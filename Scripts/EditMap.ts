@@ -41,6 +41,15 @@ const polySelectionStyle = new Style({
     color: 'rgba(0,0,0,0.1)'
   })
 });
+const polygonDrawStyle = new Style({
+  stroke: new Stroke({
+    color: '#ffff00',
+    width: 4
+  }),
+  fill: new Fill({
+    color: 'rgba(0,0,0,0.1)'
+  })
+});
 const vertexStyle = new Style({
   image: new Circle({
     radius: 5,
@@ -155,10 +164,13 @@ function initEditing(geomType: string, component: any) {
         component.invokeMethodAsync('OnDrawEnd', geoJson);
       })
       map.getViewport().style.cursor = 'crosshair';
+
       break;
+
     case "MultiPoint":
       //create point editing tools
       break;
+
     case "Line":
     case "Line+RoutePicker":
       //create line editing tools
@@ -181,8 +193,6 @@ function initEditing(geomType: string, component: any) {
         const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
         component.invokeMethodAsync('OnDrawEnd', geoJson);
       });
-      
-      
       var edit = new EditBar({
         interactions: {
           // Use our own interaction > set the title inside
@@ -244,6 +254,58 @@ function initEditing(geomType: string, component: any) {
       });
 
       break;
+
+    case "Polygon":
+      //create polygon editing tools
+      const polygonVectorLayer = new VectorLayer({
+        source: editSource,
+        style: polygonDrawStyle
+      });
+      map.addLayer(polygonVectorLayer);
+
+      // Add the editbar
+      var select = new Select({ style: selectedStyle });
+      var edit = new EditBar({
+        interactions: {
+          // Use our own interaction > set the title inside
+          Select: select,
+          // Define button title
+          DrawLine: false,
+          DrawPolygon: 'Draw polygon',
+          DrawPoint: false,
+          DrawRegular: false,
+          DrawHole: false,
+          Info: false,
+          Offset: false,
+          Split: false
+        } as any,
+        source: editSource
+      });
+      map.addControl(edit);
+
+      edit.getInteraction('ModifySelect').on('modifyend' as any, (e) => {
+        //convert to GeoJSON
+        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
+        component.invokeMethodAsync('OnDrawEnd', geoJson);
+      });
+      edit.getInteraction('DrawPolygon').on('drawend' as any, (e) => {
+        //convert to GeoJSON
+        const geoJson = new GeoJSON().writeFeatures([...editSource.getFeatures(), (e as any).feature]);
+        component.invokeMethodAsync('OnDrawEnd', geoJson);
+      });
+
+      map.on('moveend', async (e) => {
+        const view = map.getView();
+        if (view.getZoom()! < 15) { return; }
+      });
+      map.on('pointermove', (e) => {
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.hasFeatureAtPixel(pixel, { layerFilter: (lyr) => { return lyr === polygonVectorLayer } });
+        map.getViewport().style.cursor = hit ? 'pointer' : '';
+      });
+
+      break;
+
     case "PolygonSelector":
       //create polygon editing tools
       const dmmoLayer = new VectorLayer({
@@ -269,8 +331,8 @@ function initEditing(geomType: string, component: any) {
         component.invokeMethodAsync('OnDrawEnd', geoJson);
       })
       map.getViewport().style.cursor = 'crosshair';
-      break;
 
+      break;
   }
 }
 

@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record CSIDEOptions
+public record CSIDEOptions
 {
     public const string SectionName = "CSIDE";
     public const string ConnectionStringName = "CSIDE";
@@ -16,4 +16,5 @@ internal record CSIDEOptions
     public string Version { get; init; } = "0.1 ALPHA";
     public string PathBase { get; init; } = "";
     public bool UseHttpsRedirection { get; init; }
+    public string LandownerDepositsPublicRegisterURL { get; init; } = "";
 }

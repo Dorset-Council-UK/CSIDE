@@ -166,6 +166,11 @@ h1:focus {
   background-repeat: no-repeat;
   background-position: center;
 }
+.ol-editbar .ol-drawpolygon > button {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22currentColor%22%20class%3D%22bi%20bi-bounding-box-circles%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M2%201a1%201%200%201%200%200%202%201%201%200%200%200%200-2M0%202a2%202%200%200%201%203.937-.5h8.126A2%202%200%201%201%2014.5%203.937v8.126a2%202%200%201%201-2.437%202.437H3.937A2%202%200%201%201%201.5%2012.063V3.937A2%202%200%200%201%200%202m2.5%201.937v8.126c.703.18%201.256.734%201.437%201.437h8.126a2%202%200%200%201%201.437-1.437V3.937A2%202%200%200%201%2012.063%202.5H3.937A2%202%200%200%201%202.5%203.937M14%201a1%201%200%201%200%200%202%201%201%200%200%200%200-2M2%2013a1%201%200%201%200%200%202%201%201%200%200%200%200-2m12%200a1%201%200%201%200%200%202%201%201%200%200%200%200-2%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
 .ol-control.ol-bar .ol-control.ol-text-button > div{
   font-size:1rem;
   text-transform:capitalize;

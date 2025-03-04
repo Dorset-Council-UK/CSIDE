@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record StartBoundsOptions
+public record StartBoundsOptions
 {
     public const string SectionName = "StartBounds";
 

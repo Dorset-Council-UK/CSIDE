@@ -73,6 +73,31 @@ namespace CSIDE.Validators.Geometry
                 RuleFor(g => g.Count).GreaterThanOrEqualTo(1).WithMessage(localizer["Invalid Geometry Validation Message"]).WithErrorCode("INVALID_GEOM");
             });
 
+            RuleSet("Polygon", () =>
+            {
+                //Add rule to check that the featurecollection contains only polygon or multipolygons
+                RuleFor(g => g).Must(g => g.All(f => f.Geometry.OgcGeometryType == OgcGeometryType.Polygon || f.Geometry.OgcGeometryType == OgcGeometryType.MultiPolygon))
+                    .WithMessage(localizer["Invalid Geometry Validation Message"])
+                    .WithErrorCode("INVALID_GEOM");
+
+                RuleFor(g => g).Must(g => g.All(f => f.Geometry.Envelope.Coordinates.First().X >= 0))
+                     .WithMessage(localizer["Geometry Outside UK Validation Message"])
+                     .WithErrorCode("GEOM_OUTSIDE_BOUNDS");
+
+                RuleFor(g => g).Must(g => g.All(f => f.Geometry.Envelope.Coordinates.First().Y >= 0))
+                    .WithMessage(localizer["Geometry Outside UK Validation Message"])
+                    .WithErrorCode("GEOM_OUTSIDE_BOUNDS");
+
+                RuleFor(g => g).Must(g => g.All(f => f.Geometry.Envelope.Coordinates[2].X <= 700_000))
+                    .WithMessage(localizer["Geometry Outside UK Validation Message"])
+                    .WithErrorCode("GEOM_OUTSIDE_BOUNDS");
+
+                RuleFor(g => g).Must(g => g.All(f => f.Geometry.Envelope.Coordinates[2].Y <= 1_300_000))
+                    .WithMessage(localizer["Geometry Outside UK Validation Message"])
+                    .WithErrorCode("GEOM_OUTSIDE_BOUNDS");
+
+                RuleFor(g => g.Count).GreaterThanOrEqualTo(1).WithMessage(localizer["Invalid Geometry Validation Message"]).WithErrorCode("INVALID_GEOM");
+            });
         }
 
         private async Task<bool> PointOnRoute(FeatureCollection features, CancellationToken token)

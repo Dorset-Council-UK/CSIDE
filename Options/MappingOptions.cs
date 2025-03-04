@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record MappingOptions
+public record MappingOptions
 {
     public const string SectionName = "Mapping";
 

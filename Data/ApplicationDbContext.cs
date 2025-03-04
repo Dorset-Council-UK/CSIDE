@@ -3,6 +3,7 @@ using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -48,6 +49,16 @@ namespace CSIDE.Data
         public DbSet<InfrastructureType> InfrastructureTypes { get; set; }
         public DbSet<InfrastructureMedia> InfrastructureMedia { get; set; }
         public DbSet<ProblemType> ProblemTypes { get; set; }
+
+        public DbSet<LandownerDeposit> LandownerDeposits { get; set; }
+        public DbSet<LandownerDepositTypeName> LandownerDepositTypeNames { get; set; }
+        public DbSet<LandownerDepositType> LandownerDepositTypes { get; set; }
+        public DbSet<LandownerDepositMedia> LandownerDepositMedia { get; set; }
+        public DbSet<LandownerDepositContact> LandownerDepositContacts { get; set; }
+        public DbSet<LandownerDepositAddress> LandownerDepositAddresses { get; set; }
+        public DbSet<LandownerDepositMediaType> LandownerDepositMediaTypes { get; set; }
+        public DbSet<LandownerDepositParish> LandownerDepositParishes { get; set; }
+
         public DbSet<Parish> Parishes { get; set; }
         public DbSet<ParishCode> ParishCodes { get; set; }
         public DbSet<DMMOMediaType> DMMOMediaType { get; set; }
@@ -99,6 +110,12 @@ namespace CSIDE.Data
             modelBuilder.ApplyConfiguration(new JobProblemTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ParishConfiguration());
 
+            modelBuilder.ApplyConfiguration(new LandownerDepositConfiguration());
+            modelBuilder.ApplyConfiguration(new LandownerDepositTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new LandownerDepositMediaConfiguration());
+            modelBuilder.ApplyConfiguration(new LandownerDepositContactConfiguration());
+            modelBuilder.ApplyConfiguration(new LandownerDepositAddressConfiguration());
+            modelBuilder.ApplyConfiguration(new landownerDepositParishConfiguration());
         }
 
         public override int SaveChanges()
@@ -113,6 +130,10 @@ namespace CSIDE.Data
             {
                 UpdateInfrastructureParishIds().Wait();
                 SetMaintenanceTeamForInfrastructureItem().Wait();
+            }
+            if (ChangeTracker.Entries<LandownerDeposit>().Any())
+            {
+                UpdateLandownerDepositParishIds().Wait();
             }
             if (ChangeTracker.Entries<Models.RightsOfWay.Route>().Any())
             {
@@ -142,6 +163,11 @@ namespace CSIDE.Data
             {
                 await UpdateInfrastructureParishIds();
                 await SetMaintenanceTeamForInfrastructureItem();
+            }
+
+            if (ChangeTracker.Entries<LandownerDeposit>().Any())
+            {
+                await UpdateLandownerDepositParishIds();
             }
 
             if (ChangeTracker.Entries<Models.RightsOfWay.Route>().Any())
@@ -198,6 +224,28 @@ namespace CSIDE.Data
             {
                 var parish = await context.Parishes.SingleOrDefaultAsync(p => p.Geom.Contains(infrastructureItem.Geom));
                 infrastructureItem.ParishId = parish?.ParishId;
+            }
+        }
+
+        /// <summary>
+        /// Updates the Parish ID of a new or updated landowner deposit based on a spatial contains query
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateLandownerDepositParishIds()
+        {
+            var landownerDeposits = ChangeTracker.Entries<LandownerDeposit>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity);
+
+            using var context = contextFactory.CreateDbContext();
+            foreach (var landownerDeposit in landownerDeposits)
+            {
+                var parishes = await context.Parishes.Where(p => p.Geom.Intersects(landownerDeposit.Geom)).ToArrayAsync();
+                landownerDeposit.LandownerDepositParishes.Clear();
+                foreach (var parish in parishes)
+                {
+                    landownerDeposit.LandownerDepositParishes.Add(new LandownerDepositParish { ParishId = parish.ParishId, LandownerDepositId = landownerDeposit.Id });
+                }
             }
         }
 

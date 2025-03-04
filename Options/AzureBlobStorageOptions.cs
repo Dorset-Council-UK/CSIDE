@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record AzureBlobStorageOptions
+public record AzureBlobStorageOptions
 {
     public const string SectionName = "AzureBlobStorage";
 

@@ -385,6 +385,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back to Landowner Deposits.
+        /// </summary>
+        public static string Back_To_Landowner_Deposits_Label {
+            get {
+                return ResourceManager.GetString("Back To Landowner Deposits Label", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Basic Details.
         /// </summary>
         public static string Basic_Details_Label {
@@ -637,6 +646,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Create_New_Landowner_Deposit_Label {
+            get {
+                return ResourceManager.GetString("Create New Landowner Deposit Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a new Landowner Deposit using a map.
+        /// </summary>
+        public static string Create_New_Landowner_Deposit_Text {
+            get {
+                return ResourceManager.GetString("Create New Landowner Deposit Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new Landowner Deposit.
+        /// </summary>
+        public static string Create_New_Landowner_Deposit_Title {
+            get {
+                return ResourceManager.GetString("Create New Landowner Deposit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new Right of Way.
         /// </summary>
         public static string Create_New_Right_of_Way_Label {
@@ -709,6 +745,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this address from the Landowner Deposit?.
+        /// </summary>
+        public static string Delete_Landowner_Deposit_Address_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Landowner Deposit Address Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to delete this file?.
         /// </summary>
         public static string Delete_Media_Confirmation {
@@ -743,7 +788,7 @@ namespace CSIDE.Properties {
                 return ResourceManager.GetString("DMMO Details Title", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Definitive Map Modification Orders.
         /// </summary>
@@ -824,7 +869,7 @@ namespace CSIDE.Properties {
                 return ResourceManager.GetString("Edit DMMO Label", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
@@ -1177,6 +1222,249 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date sent to archive.
+        /// </summary>
+        public static string Landowner_Deposit_Archive_Date_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Archive Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archive reference.
+        /// </summary>
+        public static string Landowner_Deposit_Archive_Reference_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Archive Reference Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date cheque paid in.
+        /// </summary>
+        public static string Landowner_Deposit_Cheque_Paid_In_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Cheque Paid In Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cheque receipt number.
+        /// </summary>
+        public static string Landowner_Deposit_Cheque_Receipt_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Cheque Receipt Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Form completed correctly?.
+        /// </summary>
+        public static string Landowner_Deposit_Completed_Correctly_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Completed Correctly Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a Landowner Deposit.
+        /// </summary>
+        public static string Landowner_Deposit_Create_Title {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Create Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date acknowledged receipt.
+        /// </summary>
+        public static string Landowner_Deposit_Date_Acknowledged_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Date Acknowledged Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date received.
+        /// </summary>
+        public static string Landowner_Deposit_Date_Received_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Date Received Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landowner Deposit Details {0}.
+        /// </summary>
+        public static string Landowner_Deposit_Details_Title {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Landowner Deposit {0}.
+        /// </summary>
+        public static string Landowner_Deposit_Edit_Title {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email notice sent.
+        /// </summary>
+        public static string Landowner_Deposit_Email_Notice_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Email Notice Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fee paid?.
+        /// </summary>
+        public static string Landowner_Deposit_Fee_Paid_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Fee Paid Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landowner Deposit ID.
+        /// </summary>
+        public static string Landowner_Deposit_ID_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location description.
+        /// </summary>
+        public static string Landowner_Deposit_Location_Description_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Location Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Landowner_Deposit_Location_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Location Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map attached to correct scale?.
+        /// </summary>
+        public static string Landowner_Deposit_Map_Correct_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Map Correct Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landowner Deposit with ID &apos;{0}&apos; was not found in the database.
+        /// </summary>
+        public static string Landowner_Deposit_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date notice drafted.
+        /// </summary>
+        public static string Landowner_Deposit_Notice_Drafted_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Notice Drafted Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Onsite notice erected.
+        /// </summary>
+        public static string Landowner_Deposit_Onsite_Notice_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Onsite Notice Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parish.
+        /// </summary>
+        public static string Landowner_Deposit_Parish_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Parish Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Received date.
+        /// </summary>
+        public static string Landowner_Deposit_Received_Date_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Received Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All signed who should?.
+        /// </summary>
+        public static string Landowner_Deposit_Signed_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Signed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landowner Deposits.
+        /// </summary>
+        public static string Landowner_Deposit_Title {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Landowner_Deposit_Type_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Website entry printed.
+        /// </summary>
+        public static string Landowner_Deposit_Website_Entry_Printed_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Website Entry Printed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Website notice published.
+        /// </summary>
+        public static string Landowner_Deposit_Website_Notice_Published_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Website Notice Published Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View the public register.
+        /// </summary>
+        public static string Landowner_Deposits_Public_Register_Label {
+            get {
+                return ResourceManager.GetString("Landowner Deposits Public Register Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Landowner Deposits.
         /// </summary>
         public static string Landowner_Deposits_Title {
@@ -1483,6 +1771,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string No_Label {
+            get {
+                return ResourceManager.GetString("No Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No comments for this maintenance item..
         /// </summary>
         public static string No_Maintenance_Comments_Message {
@@ -1697,7 +1994,7 @@ namespace CSIDE.Properties {
                 return ResourceManager.GetString("Primary Contact Label", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Primary contact number.
         /// </summary>
@@ -1983,6 +2280,15 @@ namespace CSIDE.Properties {
         public static string Search_Label {
             get {
                 return ResourceManager.GetString("Search Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for a Landowner Deposit.
+        /// </summary>
+        public static string Search_Landowner_Deposits_Title {
+            get {
+                return ResourceManager.GetString("Search Landowner Deposits Title", resourceCulture);
             }
         }
         
@@ -2298,6 +2604,15 @@ namespace CSIDE.Properties {
         public static string X_Metres_Away_Label {
             get {
                 return ResourceManager.GetString("X Metres Away Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Yes_Label {
+            get {
+                return ResourceManager.GetString("Yes Label", resourceCulture);
             }
         }
         

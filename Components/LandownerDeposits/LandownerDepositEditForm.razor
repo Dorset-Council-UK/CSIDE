@@ -1,0 +1,238 @@
+﻿@using CSIDE.Data.Models.LandownerDeposits
+
+@if (LandownerDeposit is not null)
+{
+	<EditForm Model="LandownerDeposit" OnSubmit="@SubmitFormAsync">
+		<FluentValidationValidator @ref="fluentValidationValidator" />
+		<ValidationSummary />
+
+		@if (LandownerDepositTypeNames is not null && LandownerDepositTypeNames.Length != 0)
+		{
+			<div class="mb-3">
+				<fieldset>
+					<legend class="form-check-label fs-6">@localizer["Landowner Deposit Type Label"]</legend>
+
+					@foreach (var LandownerDepositType in LandownerDepositTypeNames)
+					{
+						var selected = LandownerDeposit.LandownerDepositTypes.Select(l => l.LandownerDepositTypeNameId).Contains(LandownerDepositType.Id);
+
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="@LandownerDepositType.Id" checked="@selected" id="LandownerDepositType__@LandownerDepositType.Id" @onchange="(e) => {LandownerDepositTypeChanged(LandownerDepositType, e);}">
+							<label class="form-check-label" for="LandownerDepositType__@LandownerDepositType.Id">
+								@LandownerDepositType.Name
+							</label>
+						</div>
+					}
+				</fieldset>
+			</div>
+		}
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="received-date">@localizer["Landowner Deposit Received Date Label"]</label>
+				@{
+					string ReceivedDateStringRepresentation = "";
+					if (LandownerDeposit.ReceivedDate.HasValue)
+					{
+						ReceivedDateStringRepresentation = LandownerDeposit.ReceivedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="received-date" class="form-control" value="@ReceivedDateStringRepresentation" @onchange="UpdateReceivedDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.ReceivedDate" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="location-description">@localizer["Landowner Deposit Location Description Label"]</label>
+			<InputTextArea id="location-description" class="form-control" @bind-Value="LandownerDeposit.Location"></InputTextArea>
+			<ValidationMessage For="() => LandownerDeposit.Location" />
+		</div>
+
+		<div class="mb-3">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<InputCheckbox id="form-completed" class="form-check-input" @bind-Value="LandownerDeposit.FormCompleted"></InputCheckbox>
+				<label class="form-check-label" for="form-completed">@localizer["Landowner Deposit Completed Correctly Label"]</label>
+				<ValidationMessage For="() => LandownerDeposit.FormCompleted" />
+			</div>
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<InputCheckbox id="map-correct" class="form-check-input" @bind-Value="LandownerDeposit.MapCorrect"></InputCheckbox>
+				<label class="form-check-label" for="map-correct">@localizer["Landowner Deposit Map Correct Label"]</label>
+				<ValidationMessage For="() => LandownerDeposit.MapCorrect" />
+			</div>
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<InputCheckbox id="fee-paid" class="form-check-input" @bind-Value="LandownerDeposit.FeePaid"></InputCheckbox>
+				<label class="form-check-label" for="fee-paid">@localizer["Landowner Deposit Fee Paid Label"]</label>
+				<ValidationMessage For="() => LandownerDeposit.FeePaid" />
+			</div>
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<InputCheckbox id="all-signed" class="form-check-input" @bind-Value="LandownerDeposit.AllSigned"></InputCheckbox>
+				<label class="form-check-label" for="all-signed">@localizer["Landowner Deposit Signed Label"]</label>
+				<ValidationMessage For="() => LandownerDeposit.AllSigned" />
+			</div>
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="acknowledged-date">@localizer["Landowner Deposit Date Acknowledged Label"]</label>
+				@{
+					string AcknowledgeDateStringRepresentation = "";
+					if (LandownerDeposit.DateAcknowledged.HasValue)
+					{
+						AcknowledgeDateStringRepresentation = LandownerDeposit.DateAcknowledged.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="acknowledged-date" class="form-control" value="@AcknowledgeDateStringRepresentation" @onchange="UpdateAcknowledgedDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.DateAcknowledged" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="cheque-receipt">@localizer["Landowner Deposit Cheque Receipt Label"]</label>
+				<InputText id="cheque-receipt" class="form-control" @bind-Value="LandownerDeposit.ChequeReceiptNumber"></InputText>
+				<ValidationMessage For="() => LandownerDeposit.ChequeReceiptNumber" />
+			</div>
+		</div>
+		
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+			<label class="form-label" for="paid-in-date">@localizer["Landowner Deposit Cheque Paid In Label"]</label>
+				@{
+					string ChequePaidDateStringRepresentation = "";
+					if (LandownerDeposit.ChequePaidInDate.HasValue)
+					{
+						ChequePaidDateStringRepresentation = LandownerDeposit.ChequePaidInDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="paid-in-date" class="form-control" value="@ChequePaidDateStringRepresentation" @onchange="UpdateChequePaidDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.ChequePaidInDate" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="notice-drafted-date">@localizer["Landowner Deposit Notice Drafted Label"]</label>
+				@{
+					string NoticeDraftedDateStringRepresentation = "";
+					if (LandownerDeposit.NoticeDrafted.HasValue)
+					{
+						NoticeDraftedDateStringRepresentation = LandownerDeposit.NoticeDrafted.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="notice-drafted-date" class="form-control" value="@NoticeDraftedDateStringRepresentation" @onchange="UpdateNoticeDraftedDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.NoticeDrafted" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="website-notice-date">@localizer["Landowner Deposit Website Notice Published Label"]</label>
+				@{
+					string WebsiteNoticeDateStringRepresentation = "";
+					if (LandownerDeposit.WebsiteNoticePublished.HasValue)
+					{
+						WebsiteNoticeDateStringRepresentation = LandownerDeposit.WebsiteNoticePublished.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="website-notice-date" class="form-control" value="@WebsiteNoticeDateStringRepresentation" @onchange="UpdateWebsiteNoticeDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.WebsiteNoticePublished" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="email-notice-date">@localizer["Landowner Deposit Email Notice Label"]</label>
+				@{
+					string EmailNoticeDateStringRepresentation = "";
+					if (LandownerDeposit.EmailNoticeSent.HasValue)
+					{
+						EmailNoticeDateStringRepresentation = LandownerDeposit.EmailNoticeSent.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="email-notice-date" class="form-control" value="@EmailNoticeDateStringRepresentation" @onchange="UpdateEmailNoticeDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.EmailNoticeSent" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="onsite-notice-date">@localizer["Landowner Deposit Onsite Notice Label"]</label>
+				@{
+					string OnsiteNoticeDateStringRepresentation = "";
+					if (LandownerDeposit.OnsiteNoticeErected.HasValue)
+					{
+						OnsiteNoticeDateStringRepresentation = LandownerDeposit.OnsiteNoticeErected.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="onsite-notice-date" class="form-control" value="@OnsiteNoticeDateStringRepresentation" @onchange="UpdateOnsiteNoticeDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.OnsiteNoticeErected" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="website-entry-date">@localizer["Landowner Deposit Website Entry Printed Label"]</label>
+				@{
+					string WebsiteEntryAddedDateStringRepresentation = "";
+					if (LandownerDeposit.WebsiteEntryAdded.HasValue)
+					{
+						WebsiteEntryAddedDateStringRepresentation = LandownerDeposit.WebsiteEntryAdded.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="website-entry-date" class="form-control" value="@WebsiteEntryAddedDateStringRepresentation" @onchange="UpdateWebsiteEntryDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.WebsiteEntryAdded" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="archive-date">@localizer["Landowner Deposit Archive Date Label"]</label>
+				@{
+					string ArchiveDateStringRepresentation = "";
+					if (LandownerDeposit.SentToArchive.HasValue)
+					{
+						ArchiveDateStringRepresentation = LandownerDeposit.SentToArchive.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" id="archive-date" class="form-control" value="@ArchiveDateStringRepresentation" @onchange="UpdateArchiveDateProperty" />
+			</div>
+			<ValidationMessage For="() => LandownerDeposit.SentToArchive" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="archive-reference">@localizer["Landowner Deposit Archive Reference Label"]</label>
+				<InputText id="archive-reference" class="form-control" @bind-Value="LandownerDeposit.ArchiveReference"></InputText>
+				<ValidationMessage For="() => LandownerDeposit.ArchiveReference" />
+			</div>
+		</div>
+		
+		<div class="mb-3 row">
+			<div class="col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="primary-contact-landowner-deposit">@localizer["Primary Contact Label"]</label>
+				<InputText id="primary-contact-landowner-deposit" class="form-control" @bind-Value="LandownerDeposit.PrimaryContact"></InputText>
+				<ValidationMessage For="() => LandownerDeposit.PrimaryContact" />
+			</div>
+		</div>	
+
+		@if (IsEdit)
+		{
+			<button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+			<button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+		}
+		else
+		{
+			<button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+		}
+
+	</EditForm>
+}

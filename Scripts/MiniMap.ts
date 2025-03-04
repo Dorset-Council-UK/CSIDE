@@ -6,7 +6,7 @@ import { register } from "ol/proj/proj4";
 import { TileWMS } from "ol/source";
 import VectorSource from "ol/source/Vector";
 import XYZ from "ol/source/XYZ";
-import { Icon, Stroke, Style } from "ol/style";
+import { Fill, Icon, Stroke, Style } from "ol/style";
 import { TileGrid } from "ol/tilegrid";
 import proj4 from "proj4";
 
@@ -26,6 +26,11 @@ const lineStyle = new Style({
   stroke: new Stroke({
     color: 'rgba(255,255,0,0.5)',
     width: 10,
+  })
+});
+const polygonStyle = new Style({
+  fill: new Fill({
+    color: 'rgba(0,0,0,0.3)',
   })
 });
 
@@ -116,7 +121,7 @@ function addGeometryToMapAndCenter(geometry: string, maxZoom: number) {
     });
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      style: [iconStyle, lineStyle]
+      style: [iconStyle, lineStyle, polygonStyle]
     });
     map.addLayer(vectorLayer);
     vectorLayer.setVisible(true);

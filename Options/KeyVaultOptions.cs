@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record KeyVaultOptions
+public record KeyVaultOptions
 {
     public const string SectionName = "KeyVault";
 

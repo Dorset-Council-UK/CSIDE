@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record ApplicationInsightsOptions
+public record ApplicationInsightsOptions
 {
     public const string SectionName = "ApplicationInsights";
 

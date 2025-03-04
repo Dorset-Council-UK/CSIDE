@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record KeyVaultAzureAdOptions
+public record KeyVaultAzureAdOptions
 {
     public const string SectionName = "AzureAd";
 

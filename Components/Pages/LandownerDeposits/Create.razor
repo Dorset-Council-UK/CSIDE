@@ -1,0 +1,53 @@
+﻿@page "/landowner-deposits/Create"
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.LandownerDeposits
+@using CSIDE.Data.Models.LandownerDeposits
+
+<PageTitle>@localizer["Landowner Deposit Create Title"]</PageTitle>
+<div>
+    <Breadcrumb Items="@NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Landowner Deposit Create Title"]</h1>
+
+<div class="row">
+    <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" GeomType="Polygon"></CreateMap>
+</div>
+@if (!GeometryIsValid)
+{
+    <Alert Color="AlertColor.Danger">@localizer["Invalid Geometry Validation Message"]</Alert>
+}
+
+<div class="row mt-2">
+    @if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
+    <div class="col-md-8">
+        <LandownerDepositEditForm 
+        LandownerDeposit="@LandownerDeposit" 
+        LandownerDepositTypeNames="@LandownerDepositTypeNames"
+        SelectedLandownerDepositTypes="@SelectedLandownerDepositTypes"
+        IsBusy="@IsBusy"
+        OnSubmit="@SubmitFormAsync"
+        @ref="@childLandownerDepositEditForm" />
+    </div>
+    @if (ErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
+</div>
+
+<Modal @ref="errorModal" Title="@localizer["Error Title"]">
+    <BodyTemplate>
+        @localizer["Invalid Geometry Validation Message"]
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
+    </FooterTemplate>
+</Modal>
+
+
+
+
+

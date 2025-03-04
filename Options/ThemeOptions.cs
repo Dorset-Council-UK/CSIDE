@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record ThemeOptions
+public record ThemeOptions
 {
     public const string SectionName = "Theme";
 

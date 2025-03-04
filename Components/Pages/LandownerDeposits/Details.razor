@@ -1,0 +1,283 @@
+﻿@page "/landowner-deposits/Details/{ItemId:int}"
+@using CSIDE.Data.Models.LandownerDeposits
+@using CSIDE.Components.LandownerDeposits
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.Layout
+@using CSIDE.Data.Models.Shared
+@using System.Globalization
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+
+@if (LandownerDeposit is null && !IsBusy)
+{
+    <PageTitle>@localizer["Landowner Deposit Not Found Error Message", ItemId]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["Landowner Deposit Not Found Error Message", ItemId]</Alert>
+}
+else
+{
+    if (LandownerDeposit is not null)
+    {
+        <PageTitle>@localizer["Landowner Deposit Details Title", LandownerDeposit.Id]</PageTitle>
+        <h1>@localizer["Landowner Deposit Details Title", LandownerDeposit.Id]</h1>
+        
+        <a href="landowner-deposits/Edit/@LandownerDeposit.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+
+        <div class="row">
+            <div class="col-md-8">
+
+                <CollapsibleCard Id="landowner-deposit-basic-details" Title="@localizer["Basic Details Label"]" IsShownByDefault="true">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th class="w-25">@localizer["Landowner Deposit ID Label"]</th>
+                                            <td>@LandownerDeposit.Id</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Landowner Deposit Type Label"]</th>
+                                            <td>
+                                                @if (LandownerDeposit.LandownerDepositTypes.Count != 0)
+                                                {
+                                                    <ul class="list-unstyled">
+                                                        @foreach (var landownerDepositType in LandownerDeposit.LandownerDepositTypes)
+                                                        {
+                                                            <li>@landownerDepositType.LandownerDepositTypeName?.Name</li>
+                                                        }
+                                                    </ul>
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Landowner Deposit Received Date Label"]</th>
+                                            <td>@LandownerDeposit.ReceivedDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Location Description Label"]</th>
+                                            <td class="text-break comment-field">@LandownerDeposit.Location</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Completed Correctly Label"]</th>
+                                            <td>@(LandownerDeposit.FormCompleted ? localizer["Yes Label"] : localizer["No Label"])</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Map Correct Label"]</th>
+                                            <td>@(LandownerDeposit.MapCorrect ? localizer["Yes Label"] : localizer["No Label"])</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Fee Paid Label"]</th>
+                                            <td>@(LandownerDeposit.FeePaid ? localizer["Yes Label"] : localizer["No Label"])</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Signed Label"]</th>
+                                            <td>@(LandownerDeposit.AllSigned ? localizer["Yes Label"] : localizer["No Label"])</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Date Acknowledged Label"]</th>
+                                            <td>@LandownerDeposit.DateAcknowledged</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Cheque Receipt Label"]</th>
+                                            <td>@LandownerDeposit.ChequeReceiptNumber</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Cheque Paid In Label"]</th>
+                                            <td>@LandownerDeposit.ChequePaidInDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Notice Drafted Label"]</th>
+                                            <td>@LandownerDeposit.NoticeDrafted</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Website Notice Published Label"]</th>
+                                            <td>@LandownerDeposit.WebsiteNoticePublished</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Email Notice Label"]</th>
+                                            <td>@LandownerDeposit.EmailNoticeSent</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Onsite Notice Label"]</th>
+                                            <td>@LandownerDeposit.OnsiteNoticeErected</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Website Entry Printed Label"]</th>
+                                            <td>@LandownerDeposit.WebsiteEntryAdded</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Archive Date Label"]</th>
+                                            <td>@LandownerDeposit.SentToArchive</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Landowner Deposit Archive Reference Label"]</th>
+                                            <td>@LandownerDeposit.ArchiveReference</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Primary Contact Label"]</th>
+                                            <td>@LandownerDeposit.PrimaryContact</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="landowner-deposit-contacts" Title="@localizer["Contacts Label",LandownerDeposit.LandownerDepositContacts.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <ContactsList Contacts="@LandownerDeposit.LandownerDepositContacts.Select(c => c.Contact).ToArray()"
+                                              IsEditable="true"
+                                              OnSubmit="AddContact"
+                                              OnRefresh="RefreshContactsList"></ContactsList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="landowner-deposit-addresses" Title="@localizer["Affected Addresses Label",LandownerDeposit.LandownerDepositAddresses.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <LandownerDepositAddressList Addresses="LandownerDeposit.LandownerDepositAddresses" LandownerDepositId="LandownerDeposit.Id" IsEditable="true"></LandownerDepositAddressList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="landowner-deposit-parishes" Title="@localizer["Parishes Label",LandownerDeposit.LandownerDepositParishes.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                @if (LandownerDeposit.LandownerDepositParishes.Count == 0)
+                                {
+                                    <Alert Color="AlertColor.Warning">@localizer["No Parishes Found Message"]</Alert>
+                                }
+                                else
+                                {
+                                    <Alert Color="AlertColor.Info">@localizer["Automatic Parishes Information Message"]</Alert>
+                                    <table class="table table-striped mt-2">
+                                        <tbody>
+                                            @foreach (var parish in LandownerDeposit.LandownerDepositParishes)
+                                            {
+                                                <tr><td>@parish.Parish.Name</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="landowner-deposit-media" Title="@localizer["Media Label",LandownerDeposit.LandownerDepositMedia.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <LandownerDepositMediaList LandownerDeposit="@LandownerDeposit" IsEditable="true"></LandownerDepositMediaList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+            </div>
+
+            <div class="col-md-4">
+                <ErrorBoundary>
+                    <ChildContent>
+                        @if (LandownerDeposit.Geom is not null)
+                        {
+                            <MiniMap Geometry="@LandownerDeposit.Geom"></MiniMap>
+                        }
+                    </ChildContent>
+                    <ErrorContent Context="Exception">
+                        <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </div>
+
+        </div>
+    }
+}
+@code {
+    private List<BreadcrumbItem>? NavItems;
+
+    [Parameter]
+    public int ItemId { get; set; }
+    private LandownerDeposit? LandownerDeposit{ get; set; }
+
+    private bool IsBusy { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Landowner Deposit Title"], Href="landowner-deposit" },
+            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", ItemId], IsCurrentPage = true }
+        };
+
+        IsBusy = true;
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            LandownerDeposit = await context.LandownerDeposits.FindAsync(ItemId);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task AddContact(Contact NewContact)
+    {
+
+        if (NewContact is not null && LandownerDeposit is not null)
+        {
+            using var context = contextFactory.CreateDbContext();
+
+            context.Contacts.Add(NewContact);
+            await context.SaveChangesAsync();
+            context.LandownerDepositContacts.Add(new LandownerDepositContact { ContactId = NewContact.Id, LandownerDepositId = LandownerDeposit.Id });
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private async Task RefreshContactsList()
+    {
+        using var context = contextFactory.CreateDbContext();
+        LandownerDeposit = await context.LandownerDeposits.FindAsync(ItemId);
+        StateHasChanged();
+    }
+}
+

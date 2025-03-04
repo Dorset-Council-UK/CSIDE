@@ -1,6 +1,6 @@
 ﻿namespace CSIDE.Options;
 
-internal record AzureAdOptions
+public record AzureAdOptions
 {
     public const string SectionName = "AzureAd";
 
