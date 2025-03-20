@@ -2365,6 +2365,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sign in.
+        /// </summary>
+        public static string Sign_In_Label {
+            get {
+                return ResourceManager.GetString("Sign In Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can now close your browser window.
+        /// </summary>
+        public static string Signed_Out_Text {
+            get {
+                return ResourceManager.GetString("Signed Out Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve been signed out.
+        /// </summary>
+        public static string Signed_Out_Title {
+            get {
+                return ResourceManager.GetString("Signed Out Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start Easting.
         /// </summary>
         public static string Start_Easting_Label {

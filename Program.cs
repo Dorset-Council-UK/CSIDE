@@ -3,6 +3,7 @@ using CSIDE.Components;
 using CSIDE.Options;
 using CSIDE.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IRightsOfWayHelperService, RightsOfWayHelperService>(
 builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 
 builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AuthenticatedOnly", policy => policy.RequireAuthenticatedUser())
     .AddDefaultPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor", "View"));
 
 var options = builder.Configuration.GetSection(CSIDEOptions.SectionName).Get<CSIDEOptions>();

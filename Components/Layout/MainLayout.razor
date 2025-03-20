@@ -10,7 +10,7 @@
     <main class="flex-grow-1">
         <div class="top-row px-4">
             <CultureSelector></CultureSelector>
-            <AuthorizeView>
+            <AuthorizeView Policy="AuthenticatedOnly">
                 <Authorized>
                     <ul class="navbar-nav ps-3">
                         <li class="nav-item dropdown">
@@ -19,15 +19,19 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
                                 <li><h6 class="dropdown-header">@(context.User.Claims.FirstOrDefault(c => c.Type.Contains("email")) != null ? context.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))!.Value : "")</h6></li>
-
-                                <li><a class="dropdown-item" href="Account/MyAccount">@localizer["My Account Label"]</a></li>
-                                @if (context.User.IsInRole("Administrator"))
-                                {
-                                    <li><a class="dropdown-item" href="#">@localizer["Manage Application Label"]</a></li>
-                                }
+                                <AuthorizeView Policy="CanAccessApp" Context="InnerAccountBox">
+                                    <li><a class="dropdown-item" href="Account/MyAccount">@localizer["My Account Label"]</a></li>
+                                    @if (InnerAccountBox.User.IsInRole("Administrator"))
+                                    {
+                                        <li><a class="dropdown-item" href="#">@localizer["Manage Application Label"]</a></li>
+                                    }
+                                </AuthorizeView>
+                                
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a id="logout" type="submit" class="btn btn-outline-danger btn-sm ms-2" href="MicrosoftIdentity/Account/SignOut"><i class="bi-door-open"></i> @localizer["Logout Label"]</a>
+                                    <form action="MicrosoftIdentity/Account/SignOut">
+                                        <button id="logout" class="btn btn-outline-danger btn-sm ms-2"><i class="bi-door-open"></i> @localizer["Logout Label"]</button>
+                                    </form>
                                 </li>
                             </ul>
                         </li>
@@ -35,6 +39,9 @@
                     </ul>
 
                 </Authorized>
+                <NotAuthorized>
+                    <a id="login" class="btn btn-outline-primary btn-sm ms-2" href="MicrosoftIdentity/Account/SignIn"><i class="bi-door-open"></i> @localizer["Sign In Label"]</a>
+                </NotAuthorized>
             </AuthorizeView>
         </div>
         <article class="content px-4 pb-5">

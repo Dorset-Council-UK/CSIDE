@@ -2,10 +2,12 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Data;
 using CSIDE.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Microsoft.AspNetCore.Builder;
@@ -129,6 +131,8 @@ internal static class WebApplicationBuilderExtension
         builder.Services
             .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApp(azureAdSection);
+        builder.Services.AddRazorPages();
+        builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 
         // Configure OpenIdConnectOptions to use our resilient HttpClient
         builder.Services
@@ -136,7 +140,14 @@ internal static class WebApplicationBuilderExtension
             .Configure<IHttpClientFactory>((options, httpClientFactory) =>
             {
                 options.Backchannel = httpClientFactory.CreateClient(b2cClientName);
+                options.SignedOutRedirectUri = "/account/signedout";
+                options.AccessDeniedPath = "/account/accessdenied";
             });
+
+        builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.AccessDeniedPath = "/account/accessdenied";
+        });
 
         return builder;
     }
