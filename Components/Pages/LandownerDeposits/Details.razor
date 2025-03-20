@@ -32,8 +32,10 @@ else
         <PageTitle>@localizer["Landowner Deposit Details Title", LandownerDeposit.Id]</PageTitle>
         <h1>@localizer["Landowner Deposit Details Title", LandownerDeposit.Id]</h1>
         
-        <a href="landowner-deposits/Edit/@LandownerDeposit.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
-
+        <AuthorizeView Roles="Administrator, RoW Officer">
+            <a href="landowner-deposits/Edit/@LandownerDeposit.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        </AuthorizeView>
+        
         <div class="row">
             <div class="col-md-8">
 
@@ -145,9 +147,9 @@ else
                         <ErrorBoundary>
                             <ChildContent>
                                 <ContactsList Contacts="@LandownerDeposit.LandownerDepositContacts.Select(c => c.Contact).ToArray()"
-                                              IsEditable="true"
-                                              OnSubmit="AddContact"
-                                              OnRefresh="RefreshContactsList"></ContactsList>
+                                                IsEditable="UserCanEdit"
+                                                OnSubmit="AddContact"
+                                                OnRefresh="RefreshContactsList"></ContactsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -155,12 +157,12 @@ else
                         </ErrorBoundary>
                     </ChildContent>
                 </CollapsibleCard>
-
+                
                 <CollapsibleCard Id="landowner-deposit-addresses" Title="@localizer["Affected Addresses Label",LandownerDeposit.LandownerDepositAddresses.Count]">
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <LandownerDepositAddressList Addresses="LandownerDeposit.LandownerDepositAddresses" LandownerDepositId="LandownerDeposit.Id" IsEditable="true"></LandownerDepositAddressList>
+                                <LandownerDepositAddressList Addresses="LandownerDeposit.LandownerDepositAddresses" LandownerDepositId="LandownerDeposit.Id" IsEditable="UserCanEdit"></LandownerDepositAddressList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -168,7 +170,7 @@ else
                         </ErrorBoundary>
                     </ChildContent>
                 </CollapsibleCard>
-
+               
                 <CollapsibleCard Id="landowner-deposit-parishes" Title="@localizer["Parishes Label",LandownerDeposit.LandownerDepositParishes.Count]">
                     <ChildContent>
                         <ErrorBoundary>
@@ -201,7 +203,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <LandownerDepositMediaList LandownerDeposit="@LandownerDeposit" IsEditable="true"></LandownerDepositMediaList>
+                                <LandownerDepositMediaList LandownerDeposit="@LandownerDeposit" IsEditable="UserCanEdit"></LandownerDepositMediaList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -238,6 +240,11 @@ else
 
     private bool IsBusy { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+
     protected override async Task OnParametersSetAsync()
     {
         NavItems = new List<BreadcrumbItem>
@@ -256,6 +263,17 @@ else
         finally
         {
             IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
+            }
         }
     }
 

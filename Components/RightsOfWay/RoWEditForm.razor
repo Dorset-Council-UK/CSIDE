@@ -1,124 +1,201 @@
 ﻿@using CSIDE.Data.Models.RightsOfWay
 
 @if(Route is not null){
-    <EditForm Model="Route" OnSubmit="@SubmitFormAsync">
+    
+    <AuthorizeView Roles="Administrator, RoW Officer" Context="RoWEditAuth">
+        <EditForm Model="Route" Context="RoWEdit" OnSubmit="@SubmitFormAsync">
 
-        <FluentValidationValidator @ref="fluentValidationValidator" />
-        <ValidationSummary />
+            <FluentValidationValidator @ref="fluentValidationValidator" />
+            <ValidationSummary />
 
-        <div class="mb-3 row">
-            <div class=" col-sm-4 col-md-6 col-lg-4">
-                <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
-                <InputText id="route-code" disabled class="form-control" @bind-Value="Route.RouteCode"></InputText>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="route-name">@localizer["Name Label"]</label>
-            <InputText id="route-name" class="form-control" @bind-Value="Route.Name"></InputText>
-            <ValidationMessage For="() => Route.Name" />
-        </div>
-
-        <div class="mb-3 row">
-            <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="priority">@localizer["Route Type Label"]</label>
-                <InputSelect id="route-type" class="form-select" @bind-Value="Route.RouteTypeId">
-                    @if (RouteTypes is not null)
-                    {
-                        @foreach (var routeType in RouteTypes.OrderBy(r => r.Name))
-                        {
-                            <option value="@routeType.Id">@routeType.Name</option>
-                        }
-                    }
-
-                </InputSelect>
-            </div>
-            <ValidationMessage For="() => Route.RouteTypeId" />
-        </div>
-
-        <div class="mb-3 row">
-            <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="route-legal-status">@localizer["Legal Status Label"]</label>
-                <InputSelect id="route-legal-status" class="form-select" @bind-Value="Route.LegalStatusId">
-                    @if (LegalStatuses is not null)
-                    {
-                        @foreach (var status in LegalStatuses.OrderBy(r => r.Name))
-                        {
-                            <option value="@status.Id">@status.Name</option>
-                        }
-                    }
-
-                </InputSelect>
-            </div>
-            <ValidationMessage For="() => Route.LegalStatusId" />
-        </div>
-
-        <div class="mb-3 row">
-            <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="operational-status">@localizer["Operational Status Label"]</label>
-                <select id="operational-status" class="form-select" @bind="Route.OperationalStatusId" @bind:after="AfterOperationalStatusIdChanged">
-                    @if (OperationalStatuses is not null)
-                    {
-                        @foreach (var status in OperationalStatuses.OrderBy(s => s.Id))
-                        {
-                            var key = $"OperationalStatus-{status.Id}";
-                            <option @key="@key" value="@status.Id" selected="@(Route.OperationalStatusId == status.Id)">@status.Name</option>
-                        }
-                    }
-                </select>
-            </div>
-            <ValidationMessage For="() => Route.OperationalStatusId" />
-        </div>
-
-        <div class="ps-2 border-start border-2 @(ClosureDatesShown ? "d-block" : "d-none")">
             <div class="mb-3 row">
                 <div class=" col-sm-4 col-md-6 col-lg-4">
-                    <label class="form-label" for="completion-date">@localizer["Closure Start Date Label"]</label>
-                    @{
-                        string ClosureStartDateStringRepresentation = "";
-                        if (Route.ClosureStartDate.HasValue)
-                        {
-                            ClosureStartDateStringRepresentation = Route.ClosureStartDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
-                        }
-                    }
-                    <input type="date" class="form-control" value="@ClosureStartDateStringRepresentation" @onchange="UpdateClosureStartDateProperty" />
+                    <label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
+                    <InputText id="route-code" disabled class="form-control" @bind-Value="Route.RouteCode"></InputText>
                 </div>
-                <ValidationMessage For="() => Route.ClosureStartDate" />
             </div>
 
-            <div class="form-check form-switch my-2">
-                <InputCheckbox @bind-Value="Route.ClosureIsIndefinite" class="form-check-input" id="closure-is-indefinite" />
-                <label class="form-check-label" for="closure-is-indefinite">@localizer["Closure Is Indefinite Label"]</label>
+            <div class="mb-3">
+                <label class="form-label" for="route-name">@localizer["Name Label"]</label>
+                <InputText id="route-name" class="form-control" @bind-Value="Route.Name"></InputText>
+                <ValidationMessage For="() => Route.Name" />
             </div>
-            <ValidationMessage For="() => Route.ClosureIsIndefinite" />
 
-            <div class="mb-3 row @(Route.ClosureIsIndefinite ? "d-none" : "d-block")">
-                <div class=" col-sm-4 col-md-6 col-lg-4">
-                    <label class="form-label" for="completion-date">@localizer["Closure End Date Label"]</label>
-                    @{
-                        string ClosureEndDateStringRepresentation = "";
-                        if (Route.ClosureEndDate.HasValue)
+            <div class="mb-3 row">
+                <div class="col-sm-8 col-lg-6">
+                    <label class="form-label" for="priority">@localizer["Route Type Label"]</label>
+                    <InputSelect id="route-type" class="form-select" @bind-Value="Route.RouteTypeId">
+                        @if (RouteTypes is not null)
                         {
-                            ClosureEndDateStringRepresentation = Route.ClosureEndDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                            @foreach (var routeType in RouteTypes.OrderBy(r => r.Name))
+                            {
+                                <option value="@routeType.Id">@routeType.Name</option>
+                            }
                         }
-                    }
-                    <input type="date" class="form-control" value="@ClosureEndDateStringRepresentation" @onchange="UpdateClosureEndDateProperty" />
+
+                    </InputSelect>
                 </div>
-                <ValidationMessage For="() => Route.ClosureEndDate" />
+                <ValidationMessage For="() => Route.RouteTypeId" />
             </div>
-        </div>
+
+            <div class="mb-3 row">
+                <div class="col-sm-8 col-lg-6">
+                    <label class="form-label" for="route-legal-status">@localizer["Legal Status Label"]</label>
+                    <InputSelect id="route-legal-status" class="form-select" @bind-Value="Route.LegalStatusId">
+                        @if (LegalStatuses is not null)
+                        {
+                            @foreach (var status in LegalStatuses.OrderBy(r => r.Name))
+                            {
+                                <option value="@status.Id">@status.Name</option>
+                            }
+                        }
+
+                    </InputSelect>
+                </div>
+                <ValidationMessage For="() => Route.LegalStatusId" />
+            </div>
+
+            <div class="mb-3 row">
+                <div class="col-sm-8 col-lg-6">
+                    <label class="form-label" for="operational-status">@localizer["Operational Status Label"]</label>
+                    <select id="operational-status" class="form-select" @bind="Route.OperationalStatusId" @bind:after="AfterOperationalStatusIdChanged">
+                        @if (OperationalStatuses is not null)
+                        {
+                            @foreach (var status in OperationalStatuses.OrderBy(s => s.Id))
+                            {
+                                var key = $"OperationalStatus-{status.Id}";
+                                <option @key="@key" value="@status.Id" selected="@(Route.OperationalStatusId == status.Id)">@status.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <ValidationMessage For="() => Route.OperationalStatusId" />
+            </div>
+
+            <div class="ps-2 border-start border-2 @(ClosureDatesShown ? "d-block" : "d-none")">
+                <div class="mb-3 row">
+                    <div class=" col-sm-4 col-md-6 col-lg-4">
+                        <label class="form-label" for="completion-date">@localizer["Closure Start Date Label"]</label>
+                        @{
+                            string ClosureStartDateStringRepresentation = "";
+                            if (Route.ClosureStartDate.HasValue)
+                            {
+                                ClosureStartDateStringRepresentation = Route.ClosureStartDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                            }
+                        }
+                        <input type="date" class="form-control" value="@ClosureStartDateStringRepresentation" @onchange="UpdateClosureStartDateProperty" />
+                    </div>
+                    <ValidationMessage For="() => Route.ClosureStartDate" />
+                </div>
+
+                <div class="form-check form-switch my-2">
+                    <InputCheckbox @bind-Value="Route.ClosureIsIndefinite" class="form-check-input" id="closure-is-indefinite" />
+                    <label class="form-check-label" for="closure-is-indefinite">@localizer["Closure Is Indefinite Label"]</label>
+                </div>
+                <ValidationMessage For="() => Route.ClosureIsIndefinite" />
+
+                <div class="mb-3 row @(Route.ClosureIsIndefinite ? "d-none" : "d-block")">
+                    <div class=" col-sm-4 col-md-6 col-lg-4">
+                        <label class="form-label" for="completion-date">@localizer["Closure End Date Label"]</label>
+                        @{
+                            string ClosureEndDateStringRepresentation = "";
+                            if (Route.ClosureEndDate.HasValue)
+                            {
+                                ClosureEndDateStringRepresentation = Route.ClosureEndDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                            }
+                        }
+                        <input type="date" class="form-control" value="@ClosureEndDateStringRepresentation" @onchange="UpdateClosureEndDateProperty" />
+                    </div>
+                    <ValidationMessage For="() => Route.ClosureEndDate" />
+                </div>
+            </div>
 
 
-        @if (IsEdit)
-        {
-            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
-            <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
-        }
-        else
-        {
-            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
-        }
+            @if (IsEdit)
+            {
+                <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+                <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+            }
 
-    </EditForm>
+        </EditForm>
+    </AuthorizeView>
+
+    // Cut down version of the form for rangers - where they can only open or close a right of way
+    <AuthorizeView Roles="Ranger" Context="RangerRoWEditAuth">
+        <EditForm Model="Route" Context="RangerRoWEdit" OnSubmit="@SubmitFormAsync">
+
+            <FluentValidationValidator @ref="fluentValidationValidator" />
+            <ValidationSummary />
+
+            <div class="mb-3 row">
+                <div class="col-sm-8 col-lg-6">
+                    <label class="form-label" for="operational-status">@localizer["Operational Status Label"]</label>
+                    <select id="operational-status" class="form-select" @bind="Route.OperationalStatusId" @bind:after="AfterOperationalStatusIdChanged">
+                        @if (OperationalStatuses is not null)
+                        {
+                            @foreach (var status in OperationalStatuses.OrderBy(s => s.Id))
+                            {
+                                var key = $"OperationalStatus-{status.Id}";
+                                <option @key="@key" value="@status.Id" selected="@(Route.OperationalStatusId == status.Id)">@status.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <ValidationMessage For="() => Route.OperationalStatusId" />
+            </div>
+
+            <div class="ps-2 border-start border-2 @(ClosureDatesShown ? "d-block" : "d-none")">
+                <div class="mb-3 row">
+                    <div class=" col-sm-4 col-md-6 col-lg-4">
+                        <label class="form-label" for="completion-date">@localizer["Closure Start Date Label"]</label>
+                        @{
+                            string ClosureStartDateStringRepresentation = "";
+                            if (Route.ClosureStartDate.HasValue)
+                            {
+                                ClosureStartDateStringRepresentation = Route.ClosureStartDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                            }
+                        }
+                        <input type="date" class="form-control" value="@ClosureStartDateStringRepresentation" @onchange="UpdateClosureStartDateProperty" />
+                    </div>
+                    <ValidationMessage For="() => Route.ClosureStartDate" />
+                </div>
+
+                <div class="form-check form-switch my-2">
+                    <InputCheckbox @bind-Value="Route.ClosureIsIndefinite" class="form-check-input" id="closure-is-indefinite" />
+                    <label class="form-check-label" for="closure-is-indefinite">@localizer["Closure Is Indefinite Label"]</label>
+                </div>
+                <ValidationMessage For="() => Route.ClosureIsIndefinite" />
+
+                <div class="mb-3 row @(Route.ClosureIsIndefinite ? "d-none" : "d-block")">
+                    <div class=" col-sm-4 col-md-6 col-lg-4">
+                        <label class="form-label" for="completion-date">@localizer["Closure End Date Label"]</label>
+                        @{
+                            string ClosureEndDateStringRepresentation = "";
+                            if (Route.ClosureEndDate.HasValue)
+                            {
+                                ClosureEndDateStringRepresentation = Route.ClosureEndDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                            }
+                        }
+                        <input type="date" class="form-control" value="@ClosureEndDateStringRepresentation" @onchange="UpdateClosureEndDateProperty" />
+                    </div>
+                    <ValidationMessage For="() => Route.ClosureEndDate" />
+                </div>
+            </div>
+
+            @if (IsEdit)
+            {
+                <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+                <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+            }
+        </EditForm>
+    </AuthorizeView>
 
 }

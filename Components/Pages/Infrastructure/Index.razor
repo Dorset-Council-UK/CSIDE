@@ -8,10 +8,12 @@
 
 <h1 class="mb-3">@localizer["Infrastructure Title"]</h1>
 
-<p>@localizer["Create New Infrastructure Text"]</p>
-<a href="Infrastructure/Create" class="btn btn-primary">@localizer["Create New Infrastructure Label"]</a>
+<AuthorizeView Roles="Administrator, Ranger">
+    <p>@localizer["Create New Infrastructure Text"]</p>
+    <a href="Infrastructure/Create" class="btn btn-primary">@localizer["Create New Infrastructure Label"]</a>
 
-<hr />
+    <hr />
+</AuthorizeView>
 
 <h2 class="mb-3">@localizer["Search Infrastructure Title"]</h2>
 

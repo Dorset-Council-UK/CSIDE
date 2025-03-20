@@ -31,7 +31,9 @@ else
         <PageTitle>@localizer["Infrastructure Details Title", InfrastructureItem.Id]</PageTitle>
         <h1>@localizer["Infrastructure Details Title", InfrastructureItem.Id]</h1>
         
-        <a href="Infrastructure/Edit/@InfrastructureItem.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        <AuthorizeView Roles="Administrator, Ranger">
+            <a href="Infrastructure/Edit/@InfrastructureItem.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        </AuthorizeView>
 
         <div class="row">
             <div class="col-md-8">
@@ -97,7 +99,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <InfrastructureMediaList InfrastructureItem="@InfrastructureItem" IsEditable="true"></InfrastructureMediaList>
+                                <InfrastructureMediaList InfrastructureItem="@InfrastructureItem" IsEditable="UserCanEdit"></InfrastructureMediaList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -138,6 +140,11 @@ else
 
     private bool IsBusy { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+
     protected override async Task OnParametersSetAsync()
     {
         NavItems = new List<BreadcrumbItem>
@@ -156,6 +163,17 @@ else
         finally
         {
             IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("Ranger");
+            }
         }
     }
 }

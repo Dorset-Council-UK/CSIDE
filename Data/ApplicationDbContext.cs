@@ -73,7 +73,8 @@ namespace CSIDE.Data
                 new ApplicationRole { Id = 2, RoleName = "Ranger" },
                 new ApplicationRole { Id = 3, RoleName = "RoW Officer" },
                 new ApplicationRole { Id = 4, RoleName = "Survey Validator" },
-                new ApplicationRole { Id = 5, RoleName = "RoW Statement Editor" }
+                new ApplicationRole { Id = 5, RoleName = "RoW Statement Editor" },
+                new ApplicationRole { Id = 6, RoleName = "View" }
             );
 
             // DbSet configurations

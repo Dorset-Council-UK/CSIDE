@@ -11,10 +11,12 @@
 
 <h1 class="mb-3">@localizer["Maintenance Title"]</h1>
 
-<p>@localizer["Create New Job Text"]</p>
-<a href="Maintenance/Create" class="btn btn-primary">@localizer["Create New Job Label"]</a>
+<AuthorizeView Roles="Administrator, RoW Officer, Ranger">
+    <p>@localizer["Create New Job Text"]</p>
+    <a href="Maintenance/Create" class="btn btn-primary">@localizer["Create New Job Label"]</a>
 
-<hr/>
+    <hr />
+</AuthorizeView>
 
 <h2 class="mb-3">@localizer["Search Jobs Title"]</h2>
 

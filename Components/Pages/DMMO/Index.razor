@@ -9,10 +9,12 @@
 
 <h1>@localizer["DMMO Full Text"]</h1>
 
-<p>@localizer["Create New DMMO Text"]</p>
-<a href="DMMO/Create" class="btn btn-primary">@localizer["Create New DMMO Label"]</a>
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <p>@localizer["Create New DMMO Text"]</p>
+    <a href="DMMO/Create" class="btn btn-primary">@localizer["Create New DMMO Label"]</a>
 
-<hr />
+    <hr />
+</AuthorizeView>
 
 <h2 class="mb-3">@localizer["Search DMMO Title"]</h2>
 

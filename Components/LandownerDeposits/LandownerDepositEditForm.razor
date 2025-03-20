@@ -42,14 +42,14 @@
 			<ValidationMessage For="() => LandownerDeposit.ReceivedDate" />
 		</div>
 
-		<div class="mb-3">
+		<div class="mb-3 row">
 			<label class="form-label" for="location-description">@localizer["Landowner Deposit Location Description Label"]</label>
 			<InputTextArea id="location-description" class="form-control" @bind-Value="LandownerDeposit.Location"></InputTextArea>
 			<ValidationMessage For="() => LandownerDeposit.Location" />
 		</div>
 
-		<div class="mb-3">
-			<div class="col-sm-4 col-md-6 col-lg-4">
+		<div class="mb-3 row">
+			<div class="form-check">
 				<InputCheckbox id="form-completed" class="form-check-input" @bind-Value="LandownerDeposit.FormCompleted"></InputCheckbox>
 				<label class="form-check-label" for="form-completed">@localizer["Landowner Deposit Completed Correctly Label"]</label>
 				<ValidationMessage For="() => LandownerDeposit.FormCompleted" />
@@ -57,7 +57,7 @@
 		</div>
 
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
+			<div class="form-check">
 				<InputCheckbox id="map-correct" class="form-check-input" @bind-Value="LandownerDeposit.MapCorrect"></InputCheckbox>
 				<label class="form-check-label" for="map-correct">@localizer["Landowner Deposit Map Correct Label"]</label>
 				<ValidationMessage For="() => LandownerDeposit.MapCorrect" />
@@ -65,7 +65,7 @@
 		</div>
 
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
+			<div class="form-check">
 				<InputCheckbox id="fee-paid" class="form-check-input" @bind-Value="LandownerDeposit.FeePaid"></InputCheckbox>
 				<label class="form-check-label" for="fee-paid">@localizer["Landowner Deposit Fee Paid Label"]</label>
 				<ValidationMessage For="() => LandownerDeposit.FeePaid" />
@@ -73,7 +73,7 @@
 		</div>
 
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
+			<div class="form-check">
 				<InputCheckbox id="all-signed" class="form-check-input" @bind-Value="LandownerDeposit.AllSigned"></InputCheckbox>
 				<label class="form-check-label" for="all-signed">@localizer["Landowner Deposit Signed Label"]</label>
 				<ValidationMessage For="() => LandownerDeposit.AllSigned" />

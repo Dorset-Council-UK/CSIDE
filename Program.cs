@@ -31,7 +31,7 @@ builder.Services.AddScoped<IRightsOfWayHelperService, RightsOfWayHelperService>(
 builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor"));
+    .AddDefaultPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor", "View"));
 
 var options = builder.Configuration.GetSection(CSIDEOptions.SectionName).Get<CSIDEOptions>();
 

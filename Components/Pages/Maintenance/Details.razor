@@ -121,7 +121,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <CommentsList Job="@Job" IsEditable="true"></CommentsList>
+                                <CommentsList Job="@Job" IsEditable="UserCanEdit"></CommentsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -136,7 +136,7 @@ else
                             <ChildContent>
                                 <ContactsList 
                                     Contacts="@Job.JobContacts.Select(c => c.Contact).ToArray()" 
-                                    IsEditable="true" 
+                                    IsEditable="UserCanEdit" 
                                     OnSubmit="AddContact"
                                     OnRefresh="RefreshContactsList"></ContactsList>
                             </ChildContent>
@@ -164,7 +164,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <MediaList Job="@Job" IsEditable="true"></MediaList>
+                                <MediaList Job="@Job" IsEditable="UserCanEdit"></MediaList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -206,6 +206,11 @@ else
 
     private bool IsBusy{ get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+
     protected override async Task OnParametersSetAsync()
     {
         NavItems = new List<BreadcrumbItem>
@@ -224,6 +229,17 @@ else
         finally
         {
             IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("Ranger");
+            }
         }
     }
     private async Task AddContact(Contact NewContact){

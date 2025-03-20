@@ -3,75 +3,82 @@
 @using CSIDE.Components.Maintenance
 @using CSIDE.Components.Infrastructure
 @using CSIDE.Components.Mapping
+@using CSIDE.Components.Pages.Account
 @using NodaTime
 @using System.Globalization
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
-<PageTitle>@localizer["Infrastructure Edit Title", InfrastructureId]</PageTitle>
+<AuthorizeView Roles="Administrator, Ranger">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
 
-<div>
-    <Breadcrumb Items="NavItems"></Breadcrumb>
-</div>
+    <Authorized>
+        <PageTitle>@localizer["Infrastructure Edit Title", InfrastructureId]</PageTitle>
 
-<h1>@localizer["Infrastructure Edit Title", InfrastructureId]</h1>
-
-@if (InfrastructureItem is null && !IsBusy)
-{
-    <Alert Color="AlertColor.Danger">@localizer["Infrastructure Item Not Found Error Message", InfrastructureId]</Alert>
-    <a href="Infrastructure" class="btn btn-primary">@localizer["Search Infrastructure Title"]</a>
-}
-else
-{
-    if (ErrorMessage is not null)
-    {
-        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
-    }
-
-    if (InfrastructureItem is not null)
-    {
-        <div class="row">
-            <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" GeomType="Point" Geometry="@InfrastructureItem.Geom"></EditMap>
+        <div>
+            <Breadcrumb Items="NavItems"></Breadcrumb>
         </div>
-    }
-    <div class="row mt-2">
-        <div class="col-md-8">
-            <InfrastructureItemEditForm 
-                InfrastructureItem="@InfrastructureItem"
-                InfrastructureTypes="@InfrastructureTypes"     
-                IsBusy="@IsBusy"
-                IsEdit="@true"
-                OnSubmit="SubmitFormAsync"
-                OnCancel="NavigateBackToInfrastructureDetailsPage"
-                @ref="childInfrastructureItemEditForm" />
-        </div>
-    </div>
 
-    if (ErrorMessage is not null)
-    {
-        <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
-    }
-}
+        <h1>@localizer["Infrastructure Edit Title", InfrastructureId]</h1>
 
-@*TODO - These are duplicated in Create.razor - Componentize them? Or make it part of the EditForm?*@
-<Modal @ref="routeValidationModal" Title="@localizer["Error Title"]">
-    <BodyTemplate>
-        @localizer["No Rights of Way Near Geometry Validation Message"]<br />
-        @localizer["No Rights of Way Near Geometry Options Text"]
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">@localizer["Route ID Manual Entry Label"]</Button>
-        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
-    </FooterTemplate>
+        @if (InfrastructureItem is null && !IsBusy)
+        {
+            <Alert Color="AlertColor.Danger">@localizer["Infrastructure Item Not Found Error Message", InfrastructureId]</Alert>
+            <a href="Infrastructure" class="btn btn-primary">@localizer["Search Infrastructure Title"]</a>
+        }
+        else
+        {
+            if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
 
-</Modal>
+            if (InfrastructureItem is not null)
+            {
+                <div class="row">
+                    <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" GeomType="Point" Geometry="@InfrastructureItem.Geom"></EditMap>
+                </div>
+            }
+            <div class="row mt-2">
+                <div class="col-md-8">
+                    <InfrastructureItemEditForm InfrastructureItem="@InfrastructureItem"
+                                                InfrastructureTypes="@InfrastructureTypes"
+                                                IsBusy="@IsBusy"
+                                                IsEdit="@true"
+                                                OnSubmit="SubmitFormAsync"
+                                                OnCancel="NavigateBackToInfrastructureDetailsPage"
+                                                @ref="childInfrastructureItemEditForm" />
+                </div>
+            </div>
 
-<Modal @ref="errorModal" Title="@localizer["Error Title"]">
-    <BodyTemplate>
-        @localizer["Invalid Geometry Validation Message"]
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Re@localizer["Redraw Label"]draw</Button>
-    </FooterTemplate>
-</Modal>
+            if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
+            }
+        }
 
+        @*TODO - These are duplicated in Create.razor - Componentize them? Or make it part of the EditForm?*@
+        <Modal @ref="routeValidationModal" Title="@localizer["Error Title"]">
+            <BodyTemplate>
+                @localizer["No Rights of Way Near Geometry Validation Message"]<br />
+                @localizer["No Rights of Way Near Geometry Options Text"]
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">@localizer["Route ID Manual Entry Label"]</Button>
+                <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
+            </FooterTemplate>
+
+        </Modal>
+
+        <Modal @ref="errorModal" Title="@localizer["Error Title"]">
+            <BodyTemplate>
+                @localizer["Invalid Geometry Validation Message"]
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">Re@localizer["Redraw Label"]draw</Button>
+            </FooterTemplate>
+        </Modal>
+    </Authorized>
+</AuthorizeView>
 

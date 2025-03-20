@@ -32,8 +32,10 @@ else
         <PageTitle>@localizer["DMMO Details Title", DMMOApplication.Id]</PageTitle>
         <h1>@localizer["DMMO Details Title", DMMOApplication.Id]</h1>
 
-        <a href="DMMO/Edit/@DMMOApplication.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
-
+        <AuthorizeView Roles="Administrator, RoW Officer">
+            <a href="DMMO/Edit/@DMMOApplication.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        </AuthorizeView>
+        
         <div class="row">
             <div class="col-md-8">
 
@@ -111,7 +113,7 @@ else
                             <ChildContent>
                                 <ContactsList 
                                 Contacts="@DMMOApplication.DMMOContacts.Select(d => d.Contact).ToArray()" 
-                                IsEditable="true" 
+                                IsEditable="UserCanEdit" 
                                 OnSubmit="AddContact"
                                 OnRefresh="RefreshContactsList"></ContactsList>
                             </ChildContent>
@@ -126,7 +128,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <DMMOAddressList Addresses="DMMOApplication.DMMOAddresses" ApplicationId="DMMOApplication.Id" IsEditable="true"></DMMOAddressList>
+                                <DMMOAddressList Addresses="DMMOApplication.DMMOAddresses" ApplicationId="DMMOApplication.Id" IsEditable="UserCanEdit"></DMMOAddressList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -139,7 +141,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <DMMOLinkedRoutesList LinkedRoutes="@DMMOApplication.DMMOLinkedRoutes" ApplicationId="DMMOApplication.Id" IsEditable="true"></DMMOLinkedRoutesList>
+                                <DMMOLinkedRoutesList LinkedRoutes="@DMMOApplication.DMMOLinkedRoutes" ApplicationId="DMMOApplication.Id" IsEditable="UserCanEdit"></DMMOLinkedRoutesList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -180,7 +182,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <MediaList DMMOApplication="@DMMOApplication" IsEditable="true"></MediaList>
+                                <MediaList DMMOApplication="@DMMOApplication" IsEditable="UserCanEdit"></MediaList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -221,6 +223,11 @@ else
 
     private bool IsBusy { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+
     protected override async Task OnParametersSetAsync()
     {
         NavItems = new List<BreadcrumbItem>
@@ -239,6 +246,17 @@ else
         finally
         {
             IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
+            }
         }
     }
 

@@ -15,10 +15,12 @@
     <hr />
 }
 
-<p>@localizer["Create New Landowner Deposit Text"]</p>
-<a href="landowner-deposits/Create" class="btn btn-primary">@localizer["Create New Landowner Deposit Label"]</a>
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <p>@localizer["Create New Landowner Deposit Text"]</p>
+    <a href="landowner-deposits/Create" class="btn btn-primary">@localizer["Create New Landowner Deposit Label"]</a>
 
-<hr />
+    <hr />
+</AuthorizeView>
 
 <h2 class="mb-3">@localizer["Search Landowner Deposits Title"]</h2>
 

@@ -8,10 +8,12 @@
 
 <h1>@localizer["Rights of Way Title"]</h1>
 
-<p>@localizer["Create New Right of Way Text"]</p>
-<a href="rights-of-way/Create" class="btn btn-primary">@localizer["Create New Right of Way Label"]</a>
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <p>@localizer["Create New Right of Way Text"]</p>
+    <a href="rights-of-way/Create" class="btn btn-primary">@localizer["Create New Right of Way Label"]</a>
 
-<hr />
+    <hr />
+</AuthorizeView>
 
 <h2 class="mb-3">@localizer["Search Rights of Way Title"]</h2>
 

@@ -4,25 +4,34 @@
 @using CSIDE.Data.Models.DMMO
 @using CSIDE.Services
 @using CSIDE.Data.Models.Shared
+@using CSIDE.Components.Pages.Account
 
-<div>
-    <Breadcrumb Items="NavItems"></Breadcrumb>
-</div>
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
 
-<PageTitle>@localizer["Add Addresses From Map Label"]</PageTitle>
+    <Authorized>
+        <div>
+            <Breadcrumb Items="NavItems"></Breadcrumb>
+        </div>
 
-<h1>@localizer["Add Addresses From Map Label"]</h1>
-<a href="DMMO/Details/@Id" class="my-2"><Icon Name="IconName.ArrowLeftCircle"></Icon> @localizer["Back To DMMO Label"]</a>
-<p>@localizer["Add Addresses From Map Help Text"]</p>
+        <PageTitle>@localizer["Add Addresses From Map Label"]</PageTitle>
 
-@if(ErrorMessage is not null)
-{
-    <div class="alert alert-danger" role="alert">
-        @ErrorMessage
-    </div>
-}
+        <h1>@localizer["Add Addresses From Map Label"]</h1>
+        <a href="DMMO/Details/@Id" class="my-2"><Icon Name="IconName.ArrowLeftCircle"></Icon> @localizer["Back To DMMO Label"]</a>
+        <p>@localizer["Add Addresses From Map Help Text"]</p>
 
-@if (DMMOApplication is not null)
-{
-    <MapBasedAddressSelector ExistingAddresses="ExistingAddresses" Geom="DMMOApplication.Geom" OnMultipleAddressesSelected="HandleMultipleAddressesSelected" OnSingleAddressSelected="HandleSingleAddressSelected"></MapBasedAddressSelector>
-}
+        @if (ErrorMessage is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @ErrorMessage
+            </div>
+        }
+
+        @if (DMMOApplication is not null)
+        {
+            <MapBasedAddressSelector ExistingAddresses="ExistingAddresses" Geom="DMMOApplication.Geom" OnMultipleAddressesSelected="HandleMultipleAddressesSelected" OnSingleAddressSelected="HandleSingleAddressSelected"></MapBasedAddressSelector>
+        }
+    </Authorized>
+</AuthorizeView>
