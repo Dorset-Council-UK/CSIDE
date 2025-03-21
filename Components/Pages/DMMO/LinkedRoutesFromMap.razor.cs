@@ -13,8 +13,7 @@ namespace CSIDE.Components.Pages.DMMO;
 
 public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext> contextFactory,
                                          IRightsOfWayHelperService rightsOfWayHelperService,
-                                         ILogger<LinkedRoutesFromMap> logger,
-                                         NavigationManager navigationManager)
+                                         ILogger<LinkedRoutesFromMap> logger)
 {
     private List<BreadcrumbItem>? NavItems;
 

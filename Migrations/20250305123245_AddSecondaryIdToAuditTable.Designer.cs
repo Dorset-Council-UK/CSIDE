@@ -3,6 +3,7 @@ using System.Text.Json;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250305123245_AddSecondaryIdToAuditTable")]
+    partial class AddSecondaryIdToAuditTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -452,210 +455,6 @@ namespace CSIDE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("InfrastructureTypes", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AllSigned")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ArchiveReference")
-                        .HasColumnType("text");
-
-                    b.Property<LocalDate?>("ChequePaidInDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("ChequeReceiptNumber")
-                        .HasColumnType("text");
-
-                    b.Property<LocalDate?>("DateAcknowledged")
-                        .HasColumnType("date");
-
-                    b.Property<LocalDate?>("ElapseDate")
-                        .HasColumnType("date");
-
-                    b.Property<LocalDate?>("EmailNoticeSent")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("FeePaid")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("FormCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<MultiPolygon>("Geom")
-                        .IsRequired()
-                        .HasColumnType("geometry (multipolygon)");
-
-                    b.Property<string>("IntendedEffect")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Location")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("MapCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<LocalDate?>("NoticeDrafted")
-                        .HasColumnType("date");
-
-                    b.Property<LocalDate?>("OnsiteNoticeErected")
-                        .HasColumnType("date");
-
-                    b.Property<string>("PrimaryContact")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PrimaryContactUserId")
-                        .HasColumnType("text");
-
-                    b.Property<LocalDate?>("ReceivedDate")
-                        .HasColumnType("date");
-
-                    b.Property<LocalDate?>("SentToArchive")
-                        .HasColumnType("date");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.Property<LocalDate?>("WebsiteEntryAdded")
-                        .HasColumnType("date");
-
-                    b.Property<LocalDate?>("WebsiteNoticePublished")
-                        .HasColumnType("date");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LandownerDeposits", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositAddress", b =>
-                {
-                    b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("UPRN")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("text");
-
-                    b.HasKey("LandownerDepositId", "UPRN");
-
-                    b.ToTable("LandownerDepositAddresses", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositContact", b =>
-                {
-                    b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ContactId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LandownerDepositId", "ContactId");
-
-                    b.HasIndex("ContactId");
-
-                    b.ToTable("LandownerDepositContacts", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMedia", b =>
-                {
-                    b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MediaId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MediaTypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LandownerDepositId", "MediaId");
-
-                    b.HasIndex("MediaId");
-
-                    b.HasIndex("MediaTypeId");
-
-                    b.ToTable("LandownerDepositMedia", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMediaType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FileTypesLimit")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("NumFilesLimit")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LandownerDepositMediaTypes", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositParish", b =>
-                {
-                    b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ParishId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LandownerDepositId", "ParishId");
-
-                    b.HasIndex("ParishId");
-
-                    b.ToTable("LandownerDepositParishes", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositType", b =>
-                {
-                    b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LandownerDepositTypeNameId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LandownerDepositId", "LandownerDepositTypeNameId");
-
-                    b.HasIndex("LandownerDepositTypeNameId");
-
-                    b.ToTable("LandownerDepositTypes", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositTypeName", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LandownerDepositTypeNames", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Comment", b =>
@@ -1391,101 +1190,6 @@ namespace CSIDE.Migrations
                     b.Navigation("Media");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositAddress", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
-                        .WithMany("LandownerDepositAddresses")
-                        .HasForeignKey("LandownerDepositId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LandownerDeposit");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositContact", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.Shared.Contact", "Contact")
-                        .WithMany()
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
-                        .WithMany("LandownerDepositContacts")
-                        .HasForeignKey("LandownerDepositId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Contact");
-
-                    b.Navigation("LandownerDeposit");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMedia", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
-                        .WithMany("LandownerDepositMedia")
-                        .HasForeignKey("LandownerDepositId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
-                        .WithMany()
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMediaType", "MediaType")
-                        .WithMany()
-                        .HasForeignKey("MediaTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LandownerDeposit");
-
-                    b.Navigation("Media");
-
-                    b.Navigation("MediaType");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositParish", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
-                        .WithMany("LandownerDepositParishes")
-                        .HasForeignKey("LandownerDepositId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
-                        .WithMany()
-                        .HasForeignKey("ParishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LandownerDeposit");
-
-                    b.Navigation("Parish");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositType", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
-                        .WithMany("LandownerDepositTypes")
-                        .HasForeignKey("LandownerDepositId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDepositTypeName", "LandownerDepositTypeName")
-                        .WithMany()
-                        .HasForeignKey("LandownerDepositTypeNameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LandownerDeposit");
-
-                    b.Navigation("LandownerDepositTypeName");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Comment", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Maintenance.Job", "Job")
@@ -1715,19 +1419,6 @@ namespace CSIDE.Migrations
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureItem", b =>
                 {
                     b.Navigation("InfrastructureMedia");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", b =>
-                {
-                    b.Navigation("LandownerDepositAddresses");
-
-                    b.Navigation("LandownerDepositContacts");
-
-                    b.Navigation("LandownerDepositMedia");
-
-                    b.Navigation("LandownerDepositParishes");
-
-                    b.Navigation("LandownerDepositTypes");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Job", b =>

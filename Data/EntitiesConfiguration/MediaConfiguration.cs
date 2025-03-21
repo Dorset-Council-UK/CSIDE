@@ -15,6 +15,11 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.URL).IsRequired();
             builder.Property(x => x.Title).HasMaxLength(200);
             builder.Ignore(x => x.Format);
+            builder.Navigation(x => x.JobMedia).AutoInclude();
+            builder.Navigation(x => x.DMMOMedia).AutoInclude();
+            builder.Navigation(x => x.RouteMedia).AutoInclude();
+            builder.Navigation(x => x.LandownerDepositMedia).AutoInclude();
+            builder.Navigation(x => x.InfrastructureMedia).AutoInclude();
         }
     }
 }

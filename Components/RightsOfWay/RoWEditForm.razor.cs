@@ -19,15 +19,22 @@ namespace CSIDE.Components.RightsOfWay
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]
-        public bool ClosureDatesShown { get; set; }
-        [Parameter]
         public bool IsEdit { get; set; }
         [Parameter]
         public EventCallback OnSubmit { get; set; }
         [Parameter]
         public EventCallback OnCancel { get; set; }
 
+        public bool ClosureDatesShown { get; set; }
         private FluentValidationValidator? fluentValidationValidator;
+
+        protected override void OnParametersSet()
+        {
+            if (Route is not null)
+            {
+                AfterOperationalStatusIdChanged();
+            }
+        }
 
         private async Task SubmitFormAsync()
         {

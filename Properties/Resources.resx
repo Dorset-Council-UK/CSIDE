@@ -867,110 +867,149 @@
   <data name="No Routes Found At Click Error Message" xml:space="preserve">
     <value>No routes found where you clicked. Try zooming closer if you are having trouble.</value>
   </data>
-	<data name="Landowner Deposits Public Register Label" xml:space="preserve">
+  <data name="Landowner Deposits Public Register Label" xml:space="preserve">
     <value>View the public register</value>
   </data>
-	<data name="Create New Landowner Deposit Title" xml:space="preserve">
+  <data name="Create New Landowner Deposit Title" xml:space="preserve">
     <value>Create new Landowner Deposit</value>
   </data>
-	<data name="Create New Landowner Deposit Text" xml:space="preserve">
+  <data name="Create New Landowner Deposit Text" xml:space="preserve">
     <value>Create a new Landowner Deposit using a map</value>
   </data>
-	<data name="Create New Landowner Deposit Label" xml:space="preserve">
+  <data name="Create New Landowner Deposit Label" xml:space="preserve">
     <value>Create</value>
   </data>
-	<data name="Landowner Deposit Type Label" xml:space="preserve">
+  <data name="Landowner Deposit Type Label" xml:space="preserve">
     <value>Type</value>
   </data>
-	<data name="Landowner Deposit Received Date Label" xml:space="preserve">
+  <data name="Landowner Deposit Received Date Label" xml:space="preserve">
     <value>Received date</value>
   </data>
-	<data name="Landowner Deposit Location Description Label" xml:space="preserve">
+  <data name="Landowner Deposit Location Description Label" xml:space="preserve">
     <value>Location description</value>
   </data>
-	<data name="Landowner Deposit Completed Correctly Label" xml:space="preserve">
+  <data name="Landowner Deposit Completed Correctly Label" xml:space="preserve">
     <value>Form completed correctly?</value>
   </data>
-	<data name="Landowner Deposit Map Correct Label" xml:space="preserve">
+  <data name="Landowner Deposit Map Correct Label" xml:space="preserve">
     <value>Map attached to correct scale?</value>
   </data>
-	<data name="Landowner Deposit Fee Paid Label" xml:space="preserve">
+  <data name="Landowner Deposit Fee Paid Label" xml:space="preserve">
     <value>Fee paid?</value>
   </data>
-	<data name="Landowner Deposit Signed Label" xml:space="preserve">
+  <data name="Landowner Deposit Signed Label" xml:space="preserve">
     <value>All signed who should?</value>
   </data>
-	<data name="Landowner Deposit Date Acknowledged Label" xml:space="preserve">
+  <data name="Landowner Deposit Date Acknowledged Label" xml:space="preserve">
     <value>Date acknowledged receipt</value>
   </data>
-	<data name="Landowner Deposit Cheque Receipt Label" xml:space="preserve">
+  <data name="Landowner Deposit Cheque Receipt Label" xml:space="preserve">
     <value>Cheque receipt number</value>
   </data>
-	<data name="Landowner Deposit Cheque Paid In Label" xml:space="preserve">
+  <data name="Landowner Deposit Cheque Paid In Label" xml:space="preserve">
     <value>Date cheque paid in</value>
   </data>
-	<data name="Landowner Deposit Notice Drafted Label" xml:space="preserve">
+  <data name="Landowner Deposit Notice Drafted Label" xml:space="preserve">
     <value>Date notice drafted</value>
   </data>
-	<data name="Landowner Deposit Website Notice Published Label" xml:space="preserve">
+  <data name="Landowner Deposit Website Notice Published Label" xml:space="preserve">
     <value>Website notice published</value>
   </data>
-	<data name="Landowner Deposit Email Notice Label" xml:space="preserve">
+  <data name="Landowner Deposit Email Notice Label" xml:space="preserve">
     <value>Email notice sent</value>
   </data>
-	<data name="Landowner Deposit Onsite Notice Label" xml:space="preserve">
+  <data name="Landowner Deposit Onsite Notice Label" xml:space="preserve">
     <value>Onsite notice erected</value>
   </data>
-	<data name="Landowner Deposit Website Entry Printed Label" xml:space="preserve">
+  <data name="Landowner Deposit Website Entry Printed Label" xml:space="preserve">
     <value>Website entry printed</value>
   </data>
-	<data name="Landowner Deposit Archive Date Label" xml:space="preserve">
+  <data name="Landowner Deposit Archive Date Label" xml:space="preserve">
     <value>Date sent to archive</value>
   </data>
-	<data name="Landowner Deposit Archive Reference Label" xml:space="preserve">
+  <data name="Landowner Deposit Archive Reference Label" xml:space="preserve">
     <value>Archive reference</value>
   </data>
-	<data name="Landowner Deposit ID Label" xml:space="preserve">
+  <data name="Landowner Deposit ID Label" xml:space="preserve">
     <value>Landowner Deposit ID</value>
   </data>
-	<data name="Landowner Deposit Location Label" xml:space="preserve">
+  <data name="Landowner Deposit Location Label" xml:space="preserve">
     <value>Location</value>
   </data>
-	<data name="Back To Landowner Deposits Label" xml:space="preserve">
+  <data name="Back To Landowner Deposits Label" xml:space="preserve">
     <value>Back to Landowner Deposits</value>
   </data>
-	<data name="Landowner Deposit Create Title" xml:space="preserve">
+  <data name="Landowner Deposit Create Title" xml:space="preserve">
     <value>Create a Landowner Deposit</value>
   </data>
-	<data name="Landowner Deposit Not Found Error Message" xml:space="preserve">
+  <data name="Landowner Deposit Not Found Error Message" xml:space="preserve">
     <value>Landowner Deposit with ID '{0}' was not found in the database</value>
   </data>
-	<data name="Landowner Deposit Details Title" xml:space="preserve">
+  <data name="Landowner Deposit Details Title" xml:space="preserve">
     <value>Landowner Deposit Details {0}</value>
   </data>
-	<data name="Landowner Deposit Parish Label" xml:space="preserve">
+  <data name="Landowner Deposit Parish Label" xml:space="preserve">
     <value>Parish</value>
   </data>
-	<data name="Landowner Deposit Title" xml:space="preserve">
+  <data name="Landowner Deposit Title" xml:space="preserve">
     <value>Landowner Deposits</value>
   </data>
-	<data name="Landowner Deposit Edit Title" xml:space="preserve">
+  <data name="Landowner Deposit Edit Title" xml:space="preserve">
     <value>Edit Landowner Deposit {0}</value>
   </data>
-	<data name="Search Landowner Deposits Title" xml:space="preserve">
+  <data name="Search Landowner Deposits Title" xml:space="preserve">
     <value>Search for a Landowner Deposit</value>
   </data>
-	<data name="Delete Landowner Deposit Address Confirmation" xml:space="preserve">
+  <data name="Delete Landowner Deposit Address Confirmation" xml:space="preserve">
     <value>Are you sure you want to delete this address from the Landowner Deposit?</value>
   </data>
-	<data name="Landowner Deposit Date Received Label" xml:space="preserve">
+  <data name="Landowner Deposit Date Received Label" xml:space="preserve">
     <value>Date received</value>
   </data>
-	<data name="Yes Label" xml:space="preserve">
+  <data name="Yes Label" xml:space="preserve">
     <value>Yes</value>
   </data>
-	<data name="No Label" xml:space="preserve">
+  <data name="No Label" xml:space="preserve">
     <value>No</value>
+  </data>
+  <data name="Audit Log Title" xml:space="preserve">
+    <value>Audit Log</value>
+  </data>
+  <data name="Item ID Label" xml:space="preserve">
+    <value>Item ID</value>
+  </data>
+  <data name="Section Label" xml:space="preserve">
+    <value>Section</value>
+  </data>
+  <data name="Action Label" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Audit Log Entry Title" xml:space="preserve">
+    <value>Audit log entry</value>
+  </data>
+  <data name="Property Name Label" xml:space="preserve">
+    <value>Property name</value>
+  </data>
+  <data name="Old Value Label" xml:space="preserve">
+    <value>Old value</value>
+  </data>
+  <data name="New Value Label" xml:space="preserve">
+    <value>New value</value>
+  </data>
+  <data name="Linked Item ID Label" xml:space="preserve">
+    <value>Linked item ID</value>
+  </data>
+  <data name="Property Changes Label" xml:space="preserve">
+    <value>Property changes</value>
+  </data>
+  <data name="Geometry Changes Label" xml:space="preserve">
+    <value>Geometry changes</value>
+  </data>
+  <data name="Before Label" xml:space="preserve">
+    <value>Before</value>
+  </data>
+  <data name="After Label" xml:space="preserve">
+    <value>After</value>
   </data>
 	<data name="Signed Out Title" xml:space="preserve">
     <value>You've been signed out</value>

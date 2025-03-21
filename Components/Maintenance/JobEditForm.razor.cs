@@ -19,8 +19,6 @@ public partial class JobEditForm()
     [Parameter]
     public bool IsBusy { get; set; }
     [Parameter]
-    public bool CompleteDateShown { get; set; }
-    [Parameter]
     public bool DuplicateOfShown { get; set; }
     [Parameter]
     public bool IsEdit { get; set; }
@@ -31,8 +29,16 @@ public partial class JobEditForm()
     [Parameter]
     public IList<int> SelectedProblemTypes { get; set; } = [];
 
+    public bool CompleteDateShown { get; set; }
     private FluentValidationValidator? fluentValidationValidator;
 
+    protected override void OnParametersSet()
+    {
+        if(Job is not null)
+        {
+            AfterStatusIdChanged();
+        }
+    }
     private async Task SubmitFormAsync()
     {
         if (OnSubmit.HasDelegate)

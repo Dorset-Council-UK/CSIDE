@@ -184,7 +184,7 @@ namespace CSIDE.Components.Pages.DMMO
             var routes = await rightsOfWayHelperService.GetNearestRouteAsync(selectionPoint, 10);
             //convert route to geojson
             var geoJsonWriter = new GeoJsonWriter();
-            var routesGeoJson = geoJsonWriter.Write(routes);
+            var routesGeoJson = geoJsonWriter.Write(routes?.Geom);
             return routesGeoJson;
         }
     }

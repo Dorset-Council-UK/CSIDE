@@ -79,7 +79,14 @@ namespace CSIDE.Components.Pages.RightsOfWay
                     if (Route is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
-                        context.Update(Route);
+
+                        //get the existing job to enable the smarter change tracker.
+                        //Without this, all properties are identified as tracked, since
+                        //the DbContext is different from when the entity was queried
+                        var existingRoute = await context.Routes.FindAsync(Route.RouteCode) ?? throw new Exception($"Route being edited (ID: {Route.RouteCode}) was not found prior to updating");
+
+                        context.Entry(existingRoute).CurrentValues.SetValues(Route);
+
                         await context.SaveChangesAsync();
                         //redirect
                         NavigateBackToRouteDetailsPage();

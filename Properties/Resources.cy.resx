@@ -876,112 +876,151 @@ Disgrifiad</value>
   <data name="No Routes Found At Click Error Message" xml:space="preserve">
     <value>Ni chanfuwyd unrhyw lwybrau lle gwnaethoch glicio. Ceisiwch chwyddo'n agosach os ydych chi'n cael trafferth.</value>
   </data>
-	<data name="Landowner Deposits Public Register Label" xml:space="preserve">
+  <data name="Landowner Deposits Public Register Label" xml:space="preserve">
     <value>Gweld y gofrestr gyhoeddus</value>
   </data>
-	<data name="Create New Landowner Deposit Title" xml:space="preserve">
+  <data name="Create New Landowner Deposit Title" xml:space="preserve">
     <value>
 Creu Blaendal Perchennog Tir newydd</value>
   </data>
-	<data name="Create New Landowner Deposit Text" xml:space="preserve">
+  <data name="Create New Landowner Deposit Text" xml:space="preserve">
     <value>
 Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   </data>
-	<data name="Create New Landowner Deposit Label" xml:space="preserve">
+  <data name="Create New Landowner Deposit Label" xml:space="preserve">
     <value>Creu</value>
   </data>
-	<data name="Landowner Deposit Type Label" xml:space="preserve">
+  <data name="Landowner Deposit Type Label" xml:space="preserve">
     <value>Math</value>
   </data>
-	<data name="Landowner Deposit Received Date Label" xml:space="preserve">
+  <data name="Landowner Deposit Received Date Label" xml:space="preserve">
     <value>Dyddiad derbyn</value>
   </data>
-	<data name="Landowner Deposit Location Description Label" xml:space="preserve">
+  <data name="Landowner Deposit Location Description Label" xml:space="preserve">
     <value>Disgrifiad o'r lleoliad</value>
   </data>
-	<data name="Landowner Deposit Completed Correctly Label" xml:space="preserve">
+  <data name="Landowner Deposit Completed Correctly Label" xml:space="preserve">
     <value>Ffurflen wedi'i chwblhau'n gywir?</value>
   </data>
-	<data name="Landowner Deposit Map Correct Label" xml:space="preserve">
+  <data name="Landowner Deposit Map Correct Label" xml:space="preserve">
     <value>Map wedi'i atodi i'r raddfa gywir?</value>
   </data>
-	<data name="Landowner Deposit Fee Paid Label" xml:space="preserve">
+  <data name="Landowner Deposit Fee Paid Label" xml:space="preserve">
     <value>Ffi wedi'i thalu?</value>
   </data>
-	<data name="Landowner Deposit Signed Label" xml:space="preserve">
+  <data name="Landowner Deposit Signed Label" xml:space="preserve">
     <value>Pawb wedi arwyddo pwy ddylai?</value>
   </data>
-	<data name="Landowner Deposit Date Acknowledged Label" xml:space="preserve">
+  <data name="Landowner Deposit Date Acknowledged Label" xml:space="preserve">
     <value>Dyddiad cydnabod derbynneb</value>
   </data>
-	<data name="Landowner Deposit Cheque Receipt Label" xml:space="preserve">
+  <data name="Landowner Deposit Cheque Receipt Label" xml:space="preserve">
     <value>Gwiriwch y rhif derbynneb</value>
   </data>
-	<data name="Landowner Deposit Cheque Paid In Label" xml:space="preserve">
+  <data name="Landowner Deposit Cheque Paid In Label" xml:space="preserve">
     <value>Dyddiad talu siec i mewn</value>
   </data>
-	<data name="Landowner Deposit Notice Drafted Label" xml:space="preserve">
+  <data name="Landowner Deposit Notice Drafted Label" xml:space="preserve">
     <value>Dyddiad drafftio'r hysbysiad</value>
   </data>
-	<data name="Landowner Deposit Website Notice Published Label" xml:space="preserve">
+  <data name="Landowner Deposit Website Notice Published Label" xml:space="preserve">
     <value>Hysbysiad gwefan wedi'i gyhoeddi</value>
   </data>
-	<data name="Landowner Deposit Email Notice Label" xml:space="preserve">
+  <data name="Landowner Deposit Email Notice Label" xml:space="preserve">
     <value>Anfonwyd hysbysiad e-bost</value>
   </data>
-	<data name="Landowner Deposit Onsite Notice Label" xml:space="preserve">
+  <data name="Landowner Deposit Onsite Notice Label" xml:space="preserve">
     <value>Rhybudd ar y safle wedi'i godi</value>
   </data>
-	<data name="Landowner Deposit Website Entry Printed Label" xml:space="preserve">
+  <data name="Landowner Deposit Website Entry Printed Label" xml:space="preserve">
     <value>Cofnod gwefan wedi'i argraffu</value>
   </data>
-	<data name="Landowner Deposit Archive Date Label" xml:space="preserve">
+  <data name="Landowner Deposit Archive Date Label" xml:space="preserve">
     <value>Dyddiad anfon i'r archif</value>
   </data>
-	<data name="Landowner Deposit Archive Reference Label" xml:space="preserve">
+  <data name="Landowner Deposit Archive Reference Label" xml:space="preserve">
     <value>Cyfeirnod archif</value>
   </data>
-	<data name="Landowner Deposit ID Label" xml:space="preserve">
+  <data name="Landowner Deposit ID Label" xml:space="preserve">
     <value>ID Blaendal Perchennog Tir</value>
   </data>
-	<data name="Landowner Deposit Location Label" xml:space="preserve">
+  <data name="Landowner Deposit Location Label" xml:space="preserve">
     <value>Lleoliad</value>
   </data>
-	<data name="Back To Landowner Deposits Label" xml:space="preserve">
+  <data name="Back To Landowner Deposits Label" xml:space="preserve">
     <value>Yn ôl i Adneuon Tirfeddianwyr</value>
   </data>
-	<data name="Landowner Deposit Create Title" xml:space="preserve">
+  <data name="Landowner Deposit Create Title" xml:space="preserve">
     <value>Creu Blaendal Perchennog Tir</value>
   </data>
-	<data name="Landowner Deposit Not Found Error Message" xml:space="preserve">
+  <data name="Landowner Deposit Not Found Error Message" xml:space="preserve">
     <value>Ni ddaethpwyd o hyd i Adneuo Tirfeddiannwr gydag ID '{0}' yn y gronfa ddata</value>
   </data>
-	<data name="Landowner Deposit Details Title" xml:space="preserve">
+  <data name="Landowner Deposit Details Title" xml:space="preserve">
     <value>Manylion Adneuo Tirfeddiannwr {0}</value>
   </data>
-	<data name="Landowner Deposit Parish Label" xml:space="preserve">
+  <data name="Landowner Deposit Parish Label" xml:space="preserve">
     <value>Plwyf</value>
   </data>
-	<data name="Landowner Deposit Title" xml:space="preserve">
+  <data name="Landowner Deposit Title" xml:space="preserve">
     <value>Blaendaliadau Tirfeddianwyr</value>
   </data>
-	<data name="Landowner Deposit Edit Title" xml:space="preserve">
+  <data name="Landowner Deposit Edit Title" xml:space="preserve">
     <value>Golygu Blaendal Perchennog Tir {0}</value>
   </data>
-	<data name="Search Landowner Deposits Title" xml:space="preserve">
+  <data name="Search Landowner Deposits Title" xml:space="preserve">
     <value>Chwilio am Flaendal Perchennog Tir</value>
   </data>
-	<data name="Delete Landowner Deposit Address Confirmation" xml:space="preserve">
+  <data name="Delete Landowner Deposit Address Confirmation" xml:space="preserve">
     <value>Ydych chi'n siŵr eich bod am ddileu'r cyfeiriad hwn o'r Blaendal Perchennog Tir?</value>
   </data>
-	<data name="Landowner Deposit Date Received Label" xml:space="preserve">
+  <data name="Landowner Deposit Date Received Label" xml:space="preserve">
     <value>Dyddiad derbyn</value>
   </data>
-	<data name="Yes Label" xml:space="preserve">
+  <data name="Yes Label" xml:space="preserve">
     <value>Oes</value>
   </data>
-	<data name="No Label" xml:space="preserve">
+  <data name="No Label" xml:space="preserve">
     <value>Nac ydw</value>
+  </data>
+  <data name="Audit Log Title" xml:space="preserve">
+    <value>Log Archwilio</value>
+  </data>
+  <data name="Item ID Label" xml:space="preserve">
+    <value>ID Eitem</value>
+  </data>
+  <data name="Section Label" xml:space="preserve">
+    <value>Ardal</value>
+  </data>
+  <data name="Action Label" xml:space="preserve">
+    <value>Gweithred</value>
+  </data>
+  <data name="Audit Log Entry Title" xml:space="preserve">
+    <value>Mynediad Log Archwilio</value>
+  </data>
+  <data name="Property Name Label" xml:space="preserve">
+    <value>Enw eiddo</value>
+  </data>
+  <data name="Old Value Label" xml:space="preserve">
+    <value>Hen werth</value>
+  </data>
+  <data name="New Value Label" xml:space="preserve">
+    <value>Gwerth Newydd</value>
+  </data>
+  <data name="Linked Item ID Label" xml:space="preserve">
+    <value>ID Eitem Cysylltiedig</value>
+  </data>
+  <data name="Property Changes Label" xml:space="preserve">
+    <value>Newidiadau eiddo</value>
+  </data>
+  <data name="Geometry Changes Label" xml:space="preserve">
+    <value>Newidiadau geometreg</value>
+  </data>
+  <data name="Before Label" xml:space="preserve">
+    <value>Cyn</value>
+  </data>
+  <data name="After Label" xml:space="preserve">
+    <value>Wedi</value>
   </data>
 	<data name="Signed Out Title" xml:space="preserve">
     <value>Rydych chi wedi cael eich allgofnodi</value>

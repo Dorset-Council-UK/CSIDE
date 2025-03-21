@@ -32,12 +32,13 @@
                 }
                 @localizer["Add Comment Label"]
             </button>
-    </EditForm>
+        </EditForm>
     }
     if(Job.Comments is not null && Job.Comments.Count != 0)
     {
         @foreach (Comment comment in Job.Comments.OrderByDescending(c => c.CreatedAt))
         {
+            comment.Job = null;
             <SingleComment Comment="@comment" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></SingleComment>
         }
     }

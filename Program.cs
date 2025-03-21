@@ -1,9 +1,9 @@
 using CSIDE.Authorization;
 using CSIDE.Components;
+using CSIDE.Data.Interceptors;
 using CSIDE.Options;
 using CSIDE.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +30,14 @@ builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddScoped<IRightsOfWayHelperService, RightsOfWayHelperService>();
 builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
+builder.Services.AddScoped<IAuditInterceptor, AuditInterceptor>();
+builder.Services.AddScoped<IRightsOfWayInterceptor, RightsOfWayInterceptor>();
+builder.Services.AddScoped<IMaintenanceInterceptor, MaintenanceInterceptor>();
+builder.Services.AddScoped<IInfrastructureInterceptor, InfrastructureInterceptor>();
+builder.Services.AddScoped<ILandownerDepositInterceptor, LandownerDepositInterceptor>();
+builder.Services.AddScoped<IDMMOInterceptor, DMMOInterceptor>();
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AuthenticatedOnly", policy => policy.RequireAuthenticatedUser())

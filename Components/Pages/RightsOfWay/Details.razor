@@ -157,7 +157,19 @@ else
                         </ErrorBoundary>
                     </ChildContent>
                 </CollapsibleCard> 
-
+                
+                <CollapsibleCard Id="route-audit" Title="@localizer["Audit Log Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <AuditLogList SectionNames="@AuditLogSectionNames" EntityId="@Route.RouteCode"></AuditLogList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
 
             </div>
             <div class="col-lg-4">
@@ -200,6 +212,12 @@ else
 
     private bool UserCanEdit { get; set; } = false;
     private bool UserCanEditStatements { get; set; } = false;
+
+    private string[] AuditLogSectionNames => new string[] {
+        nameof(Data.Models.RightsOfWay.Route),
+        nameof(Data.Models.RightsOfWay.RouteMedia),
+        nameof(Data.Models.RightsOfWay.Statement)
+    };
 
     protected override async Task OnParametersSetAsync()
     {

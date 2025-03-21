@@ -60,8 +60,12 @@ namespace CSIDE.Components.Maintenance
                 {
                     if (comment is not null)
                     {
+                        
                         using var context = contextFactory.CreateDbContext();
-                        context.MaintenanceComments.Update(comment);
+                        var existingComment = await context.MaintenanceComments.FindAsync(Comment.Id) ?? throw new Exception($"Maintenance Comment being edited (ID: {Comment.Id}) was not found prior to updating");
+
+                        context.Entry(existingComment).CurrentValues.SetValues(Comment);
+
                         await context.SaveChangesAsync();
                         //refresh component by simply switching off editing mode. We don't need to refetch the data, its already there!
                         IsEditing = false;

@@ -80,7 +80,15 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                     if (LandownerDeposit is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
-                        context.Update(LandownerDeposit);
+
+
+                        //get the existing job to enable the smarter change tracker.
+                        //Without this, all properties are identified as tracked, since
+                        //the DbContext is different from when the entity was queried
+                        var existingDeposit = await context.LandownerDeposits.FindAsync(LandownerDeposit.Id) ?? throw new Exception($"Landowner Deposit being edited (ID: {LandownerDeposit.Id}) was not found prior to updating");
+
+                        context.Entry(existingDeposit).CurrentValues.SetValues(LandownerDeposit);
+
                         await UpdateLandownerDepositTypes(SelectedLandownerDepositTypes, context);
                         await context.SaveChangesAsync();
                         //redirect

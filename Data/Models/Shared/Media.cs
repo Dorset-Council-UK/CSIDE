@@ -1,4 +1,9 @@
-﻿using NodaTime;
+﻿using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.LandownerDeposits;
+using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.RightsOfWay;
+using NodaTime;
 using System.Globalization;
 
 namespace CSIDE.Data.Models.Shared
@@ -9,6 +14,13 @@ namespace CSIDE.Data.Models.Shared
         public Instant? UploadDate { get; set; }
         public required string URL { get; set; }
         public string? Title { get; set; }
+
+        
+        public ICollection<JobMedia>? JobMedia { get; set; }
+        public ICollection<DMMOMedia>? DMMOMedia { get; set; }
+        public ICollection<LandownerDepositMedia>? LandownerDepositMedia { get; set; }
+        public ICollection<InfrastructureMedia>? InfrastructureMedia { get; set; }
+        public ICollection<RouteMedia>? RouteMedia { get; set; }
 
         public MediaType Format
         {

@@ -11,6 +11,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Services;
+using CSIDE.Data.Models.Shared;
 
 namespace CSIDE.Components.Pages.Maintenance
 {
@@ -77,11 +78,20 @@ namespace CSIDE.Components.Pages.Maintenance
                     if (Job is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
-                        context.Update(Job);
+
+                        //get the existing job to enable the smarter change tracker.
+                        //Without this, all properties are identified as tracked, since
+                        //the DbContext is different from when the entity was queried
+                        var existingJob = await context.MaintenanceJobs.FindAsync(Job.Id) ?? throw new Exception($"Maintenance job being edited (ID: {Job.Id}) was not found prior to updating");
+
+                        context.Entry(existingJob).CurrentValues.SetValues(Job);
+
                         await UpdateMaintenanceProblemTypes(SelectedProblemTypes, context);
                         await context.SaveChangesAsync();
+
                         //redirect
                         NavigateBackToJobDetailsPage();
+                        
                     }
                 }
                 catch (DbUpdateConcurrencyException ex)
@@ -104,25 +114,39 @@ namespace CSIDE.Components.Pages.Maintenance
         private async Task UpdateMaintenanceProblemTypes(List<int> selectedProblemTypes, ApplicationDbContext context)
         {
             if (Job is null) return;
-            if (selectedProblemTypes == null)
-            {
-                await context.MaintenanceJobProblemTypes.Where(c => c.JobId == Job.Id).ExecuteDeleteAsync();
-                return;
-            }
 
-            //delete problems not needed anymore
-            await context.MaintenanceJobProblemTypes.Where(c => c.JobId == Job.Id && !selectedProblemTypes.Contains(c.ProblemTypeId)).ExecuteDeleteAsync();
+            // Retrieve the existing problem types for the job
+            var existingProblemTypes = await context.MaintenanceJobProblemTypes
+                .Where(c => c.JobId == Job.Id)
+                .ToListAsync();
 
-            //add new problem types
-            foreach (int problemType in selectedProblemTypes)
+            // Determine the problem types to remove
+            var problemTypesToRemove = existingProblemTypes
+                .Where(c => !selectedProblemTypes.Contains(c.ProblemTypeId))
+                .ToList();
+
+            // Remove the entities
+            context.MaintenanceJobProblemTypes.RemoveRange(problemTypesToRemove);
+
+            // Determine the problem types to add
+            var problemTypesToAdd = selectedProblemTypes
+                .Where(problemTypeId => !existingProblemTypes.Any(c => c.ProblemTypeId == problemTypeId))
+                .Select(problemTypeId => new JobProblemType { ProblemTypeId = problemTypeId, JobId = Job.Id })
+                .ToList();
+
+            // Add the new problem types
+            context.MaintenanceJobProblemTypes.AddRange(problemTypesToAdd);
+
+            // Mark entities as unchanged if they haven't actually changed
+            foreach (var existingProblemType in existingProblemTypes)
             {
-                if (!context.MaintenanceJobProblemTypes.Where(c => c.JobId == Job.Id && c.ProblemTypeId == problemType).Any())
+                if (selectedProblemTypes.Contains(existingProblemType.ProblemTypeId))
                 {
-                    context.MaintenanceJobProblemTypes.Add(new JobProblemType { ProblemTypeId = problemType, JobId = Job.Id });
+                    context.Entry(existingProblemType).State = EntityState.Unchanged;
                 }
             }
-            return;
         }
+
 
         private void NavigateBackToJobDetailsPage()
         {

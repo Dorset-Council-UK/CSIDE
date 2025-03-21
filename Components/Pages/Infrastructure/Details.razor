@@ -51,7 +51,7 @@ else
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Infrastructure Type Label"]</th>
-                                            <td>@InfrastructureItem.InfrastructureType.Name</td>
+                                            <td>@InfrastructureItem.InfrastructureType?.Name</td>
                                         </tr>
                                         <tr>
                                             <th>@localizer["Infrastructure Description Label"]</th>
@@ -108,6 +108,19 @@ else
                     </ChildContent>
                 </CollapsibleCard>
 
+                <CollapsibleCard Id="infra-audit" Title="@localizer["Audit Log Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <AuditLogList SectionNames="@AuditLogSectionNames" EntityId="@InfrastructureItem.Id.ToString()"></AuditLogList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
             </div>
             <div class="col-md-4">
                 <ErrorBoundary>
@@ -144,6 +157,11 @@ else
     private Task<AuthenticationState>? authenticationState { get; set; }
 
     private bool UserCanEdit { get; set; } = false;
+
+    private string[] AuditLogSectionNames => new string[] {
+        nameof(Data.Models.Infrastructure.InfrastructureItem),
+        nameof(Data.Models.Infrastructure.InfrastructureMedia)
+    };
 
     protected override async Task OnParametersSetAsync()
     {

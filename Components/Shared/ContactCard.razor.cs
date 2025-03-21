@@ -50,7 +50,14 @@ namespace CSIDE.Components.Shared
                         using var context = contextFactory.CreateDbContext();
                         //clear the 'ContactType' navigation property, otherwise ef core uses that which hasn't changed
                         Contact.ContactType = null;
-                        context.Update(Contact);
+
+                        //get the existing job to enable the smarter change tracker.
+                        //Without this, all properties are identified as tracked, since
+                        //the DbContext is different from when the entity was queried
+                        var existingContact = await context.Contacts.FindAsync(Contact.Id) ?? throw new Exception($"Contact being edited (ID: {Contact.Id}) was not found prior to updating");
+
+                        context.Entry(existingContact).CurrentValues.SetValues(Contact);
+
                         await context.SaveChangesAsync();
 
                         await HideEditContactModal();

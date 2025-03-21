@@ -3,6 +3,7 @@ using CSIDE.Components.DMMO;
 using CSIDE.Components.Mapping;
 using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Maintenance;
 using CSIDE.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
@@ -72,7 +73,14 @@ namespace CSIDE.Components.Pages.DMMO
                     if (DMMOApplication is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
-                        context.Update(DMMOApplication);
+
+                        //get the existing job to enable the smarter change tracker.
+                        //Without this, all properties are identified as tracked, since
+                        //the DbContext is different from when the entity was queried
+                        var existingApp = await context.DMMOApplication.FindAsync(DMMOApplication.Id) ?? throw new Exception($"DMMO Application being edited (ID: {DMMOApplication.Id}) was not found prior to updating");
+
+                        context.Entry(existingApp).CurrentValues.SetValues(DMMOApplication);
+
                         await context.SaveChangesAsync();
                         //redirect
                         navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");

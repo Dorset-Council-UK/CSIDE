@@ -16,6 +16,10 @@ namespace CSIDE.Data.EntitiesConfiguration
 
             builder.Navigation(x => x.ContactType)
                 .AutoInclude();
+
+            builder.Navigation(x => x.JobContact).AutoInclude();
+            builder.Navigation(x => x.DMMOContact).AutoInclude();
+            builder.Navigation(x => x.LandownerDepositContact).AutoInclude();
         }
     }
 }

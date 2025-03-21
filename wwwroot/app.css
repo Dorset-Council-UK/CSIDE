@@ -1,8 +1,6 @@
-
 a, .btn-link {
     color: #006bb7;
 }
-
 .btn-primary {
   color: #fff;
   background-color: var(--primary-color);
@@ -55,6 +53,12 @@ a, .btn-link {
 .form-check-input:checked {
   background-color: var(--primary-color);
   border: var(--primary-color-dark);
+}
+.pagination, .page-link {
+  --bs-pagination-active-bg: var(--primary-color);
+  --bs-pagination-color: var(--primary-color);
+  --bs-pagination-hover-color: var(--primary-color-dark);
+  --bs-pagination-active-border-color: var(--primary-color-dark);
 }
 .comment-field {
   white-space: pre-line;

@@ -67,7 +67,14 @@ namespace CSIDE.Components.Pages.Infrastructure
                     if (InfrastructureItem is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
-                        context.Update(InfrastructureItem);
+
+                        //get the existing job to enable the smarter change tracker.
+                        //Without this, all properties are identified as tracked, since
+                        //the DbContext is different from when the entity was queried
+                        var existingInfra = await context.Infrastructure.FindAsync(InfrastructureItem.Id) ?? throw new Exception($"Infrastructure Item being edited (ID: {InfrastructureItem.Id}) was not found prior to updating");
+
+                        context.Entry(existingInfra).CurrentValues.SetValues(InfrastructureItem);
+
                         await context.SaveChangesAsync();
                         //redirect
                         NavigateBackToInfrastructureDetailsPage();
