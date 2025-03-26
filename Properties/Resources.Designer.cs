@@ -115,6 +115,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to These users have access to {0}.
+        /// </summary>
+        public static string Active_Users_Text {
+            get {
+                return ResourceManager.GetString("Active Users Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active users.
+        /// </summary>
+        public static string Active_Users_Title {
+            get {
+                return ResourceManager.GetString("Active Users Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add address.
         /// </summary>
         public static string Add_Address_Label {
@@ -394,6 +412,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View the audit logs for {0}.
+        /// </summary>
+        public static string Audit_Log_Text {
+            get {
+                return ResourceManager.GetString("Audit Log Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Audit Log.
         /// </summary>
         public static string Audit_Log_Title {
@@ -408,6 +435,24 @@ namespace CSIDE.Properties {
         public static string Automatic_Parishes_Information_Message {
             get {
                 return ResourceManager.GetString("Automatic Parishes Information Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These users do not currently have access to {0}. You can give them access by selecting them and giving them a role..
+        /// </summary>
+        public static string Available_Users_Text {
+            get {
+                return ResourceManager.GetString("Available Users Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available users.
+        /// </summary>
+        public static string Available_Users_Title {
+            get {
+                return ResourceManager.GetString("Available Users Title", resourceCulture);
             }
         }
         
@@ -1717,6 +1762,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage users for {0} and view the audit logs.
+        /// </summary>
+        public static string Management_Text {
+            get {
+                return ResourceManager.GetString("Management Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Management.
+        /// </summary>
+        public static string Management_Title {
+            get {
+                return ResourceManager.GetString("Management Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter an address manually.
         /// </summary>
         public static string Manual_Address_Search_Text {
@@ -2689,11 +2752,83 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User details are managed through the external identity provider.
+        /// </summary>
+        public static string User_Edit_Text {
+            get {
+                return ResourceManager.GetString("User Edit Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit user &apos;{0}&apos;.
+        /// </summary>
+        public static string User_Edit_Title {
+            get {
+                return ResourceManager.GetString("User Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User ID.
         /// </summary>
         public static string User_ID_Label {
             get {
                 return ResourceManager.GetString("User ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage users and assign roles.
+        /// </summary>
+        public static string User_Management_Text {
+            get {
+                return ResourceManager.GetString("User Management Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users.
+        /// </summary>
+        public static string User_Management_Title {
+            get {
+                return ResourceManager.GetString("User Management Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected roles.
+        /// </summary>
+        public static string User_Roles_Label {
+            get {
+                return ResourceManager.GetString("User Roles Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add or remove this users roles. Roles can give users powerful abilities. Use with caution..
+        /// </summary>
+        public static string User_Roles_Text {
+            get {
+                return ResourceManager.GetString("User Roles Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User roles.
+        /// </summary>
+        public static string User_Roles_Title {
+            get {
+                return ResourceManager.GetString("User Roles Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} updated.
+        /// </summary>
+        public static string User_Updated_Message {
+            get {
+                return ResourceManager.GetString("User Updated Message", resourceCulture);
             }
         }
         

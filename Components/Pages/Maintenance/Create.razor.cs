@@ -37,7 +37,7 @@ public partial class Create(IDbContextFactory<ApplicationDbContext> contextFacto
     protected override async Task OnInitializedAsync()
     {
         NavItems = [
-            new() { Text = localizer["Home Title"], Href ="/" },
+            new() { Text = localizer["Home Title"], Href = "" },
             new() { Text = localizer["Maintenance Title"], Href="Maintenance" },
             new() { Text = localizer["Maintenance Create Title"], IsCurrentPage = true },
         ];

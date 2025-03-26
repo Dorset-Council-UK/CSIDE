@@ -23,7 +23,7 @@
                                     <li><a class="dropdown-item" href="Account/MyAccount">@localizer["My Account Label"]</a></li>
                                     @if (InnerAccountBox.User.IsInRole("Administrator"))
                                     {
-                                        <li><a class="dropdown-item" href="#">@localizer["Manage Application Label"]</a></li>
+                                        <li><a class="dropdown-item" href="management">@localizer["Manage Application Label"]</a></li>
                                     }
                                 </AuthorizeView>
                                 

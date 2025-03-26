@@ -28,7 +28,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
     {
         NavItems =
         [
-            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
             new BreadcrumbItem{ Text = localizer["DMMO Details Title", Id], Href=$"DMMO/Details/{Id}" },
             new BreadcrumbItem{ Text = localizer["Add Addresses From Map Label"], IsCurrentPage = true }

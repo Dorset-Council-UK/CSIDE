@@ -33,7 +33,7 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
     {
         NavItems =
         [
-            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
             new BreadcrumbItem{ Text = localizer["DMMO Details Title", Id], Href=$"DMMO/Details/{Id}" },
             new BreadcrumbItem{ Text = localizer["Add Linked Routes From Map Label"], IsCurrentPage = true }

@@ -32,7 +32,7 @@ namespace CSIDE.Components.Pages.Infrastructure
         {
             NavItems = new List<BreadcrumbItem>
         {
-            new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["Infrastructure Title"], IsCurrentPage = true }
         };
             using var context = contextFactory.CreateDbContext();

@@ -30,7 +30,7 @@ namespace CSIDE.Components.Pages.Maintenance
         {
             NavItems =
         [
-            new() { Text = localizer["Home Title"], Href ="/" },
+            new() { Text = localizer["Home Title"], Href = "" },
             new() { Text = localizer["Maintenance Title"], IsCurrentPage = true }
         ];
             using var context = contextFactory.CreateDbContext();

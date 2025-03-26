@@ -1,0 +1,113 @@
+﻿@page "/management/users"
+@using CSIDE.Components.Pages.Account
+
+<AuthorizeView Roles="Administrator" Context="AuthContext">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+
+    <Authorized>
+        <PageTitle>@localizer["User Management Title"]</PageTitle>
+        <div>
+            <Breadcrumb Items="NavItems"></Breadcrumb>
+        </div>
+
+        <h1>@localizer["User Management Title"]</h1>
+        <p>@localizer["User Management Text"]</p>
+
+        @if (IsBusy)
+        {
+            <p class="fs-4">
+                <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+            </p>
+        }
+
+        @if(AllUsers is not null)
+        {
+            <h2>@localizer["Active Users Title"]</h2>
+            <p>@localizer["Active Users Text", csideOptions.Value.AppName]</p>
+
+            <Grid TItem="Microsoft.Graph.Beta.Models.User"
+            Class="table table-hover table-bordered table-striped mt-2"
+            DataProvider="ActiveUserDataProvider"
+            AllowFiltering="true"
+            AllowPaging="true"
+            PageSize="20"
+            AllowSorting="true"
+            AllowSelection="false"
+            AllowRowClick="true"
+            OnRowClick="OnRowClick"
+            AutoHidePaging="true"
+            Responsive="true">
+
+                <GridColumns>
+
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["User ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+                        @context.Id
+                    </GridColumn>
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["Name Label"]" PropertyName="DisplayName" SortKeySelector="item => item.DisplayName">
+                        @context.DisplayName
+                    </GridColumn>
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
+                        @(context.OtherMails is not null ? string.Join(',', context.OtherMails) : "")
+                    </GridColumn>
+
+                </GridColumns>
+                <GridTemplates>
+                    <GridEmptyDataTemplate TItem="Microsoft.Graph.Beta.Models.User">
+                        <div class="text-center text-muted">
+                            <span class="bi bi-inbox fs-2"></span>
+                            <div>
+                                <p>@localizer["No Results Found Label"]</p>
+                            </div>
+                        </div>
+                    </GridEmptyDataTemplate>
+                </GridTemplates>
+            </Grid>
+
+            <h2>@localizer["Available Users Title"]</h2>
+            <p>@localizer["Available Users Text", csideOptions.Value.AppName]</p>
+
+            <Grid TItem="Microsoft.Graph.Beta.Models.User"
+                  Class="table table-hover table-bordered table-striped mt-2"
+                  DataProvider="AvailableUserDataProvider"
+                  AllowFiltering="true"
+                  AllowPaging="true"
+                  PageSize="20"
+                  AllowSorting="true"
+                  AllowSelection="false"
+                  AllowRowClick="true"
+                  OnRowClick="OnRowClick"
+                  AutoHidePaging="true"
+                  Responsive="true">
+
+                <GridColumns>
+
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["User ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+                        @context.Id
+                    </GridColumn>
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["Name Label"]" PropertyName="DisplayName" SortKeySelector="item => item.DisplayName">
+                        @context.DisplayName
+                    </GridColumn>
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
+                        @(context.OtherMails is not null ? string.Join(',', context.OtherMails) : "")
+                    </GridColumn>
+
+                </GridColumns>
+                <GridTemplates>
+                    <GridEmptyDataTemplate TItem="Microsoft.Graph.Beta.Models.User">
+                        <div class="text-center text-muted">
+                            <span class="bi bi-inbox fs-2"></span>
+                            <div>
+                                <p>@localizer["No Results Found Label"]</p>
+                            </div>
+                        </div>
+                    </GridEmptyDataTemplate>
+                </GridTemplates>
+            </Grid>
+
+        }
+
+    </Authorized>
+</AuthorizeView>
+

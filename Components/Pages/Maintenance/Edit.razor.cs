@@ -41,7 +41,7 @@ namespace CSIDE.Components.Pages.Maintenance
         {
             NavItems =
             [
-                new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+                new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
                 new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", JobId], IsCurrentPage = true }
             ];

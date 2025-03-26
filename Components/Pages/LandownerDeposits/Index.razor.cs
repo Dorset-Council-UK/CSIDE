@@ -29,7 +29,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
         {
             NavItems = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+                new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Landowner Deposits Title"], IsCurrentPage = true }
             };
             using var context = contextFactory.CreateDbContext();

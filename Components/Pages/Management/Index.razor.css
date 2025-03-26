@@ -1,0 +1,32 @@
+﻿.card.link-card {
+  height: 4rem;
+  background-color: #fbfbfb;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-top: 0.5rem;
+  border-color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .card.link-card {
+  background-color: var(--bs-body-bg);
+}
+
+.card.link-card:hover {
+  box-shadow: 2px 2px 5px #e0e0e0;
+  border-color: grey;
+  transition: all 0.2s ease;
+}
+
+[data-bs-theme="dark"] .card.link-card:hover {
+  box-shadow: 2px 2px 5px var(--bs-body-bg);
+  transition: all 0.2s ease;
+}
+
+.card.link-card.active:hover {
+  box-shadow: none;
+}
+
+.card.link-card a {
+  color: inherit;
+  text-decoration: none;
+}

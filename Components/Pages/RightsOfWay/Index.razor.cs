@@ -28,7 +28,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
         {
             NavItems =
             [
-                new() { Text = localizer["Home Title"], Href ="/" },
+                new() { Text = localizer["Home Title"], Href = "" },
                 new() { Text = localizer["Rights of Way Title"], IsCurrentPage = true }
             ];
 

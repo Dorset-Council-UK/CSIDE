@@ -1022,13 +1022,58 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="After Label" xml:space="preserve">
     <value>Wedi</value>
   </data>
-	<data name="Signed Out Title" xml:space="preserve">
+  <data name="Signed Out Title" xml:space="preserve">
     <value>Rydych chi wedi cael eich allgofnodi</value>
   </data>
-	<data name="Signed Out Text" xml:space="preserve">
+  <data name="Signed Out Text" xml:space="preserve">
     <value>Nawr gallwch chi gau ffenestr eich porwr</value>
   </data>
-	<data name="Sign In Label" xml:space="preserve">
+  <data name="Sign In Label" xml:space="preserve">
     <value>Mewngofnodwch</value>
+  </data>
+  <data name="Management Title" xml:space="preserve">
+    <value>Rheoli cymhwysiad</value>
+  </data>
+  <data name="Management Text" xml:space="preserve">
+    <value>Rheoli defnyddwyr ar gyfer {0} a gweld y logiau archwilio</value>
+  </data>
+  <data name="User Management Title" xml:space="preserve">
+    <value>Defnyddwyr</value>
+  </data>
+  <data name="User Management Text" xml:space="preserve">
+    <value>Rheoli defnyddwyr a phennu rolau</value>
+  </data>
+  <data name="Audit Log Text" xml:space="preserve">
+    <value>Gweld y logiau archwilio ar gyfer {0}</value>
+  </data>
+  <data name="User Edit Title" xml:space="preserve">
+    <value>Golygu defnyddiwr '{0}'</value>
+  </data>
+  <data name="User Edit Text" xml:space="preserve">
+    <value>Rheolir manylion defnyddwyr trwy'r darparwr hunaniaeth allanol</value>
+  </data>
+  <data name="User Roles Title" xml:space="preserve">
+    <value>Rolau defnyddiwr</value>
+  </data>
+  <data name="User Roles Text" xml:space="preserve">
+    <value>Ychwanegu neu ddileu rolau'r defnyddiwr hwn. Gall rolau roi galluoedd pwerus i ddefnyddwyr. Defnyddiwch yn ofalus.</value>
+  </data>
+  <data name="User Roles Label" xml:space="preserve">
+    <value>Rolau dethol</value>
+  </data>
+  <data name="Active Users Title" xml:space="preserve">
+    <value>Defnyddwyr gweithredol</value>
+  </data>
+  <data name="Available Users Title" xml:space="preserve">
+    <value>Defnyddwyr sydd ar gael</value>
+  </data>
+  <data name="Active Users Text" xml:space="preserve">
+    <value>Mae gan y defnyddwyr hyn fynediad i {0}</value>
+  </data>
+  <data name="Available Users Text" xml:space="preserve">
+    <value>Nid oes gan y defnyddwyr hyn fynediad i {0} ar hyn o bryd. Gallwch roi mynediad iddynt trwy eu dewis a rhoi rôl iddynt.</value>
+  </data>
+  <data name="User Updated Message" xml:space="preserve">
+    <value>Defnyddiwr {0} wedi'i ddiweddaru</value>
   </data>
 </root>

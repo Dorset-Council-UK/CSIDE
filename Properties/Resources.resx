@@ -1011,13 +1011,58 @@
   <data name="After Label" xml:space="preserve">
     <value>After</value>
   </data>
-	<data name="Signed Out Title" xml:space="preserve">
+  <data name="Signed Out Title" xml:space="preserve">
     <value>You've been signed out</value>
   </data>
-	<data name="Signed Out Text" xml:space="preserve">
+  <data name="Signed Out Text" xml:space="preserve">
     <value>You can now close your browser window</value>
   </data>
-	<data name="Sign In Label" xml:space="preserve">
+  <data name="Sign In Label" xml:space="preserve">
     <value>Sign in</value>
+  </data>
+  <data name="Management Title" xml:space="preserve">
+    <value>Management</value>
+  </data>
+  <data name="Management Text" xml:space="preserve">
+    <value>Manage users for {0} and view the audit logs</value>
+  </data>
+  <data name="User Management Title" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="User Management Text" xml:space="preserve">
+    <value>Manage users and assign roles</value>
+  </data>
+  <data name="Audit Log Text" xml:space="preserve">
+    <value>View the audit logs for {0}</value>
+  </data>
+  <data name="User Edit Title" xml:space="preserve">
+    <value>Edit user '{0}'</value>
+  </data>
+  <data name="User Edit Text" xml:space="preserve">
+    <value>User details are managed through the external identity provider</value>
+  </data>
+  <data name="User Roles Title" xml:space="preserve">
+    <value>User roles</value>
+  </data>
+  <data name="User Roles Text" xml:space="preserve">
+    <value>Add or remove this users roles. Roles can give users powerful abilities. Use with caution.</value>
+  </data>
+  <data name="User Roles Label" xml:space="preserve">
+    <value>Selected roles</value>
+  </data>
+  <data name="Active Users Title" xml:space="preserve">
+    <value>Active users</value>
+  </data>
+  <data name="Available Users Title" xml:space="preserve">
+    <value>Available users</value>
+  </data>
+  <data name="Active Users Text" xml:space="preserve">
+    <value>These users have access to {0}</value>
+  </data>
+  <data name="Available Users Text" xml:space="preserve">
+    <value>These users do not currently have access to {0}. You can give them access by selecting them and giving them a role.</value>
+  </data>
+  <data name="User Updated Message" xml:space="preserve">
+    <value>User {0} updated</value>
   </data>
 </root>

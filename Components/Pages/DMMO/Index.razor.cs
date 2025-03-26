@@ -29,7 +29,7 @@ namespace CSIDE.Components.Pages.DMMO
         {
             NavItems =
            [
-                new BreadcrumbItem{ Text = localizer["Home Title"], Href ="/" },
+                new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], IsCurrentPage = true },
             ];
 

@@ -31,6 +31,7 @@ builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddScoped<IRightsOfWayHelperService, RightsOfWayHelperService>();
 builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAuditInterceptor, AuditInterceptor>();
 builder.Services.AddScoped<IRightsOfWayInterceptor, RightsOfWayInterceptor>();

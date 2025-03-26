@@ -33,8 +33,8 @@ namespace CSIDE.Components.Pages.Infrastructure
         {
             NavItems =
             [
-                new() { Text = localizer["Home Title"], Href = "/" },
-                new() { Text = localizer["Infrastructure Title"], Href = "/Infrastructure" },
+                new() { Text = localizer["Home Title"], Href = "" },
+                new() { Text = localizer["Infrastructure Title"], Href = "Infrastructure" },
                 new() { Text = localizer["Infrastructure Create Title"], IsCurrentPage = true }
             ];
 
