@@ -36,6 +36,7 @@ namespace CSIDE.Components.Pages.Infrastructure
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
+                new BreadcrumbItem{ Text = localizer["Infrastructure Details Title", InfrastructureId], Href=$"Infrastructure/Details/{InfrastructureId}"},
                 new BreadcrumbItem{ Text = localizer["Infrastructure Edit Title", InfrastructureId], IsCurrentPage = true }
             ];
             IsBusy = true;

@@ -8,10 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO;
 using NetTopologySuite.Features;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
-using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Services;
-using CSIDE.Data.Models.Shared;
 
 namespace CSIDE.Components.Pages.Maintenance
 {
@@ -43,6 +40,7 @@ namespace CSIDE.Components.Pages.Maintenance
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
+                new BreadcrumbItem{ Text = localizer["Maintenance Details Title", JobId], Href=$"Maintenance/Details/{JobId}"},
                 new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", JobId], IsCurrentPage = true }
             ];
             IsBusy = true;

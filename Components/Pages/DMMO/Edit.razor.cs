@@ -3,7 +3,6 @@ using CSIDE.Components.DMMO;
 using CSIDE.Components.Mapping;
 using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
-using CSIDE.Data.Models.Maintenance;
 using CSIDE.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
@@ -39,7 +38,8 @@ namespace CSIDE.Components.Pages.DMMO
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
-                new BreadcrumbItem{ Text = localizer["Edit DMMO Label"], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["DMMO Details Title", DMMOApplicationId], Href=$"DMMO/Details/{DMMOApplicationId}"},
+                new BreadcrumbItem{ Text = localizer["Edit DMMO Label", DMMOApplicationId], IsCurrentPage = true }
             ];
             IsBusy = true;
             try

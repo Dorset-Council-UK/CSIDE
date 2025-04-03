@@ -38,6 +38,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Landowner Deposit Title"], Href="landowner-deposits" },
+                new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", LandownerDepositId], Href=$"landowner-deposits/Details/{LandownerDepositId}"},
                 new BreadcrumbItem{ Text = localizer["Landowner Deposit Edit Title", LandownerDepositId], IsCurrentPage = true }
             ];
             IsBusy = true;

@@ -7,11 +7,8 @@ using NetTopologySuite.IO;
 using NetTopologySuite.Features;
 using FluentValidation;
 using CSIDE.Components.RightsOfWay;
-using CSIDE.Data.Models.Maintenance;
 using NetTopologySuite.Geometries;
 using CSIDE.Data.Models.RightsOfWay;
-using Microsoft.Extensions.Logging;
-using CSIDE.Components.Maintenance;
 using CSIDE.Services;
 
 namespace CSIDE.Components.Pages.RightsOfWay
@@ -43,6 +40,7 @@ namespace CSIDE.Components.Pages.RightsOfWay
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
+                new BreadcrumbItem{ Text = localizer["Rights of Way Details Title", RouteID], Href=$"rights-of-way/Details/{RouteID}"},
                 new BreadcrumbItem{ Text = localizer["Rights of Way Edit Title", RouteID], IsCurrentPage = true }
             ];
             IsBusy = true;
