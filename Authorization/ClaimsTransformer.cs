@@ -1,5 +1,6 @@
 ﻿using CSIDE.Data;
 using CSIDE.Data.Models.Authorization;
+using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -40,11 +41,47 @@ namespace CSIDE.Authorization
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
                 });
             }
-
-            foreach (var role in roles)
+            if (roles is not null)
             {
-                Claim customRoleClaim = new(claimsIdentity.RoleClaimType, role.Role.RoleName);
-                claimsIdentity.AddClaim(customRoleClaim);
+                foreach (var role in roles)
+                {
+                    Claim customRoleClaim = new(claimsIdentity.RoleClaimType, role.Role.RoleName);
+                    claimsIdentity.AddClaim(customRoleClaim);
+                }
+            }
+
+            //get users team
+            List<TeamUser>? teams = null;
+            string teamCacheKey = $"UserTeam/{userId}";
+            if (_memoryCache.TryGetValue(teamCacheKey, out List<TeamUser>? teamCacheValue))
+            {
+                teams = teamCacheValue;
+            }
+            else
+            {
+                teams = await context.MaintenanceTeamUsers
+                .Where(u => u.UserId == userId)
+                .Include(t => t.Team)
+                .AsNoTrackingWithIdentityResolution()
+                .ToListAsync();
+                _memoryCache.Set(teamCacheKey, teams, new MemoryCacheEntryOptions
+                {
+                    Priority = CacheItemPriority.Low,
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+                });
+            }
+            if (teams is not null)
+            {
+                foreach (var team in teams)
+                {
+                    Claim customRoleClaim = new("member_of_team", team.TeamId.ToString());
+                    claimsIdentity.AddClaim(customRoleClaim);
+                    if(team.IsLead)
+                    {
+                        Claim customRoleClaimLead = new("leader_of_team", team.TeamId.ToString());
+                        claimsIdentity.AddClaim(customRoleClaimLead);
+                    }
+                }
             }
 
             //DEBUGGING PURPOSES ONLY
@@ -52,7 +89,7 @@ namespace CSIDE.Authorization
             //claimsIdentity.AddClaim(customRoleClaim);
             //
 
-            
+
             return principal;
         }
     }

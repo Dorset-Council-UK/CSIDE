@@ -44,7 +44,11 @@ namespace CSIDE.Components.Pages.Infrastructure
             {
                 using var context = contextFactory.CreateDbContext();
                 InfrastructureTypes = await context.InfrastructureTypes.AsNoTracking().OrderBy(n => n.Name).ToArrayAsync();
-                InfrastructureItem = await context.Infrastructure.IgnoreAutoIncludes().FirstOrDefaultAsync(i => i.Id == InfrastructureId);
+                InfrastructureItem = await context.Infrastructure
+                    .IgnoreAutoIncludes()
+                    .Include(s => s.InfrastructureType)
+                    .Include(s => s.BridgeDetails)
+                    .FirstOrDefaultAsync(i => i.Id == InfrastructureId);
             }
             finally
             {
@@ -73,9 +77,30 @@ namespace CSIDE.Components.Pages.Infrastructure
                         //Without this, all properties are identified as tracked, since
                         //the DbContext is different from when the entity was queried
                         var existingInfra = await context.Infrastructure.FindAsync(InfrastructureItem.Id) ?? throw new Exception($"Infrastructure Item being edited (ID: {InfrastructureItem.Id}) was not found prior to updating");
-
+                        
                         context.Entry(existingInfra).CurrentValues.SetValues(InfrastructureItem);
-
+                        if (existingInfra.InfrastructureType is not null && existingInfra.InfrastructureType.IsBridge && InfrastructureItem.BridgeDetails is not null)
+                        {
+                            var existingBridgeDetails = await context.InfrastructureBridgeDetails.Where(i => i.InfrastructureId == InfrastructureItem.Id).FirstOrDefaultAsync();
+                            if(existingBridgeDetails is not null)
+                            {
+                                context.Entry(existingBridgeDetails).CurrentValues.SetValues(InfrastructureItem.BridgeDetails);
+                            }
+                            else
+                            {
+                                InfrastructureItem.BridgeDetails.InfrastructureId = InfrastructureItem.Id;
+                                context.Add(InfrastructureItem.BridgeDetails);
+                            }
+                        }
+                        if (existingInfra.InfrastructureType is not null && !existingInfra.InfrastructureType.IsBridge)
+                        {
+                            //delete the linked bridge details
+                            var existingBridgeDetails = await context.InfrastructureBridgeDetails.Where(i => i.InfrastructureId == InfrastructureItem.Id).FirstOrDefaultAsync();
+                            if (existingBridgeDetails is not null)
+                            {
+                                context.Remove(existingBridgeDetails);
+                            }
+                        }
                         await context.SaveChangesAsync();
                         //redirect
                         NavigateBackToInfrastructureDetailsPage();

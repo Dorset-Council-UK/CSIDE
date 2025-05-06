@@ -1,3 +1,6 @@
+iframe {
+  box-shadow: lightgrey 5px 5px 10px 0px
+}
 a, .btn-link {
     color: #006bb7;
 }
@@ -20,6 +23,8 @@ a, .btn-link {
 .btn-outline-primary {
   color: var(--primary-color);
   border-color: var(--primary-color-dark);
+  --bs-btn-disabled-color: var(--primary-color);
+  --bs-btn-disabled-border-color: var(--primary-color);
 }
 .btn-outline-primary:hover {
   color:#fff;
@@ -53,6 +58,23 @@ a, .btn-link {
 .form-check-input:checked {
   background-color: var(--primary-color);
   border: var(--primary-color-dark);
+}
+.form-check{
+  margin-bottom:.5rem;
+}
+.form-check label{
+  padding-left:.5rem;
+}
+.form-check-input[type=radio] {
+  transform: scale(1.5);
+  transform-origin: left center;
+}
+.form-check-input[type=checkbox] {
+  transform: scale(1.25);
+  transform-origin: left center;
+}
+fieldset.valid.modified:not([type=checkbox]){
+  outline: 0;
 }
 .pagination, .page-link {
   --bs-pagination-active-bg: var(--primary-color);
@@ -100,12 +122,45 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+  .blazor-error-boundary::after {
+      content: "An error has occurred."
+  }
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+.card.link-card {
+  height: 4rem;
+  background-color: #fbfbfb;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-top: 0.5rem;
+  border-color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .card.link-card {
+  background-color: var(--bs-body-bg);
+}
+
+.card.link-card:hover {
+  box-shadow: 2px 2px 5px #e0e0e0;
+  border-color: grey;
+  transition: all 0.2s ease;
+}
+
+[data-bs-theme="dark"] .card.link-card:hover {
+  box-shadow: 2px 2px 5px var(--bs-body-bg);
+  transition: all 0.2s ease;
+}
+
+.card.link-card.active:hover {
+  box-shadow: none;
+}
+
+.card.link-card a {
+  color: inherit;
+  text-decoration: none;
 }
 
 /*openlayers overrides*/

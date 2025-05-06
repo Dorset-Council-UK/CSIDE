@@ -32,7 +32,7 @@ Responsive="true">
             @context.RouteId
         </GridColumn>
         <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Log Date Label"]" PropertyName="LogDate" SortKeySelector="item => item.LogDate">
-            @(context.LogDate.HasValue ? context.LogDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")
+            @(context.LogDate.HasValue ? context.LogDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")
         </GridColumn>
         <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty">
             @context.Parish?.Name

@@ -1065,4 +1065,451 @@
   <data name="User Updated Message" xml:space="preserve">
     <value>User {0} updated</value>
   </data>
+  <data name="New Bridge Survey Title" xml:space="preserve">
+    <value>New bridge survey</value>
+  </data>
+  <data name="New Bridge Survey Text" xml:space="preserve">
+    <value>Find a bridge and start a new survey</value>
+  </data>
+  <data name="Existing Bridge Surveys Title" xml:space="preserve">
+    <value>Existing bridge surveys</value>
+  </data>
+  <data name="Existing Bridge Surveys Text" xml:space="preserve">
+    <value>View and update existing bridge surveys</value>
+  </data>
+  <data name="Start New Bridge Survey Text" xml:space="preserve">
+    <value>You will need to: &lt;ul&gt;&lt;li&gt;tell us the construction and condition of all parts of the bridge&lt;/li&gt;&lt;li&gt;submit at least one photo of the bridge&lt;/li&gt;&lt;li&gt;tell us about any repairs required&lt;/li&gt;&lt;/ul&gt;</value>
+  </data>
+  <data name="Start New Bridge Survey Title" xml:space="preserve">
+    <value>Start survey for bridge {0}</value>
+  </data>
+  <data name="Start New Bridge Survey Disclaimer" xml:space="preserve">
+    <value>&lt;p&gt;Remember to stay safe and always stick to the legal paths.&lt;/p&gt;&lt;p&gt;You'll need an internet connection. If you are in an area of bad coverage, you may need to complete the survey at home.&lt;/p&gt;&lt;p&gt;If you have any issues, contact your local ranger.&lt;/p&gt;</value>
+  </data>
+  <data name="Start Now Button Text" xml:space="preserve">
+    <value>Start now</value>
+  </data>
+  <data name="New Bridge Survey Help Text" xml:space="preserve">
+    <value>Find the bridge you are surveying using the infrastructure ID, or your location</value>
+  </data>
+  <data name="Find Bridge By ID Title" xml:space="preserve">
+    <value>Find bridge by ID</value>
+  </data>
+  <data name="Find Bridge Survey Title" xml:space="preserve">
+    <value>Which bridge are you surveying?</value>
+  </data>
+  <data name="Before You Start Title" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Current Accuracy Label" xml:space="preserve">
+    <value>Current location accuracy: {0}m</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Title" xml:space="preserve">
+    <value>Confirm bridge location</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Question" xml:space="preserve">
+    <value>Are you at the bridge now?</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Question Text" xml:space="preserve">
+    <value>Don't worry if you're not, we just want to improve the accuracy of our map</value>
+  </data>
+  <data name="Bridge Survey Confirm Location At Location Title" xml:space="preserve">
+    <value>Yes, I am</value>
+  </data>
+  <data name="Bridge Survey Confirm Location At Location Text" xml:space="preserve">
+    <value>&lt;p&gt;Great! Make sure your devices location is turned on, stand in the middle of the bridge (if safe) and hit the 'Locate me' button below.&lt;/p&gt;&lt;p&gt;To get the best result we can, we will spend up to 30 seconds getting your position, so please be patient.&lt;/p&gt;</value>
+  </data>
+  <data name="Locate Me Label" xml:space="preserve">
+    <value>Locate me</value>
+  </data>
+  <data name="Locating Label" xml:space="preserve">
+    <value>Locating...</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Not At Location Title" xml:space="preserve">
+    <value>No, I'm not</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Not At Location Text" xml:space="preserve">
+    <value>Not to worry, carry on by hitting Continue below.</value>
+  </data>
+  <data name="Continue Button Text" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Location Error Message" xml:space="preserve">
+    <value>We couldn't get your location accurately enough. You can try again or continue with the form.</value>
+  </data>
+  <data name="Bridge Survey Location Confirmed Title" xml:space="preserve">
+    <value>Location already confirmed</value>
+  </data>
+  <data name="Bridge Survey Location Confirmed Text" xml:space="preserve">
+    <value>You've already confirmed the location of the bridge to an accuracy of {0} metres. This means you can skip this section. If you want to re-do the location, carry on below.</value>
+  </data>
+  <data name="Bridge Survey Construction Title" xml:space="preserve">
+    <value>Construction</value>
+  </data>
+  <data name="Bridge Survey Construction Question" xml:space="preserve">
+    <value>What materials is the bridge made of?</value>
+  </data>
+  <data name="Bridge Survey Beam Material Label" xml:space="preserve">
+    <value>What are the beams made of?</value>
+  </data>
+  <data name="Bridge Survey Num Beam Timbers Label" xml:space="preserve">
+    <value>How many beams are there?</value>
+  </data>
+  <data name="Bridge Survey Size Beam Timbers Label" xml:space="preserve">
+    <value>What size are the beams timbers?</value>
+  </data>
+  <data name="Bridge Survey Decking Material Label" xml:space="preserve">
+    <value>What is the decking made of?</value>
+  </data>
+  <data name="Bridge Survey Num Decking Boards Label" xml:space="preserve">
+    <value>How many decking boards are there?</value>
+  </data>
+  <data name="Bridge Survey Size Decking Boards Label" xml:space="preserve">
+    <value>What size are the decking boards?</value>
+  </data>
+  <data name="Bridge Survey Length Decking Boards Label" xml:space="preserve">
+    <value>What length are the decking boards?</value>
+  </data>
+  <data name="Bridge Survey Handrail Material Label" xml:space="preserve">
+    <value>What is the handrail made of?</value>
+  </data>
+  <data name="Bridge Survey Size Handrail Timbers Label" xml:space="preserve">
+    <value>What size are the handrail timbers?</value>
+  </data>
+  <data name="Bridge Survey Handrails In Place Label" xml:space="preserve">
+    <value>Are the handrails and intermediate rails all still in place, including kickboard?</value>
+  </data>
+  <data name="Bridge Survey Handrail Posts Material Label" xml:space="preserve">
+    <value>What are the handrail posts made of?</value>
+  </data>
+  <data name="Bridge Survey Num Handrail Posts Label" xml:space="preserve">
+    <value>How many posts are there in total?</value>
+  </data>
+  <data name="Bridge Survey Size Handrail Posts Label" xml:space="preserve">
+    <value>What size are the posts?</value>
+  </data>
+  <data name="Bridge Survey Bank Seat Material Label" xml:space="preserve">
+    <value>What is the bank seat made of?</value>
+  </data>
+  <data name="Bridge Survey Anti Slip Installed Label" xml:space="preserve">
+    <value>Is anti-slip installed?</value>
+  </data>
+  <data name="Bridge Survey Gates Installed Label" xml:space="preserve">
+    <value>Are there any gates?</value>
+  </data>
+  <data name="Bridge Survey Stiles Installed Label" xml:space="preserve">
+    <value>Are there any stiles?</value>
+  </data>
+  <data name="Bridge Survey Ramp Installed Label" xml:space="preserve">
+    <value>Is there a ramp at either end?</value>
+  </data>
+  <data name="Bridge Survey Steps Installed Label" xml:space="preserve">
+    <value>Are there any steps at either end?</value>
+  </data>
+  <data name="Bridge Survey Height Label" xml:space="preserve">
+    <value>What is the height of the bridge in metres?</value>
+  </data>
+  <data name="Bridge Survey Length Label" xml:space="preserve">
+    <value>What is the length of the bridge in metres?</value>
+  </data>
+  <data name="Bridge Survey Handrails In Place Hint Text" xml:space="preserve">
+    <value>4 each side for a footpath bridge, 5 each side for a bridleway bridge</value>
+  </data>
+  <data name="Bridge Survey Handrails In Place Additional Text" xml:space="preserve">
+    <value>If 'No' please make sure you tell us what's missing in the Repairs Required section later on in the form.</value>
+  </data>
+  <data name="Metres Label" xml:space="preserve">
+    <value>metres</value>
+  </data>
+  <data name="Bridge Survey Condition Title" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="Bridge Survey Condition Question" xml:space="preserve">
+    <value>What condition is the bridge in?</value>
+  </data>
+  <data name="Bridge Survey Beam Condition Label" xml:space="preserve">
+    <value>What condition is the beam in?</value>
+  </data>
+  <data name="Bridge Survey Decking Condition Label" xml:space="preserve">
+    <value>What condition is the decking in?</value>
+  </data>
+  <data name="Bridge Survey Handrail Condition Label" xml:space="preserve">
+    <value>What condition is the handrail in?</value>
+  </data>
+  <data name="Bridge Survey Handrail Posts Condition Label" xml:space="preserve">
+    <value>What condition are the handrail posts in?</value>
+  </data>
+  <data name="Bridge Survey Bank Seat Condition Label" xml:space="preserve">
+    <value>What condition is the bank seat in?</value>
+  </data>
+  <data name="Bridge Survey Repairs Title" xml:space="preserve">
+    <value>Repairs required and other issues</value>
+  </data>
+  <data name="Bridge Survey Overgrown Label" xml:space="preserve">
+    <value>Is the bridge overgrown?</value>
+  </data>
+  <data name="Bridge Survey Signs Of Bank Erosion Label" xml:space="preserve">
+    <value>Are there any signs of erosion on the bank?</value>
+  </data>
+  <data name="Bridge Survey Seriously Eroded Label" xml:space="preserve">
+    <value>Is the bank seriously eroded?</value>
+  </data>
+  <data name="Bridge Survey High Usage Label" xml:space="preserve">
+    <value>Is this a high usage bridge?</value>
+  </data>
+  <data name="Bridge Survey Cover Boards In Place Label" xml:space="preserve">
+    <value>Are both cover boards still in place?</value>
+  </data>
+  <data name="Unknown Label" xml:space="preserve">
+    <value>Unknown/Not applicable</value>
+  </data>
+  <data name="Bridge Survey Repairs Required Label" xml:space="preserve">
+    <value>Are any repairs required?</value>
+  </data>
+  <data name="Bridge Survey Media Title" xml:space="preserve">
+    <value>Add media</value>
+  </data>
+  <data name="Bridge Survey Media Question" xml:space="preserve">
+    <value>Add some photos or videos</value>
+  </data>
+  <data name="Bridge Survey Media Help Text" xml:space="preserve">
+    <value>&lt;p&gt;Upload some photos or videos of the bridge to help us validate your survey and check what works might be required.&lt;/p&gt;&lt;p&gt;Please try to add at least one photo. If you are unable to at the moment, you can save the survey and come back later.&lt;/p&gt;&lt;p&gt;Media uploaded may be made public.&lt;/p&gt;</value>
+  </data>
+  <data name="Bridge Survey Media Added Message" xml:space="preserve">
+    <value>You've already uploaded some media to this survey. You can add more photos or videos here, or you can skip this section.</value>
+  </data>
+  <data name="Bridge Survey Media Unable To Add Help Text" xml:space="preserve">
+    <value>If you are unable to add any media, just hit 'Continue without media'</value>
+  </data>
+  <data name="Bridge Survey Continue Without Media Button Text" xml:space="preserve">
+    <value>Continue without media</value>
+  </data>
+  <data name="Bridge Survey Upload Media Title" xml:space="preserve">
+    <value>Upload photos or videos</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Summary Title" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Bridge Survey Summary Title" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Bridge Survey Summary Question" xml:space="preserve">
+    <value>Check your survey</value>
+  </data>
+  <data name="Bridge Survey Beams Short Label" xml:space="preserve">
+    <value>Beams</value>
+  </data>
+  <data name="Bridge Survey Decking Short Label" xml:space="preserve">
+    <value>Decking</value>
+  </data>
+  <data name="Bridge Survey Handrail Short Label" xml:space="preserve">
+    <value>Handrails</value>
+  </data>
+  <data name="Bridge Survey Handrail Posts Short Label" xml:space="preserve">
+    <value>Handrail posts</value>
+  </data>
+  <data name="Bridge Survey Bank Seat Short Label" xml:space="preserve">
+    <value>Bank seat</value>
+  </data>
+  <data name="Bridge Survey Anti Slip Short Label" xml:space="preserve">
+    <value>Anti-Slip?</value>
+  </data>
+  <data name="Bridge Survey Gates Short Label" xml:space="preserve">
+    <value>Gates?</value>
+  </data>
+  <data name="Bridge Survey Stiles Short Label" xml:space="preserve">
+    <value>Stiles?</value>
+  </data>
+  <data name="Bridge Survey Ramps Short Label" xml:space="preserve">
+    <value>Ramps?</value>
+  </data>
+  <data name="Bridge Survey Steps Short Label" xml:space="preserve">
+    <value>Steps?</value>
+  </data>
+  <data name="Bridge Survey Overgrown Short Label" xml:space="preserve">
+    <value>Overgrown?</value>
+  </data>
+  <data name="Bridge Survey Signs Of Bank Erosion Short Label" xml:space="preserve">
+    <value>Signs of bank erosion?</value>
+  </data>
+  <data name="Bridge Survey Seriously Eroded Short Label" xml:space="preserve">
+    <value>Seriously eroded?</value>
+  </data>
+  <data name="Bridge Survey High Usage Short Label" xml:space="preserve">
+    <value>High usage?</value>
+  </data>
+  <data name="Bridge Survey Cover Boards In Place Short Label" xml:space="preserve">
+    <value>Cover boards in place?</value>
+  </data>
+  <data name="Bridge Survey Repairs Required Short Label" xml:space="preserve">
+    <value>Repairs required</value>
+  </data>
+  <data name="Bridge Survey Media Summary Title" xml:space="preserve">
+    <value>Photos and videos</value>
+  </data>
+  <data name="Bridge Survey Media Provided Summary Label" xml:space="preserve">
+    <value>Media provided?</value>
+  </data>
+  <data name="Media Items Count Label" xml:space="preserve">
+    <value>{0} media items</value>
+  </data>
+  <data name="Bridge Survey Summary Submit Title" xml:space="preserve">
+    <value>Now submit your survey</value>
+  </data>
+  <data name="Bridge Survey Summary Submit Help Text" xml:space="preserve">
+    <value>Your survey will be checked by our rangers who may contact you for further information.</value>
+  </data>
+  <data name="Submit Survey Button Text" xml:space="preserve">
+    <value>Submit survey</value>
+  </data>
+  <data name="Save And Finish Later Label" xml:space="preserve">
+    <value>Save and finish later</value>
+  </data>
+  <data name="Change Label" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Bridge Survey What Happens Next Text" xml:space="preserve">
+    <value>&lt;h2&gt;What happens next&lt;/h2&gt;&lt;p&gt;We've sent your survey to your local ranger.&lt;/p&gt;&lt;p&gt;They will check your survey and arrange for any repairs. They may contact you if they need further information about the bridge.&lt;/p&gt;</value>
+  </data>
+  <data name="Survey Complete Title" xml:space="preserve">
+    <value>Survey complete</value>
+  </data>
+  <data name="Survey ID Label" xml:space="preserve">
+    <value>Survey ID</value>
+  </data>
+  <data name="Do Another Survey Button Text" xml:space="preserve">
+    <value>Do another survey</value>
+  </data>
+  <data name="Bridge Survey Details Title" xml:space="preserve">
+    <value>Bridge survey {0}</value>
+  </data>
+  <data name="Survey Awaiting Validation Message" xml:space="preserve">
+    <value>This survey is awaiting validation</value>
+  </data>
+  <data name="Survey Validated Message" xml:space="preserve">
+    <value>This survey has been validated and added to the infrastructure item</value>
+  </data>
+  <data name="Survey Rejected Message" xml:space="preserve">
+    <value>This survey was rejected</value>
+  </data>
+  <data name="Survey Validation Notes Label" xml:space="preserve">
+    <value>Validation notes</value>
+  </data>
+  <data name="Start Date Label" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="End Date Label" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="Bridge Num Timbers Short Label" xml:space="preserve">
+    <value>No. timbers</value>
+  </data>
+  <data name="Bridge Timbers Size Short Label" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Bridge Num Boards Short Label" xml:space="preserve">
+    <value>No. boards</value>
+  </data>
+  <data name="Bridge Handrails In Place Short Label" xml:space="preserve">
+    <value>Handrails in place?</value>
+  </data>
+  <data name="Bridge Survey No Updated Location Message" xml:space="preserve">
+    <value>The surveyor did not provide an updated location</value>
+  </data>
+  <data name="Location Accuracy Label" xml:space="preserve">
+    <value>Location accuracy</value>
+  </data>
+  <data name="Not Provided Label" xml:space="preserve">
+    <value>Not provided</value>
+  </data>
+  <data name="Bridge Survey Update Details Label" xml:space="preserve">
+    <value>Update bridge details with survey information?</value>
+  </data>
+  <data name="Bridge Survey Update Details Help Text" xml:space="preserve">
+    <value>Bridge details will be updated with what was reported above. Check the fields carefully before allowing this. If there are problems, you can either accept their changes and manually edit them afterwards, or uncheck the above box to ignore all their changes.</value>
+  </data>
+  <data name="Bridge Survey Update Location Label" xml:space="preserve">
+    <value>Update bridge location with survey location?</value>
+  </data>
+  <data name="Bridge Survey Update Location Help Text" xml:space="preserve">
+    <value>Bridge location will be moved to the user submitted location shown above. Check this carefully before doing so. If its not accurate enough, uncheck the box above and move it manually through the infrastructure edit pages.</value>
+  </data>
+  <data name="Bridge Survey Add Media To Bridge Label" xml:space="preserve">
+    <value>Add submitted media to bridge details?</value>
+  </data>
+  <data name="Bridge Survey Add Media To Bridge Help Text" xml:space="preserve">
+    <value>All media attached to this survey will be publically viewable. Don't do this if there are identifiable people or the photos/videos are of poor quality. To attach individual items, download them and attach to the infrastructure item manually.</value>
+  </data>
+  <data name="Bridge Survey Create Maint Job Label" xml:space="preserve">
+    <value>Create maintenance job after validation?</value>
+  </data>
+  <data name="Bridge Survey Validation Notes Label" xml:space="preserve">
+    <value>Validation notes</value>
+  </data>
+  <data name="Approve Survey Label" xml:space="preserve">
+    <value>Approve survey</value>
+  </data>
+  <data name="Reject Survey Label" xml:space="preserve">
+    <value>Reject survey</value>
+  </data>
+  <data name="Surveyor Name Label" xml:space="preserve">
+    <value>Surveyor</value>
+  </data>
+  <data name="No Bridge Details Text" xml:space="preserve">
+    <value>No detailed information about the bridge has been recorded</value>
+  </data>
+  <data name="Bridge Details Label" xml:space="preserve">
+    <value>Bridge details</value>
+  </data>
+  <data name="View Survey Label" xml:space="preserve">
+    <value>View survey</value>
+  </data>
+  <data name="Surveys Awaiting Validation Title" xml:space="preserve">
+    <value>Surveys awaiting validation</value>
+  </data>
+  <data name="No Surveys Awaiting Validation Message" xml:space="preserve">
+    <value>All done! No surveys for you to validate right now</value>
+  </data>
+  <data name="Finished Surveys Title" xml:space="preserve">
+    <value>Completed surveys</value>
+  </data>
+  <data name="Status Label" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="No Surveys Message" xml:space="preserve">
+    <value>No surveys found</value>
+  </data>
+  <data name="Incomplete Surveys Title" xml:space="preserve">
+    <value>Incomplete surveys</value>
+  </data>
+  <data name="Check Survey Label" xml:space="preserve">
+    <value>Check this survey</value>
+  </data>
+  <data name="No Surveys For Infrastructure Text" xml:space="preserve">
+    <value>No surveys have been completed on this infrastructure item</value>
+  </data>
+  <data name="Start Bridge Survey Title" xml:space="preserve">
+    <value>Start bridge survey</value>
+  </data>
+  <data name="Find Bridge On Map Title" xml:space="preserve">
+    <value>Find bridge on map</value>
+  </data>
+  <data name="Find Bridge By Location Title" xml:space="preserve">
+    <value>Find bridge using your device location</value>
+  </data>
+  <data name="Find Bridge By Location Text" xml:space="preserve">
+    <value>If you are at the bridge now, we can look up the bridge for you using your location. Stand near the bridge whilst we check.</value>
+  </data>
+  <data name="Bridges Found Text" xml:space="preserve">
+    <value>We found {0} bridges near your location</value>
+  </data>
+  <data name="Auth Claims Title" xml:space="preserve">
+    <value>Detailed authorization claims (for debugging purposes)</value>
+  </data>
+  <data name="Survey Not A Bridge Error Message" xml:space="preserve">
+    <value>The infrastructure you selected was not a bridge</value>
+  </data>
+  <data name="Bridge Survey Create Maint Job Help Text" xml:space="preserve">
+    <value>A maintenance job will be created at the bridge location with the details from the 'Repairs required' field.</value>
+  </data>
 </root>

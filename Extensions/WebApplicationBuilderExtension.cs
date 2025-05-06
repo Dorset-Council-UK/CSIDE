@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Data;
+using CSIDE.Data.Models.Surveys;
 using CSIDE.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -166,6 +167,7 @@ internal static class WebApplicationBuilderExtension
                 x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
                 x.UseNodaTime();
                 x.UseNetTopologySuite();
+                x.MapEnum<SurveyStatus>("survey_status");
             });
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 

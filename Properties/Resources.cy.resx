@@ -1076,4 +1076,451 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="User Updated Message" xml:space="preserve">
     <value>Defnyddiwr {0} wedi'i ddiweddaru</value>
   </data>
+  <data name="New Bridge Survey Title" xml:space="preserve">
+    <value>Arolwg pont newydd</value>
+  </data>
+  <data name="New Bridge Survey Text" xml:space="preserve">
+    <value>Dewch o hyd i bont a dechrau arolwg newydd</value>
+  </data>
+  <data name="Existing Bridge Surveys Title" xml:space="preserve">
+    <value>Rhestr arolygon pontydd</value>
+  </data>
+  <data name="Existing Bridge Surveys Text" xml:space="preserve">
+    <value>Gweld a diweddaru arolygon pontydd presennol</value>
+  </data>
+  <data name="Start New Bridge Survey Text" xml:space="preserve">
+    <value>Bydd angen i chi: &lt;ul&gt;&lt;li&gt;roi gwybod i ni am adeiladwaith a chyflwr pob rhan o'r bont&lt;/li&gt;&lt;li&gt;cyflwyno o leiaf un llun o'r bont&lt;/li&gt;&lt;li&gt;dweud wrthym am unrhyw atgyweiriadau sydd eu hangen&lt;/li&gt;&lt;/ul&gt;</value>
+  </data>
+  <data name="Start New Bridge Survey Title" xml:space="preserve">
+    <value>Dechrau arolwg ar gyfer pont {0}</value>
+  </data>
+  <data name="Start New Bridge Survey Disclaimer" xml:space="preserve">
+    <value>&lt;p&gt;Cofiwch aros yn ddiogel a chadw at y llwybrau bob amser.&lt;/p&gt;&lt;p&gt;Bydd angen cysylltiad rhyngrwyd arnoch. Os ydych mewn ardal o wasanaeth gwael, efallai y bydd angen i chi gwblhau'r arolwg gartref.&lt;/p&gt;&lt;p&gt;Os oes gennych unrhyw broblemau, cysylltwch â'ch ceidwad lleol.&lt;/p&gt;</value>
+  </data>
+  <data name="Start Now Button Text" xml:space="preserve">
+    <value>Dechrau nawr</value>
+  </data>
+  <data name="New Bridge Survey Help Text" xml:space="preserve">
+    <value>Dewch o hyd i'r bont rydych chi'n ei harolygu gan ddefnyddio'r ID seilwaith, neu'ch lleoliad</value>
+  </data>
+  <data name="Find Bridge By ID Title" xml:space="preserve">
+    <value>Dod o hyd i bont trwy ID</value>
+  </data>
+  <data name="Find Bridge Survey Title" xml:space="preserve">
+    <value>Pa bont ydych chi'n ei harolygu?</value>
+  </data>
+  <data name="Before You Start Title" xml:space="preserve">
+    <value>Cyn i chi ddechrau</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Current Accuracy Label" xml:space="preserve">
+    <value>Cywirdeb y lleoliad presennol: {0} metr</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Title" xml:space="preserve">
+    <value>Cadarnhau lleoliad y bont</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Question" xml:space="preserve">
+    <value>Ydych chi wrth y bont nawr?</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Question Text" xml:space="preserve">
+    <value>Peidiwch â phoeni os nad ydych wrth y bont, rydym am wella cywirdeb ein map</value>
+  </data>
+  <data name="Bridge Survey Confirm Location At Location Title" xml:space="preserve">
+    <value>Ydw, rydw i</value>
+  </data>
+  <data name="Bridge Survey Confirm Location At Location Text" xml:space="preserve">
+    <value>&lt;p&gt;Gwych! Sicrhewch fod lleoliad eich dyfais wedi'i droi ymlaen, sefwch yng nghanol y bont (os yw'n ddiogel) a gwasgwch y botwm 'Lleolwch fi' isod.&lt;/p&gt;&lt;p&gt;I gael y canlyniad gorau y gallwn, byddwn yn treulio hyd at 30 eiliad yn cael eich safle, felly byddwch yn amyneddgar.&lt;/p&gt;</value>
+  </data>
+  <data name="Locate Me Label" xml:space="preserve">
+    <value>Lleolwch fi</value>
+  </data>
+  <data name="Locating Label" xml:space="preserve">
+    <value>Lleoli...</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Not At Location Title" xml:space="preserve">
+    <value>Na, dydw i ddim</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Not At Location Text" xml:space="preserve">
+    <value>Dim problem, pwyswch yn parhau i barhau.</value>
+  </data>
+  <data name="Continue Button Text" xml:space="preserve">
+    <value>Parhau</value>
+  </data>
+  <data name="Location Error Message" xml:space="preserve">
+    <value>Ni allem gael eich lleoliad yn ddigon cywir. Gallwch geisio eto neu barhau â'r ffurflen.</value>
+  </data>
+  <data name="Bridge Survey Location Confirmed Title" xml:space="preserve">
+    <value>Mae'r lleoliad eisoes wedi'i gadarnhau</value>
+  </data>
+  <data name="Bridge Survey Location Confirmed Text" xml:space="preserve">
+    <value>Rydych chi eisoes wedi cadarnhau lleoliad y bont i gywirdeb o {0} metr. Mae hyn yn golygu y gallwch chi hepgor yr adran hon. Os ydych am ail-wneud y lleoliad, parhewch isod.</value>
+  </data>
+  <data name="Bridge Survey Construction Title" xml:space="preserve">
+    <value>Adeiladu</value>
+  </data>
+  <data name="Bridge Survey Construction Question" xml:space="preserve">
+    <value>O ba ddefnyddiau mae'r bont wedi'i gwneud?</value>
+  </data>
+  <data name="Bridge Survey Beam Material Label" xml:space="preserve">
+    <value>O beth mae'r trawstiau wedi'u gwneud?</value>
+  </data>
+  <data name="Bridge Survey Num Beam Timbers Label" xml:space="preserve">
+    <value>Faint o drawstiau sydd yna?</value>
+  </data>
+  <data name="Bridge Survey Size Beam Timbers Label" xml:space="preserve">
+    <value>Beth yw maint y prennau trawstiau?</value>
+  </data>
+  <data name="Bridge Survey Decking Material Label" xml:space="preserve">
+    <value>O beth mae'r decin wedi'i wneud?</value>
+  </data>
+  <data name="Bridge Survey Num Decking Boards Label" xml:space="preserve">
+    <value>Faint o fyrddau decio sydd yna?</value>
+  </data>
+  <data name="Bridge Survey Size Decking Boards Label" xml:space="preserve">
+    <value>Pa faint yw'r byrddau decio?</value>
+  </data>
+  <data name="Bridge Survey Length Decking Boards Label" xml:space="preserve">
+    <value>Beth yw hyd y byrddau decio?</value>
+  </data>
+  <data name="Bridge Survey Handrail Material Label" xml:space="preserve">
+    <value>O beth mae'r canllaw wedi'i wneud?</value>
+  </data>
+  <data name="Bridge Survey Size Handrail Timbers Label" xml:space="preserve">
+    <value>Pa faint yw pren y canllawiau?</value>
+  </data>
+  <data name="Bridge Survey Handrails In Place Label" xml:space="preserve">
+    <value>Ydy'r canllawiau a'r rheiliau canolradd i gyd yn eu lle o hyd, gan gynnwys y cicfwrdd?</value>
+  </data>
+  <data name="Bridge Survey Handrail Posts Material Label" xml:space="preserve">
+    <value>O beth mae pyst y canllawiau wedi'u gwneud?</value>
+  </data>
+  <data name="Bridge Survey Num Handrail Posts Label" xml:space="preserve">
+    <value>Faint o bostiadau sydd yna i gyd?</value>
+  </data>
+  <data name="Bridge Survey Size Handrail Posts Label" xml:space="preserve">
+    <value>Beth yw maint y pyst?</value>
+  </data>
+  <data name="Bridge Survey Bank Seat Material Label" xml:space="preserve">
+    <value>O beth mae sedd y banc wedi'i gwneud?</value>
+  </data>
+  <data name="Bridge Survey Anti Slip Installed Label" xml:space="preserve">
+    <value>A oes gwrthlithro wedi'i osod?</value>
+  </data>
+  <data name="Bridge Survey Gates Installed Label" xml:space="preserve">
+    <value>Oes yna unrhyw gatiau?</value>
+  </data>
+  <data name="Bridge Survey Stiles Installed Label" xml:space="preserve">
+    <value>Oes yna unrhyw gamfeydd?</value>
+  </data>
+  <data name="Bridge Survey Ramp Installed Label" xml:space="preserve">
+    <value>Oes ramp ar y naill ben neu'r llall?</value>
+  </data>
+  <data name="Bridge Survey Steps Installed Label" xml:space="preserve">
+    <value>A oes unrhyw gamau ar y naill ben a'r llall?</value>
+  </data>
+  <data name="Bridge Survey Height Label" xml:space="preserve">
+    <value>Beth yw uchder y bont mewn metrau?</value>
+  </data>
+  <data name="Bridge Survey Length Label" xml:space="preserve">
+    <value>Beth yw hyd y bont mewn metrau?</value>
+  </data>
+  <data name="Bridge Survey Handrails In Place Hint Text" xml:space="preserve">
+    <value>4 bob ochr ar gyfer pont llwybr troed, 5 bob ochr ar gyfer pont llwybr ceffylau</value>
+  </data>
+  <data name="Bridge Survey Handrails In Place Additional Text" xml:space="preserve">
+    <value>Os 'Na', gwnewch yn siŵr eich bod yn dweud wrthym beth sydd ar goll yn yr adran Atgyweiriadau Angenrheidiol yn ddiweddarach yn y ffurflen.</value>
+  </data>
+  <data name="Metres Label" xml:space="preserve">
+    <value>metrau</value>
+  </data>
+  <data name="Bridge Survey Condition Title" xml:space="preserve">
+    <value>Cyflwr</value>
+  </data>
+  <data name="Bridge Survey Condition Question" xml:space="preserve">
+    <value>Ym mha gyflwr mae'r bont?</value>
+  </data>
+  <data name="Bridge Survey Beam Condition Label" xml:space="preserve">
+    <value>Ym mha gyflwr mae'r trawst?</value>
+  </data>
+  <data name="Bridge Survey Decking Condition Label" xml:space="preserve">
+    <value>Ym mha gyflwr mae'r dec?</value>
+  </data>
+  <data name="Bridge Survey Handrail Condition Label" xml:space="preserve">
+    <value>Ym mha gyflwr mae'r canllaw?</value>
+  </data>
+  <data name="Bridge Survey Handrail Posts Condition Label" xml:space="preserve">
+    <value>Ym mha gyflwr mae pyst y canllaw?</value>
+  </data>
+  <data name="Bridge Survey Bank Seat Condition Label" xml:space="preserve">
+    <value>Ym mha gyflwr mae sedd y banc?</value>
+  </data>
+  <data name="Bridge Survey Repairs Title" xml:space="preserve">
+    <value>Atgyweiriadau sydd eu hangen a phroblemau eraill</value>
+  </data>
+  <data name="Bridge Survey Overgrown Label" xml:space="preserve">
+    <value>Ydy'r bont wedi gordyfu?</value>
+  </data>
+  <data name="Bridge Survey Signs Of Bank Erosion Label" xml:space="preserve">
+    <value>A oes unrhyw arwyddion o erydiad ar y clawdd?</value>
+  </data>
+  <data name="Bridge Survey Seriously Eroded Label" xml:space="preserve">
+    <value>A yw'r banc wedi'i erydu'n ddifrifol?</value>
+  </data>
+  <data name="Bridge Survey High Usage Label" xml:space="preserve">
+    <value>Ai pont defnydd uchel yw hon?</value>
+  </data>
+  <data name="Bridge Survey Cover Boards In Place Label" xml:space="preserve">
+    <value>Ydy'r ddau fwrdd gorchudd yn dal yn eu lle?</value>
+  </data>
+  <data name="Unknown Label" xml:space="preserve">
+    <value>Anhysbys/Ddim yn berthnasol</value>
+  </data>
+  <data name="Bridge Survey Repairs Required Label" xml:space="preserve">
+    <value>A oes angen unrhyw atgyweiriadau?</value>
+  </data>
+  <data name="Bridge Survey Media Title" xml:space="preserve">
+    <value>Ychwanegu cyfryngau</value>
+  </data>
+  <data name="Bridge Survey Media Question" xml:space="preserve">
+    <value>Ychwanegwch rai lluniau neu fideos</value>
+  </data>
+  <data name="Bridge Survey Media Help Text" xml:space="preserve">
+    <value>&lt;p&gt;Llwythwch rai lluniau neu fideos o'r bont i'n helpu i ddilysu eich arolwg a gwirio pa waith a allai fod ei angen.&lt;/p&gt;&lt;p&gt;Ceisiwch ychwanegu o leiaf un llun. Os na allwch chi ar hyn o bryd, gallwch chi gadw'r arolwg a dod yn ôl yn nes ymlaen.&lt;/p&gt;&lt;p&gt;Efallai y bydd y cyfryngau a uwchlwythwyd yn cael eu cyhoeddi.&lt;/p&gt;</value>
+  </data>
+  <data name="Bridge Survey Media Added Message" xml:space="preserve">
+    <value>Rydych chi eisoes wedi uwchlwytho rhywfaint o gyfryngau i'r arolwg hwn. Gallwch ychwanegu mwy o luniau neu fideos yma, neu gallwch hepgor yr adran hon.</value>
+  </data>
+  <data name="Bridge Survey Media Unable To Add Help Text" xml:space="preserve">
+    <value>Os na allwch ychwanegu unrhyw gyfryngau, cliciwch 'Parhau heb gyfryngau'</value>
+  </data>
+  <data name="Bridge Survey Continue Without Media Button Text" xml:space="preserve">
+    <value>Parhau heb gyfryngau</value>
+  </data>
+  <data name="Bridge Survey Upload Media Title" xml:space="preserve">
+    <value>Lanlwytho lluniau neu fideos</value>
+  </data>
+  <data name="Bridge Survey Confirm Location Summary Title" xml:space="preserve">
+    <value>Lleoliad</value>
+  </data>
+  <data name="Bridge Survey Summary Title" xml:space="preserve">
+    <value>Crynodeb</value>
+  </data>
+  <data name="Bridge Survey Summary Question" xml:space="preserve">
+    <value>Gwiriwch eich arolwg</value>
+  </data>
+  <data name="Bridge Survey Beams Short Label" xml:space="preserve">
+    <value>Trawstiau</value>
+  </data>
+  <data name="Bridge Survey Decking Short Label" xml:space="preserve">
+    <value>Decio</value>
+  </data>
+  <data name="Bridge Survey Handrail Short Label" xml:space="preserve">
+    <value>Rheiliau llaw</value>
+  </data>
+  <data name="Bridge Survey Handrail Posts Short Label" xml:space="preserve">
+    <value>Postau canllaw</value>
+  </data>
+  <data name="Bridge Survey Bank Seat Short Label" xml:space="preserve">
+    <value>Sedd y banc</value>
+  </data>
+  <data name="Bridge Survey Anti Slip Short Label" xml:space="preserve">
+    <value>Gwrth-lithro?</value>
+  </data>
+  <data name="Bridge Survey Gates Short Label" xml:space="preserve">
+    <value>Gatiau?</value>
+  </data>
+  <data name="Bridge Survey Stiles Short Label" xml:space="preserve">
+    <value>Camfeydd?</value>
+  </data>
+  <data name="Bridge Survey Ramps Short Label" xml:space="preserve">
+    <value>Rampiau?</value>
+  </data>
+  <data name="Bridge Survey Steps Short Label" xml:space="preserve">
+    <value>Camau?</value>
+  </data>
+  <data name="Bridge Survey Overgrown Short Label" xml:space="preserve">
+    <value>Gordyfu?</value>
+  </data>
+  <data name="Bridge Survey Signs Of Bank Erosion Short Label" xml:space="preserve">
+    <value>Arwyddion o erydiad ar y glannau?</value>
+  </data>
+  <data name="Bridge Survey Seriously Eroded Short Label" xml:space="preserve">
+    <value>Wedi erydu o ddifrif?</value>
+  </data>
+  <data name="Bridge Survey High Usage Short Label" xml:space="preserve">
+    <value>Defnydd uchel?</value>
+  </data>
+  <data name="Bridge Survey Cover Boards In Place Short Label" xml:space="preserve">
+    <value>Byrddau gorchudd yn eu lle?</value>
+  </data>
+  <data name="Bridge Survey Repairs Required Short Label" xml:space="preserve">
+    <value>Atgyweiriadau sydd eu hangen</value>
+  </data>
+  <data name="Bridge Survey Media Summary Title" xml:space="preserve">
+    <value>Lluniau a fideos</value>
+  </data>
+  <data name="Bridge Survey Media Provided Summary Label" xml:space="preserve">
+    <value>Cyfryngau wedi'u darparu?</value>
+  </data>
+  <data name="Media Items Count Label" xml:space="preserve">
+    <value>{0} eitemau cyfryngau</value>
+  </data>
+  <data name="Bridge Survey Summary Submit Title" xml:space="preserve">
+    <value>Nawr cyflwynwch eich arolwg</value>
+  </data>
+  <data name="Bridge Survey Summary Submit Help Text" xml:space="preserve">
+    <value>Bydd eich arolwg yn cael ei wirio gan ein ceidwaid a gallant gysylltu â chi i gael rhagor o wybodaeth.</value>
+  </data>
+  <data name="Submit Survey Button Text" xml:space="preserve">
+    <value>Cyflwynwch eich arolwg</value>
+  </data>
+  <data name="Save And Finish Later Label" xml:space="preserve">
+    <value>Cadw a gorffen yn ddiweddarach</value>
+  </data>
+  <data name="Change Label" xml:space="preserve">
+    <value>Newid</value>
+  </data>
+  <data name="Bridge Survey What Happens Next Text" xml:space="preserve">
+    <value>&lt;h2&gt;Beth sy'n digwydd nesaf&lt;/h2&gt;&lt;p&gt;Rydym wedi anfon eich arolwg at eich ceidwad lleol.&lt;/p&gt;&lt;p&gt;Byddant yn gwirio eich arolwg ac yn trefnu unrhyw atgyweiriadau. Efallai y byddant yn cysylltu â chi os oes angen rhagor o wybodaeth arnynt am y bont.&lt;/p&gt;</value>
+  </data>
+  <data name="Survey Complete Title" xml:space="preserve">
+    <value>Arolwg wedi'i gwblhau</value>
+  </data>
+  <data name="Survey ID Label" xml:space="preserve">
+    <value>ID yr Arolwg</value>
+  </data>
+  <data name="Do Another Survey Button Text" xml:space="preserve">
+    <value>Gwnewch arolwg arall</value>
+  </data>
+  <data name="Bridge Survey Details Title" xml:space="preserve">
+    <value>Arolwg pont {0}</value>
+  </data>
+  <data name="Survey Awaiting Validation Message" xml:space="preserve">
+    <value>Mae'r arolwg hwn yn aros i gael ei ddilysu</value>
+  </data>
+  <data name="Survey Validated Message" xml:space="preserve">
+    <value>Mae'r arolwg hwn wedi cael ei ddilysu a'i ychwanegu at yr eitem seilwaith</value>
+  </data>
+  <data name="Survey Rejected Message" xml:space="preserve">
+    <value>Gwrthodwyd yr arolwg hwn</value>
+  </data>
+  <data name="Survey Validation Notes Label" xml:space="preserve">
+    <value>Nodiadau dilysu</value>
+  </data>
+  <data name="Start Date Label" xml:space="preserve">
+    <value>Dyddiad cychwyn</value>
+  </data>
+  <data name="End Date Label" xml:space="preserve">
+    <value>Dyddiad gorffen</value>
+  </data>
+  <data name="Bridge Num Timbers Short Label" xml:space="preserve">
+    <value>Nifer y prennau</value>
+  </data>
+  <data name="Bridge Timbers Size Short Label" xml:space="preserve">
+    <value>Maint</value>
+  </data>
+  <data name="Bridge Num Boards Short Label" xml:space="preserve">
+    <value>Rhif byrddau</value>
+  </data>
+  <data name="Bridge Handrails In Place Short Label" xml:space="preserve">
+    <value>Canllawiau yn eu lle?</value>
+  </data>
+  <data name="Bridge Survey No Updated Location Message" xml:space="preserve">
+    <value>Ni ddarparodd y syrfëwr leoliad wedi'i ddiweddaru</value>
+  </data>
+  <data name="Location Accuracy Label" xml:space="preserve">
+    <value>Cywirdeb lleoliad</value>
+  </data>
+  <data name="Not Provided Label" xml:space="preserve">
+    <value>Heb ei ddarparu</value>
+  </data>
+  <data name="Bridge Survey Update Details Label" xml:space="preserve">
+    <value>Diweddaru manylion y bont gyda gwybodaeth yr arolwg?</value>
+  </data>
+  <data name="Bridge Survey Update Details Help Text" xml:space="preserve">
+    <value>Bydd manylion y bont yn cael eu diweddaru gyda'r hyn a adroddwyd uchod. Gwiriwch y meysydd yn ofalus cyn caniatáu hyn. Os oes problemau, gallwch naill ai dderbyn eu newidiadau a'u golygu â llaw wedyn, neu ddad-diciwch y blwch uchod i anwybyddu eu holl newidiadau.</value>
+  </data>
+  <data name="Bridge Survey Update Location Label" xml:space="preserve">
+    <value>Diweddaru lleoliad y bont gyda lleoliad yr arolwg?</value>
+  </data>
+  <data name="Bridge Survey Update Location Help Text" xml:space="preserve">
+    <value>Bydd lleoliad y bont yn cael ei symud i'r lleoliad a gyflwynwyd gan y defnyddiwr uchod isod. Gwiriwch hyn yn ofalus cyn gwneud hynny. Os nad yw'n ddigon cywir, dad-diciwch y blwch uchod a'i symud â llaw trwy'r tudalennau golygu seilwaith.</value>
+  </data>
+  <data name="Bridge Survey Add Media To Bridge Label" xml:space="preserve">
+    <value>Ychwanegu cyfryngau a gyflwynwyd at fanylion y bont?</value>
+  </data>
+  <data name="Bridge Survey Add Media To Bridge Help Text" xml:space="preserve">
+    <value>Bydd yr holl gyfryngau sydd ynghlwm wrth yr arolwg hwn ar gael i'r cyhoedd. Peidiwch â gwneud hyn os oes pobl adnabyddadwy neu os yw'r lluniau/fideos o ansawdd gwael. I atodi eitemau unigol, lawrlwythwch nhw ac atodwch nhw i'r eitem seilwaith â llaw.</value>
+  </data>
+  <data name="Bridge Survey Create Maint Job Label" xml:space="preserve">
+    <value>Creu swydd cynnal a chadw ar ôl dilysu?</value>
+  </data>
+  <data name="Bridge Survey Validation Notes Label" xml:space="preserve">
+    <value>Nodiadau dilysu</value>
+  </data>
+  <data name="Approve Survey Label" xml:space="preserve">
+    <value>Cymeradwyo'r arolwg</value>
+  </data>
+  <data name="Reject Survey Label" xml:space="preserve">
+    <value>Gwrthod arolwg</value>
+  </data>
+  <data name="Surveyor Name Label" xml:space="preserve">
+    <value>Syrfëwr</value>
+  </data>
+  <data name="No Bridge Details Text" xml:space="preserve">
+    <value>Ni chofnodwyd unrhyw wybodaeth fanwl am y bont</value>
+  </data>
+  <data name="Bridge Details Label" xml:space="preserve">
+    <value>Manylion y bont</value>
+  </data>
+  <data name="View Survey Label" xml:space="preserve">
+    <value>Gweld yr arolwg</value>
+  </data>
+  <data name="Surveys Awaiting Validation Title" xml:space="preserve">
+    <value>Arolygon yn aros am ddilysu</value>
+  </data>
+  <data name="No Surveys Awaiting Validation Message" xml:space="preserve">
+    <value>Pawb wedi'i wneud! Nid oes unrhyw arolygon i chi eu dilysu ar hyn o bryd</value>
+  </data>
+  <data name="Finished Surveys Title" xml:space="preserve">
+    <value>Arolygon wedi'u cwblhau</value>
+  </data>
+  <data name="Status Label" xml:space="preserve">
+    <value>Statws</value>
+  </data>
+  <data name="No Surveys Message" xml:space="preserve">
+    <value>Ni chanfuwyd unrhyw arolygon</value>
+  </data>
+  <data name="Incomplete Surveys Title" xml:space="preserve">
+    <value>Arolygon anghyflawn</value>
+  </data>
+  <data name="Check Survey Label" xml:space="preserve">
+    <value>Gwiriwch yr arolwg hwn</value>
+  </data>
+  <data name="No Surveys For Infrastructure Text" xml:space="preserve">
+    <value>Ni chwblhawyd unrhyw arolygon ar yr eitem seilwaith hon</value>
+  </data>
+  <data name="Start Bridge Survey Title" xml:space="preserve">
+    <value>Dechrau arolwg pont</value>
+  </data>
+  <data name="Find Bridge On Map Title" xml:space="preserve">
+    <value>Dewch o hyd i'r bont ar y map</value>
+  </data>
+  <data name="Find Bridge By Location Title" xml:space="preserve">
+    <value>Dod o hyd i bont gan ddefnyddio lleoliad eich dyfais</value>
+  </data>
+  <data name="Find Bridge By Location Text" xml:space="preserve">
+    <value>Os ydych chi wrth y bont nawr, gallwn ni chwilio am y bont i chi gan ddefnyddio eich lleoliad. Safwch ger y bont tra byddwn ni'n gwirio.</value>
+  </data>
+  <data name="Bridges Found Text" xml:space="preserve">
+    <value>Fe wnaethon ni ddod o hyd i {0} o bontydd ger eich lleoliad</value>
+  </data>
+  <data name="Auth Claims Title" xml:space="preserve">
+    <value>Hawliadau awdurdodi manwl (at ddibenion dadfygio)</value>
+  </data>
+  <data name="Survey Not A Bridge Error Message" xml:space="preserve">
+    <value>Nid pont oedd y seilwaith a ddewisoch</value>
+  </data>
+  <data name="Bridge Survey Create Maint Job Help Text" xml:space="preserve">
+    <value>Bydd swydd cynnal a chadw yn cael ei chreu yn lleoliad y bont gyda'r manylion o'r maes 'Atgyweiriadau sydd eu hangen'.</value>
+  </data>
 </root>

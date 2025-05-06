@@ -28,7 +28,8 @@ namespace CSIDE.Data.Models.Infrastructure
         public RightsOfWay.Route? Route { get; set; }
         public InfrastructureType? InfrastructureType { get; set; }
         public Parish? Parish { get; set; }
-        public Team? MaintenanceTeam { get; set; }
+        public Team? MaintenanceTeam { get; set; } 
+        public InfrastructureBridgeDetails? BridgeDetails { get; set; }
         /*TODO - Add concurrency token*/
     }
 }

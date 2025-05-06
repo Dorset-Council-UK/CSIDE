@@ -376,6 +376,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Approve survey.
+        /// </summary>
+        public static string Approve_Survey_Label {
+            get {
+                return ResourceManager.GetString("Approve Survey Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Approximate Length.
         /// </summary>
         public static string Approximate_Length_Label {
@@ -426,6 +435,15 @@ namespace CSIDE.Properties {
         public static string Audit_Log_Title {
             get {
                 return ResourceManager.GetString("Audit Log Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detailed authorization claims (for debugging purposes).
+        /// </summary>
+        public static string Auth_Claims_Title {
+            get {
+                return ResourceManager.GetString("Auth Claims Title", resourceCulture);
             }
         }
         
@@ -493,6 +511,888 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Before you start.
+        /// </summary>
+        public static string Before_You_Start_Title {
+            get {
+                return ResourceManager.GetString("Before You Start Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bridge details.
+        /// </summary>
+        public static string Bridge_Details_Label {
+            get {
+                return ResourceManager.GetString("Bridge Details Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handrails in place?.
+        /// </summary>
+        public static string Bridge_Handrails_In_Place_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Handrails In Place Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No. boards.
+        /// </summary>
+        public static string Bridge_Num_Boards_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Num Boards Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No. timbers.
+        /// </summary>
+        public static string Bridge_Num_Timbers_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Num Timbers Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All media attached to this survey will be publically viewable. Don&apos;t do this if there are identifiable people or the photos/videos are of poor quality. To attach individual items, download them and attach to the infrastructure item manually..
+        /// </summary>
+        public static string Bridge_Survey_Add_Media_To_Bridge_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Add Media To Bridge Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add submitted media to bridge details?.
+        /// </summary>
+        public static string Bridge_Survey_Add_Media_To_Bridge_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Add Media To Bridge Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is anti-slip installed?.
+        /// </summary>
+        public static string Bridge_Survey_Anti_Slip_Installed_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Anti Slip Installed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anti-Slip?.
+        /// </summary>
+        public static string Bridge_Survey_Anti_Slip_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Anti Slip Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What condition is the bank seat in?.
+        /// </summary>
+        public static string Bridge_Survey_Bank_Seat_Condition_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Bank Seat Condition Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is the bank seat made of?.
+        /// </summary>
+        public static string Bridge_Survey_Bank_Seat_Material_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Bank Seat Material Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bank seat.
+        /// </summary>
+        public static string Bridge_Survey_Bank_Seat_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Bank Seat Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What condition is the beam in?.
+        /// </summary>
+        public static string Bridge_Survey_Beam_Condition_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Beam Condition Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What are the beams made of?.
+        /// </summary>
+        public static string Bridge_Survey_Beam_Material_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Beam Material Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Beams.
+        /// </summary>
+        public static string Bridge_Survey_Beams_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Beams Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What condition is the bridge in?.
+        /// </summary>
+        public static string Bridge_Survey_Condition_Question {
+            get {
+                return ResourceManager.GetString("Bridge Survey Condition Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition.
+        /// </summary>
+        public static string Bridge_Survey_Condition_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Condition Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;Great! Make sure your devices location is turned on, stand in the middle of the bridge (if safe) and hit the &apos;Locate me&apos; button below.&lt;/p&gt;&lt;p&gt;To get the best result we can, we will spend up to 30 seconds getting your position, so please be patient.&lt;/p&gt;.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_At_Location_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location At Location Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes, I am.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_At_Location_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location At Location Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current location accuracy: {0}m.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Current_Accuracy_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Current Accuracy Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not to worry, carry on by hitting Continue below..
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Not_At_Location_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Not At Location Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No, I&apos;m not.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Not_At_Location_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Not At Location Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you at the bridge now?.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Question {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t worry if you&apos;re not, we just want to improve the accuracy of our map.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Question_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Question Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Summary_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Summary Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm bridge location.
+        /// </summary>
+        public static string Bridge_Survey_Confirm_Location_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Confirm Location Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What materials is the bridge made of?.
+        /// </summary>
+        public static string Bridge_Survey_Construction_Question {
+            get {
+                return ResourceManager.GetString("Bridge Survey Construction Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Construction.
+        /// </summary>
+        public static string Bridge_Survey_Construction_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Construction Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue without media.
+        /// </summary>
+        public static string Bridge_Survey_Continue_Without_Media_Button_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Continue Without Media Button Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are both cover boards still in place?.
+        /// </summary>
+        public static string Bridge_Survey_Cover_Boards_In_Place_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Cover Boards In Place Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cover boards in place?.
+        /// </summary>
+        public static string Bridge_Survey_Cover_Boards_In_Place_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Cover Boards In Place Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A maintenance job will be created at the bridge location with the details from the &apos;Repairs required&apos; field..
+        /// </summary>
+        public static string Bridge_Survey_Create_Maint_Job_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Create Maint Job Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create maintenance job after validation?.
+        /// </summary>
+        public static string Bridge_Survey_Create_Maint_Job_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Create Maint Job Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What condition is the decking in?.
+        /// </summary>
+        public static string Bridge_Survey_Decking_Condition_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Decking Condition Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is the decking made of?.
+        /// </summary>
+        public static string Bridge_Survey_Decking_Material_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Decking Material Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decking.
+        /// </summary>
+        public static string Bridge_Survey_Decking_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Decking Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bridge survey {0}.
+        /// </summary>
+        public static string Bridge_Survey_Details_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are there any gates?.
+        /// </summary>
+        public static string Bridge_Survey_Gates_Installed_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Gates Installed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gates?.
+        /// </summary>
+        public static string Bridge_Survey_Gates_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Gates Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What condition is the handrail in?.
+        /// </summary>
+        public static string Bridge_Survey_Handrail_Condition_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrail Condition Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is the handrail made of?.
+        /// </summary>
+        public static string Bridge_Survey_Handrail_Material_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrail Material Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What condition are the handrail posts in?.
+        /// </summary>
+        public static string Bridge_Survey_Handrail_Posts_Condition_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrail Posts Condition Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What are the handrail posts made of?.
+        /// </summary>
+        public static string Bridge_Survey_Handrail_Posts_Material_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrail Posts Material Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handrail posts.
+        /// </summary>
+        public static string Bridge_Survey_Handrail_Posts_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrail Posts Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handrails.
+        /// </summary>
+        public static string Bridge_Survey_Handrail_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrail Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If &apos;No&apos; please make sure you tell us what&apos;s missing in the Repairs Required section later on in the form..
+        /// </summary>
+        public static string Bridge_Survey_Handrails_In_Place_Additional_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrails In Place Additional Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4 each side for a footpath bridge, 5 each side for a bridleway bridge.
+        /// </summary>
+        public static string Bridge_Survey_Handrails_In_Place_Hint_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrails In Place Hint Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are the handrails and intermediate rails all still in place, including kickboard?.
+        /// </summary>
+        public static string Bridge_Survey_Handrails_In_Place_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Handrails In Place Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is the height of the bridge in metres?.
+        /// </summary>
+        public static string Bridge_Survey_Height_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Height Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is this a high usage bridge?.
+        /// </summary>
+        public static string Bridge_Survey_High_Usage_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey High Usage Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High usage?.
+        /// </summary>
+        public static string Bridge_Survey_High_Usage_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey High Usage Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What length are the decking boards?.
+        /// </summary>
+        public static string Bridge_Survey_Length_Decking_Boards_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Length Decking Boards Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is the length of the bridge in metres?.
+        /// </summary>
+        public static string Bridge_Survey_Length_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Length Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve already confirmed the location of the bridge to an accuracy of {0} metres. This means you can skip this section. If you want to re-do the location, carry on below..
+        /// </summary>
+        public static string Bridge_Survey_Location_Confirmed_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Location Confirmed Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location already confirmed.
+        /// </summary>
+        public static string Bridge_Survey_Location_Confirmed_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Location Confirmed Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve already uploaded some media to this survey. You can add more photos or videos here, or you can skip this section..
+        /// </summary>
+        public static string Bridge_Survey_Media_Added_Message {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Added Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;Upload some photos or videos of the bridge to help us validate your survey and check what works might be required.&lt;/p&gt;&lt;p&gt;Please try to add at least one photo. If you are unable to at the moment, you can save the survey and come back later.&lt;/p&gt;&lt;p&gt;Media uploaded may be made public.&lt;/p&gt;.
+        /// </summary>
+        public static string Bridge_Survey_Media_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Media provided?.
+        /// </summary>
+        public static string Bridge_Survey_Media_Provided_Summary_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Provided Summary Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add some photos or videos.
+        /// </summary>
+        public static string Bridge_Survey_Media_Question {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Photos and videos.
+        /// </summary>
+        public static string Bridge_Survey_Media_Summary_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Summary Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add media.
+        /// </summary>
+        public static string Bridge_Survey_Media_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you are unable to add any media, just hit &apos;Continue without media&apos;.
+        /// </summary>
+        public static string Bridge_Survey_Media_Unable_To_Add_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Media Unable To Add Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surveyor did not provide an updated location.
+        /// </summary>
+        public static string Bridge_Survey_No_Updated_Location_Message {
+            get {
+                return ResourceManager.GetString("Bridge Survey No Updated Location Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many beams are there?.
+        /// </summary>
+        public static string Bridge_Survey_Num_Beam_Timbers_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Num Beam Timbers Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many decking boards are there?.
+        /// </summary>
+        public static string Bridge_Survey_Num_Decking_Boards_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Num Decking Boards Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many posts are there in total?.
+        /// </summary>
+        public static string Bridge_Survey_Num_Handrail_Posts_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Num Handrail Posts Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is the bridge overgrown?.
+        /// </summary>
+        public static string Bridge_Survey_Overgrown_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Overgrown Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overgrown?.
+        /// </summary>
+        public static string Bridge_Survey_Overgrown_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Overgrown Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is there a ramp at either end?.
+        /// </summary>
+        public static string Bridge_Survey_Ramp_Installed_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Ramp Installed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ramps?.
+        /// </summary>
+        public static string Bridge_Survey_Ramps_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Ramps Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are any repairs required?.
+        /// </summary>
+        public static string Bridge_Survey_Repairs_Required_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Repairs Required Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repairs required.
+        /// </summary>
+        public static string Bridge_Survey_Repairs_Required_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Repairs Required Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repairs required and other issues.
+        /// </summary>
+        public static string Bridge_Survey_Repairs_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Repairs Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is the bank seriously eroded?.
+        /// </summary>
+        public static string Bridge_Survey_Seriously_Eroded_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Seriously Eroded Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seriously eroded?.
+        /// </summary>
+        public static string Bridge_Survey_Seriously_Eroded_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Seriously Eroded Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are there any signs of erosion on the bank?.
+        /// </summary>
+        public static string Bridge_Survey_Signs_Of_Bank_Erosion_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Signs Of Bank Erosion Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signs of bank erosion?.
+        /// </summary>
+        public static string Bridge_Survey_Signs_Of_Bank_Erosion_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Signs Of Bank Erosion Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What size are the beams timbers?.
+        /// </summary>
+        public static string Bridge_Survey_Size_Beam_Timbers_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Size Beam Timbers Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What size are the decking boards?.
+        /// </summary>
+        public static string Bridge_Survey_Size_Decking_Boards_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Size Decking Boards Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What size are the posts?.
+        /// </summary>
+        public static string Bridge_Survey_Size_Handrail_Posts_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Size Handrail Posts Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What size are the handrail timbers?.
+        /// </summary>
+        public static string Bridge_Survey_Size_Handrail_Timbers_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Size Handrail Timbers Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are there any steps at either end?.
+        /// </summary>
+        public static string Bridge_Survey_Steps_Installed_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Steps Installed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Steps?.
+        /// </summary>
+        public static string Bridge_Survey_Steps_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Steps Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are there any stiles?.
+        /// </summary>
+        public static string Bridge_Survey_Stiles_Installed_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Stiles Installed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stiles?.
+        /// </summary>
+        public static string Bridge_Survey_Stiles_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Stiles Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check your survey.
+        /// </summary>
+        public static string Bridge_Survey_Summary_Question {
+            get {
+                return ResourceManager.GetString("Bridge Survey Summary Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your survey will be checked by our rangers who may contact you for further information..
+        /// </summary>
+        public static string Bridge_Survey_Summary_Submit_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Summary Submit Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Now submit your survey.
+        /// </summary>
+        public static string Bridge_Survey_Summary_Submit_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Summary Submit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary.
+        /// </summary>
+        public static string Bridge_Survey_Summary_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Summary Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bridge details will be updated with what was reported above. Check the fields carefully before allowing this. If there are problems, you can either accept their changes and manually edit them afterwards, or uncheck the above box to ignore all their changes..
+        /// </summary>
+        public static string Bridge_Survey_Update_Details_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Update Details Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update bridge details with survey information?.
+        /// </summary>
+        public static string Bridge_Survey_Update_Details_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Update Details Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bridge location will be moved to the user submitted location shown above. Check this carefully before doing so. If its not accurate enough, uncheck the box above and move it manually through the infrastructure edit pages..
+        /// </summary>
+        public static string Bridge_Survey_Update_Location_Help_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey Update Location Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update bridge location with survey location?.
+        /// </summary>
+        public static string Bridge_Survey_Update_Location_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Update Location Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload photos or videos.
+        /// </summary>
+        public static string Bridge_Survey_Upload_Media_Title {
+            get {
+                return ResourceManager.GetString("Bridge Survey Upload Media Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validation notes.
+        /// </summary>
+        public static string Bridge_Survey_Validation_Notes_Label {
+            get {
+                return ResourceManager.GetString("Bridge Survey Validation Notes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;h2&gt;What happens next&lt;/h2&gt;&lt;p&gt;We&apos;ve sent your survey to your local ranger.&lt;/p&gt;&lt;p&gt;They will check your survey and arrange for any repairs. They may contact you if they need further information about the bridge.&lt;/p&gt;.
+        /// </summary>
+        public static string Bridge_Survey_What_Happens_Next_Text {
+            get {
+                return ResourceManager.GetString("Bridge Survey What Happens Next Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string Bridge_Timbers_Size_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Timbers Size Short Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We found {0} bridges near your location.
+        /// </summary>
+        public static string Bridges_Found_Text {
+            get {
+                return ResourceManager.GetString("Bridges Found Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel_Label {
@@ -516,6 +1416,24 @@ namespace CSIDE.Properties {
         public static string Case_Status_Label {
             get {
                 return ResourceManager.GetString("Case Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string Change_Label {
+            get {
+                return ResourceManager.GetString("Change Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check this survey.
+        /// </summary>
+        public static string Check_Survey_Label {
+            get {
+                return ResourceManager.GetString("Check Survey Label", resourceCulture);
             }
         }
         
@@ -669,6 +1587,15 @@ namespace CSIDE.Properties {
         public static string Contacts_Label {
             get {
                 return ResourceManager.GetString("Contacts Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string Continue_Button_Text {
+            get {
+                return ResourceManager.GetString("Continue Button Text", resourceCulture);
             }
         }
         
@@ -907,6 +1834,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do another survey.
+        /// </summary>
+        public static string Do_Another_Survey_Button_Text {
+            get {
+                return ResourceManager.GetString("Do Another Survey Button Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Documents.
         /// </summary>
         public static string Documents_Label {
@@ -979,6 +1915,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to End date.
+        /// </summary>
+        public static string End_Date_Label {
+            get {
+                return ResourceManager.GetString("End Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End Easting.
         /// </summary>
         public static string End_Easting_Label {
@@ -1024,11 +1969,83 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View and update existing bridge surveys.
+        /// </summary>
+        public static string Existing_Bridge_Surveys_Text {
+            get {
+                return ResourceManager.GetString("Existing Bridge Surveys Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Existing bridge surveys.
+        /// </summary>
+        public static string Existing_Bridge_Surveys_Title {
+            get {
+                return ResourceManager.GetString("Existing Bridge Surveys Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Max file size of {0}MB exceeded for file &apos;{1}&apos;.
         /// </summary>
         public static string File_Too_Large_Upload_Error {
             get {
                 return ResourceManager.GetString("File Too Large Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Find bridge by ID.
+        /// </summary>
+        public static string Find_Bridge_By_ID_Title {
+            get {
+                return ResourceManager.GetString("Find Bridge By ID Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you are at the bridge now, we can look up the bridge for you using your location. Stand near the bridge whilst we check..
+        /// </summary>
+        public static string Find_Bridge_By_Location_Text {
+            get {
+                return ResourceManager.GetString("Find Bridge By Location Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Find bridge using your device location.
+        /// </summary>
+        public static string Find_Bridge_By_Location_Title {
+            get {
+                return ResourceManager.GetString("Find Bridge By Location Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Find bridge on map.
+        /// </summary>
+        public static string Find_Bridge_On_Map_Title {
+            get {
+                return ResourceManager.GetString("Find Bridge On Map Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which bridge are you surveying?.
+        /// </summary>
+        public static string Find_Bridge_Survey_Title {
+            get {
+                return ResourceManager.GetString("Find Bridge Survey Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed surveys.
+        /// </summary>
+        public static string Finished_Surveys_Title {
+            get {
+                return ResourceManager.GetString("Finished Surveys Title", resourceCulture);
             }
         }
         
@@ -1101,6 +2118,15 @@ namespace CSIDE.Properties {
         public static string Images_Label {
             get {
                 return ResourceManager.GetString("Images Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incomplete surveys.
+        /// </summary>
+        public static string Incomplete_Surveys_Title {
+            get {
+                return ResourceManager.GetString("Incomplete Surveys Title", resourceCulture);
             }
         }
         
@@ -1627,11 +2653,47 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Locate me.
+        /// </summary>
+        public static string Locate_Me_Label {
+            get {
+                return ResourceManager.GetString("Locate Me Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locating....
+        /// </summary>
+        public static string Locating_Label {
+            get {
+                return ResourceManager.GetString("Locating Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location accuracy.
+        /// </summary>
+        public static string Location_Accuracy_Label {
+            get {
+                return ResourceManager.GetString("Location Accuracy Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Location description.
         /// </summary>
         public static string Location_Description_Label {
             get {
                 return ResourceManager.GetString("Location Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t get your location accurately enough. You can try again or continue with the form..
+        /// </summary>
+        public static string Location_Error_Message {
+            get {
+                return ResourceManager.GetString("Location Error Message", resourceCulture);
             }
         }
         
@@ -1798,11 +2860,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} media items.
+        /// </summary>
+        public static string Media_Items_Count_Label {
+            get {
+                return ResourceManager.GetString("Media Items Count Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Media ({0}).
         /// </summary>
         public static string Media_Label {
             get {
                 return ResourceManager.GetString("Media Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to metres.
+        /// </summary>
+        public static string Metres_Label {
+            get {
+                return ResourceManager.GetString("Metres Label", resourceCulture);
             }
         }
         
@@ -1861,6 +2941,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Find the bridge you are surveying using the infrastructure ID, or your location.
+        /// </summary>
+        public static string New_Bridge_Survey_Help_Text {
+            get {
+                return ResourceManager.GetString("New Bridge Survey Help Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Find a bridge and start a new survey.
+        /// </summary>
+        public static string New_Bridge_Survey_Text {
+            get {
+                return ResourceManager.GetString("New Bridge Survey Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New bridge survey.
+        /// </summary>
+        public static string New_Bridge_Survey_Title {
+            get {
+                return ResourceManager.GetString("New Bridge Survey Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add new comment.
         /// </summary>
         public static string New_Comment_Label {
@@ -1875,6 +2982,15 @@ namespace CSIDE.Properties {
         public static string New_Value_Label {
             get {
                 return ResourceManager.GetString("New Value Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No detailed information about the bridge has been recorded.
+        /// </summary>
+        public static string No_Bridge_Details_Text {
+            get {
+                return ResourceManager.GetString("No Bridge Details Text", resourceCulture);
             }
         }
         
@@ -2041,11 +3157,47 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All done! No surveys for you to validate right now.
+        /// </summary>
+        public static string No_Surveys_Awaiting_Validation_Message {
+            get {
+                return ResourceManager.GetString("No Surveys Awaiting Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No surveys have been completed on this infrastructure item.
+        /// </summary>
+        public static string No_Surveys_For_Infrastructure_Text {
+            get {
+                return ResourceManager.GetString("No Surveys For Infrastructure Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No surveys found.
+        /// </summary>
+        public static string No_Surveys_Message {
+            get {
+                return ResourceManager.GetString("No Surveys Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Northing.
         /// </summary>
         public static string Northing_Label {
             get {
                 return ResourceManager.GetString("Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not provided.
+        /// </summary>
+        public static string Not_Provided_Label {
+            get {
+                return ResourceManager.GetString("Not Provided Label", resourceCulture);
             }
         }
         
@@ -2275,6 +3427,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reject survey.
+        /// </summary>
+        public static string Reject_Survey_Label {
+            get {
+                return ResourceManager.GetString("Reject Survey Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reload.
         /// </summary>
         public static string Reload_Label {
@@ -2388,6 +3549,15 @@ namespace CSIDE.Properties {
         public static string Route_ID_Manual_Entry_Label {
             get {
                 return ResourceManager.GetString("Route ID Manual Entry Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save and finish later.
+        /// </summary>
+        public static string Save_And_Finish_Later_Label {
+            get {
+                return ResourceManager.GetString("Save And Finish Later Label", resourceCulture);
             }
         }
         
@@ -2572,6 +3742,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start bridge survey.
+        /// </summary>
+        public static string Start_Bridge_Survey_Title {
+            get {
+                return ResourceManager.GetString("Start Bridge Survey Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start date.
+        /// </summary>
+        public static string Start_Date_Label {
+            get {
+                return ResourceManager.GetString("Start Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start Easting.
         /// </summary>
         public static string Start_Easting_Label {
@@ -2581,11 +3769,47 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;Remember to stay safe and always stick to the legal paths.&lt;/p&gt;&lt;p&gt;You&apos;ll need an internet connection. If you are in an area of bad coverage, you may need to complete the survey at home.&lt;/p&gt;&lt;p&gt;If you have any issues, contact your local ranger.&lt;/p&gt;.
+        /// </summary>
+        public static string Start_New_Bridge_Survey_Disclaimer {
+            get {
+                return ResourceManager.GetString("Start New Bridge Survey Disclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You will need to: &lt;ul&gt;&lt;li&gt;tell us the construction and condition of all parts of the bridge&lt;/li&gt;&lt;li&gt;submit at least one photo of the bridge&lt;/li&gt;&lt;li&gt;tell us about any repairs required&lt;/li&gt;&lt;/ul&gt;.
+        /// </summary>
+        public static string Start_New_Bridge_Survey_Text {
+            get {
+                return ResourceManager.GetString("Start New Bridge Survey Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start survey for bridge {0}.
+        /// </summary>
+        public static string Start_New_Bridge_Survey_Title {
+            get {
+                return ResourceManager.GetString("Start New Bridge Survey Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start Northing.
         /// </summary>
         public static string Start_Northing_Label {
             get {
                 return ResourceManager.GetString("Start Northing Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start now.
+        /// </summary>
+        public static string Start_Now_Button_Text {
+            get {
+                return ResourceManager.GetString("Start Now Button Text", resourceCulture);
             }
         }
         
@@ -2626,6 +3850,105 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Status_Label {
+            get {
+                return ResourceManager.GetString("Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Submit survey.
+        /// </summary>
+        public static string Submit_Survey_Button_Text {
+            get {
+                return ResourceManager.GetString("Submit Survey Button Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This survey is awaiting validation.
+        /// </summary>
+        public static string Survey_Awaiting_Validation_Message {
+            get {
+                return ResourceManager.GetString("Survey Awaiting Validation Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Survey complete.
+        /// </summary>
+        public static string Survey_Complete_Title {
+            get {
+                return ResourceManager.GetString("Survey Complete Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Survey ID.
+        /// </summary>
+        public static string Survey_ID_Label {
+            get {
+                return ResourceManager.GetString("Survey ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The infrastructure you selected was not a bridge.
+        /// </summary>
+        public static string Survey_Not_A_Bridge_Error_Message {
+            get {
+                return ResourceManager.GetString("Survey Not A Bridge Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This survey was rejected.
+        /// </summary>
+        public static string Survey_Rejected_Message {
+            get {
+                return ResourceManager.GetString("Survey Rejected Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This survey has been validated and added to the infrastructure item.
+        /// </summary>
+        public static string Survey_Validated_Message {
+            get {
+                return ResourceManager.GetString("Survey Validated Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validation notes.
+        /// </summary>
+        public static string Survey_Validation_Notes_Label {
+            get {
+                return ResourceManager.GetString("Survey Validation Notes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Surveyor.
+        /// </summary>
+        public static string Surveyor_Name_Label {
+            get {
+                return ResourceManager.GetString("Surveyor Name Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Surveys awaiting validation.
+        /// </summary>
+        public static string Surveys_Awaiting_Validation_Title {
+            get {
+                return ResourceManager.GetString("Surveys Awaiting Validation Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Surveys.
         /// </summary>
         public static string Surveys_Title {
@@ -2658,6 +3981,15 @@ namespace CSIDE.Properties {
         public static string Too_Many_Files_Upload_Error {
             get {
                 return ResourceManager.GetString("Too Many Files Upload Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown/Not applicable.
+        /// </summary>
+        public static string Unknown_Label {
+            get {
+                return ResourceManager.GetString("Unknown Label", resourceCulture);
             }
         }
         
@@ -2847,6 +4179,15 @@ namespace CSIDE.Properties {
         public static string View_All_Recent_Jobs_Label {
             get {
                 return ResourceManager.GetString("View All Recent Jobs Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View survey.
+        /// </summary>
+        public static string View_Survey_Label {
+            get {
+                return ResourceManager.GetString("View Survey Label", resourceCulture);
             }
         }
         

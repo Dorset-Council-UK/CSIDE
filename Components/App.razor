@@ -26,10 +26,26 @@
     {
         <link rel="manifest" href="@IconsRoot/manifest.webmanifest" />
     }
+    @{
+        var primaryColorHex = _csideOptions.Theme.PrimaryColour;
+        //convert hex to rgb
+        // Remove the '#' if it exists
+        primaryColorHex = primaryColorHex.TrimStart('#');
+
+        // Parse the hex string into RGB components
+        var r = int.Parse(primaryColorHex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        var g = int.Parse(primaryColorHex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        var b = int.Parse(primaryColorHex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+        // Create the RGB value as a string
+        var primaryColorRgb = $"{r}, {g}, {b}";
+    }
     <style type="text/css">
         :root{
-            --primary-color: @(_csideOptions.Theme.PrimaryColour);
+            --primary-color: #@primaryColorHex;
             --primary-color-dark: color-mix(in srgb, var(--primary-color), black 25%);
+            --bs-primary: #@primaryColorHex;
+            --bs-primary-rgb: @primaryColorRgb
         }
     </style>
     <HeadOutlet @rendermode="@InteractiveServer" />

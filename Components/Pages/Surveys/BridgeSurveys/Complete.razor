@@ -1,0 +1,34 @@
+﻿@page "/surveys/bridge/{SurveyId:int}/complete"
+@using CSIDE.Components.Authorization
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<PageTitle>@localizer["Survey Complete Title"]</PageTitle>
+<AuthorizeView Policy="IsSurveyor" Resource="Survey" Context="SurveyEdit">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+    <Authorized>
+        <div class="row">
+            <div class="col-lg-8">
+
+                <div class="card bg-primary text-white text-center my-3">
+                    <div class="card-body">
+                        <h1 class="font-weight-bold mb-3">@localizer["Survey Complete Title"]</h1>
+                        <p class="h2">@localizer["Survey ID Label"] <strong>@SurveyId</strong></p>
+                    </div>
+                </div>
+
+                <CSIDE.Components.Shared.Markdown Text="@localizer["Bridge Survey What Happens Next Text"]"></CSIDE.Components.Shared.Markdown>
+
+                <a href="/surveys" class="btn btn-primary">@localizer["Do Another Survey Button Text"]</a>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+
+
+

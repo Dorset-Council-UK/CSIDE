@@ -15,7 +15,7 @@ Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Log Date Label"]" PropertyName="LogDate" SortKeySelector="item => item.LogDate">
-            @context.LogDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)
+            @context.LogDate.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)
         </GridColumn>
         <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Section Label"]" PropertyName="EntityName" SortKeySelector="item => item.EntityName">
             @context.EntityName

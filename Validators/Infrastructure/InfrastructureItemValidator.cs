@@ -14,6 +14,7 @@ namespace CSIDE.Validators.Infrastructure
         {
             _contextFactory = contextFactory;
             _localizer = localizer;
+
             RuleFor(item => item.Description)
                 .MaximumLength(4000)
                 .WithName(_localizer["Infrastructure Description Label"]);
@@ -32,9 +33,13 @@ namespace CSIDE.Validators.Infrastructure
                 .LessThanOrEqualTo(100)
                 .GreaterThanOrEqualTo(0)
                 .WithName(_localizer["Infrastructure Width Label"]);
-            RuleFor(job => job.RouteId)
+            RuleFor(item => item.RouteId)
                 .NotEmpty().WithName(_localizer["Route ID Label"])
                 .MustAsync(RouteIDExists).WithMessage(r => _localizer["Route Does Not Exist Validation Message",r.RouteId!]);
+
+            RuleFor(item => item.BridgeDetails)
+                .SetValidator(new InfrastructureBridgeDetailsValidator())
+                .When(item => item.BridgeDetails != null);
         }
 
         private async Task<bool> RouteIDExists(string? RouteId, CancellationToken ct)

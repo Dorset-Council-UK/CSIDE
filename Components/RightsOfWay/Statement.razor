@@ -3,7 +3,7 @@
 <div class="card statement-card bg-light mb-2" id="statement-@statement.Id">
     <div class="card-header d-flex justify-content-between">
         <span>
-            @statement.CreatedDate!.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)
+            @statement.CreatedDate!.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)
         </span>
         <span>
             v@(statement.Version)

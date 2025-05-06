@@ -1,0 +1,36 @@
+﻿@using System.Globalization
+
+@if (IsLoading)
+{
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+else
+{
+    if(Surveys is null || Surveys.Count == 0)
+    {
+        <Alert Color="AlertColor.Info">@localizer["No Surveys For Infrastructure Text"]</Alert>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var survey in Surveys.OrderByDescending(s => s.EndDate))
+            {
+                string url = $"surveys/bridge/{survey.Id}/details";
+                <div class="col-lg-6">
+                    <Card Color="CardColor.Light">
+                        <CardBody>
+                            <CardTitle>@localizer["Bridge Survey Details Title",survey.Id]</CardTitle>
+                            <CardText>
+                                <p><strong>@localizer["Completion Date Label"]: </strong>@(survey.EndDate.HasValue ? survey.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])</p>
+                                <p><a href="surveys/bridge/@survey.Id/details" class="btn btn-outline-primary btn-sm">@localizer["View Survey Label"]</a></p>
+                            </CardText>
+                            
+                        </CardBody>
+                    </Card>
+                </div>
+            }
+        </div>
+    }
+}

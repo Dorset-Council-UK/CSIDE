@@ -1,0 +1,66 @@
+﻿@page "/surveys/bridge/start/{InfraId:int}"
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.Authorization
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Start New Bridge Survey Title",InfraId]</h1>
+
+@if (ErrorMessage is not null)
+{
+    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+}
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+
+<AuthorizeView Roles="Surveyor, Ranger, Administrator">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+    <Authorized>
+        @if (InfrastructureItem is not null)
+        {
+            <PageTitle>@localizer["Start New Bridge Survey Title", InfraId]</PageTitle>
+
+
+            <div class="row">
+                <div class="col-md-8">
+                    <CSIDE.Components.Shared.Markdown Text="@localizer["Start New Bridge Survey Text"]"></CSIDE.Components.Shared.Markdown>
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Type="ButtonType.Button" disabled="@IsBusy" @onclick="SubmitFormAsync">@localizer["Start Now Button Text"] <span class="bi bi-chevron-right"></span></Button>
+
+
+                    <h2 class="mt-2">@localizer["Before You Start Title"]</h2>
+                    <CSIDE.Components.Shared.Markdown Text="@localizer["Start New Bridge Survey Disclaimer"]"></CSIDE.Components.Shared.Markdown>
+
+                </div>
+                <div class="col-md-4">
+                    <ErrorBoundary>
+                        <ChildContent>
+                            @if (InfrastructureItem.Geom is not null)
+                            {
+                                <MiniMap Geometry="@InfrastructureItem.Geom"></MiniMap>
+                            }
+                            <table class="table table-striped table-sm">
+                                <tbody>
+                                    <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom?.X)</td></tr>
+                                    <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom?.Y)</td></tr>
+                                </tbody>
+                            </table>
+                        </ChildContent>
+                        <ErrorContent Context="Exception">
+                            <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                        </ErrorContent>
+                    </ErrorBoundary>
+                </div>
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>

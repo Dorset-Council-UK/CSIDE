@@ -1,0 +1,225 @@
+﻿@page "/surveys/bridge/{SurveyId:int}/summary"
+@using CSIDE.Components.Authorization
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (ErrorMessage is not null)
+{
+    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+}
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+@if (Survey is not null)
+{
+    <PageTitle>@localizer["Bridge Survey Summary Title"]</PageTitle>
+
+    
+    <AuthorizeView Policy="IsSurveyor" Resource="Survey" Context="SurveyEdit">
+        <NotAuthorized>
+            <AccessDenied></AccessDenied>
+        </NotAuthorized>
+        <Authorized>
+            <h1>@localizer["Bridge Survey Summary Question"]</h1>
+
+            <h2 class="h3 mt-2">@localizer["Bridge Survey Confirm Location Summary Title"]</h2>
+            <div class="row my-3">
+                <div class="col-md-10 col-lg-8">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">Location provided?</th>
+                                <td>
+                                    @(Survey.UpdatedX is not null && Survey.UpdatedY is not null && Survey.LocationAccuracy is not null ?
+                                        $"{localizer["Yes Label"]} ({localizer["Bridge Survey Confirm Location Current Accuracy Label", Survey.LocationAccuracy]})" :
+                                        localizer["No Label"])
+                                </td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/confirm-location?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 class="h3">@localizer["Bridge Survey Construction Title"]</h2>
+            <div class="row my-3">
+                <div class="col-md-10 col-lg-8">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Beams Short Label"]</th>
+                                <td>@(Survey.BeamMaterial?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Decking Short Label"]</th>
+                                <td>@(Survey.DeckingMaterial?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Handrail Short Label"]</th>
+                                <td>@(Survey.HandrailMaterial?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Handrail Posts Short Label"]</th>
+                                <td>@(Survey.HandrailPostsMaterial?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Bank Seat Short Label"]</th>
+                                <td>@(Survey.BankSeatMaterial?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Anti Slip Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.AntiSlipInstalled"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Gates Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.GateInstalled"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Stiles Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.StileInstalled"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Ramps Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.RampInstalled"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Steps Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.StepsInstalled"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Infrastructure Height Label"]</th>
+                                <td>@(Survey.Height.HasValue ? $"{Survey.Height} {localizer["Metres Label"]}" : localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Infrastructure Length Label"]</th>
+                                <td>@(Survey.Length.HasValue ? $"{Survey.Length} {localizer["Metres Label"]}" : localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/construction?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 class="h3">@localizer["Bridge Survey Condition Title"]</h2>
+            <div class="row my-3">
+                <div class="col-md-10 col-lg-8">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Beams Short Label"]</th>
+                                <td>@(Survey.BeamCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/condition?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Decking Short Label"]</th>
+                                <td>@(Survey.DeckingCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/condition?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Handrail Short Label"]</th>
+                                <td>@(Survey.HandrailCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/condition?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Handrail Posts Short Label"]</th>
+                                <td>@(Survey.HandrailPostsCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/condition?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Bank Seat Short Label"]</th>
+                                <td>@(Survey.BankSeatCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/condition?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 class="h3">@localizer["Bridge Survey Repairs Title"]</h2>
+            <div class="row my-3">
+                <div class="col-md-10 col-lg-8">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Overgrown Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.Overgrown"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/repairs-and-further-information?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Signs Of Bank Erosion Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.SignsOfBankErosion"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/repairs-and-further-information?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Seriously Eroded Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.SeriouslyEroded"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/repairs-and-further-information?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey High Usage Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.HighUsage"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/repairs-and-further-information?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Cover Boards In Place Short Label"]</th>
+                                <td><NullableBooleanDisplay Value="Survey.CoverBoardsInPlace"></NullableBooleanDisplay></td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/repairs-and-further-information?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Repairs Required Short Label"]</th>
+                                <td>@Survey.RepairsRequired</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/repairs-and-further-information?fromSummary=true")">@localizer["Change Label"]</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 class="h3">@localizer["Bridge Survey Media Summary Title"]</h2>
+            <div class="row my-3">
+                <div class="col-md-10 col-lg-8">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">@localizer["Bridge Survey Media Provided Summary Label"]</th>
+                                <td>@(Survey.SurveyMedia.Count == 0 ? @localizer["Not Provided Label"] : localizer["Media Items Count Label", Survey.SurveyMedia.Count])</td>
+                                <td class="w-25"><a href="@($"surveys/bridge/{SurveyId}/media")">@localizer["Change Label"]</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h1 class="h2">@localizer["Bridge Survey Summary Submit Title"]</h1>
+            <p>@localizer["Bridge Survey Summary Submit Help Text"]</p>
+
+            @if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Type="ButtonType.Button" disabled="@IsBusy" @onclick="SubmitFormAsync">@localizer["Submit Survey Button Text"]</Button>
+            <a href="surveys" class="btn btn-link btn-lg">@localizer["Save And Finish Later Label"].ToString().ToLower()</a>
+        </Authorized>
+    </AuthorizeView>
+
+    
+}

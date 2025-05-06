@@ -10,4 +10,6 @@ public record MappingOptions
     public required string RouteLayer { get; init; }
     public required string InfrastructureLayer { get; init; }
     public StartBoundsOptions StartBounds { get; init; } = new();
+    public string ExternalMappingSystemTemplateURL { get; init; } = "";
+    public string ExternalMappingSystemBridgeSurveyMapURL { get; init; } = "";
 }

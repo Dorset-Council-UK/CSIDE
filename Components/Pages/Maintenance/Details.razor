@@ -50,7 +50,7 @@ else
                                         </tr>
                                         <tr>
                                             <th>@localizer["Log Date Label"]</th>
-                                            <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")</td>
+                                            <td>@(Job.LogDate.HasValue ? Job.LogDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])</td>
                                         </tr>
                                         <tr>
                                             <th>@localizer["Logged By Label"]</th>

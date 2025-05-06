@@ -1,0 +1,224 @@
+﻿@page "/Surveys/List"
+@using CSIDE.Components.Authorization;
+@using CSIDE.Data.Models.Surveys;
+@using System.Globalization;
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<AuthorizeView Roles="Ranger, Administrator, Survey Validator, Surveyor" Context="OuterContext">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+    <Authorized>
+
+        @if (ErrorMessage is not null)
+        {
+            <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+        }
+        @if (IsBusy)
+        {
+            <PageTitle>@localizer["Loading Text"]</PageTitle>
+            <p class="fs-4">
+                <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+            </p>
+        }
+        else
+        {
+            <PageTitle>@localizer["Existing Bridge Surveys Title"]</PageTitle>
+            <h1>@localizer["Existing Bridge Surveys Title"]</h1>
+            <p>@localizer["Existing Bridge Surveys Text"]</p>
+            
+            <AuthorizeView Roles="Survey Validator, Administrator" Context="InnerContext">
+                <Authorized>
+                    <h2>@localizer["Surveys Awaiting Validation Title"]</h2>
+
+                    <Grid TItem="BridgeSurvey"
+                          Class="table table-hover table-bordered table-striped mt-2"
+                          DataProvider="SurveysAwaitingValidationDataProvider"
+                          AllowFiltering="false"
+                          AllowPaging="true"
+                          PageSize="20"
+                          AllowSorting="true"
+                          AllowSelection="false"
+                          AllowRowClick="true"
+                          OnRowClick="OnRowClick"
+                          AutoHidePaging="true"
+                          Responsive="true">
+
+                        <GridColumns>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
+                                @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
+                                @context.SurveyorName
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["End Date Label"]" PropertyName="EndDate" SortKeySelector="item => item.EndDate">
+                                @(context.EndDate.HasValue ? context.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])
+                            </GridColumn>
+
+                        </GridColumns>
+                        <GridTemplates>
+                            <GridEmptyDataTemplate TItem="BridgeSurvey">
+                                <div class="text-center text-muted">
+                                    <span class="bi bi-inbox fs-2"></span>
+                                    <div>
+                                        <p>@localizer["No Surveys Awaiting Validation Message"]</p>
+                                    </div>
+                                </div>
+                            </GridEmptyDataTemplate>
+                        </GridTemplates>
+                    </Grid>
+
+                    <h2>@localizer["Finished Surveys Title"]</h2>
+
+                    <Grid TItem="BridgeSurvey"
+                          Class="table table-hover table-bordered table-striped mt-2"
+                          DataProvider="FinishedSurveysDataProvider"
+                          AllowFiltering="false"
+                          AllowPaging="true"
+                          PageSize="20"
+                          AllowSorting="true"
+                          AllowSelection="false"
+                          AllowRowClick="true"
+                          OnRowClick="OnRowClick"
+                          AutoHidePaging="true"
+                          Responsive="true">
+
+                        <GridColumns>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
+                                @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
+                                @context.SurveyorName
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["End Date Label"]" PropertyName="EndDate" SortKeySelector="item => item.EndDate">
+                                @(context.EndDate.HasValue ? context.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Status Label"]" PropertyName="Status" SortKeySelector="item => item.Status">
+                                @context.Status.ToString()
+                            </GridColumn>
+                        </GridColumns>
+                        <GridTemplates>
+                            <GridEmptyDataTemplate TItem="BridgeSurvey">
+                                <div class="text-center text-muted">
+                                    <span class="bi bi-inbox fs-2"></span>
+                                    <div>
+                                        <p>@localizer["No Surveys Message"]</p>
+                                    </div>
+                                </div>
+                            </GridEmptyDataTemplate>
+                        </GridTemplates>
+                    </Grid>
+
+                </Authorized>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Ranger, Surveyor" Context="InnerContext">
+                <Authorized>
+                    <h2>@localizer["Incomplete Surveys Title"]</h2>
+
+                    <Grid TItem="BridgeSurvey"
+                          Class="table table-hover table-bordered table-striped mt-2"
+                          DataProvider="IncompleteSurveysDataProvider"
+                          AllowFiltering="false"
+                          AllowPaging="true"
+                          PageSize="20"
+                          AllowSorting="true"
+                          AllowSelection="false"
+                          AllowRowClick="true"
+                          OnRowClick="OnRowClick"
+                          AutoHidePaging="true"
+                          Responsive="true">
+
+                        <GridColumns>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
+                                @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
+                                @context.SurveyorName
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Start Date Label"]" PropertyName="StartDate" SortKeySelector="item => item.StartDate">
+                                @(context.StartDate.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture))
+                            </GridColumn>
+                        </GridColumns>
+                        <GridTemplates>
+                            <GridEmptyDataTemplate TItem="BridgeSurvey">
+                                <div class="text-center text-muted">
+                                    <span class="bi bi-inbox fs-2"></span>
+                                    <div>
+                                        <p>@localizer["No Surveys Message"]</p>
+                                    </div>
+                                </div>
+                            </GridEmptyDataTemplate>
+                        </GridTemplates>
+                    </Grid>
+
+                    <h2>@localizer["Finished Surveys Title"]</h2>
+
+                    <Grid TItem="BridgeSurvey"
+                          Class="table table-hover table-bordered table-striped mt-2"
+                          DataProvider="FinishedSurveysDataProvider"
+                          AllowFiltering="false"
+                          AllowPaging="true"
+                          PageSize="20"
+                          AllowSorting="true"
+                          AllowSelection="false"
+                          AllowRowClick="true"
+                          OnRowClick="OnRowClick"
+                          AutoHidePaging="true"
+                          Responsive="true">
+
+                        <GridColumns>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
+                                @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
+                                @context.SurveyorName
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["End Date Label"]" PropertyName="EndDate" SortKeySelector="item => item.EndDate">
+                                @(context.EndDate.HasValue ? context.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey Status Label"]" PropertyName="Status" SortKeySelector="item => item.Status">
+                                @context.Status.ToString()
+                            </GridColumn>
+                        </GridColumns>
+                        <GridTemplates>
+                            <GridEmptyDataTemplate TItem="Survey">
+                                <div class="text-center text-muted">
+                                    <span class="bi bi-inbox fs-2"></span>
+                                    <div>
+                                        <p>@localizer["No Surveys Message"]</p>
+                                    </div>
+                                </div>
+                            </GridEmptyDataTemplate>
+                        </GridTemplates>
+                    </Grid>
+
+                </Authorized>
+            </AuthorizeView>
+        }
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+@*If user is validator, provide list of surveys awaiting validation*@
+
+@*Else show a list of the users surveys*@
+
+
+

@@ -10,15 +10,16 @@
     </div>
 </div>
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public required string Id{ get; set; }
-    [Parameter]
+    [Parameter, EditorRequired]
     public required string Title{ get; set; }
     [Parameter]
     public bool IsShownByDefault{ get; set; }
     [Parameter]
     public required RenderFragment ChildContent { get; set; }
 
+    /*TODO Implement updating to allow counts to be updated*/
     public void UpdateTitle(string NewTitle)
     {
         Title = NewTitle;

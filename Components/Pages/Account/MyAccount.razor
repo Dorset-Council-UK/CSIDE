@@ -36,15 +36,35 @@
         </ul>
     }
 }
+<Button Type="ButtonType.Button" Color="ButtonColor.Link" Class="ps-0" @onclick="ToggleContentAsync"><span class="bi bi-caret-@(!AuthClaimsOpen ? "right" : "down")"></span> @localizer["Auth Claims Title"]</Button>
+
+<Collapse @ref="AuthClaimsCollapseElement">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            @if (UserClaims is not null)
+            {
+                @foreach (var claim in UserClaims)
+                {
+                    <tr><th class="w-25">@claim.Type</th><td>@claim.Value</td><td>@claim.Issuer</td></tr>
+                }
+            }
+        </table>
+    </div>
+</Collapse>
+
+
 
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
+    Collapse AuthClaimsCollapseElement = default!;
+    private bool AuthClaimsOpen = false;
     private string? UserID{ get; set; }
     private string? UserDisplayName{ get; set; }
     private string? UserPrimaryEmailAddress { get; set; }
     private string? UserIdentityProvider{ get; set; }
+    private IEnumerable<System.Security.Claims.Claim>? UserClaims{ get; set; }
     private List<ApplicationRole>? ApplicationRoles { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -64,6 +84,12 @@
                 .ToListAsync();
 
         ApplicationRoles = userRoles.Select(r => r.Role).ToList();
-
+        UserClaims = user.Claims;
     }
+
+    private async Task ToggleContentAsync() {
+        await AuthClaimsCollapseElement.ToggleAsync();
+        AuthClaimsOpen = !AuthClaimsOpen;
+    }
+
 }

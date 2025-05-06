@@ -1,0 +1,110 @@
+@inherits InputBase<bool?>
+
+<fieldset class="@CssClass">
+    <legend class="form-label fs-6">@Label</legend>
+    @if (HintText is not null)
+    {
+        <div class="form-text my-2">@HintText</div>
+    }
+    <InputRadioGroup Name="@_id.ToString()" TValue="string" Value="@CurrentValueAsString" ValueChanged="@HandleValueChanged" ValueExpression="@(() => CurrentValueAsString)">
+        @{
+            var true_id = $"{_id.ToString()}-true";
+            var false_id = $"{_id.ToString()}-false";
+           
+        }
+        <div class="form-check form-check-inline">
+
+            <InputRadio TValue="string"
+                        class="form-check-input"
+                        id="@true_id"
+                        Name="@_id.ToString()"
+                        Value="@("true")"
+                        @key="@true_id" />
+
+            <label class="form-check-label" for="@true_id">
+                @localizer["Yes Label"]
+            </label>
+        </div>
+
+        <div class="form-check form-check-inline">
+
+            <InputRadio TValue="string"
+                        class="form-check-input"
+                        id="@false_id"
+                        Name="@_id.ToString()"
+                        Value="@("false")"
+                        @key="@false_id" />
+
+            <label class="form-check-label" for="@false_id">
+                @localizer["No Label"]
+            </label>
+        </div>
+
+        @if (HasNullOption)
+        {
+            var null_id = $"{_id.ToString()}-null";
+            <div class="form-check form-check-inline">
+
+                <InputRadio TValue="string"
+                            class="form-check-input"
+                            id="@null_id"
+                            Name="@_id.ToString()"
+                            Value="@("null")"
+                            @key="@null_id" />
+
+                <label class="form-check-label" for="@null_id">
+                    @NullValueLabel
+                </label>
+            </div>
+        }
+    </InputRadioGroup>
+</fieldset>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+    [Parameter]
+    public bool HasNullOption { get; set; } = false;
+    [Parameter]
+    public string? NullValueLabel { get; set; } = "Unknown";
+    [Parameter]
+    public string? HintText { get; set; }
+
+    private Guid _id = Guid.NewGuid();
+
+    private void HandleValueChanged(string value)
+    {
+        bool? parsedValue = value switch
+        {
+            "null" => null,
+            "true" => true,
+            "false" => false,
+            _ => null
+        };
+
+        CurrentValue = parsedValue;
+    }
+
+    protected override string FormatValueAsString(bool? value) =>
+        value switch
+        {
+            true => "true",
+            false => "false",
+            _ => "null"
+        };
+
+    protected override bool TryParseValueFromString(string? value, out bool? result, out string validationErrorMessage)
+    {
+        validationErrorMessage = string.Empty;
+
+        result = value switch
+        {
+            "true" => true,
+            "false" => false,
+            "null" or null => null,
+            _ => null
+        };
+
+        return true;
+    }
+}

@@ -11,6 +11,7 @@ using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Interceptors;
 using CSIDE.Data.Models.Audit;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using CSIDE.Data.Models.Surveys;
 
 namespace CSIDE.Data
 {
@@ -20,7 +21,8 @@ namespace CSIDE.Data
                                       IMaintenanceInterceptor maintenanceInterceptor,
                                       IInfrastructureInterceptor infrastructureInterceptor,
                                       ILandownerDepositInterceptor landownerDepositInterceptor,
-                                      IDMMOInterceptor dmmoInterceptor) : DbContext(options)
+                                      IDMMOInterceptor dmmoInterceptor,
+                                      ISurveyInterceptor surveyInterceptor) : DbContext(options)
     {
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
@@ -30,6 +32,7 @@ namespace CSIDE.Data
         public DbSet<JobPriority> MaintenanceJobPriorities { get; set; }
         public DbSet<JobStatus> MaintenanceJobStatuses { get; set; }
         public DbSet<Team> MaintenanceTeams { get; set; }
+        public DbSet<TeamUser> MaintenanceTeamUsers { get; set; }
         public DbSet<Comment> MaintenanceComments { get; set; }
         public DbSet<JobContact> MaintenanceJobContact { get; set; }
         public DbSet<JobMedia> MaintenanceJobMedia { get; set; }
@@ -58,6 +61,7 @@ namespace CSIDE.Data
         public DbSet<InfrastructureItem> Infrastructure { get; set; }
         public DbSet<InfrastructureType> InfrastructureTypes { get; set; }
         public DbSet<InfrastructureMedia> InfrastructureMedia { get; set; }
+        public DbSet<InfrastructureBridgeDetails> InfrastructureBridgeDetails { get; set; }
         public DbSet<ProblemType> ProblemTypes { get; set; }
 
         public DbSet<LandownerDeposit> LandownerDeposits { get; set; }
@@ -68,6 +72,10 @@ namespace CSIDE.Data
         public DbSet<LandownerDepositAddress> LandownerDepositAddresses { get; set; }
         public DbSet<LandownerDepositMediaType> LandownerDepositMediaTypes { get; set; }
         public DbSet<LandownerDepositParish> LandownerDepositParishes { get; set; }
+
+        public DbSet<BridgeSurvey> BridgeSurveys { get; set; }
+        public DbSet<Condition> Conditions { get; set; }
+        public DbSet<Material> Materials { get; set; }
 
         public DbSet<Parish> Parishes { get; set; }
         public DbSet<ParishCode> ParishCodes { get; set; }
@@ -82,7 +90,8 @@ namespace CSIDE.Data
                 infrastructureInterceptor,
                 dmmoInterceptor,
                 landownerDepositInterceptor,
-                auditInterceptor
+                surveyInterceptor,
+                auditInterceptor,
             ]);
         }
 
@@ -96,336 +105,13 @@ namespace CSIDE.Data
                 new ApplicationRole { Id = 3, RoleName = "RoW Officer" },
                 new ApplicationRole { Id = 4, RoleName = "Survey Validator" },
                 new ApplicationRole { Id = 5, RoleName = "RoW Statement Editor" },
-                new ApplicationRole { Id = 6, RoleName = "View" }
+                new ApplicationRole { Id = 6, RoleName = "View" },
+                new ApplicationRole { Id = 7, RoleName = "Surveyor"}
             );
 
+            modelBuilder.Entity<Survey>().UseTpcMappingStrategy();
             // DbSet configurations
-            modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
-
-            modelBuilder.ApplyConfiguration(new ApplicationUserRoleConfiguration());
-            modelBuilder.ApplyConfiguration(new ContactConfiguration());
-            modelBuilder.ApplyConfiguration(new MediaConfiguration());
-            modelBuilder.ApplyConfiguration(new ParishConfiguration());
-            modelBuilder.ApplyConfiguration(new ParishCodeConfiguration());
-
-            modelBuilder.ApplyConfiguration(new ProblemTypeConfiguration());
-
-            modelBuilder.ApplyConfiguration(new MaintenanceJobConfiguration());
-            modelBuilder.ApplyConfiguration(new MaintenanceTeamConfiguration());
-            modelBuilder.ApplyConfiguration(new MaintenanceCommentConfiguration());
-            modelBuilder.ApplyConfiguration(new JobProblemTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new JobContactConfiguration());
-            modelBuilder.ApplyConfiguration(new JobMediaConfiguration());
-            modelBuilder.ApplyConfiguration(new JobInfrastructureConfiguration());
-
-            modelBuilder.ApplyConfiguration(new RouteConfiguration());
-            modelBuilder.ApplyConfiguration(new StatementConfiguration());
-            modelBuilder.ApplyConfiguration(new RouteMediaConfiguration());
-
-            modelBuilder.ApplyConfiguration(new DMMOApplicationConfiguration());
-            modelBuilder.ApplyConfiguration(new DMMOMediaConfiguration());
-            modelBuilder.ApplyConfiguration(new DMMOContactConfiguration());
-            modelBuilder.ApplyConfiguration(new DMMOParishConfiguration());
-            modelBuilder.ApplyConfiguration(new DMMOAddressConfiguration());
-            modelBuilder.ApplyConfiguration(new DMMOLinkedRouteConfiguration());
-
-            modelBuilder.ApplyConfiguration(new InfrastructureItemConfiguration());
-            modelBuilder.ApplyConfiguration(new InfrastructureTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new InfrastructureMediaConfiguration());
-            modelBuilder.ApplyConfiguration(new JobProblemTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ParishConfiguration());
-
-            modelBuilder.ApplyConfiguration(new LandownerDepositConfiguration());
-            modelBuilder.ApplyConfiguration(new LandownerDepositTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new LandownerDepositMediaConfiguration());
-            modelBuilder.ApplyConfiguration(new LandownerDepositContactConfiguration());
-            modelBuilder.ApplyConfiguration(new LandownerDepositAddressConfiguration());
-            modelBuilder.ApplyConfiguration(new landownerDepositParishConfiguration());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
-
-    //    public override int SaveChanges()
-    //    {
-    //        if (ChangeTracker.Entries<LandownerDeposit>().Any())
-    //        {
-    //            UpdateLandownerDepositParishIds().Wait();
-    //        }
-    
-    //        if (ChangeTracker.Entries<Models.DMMO.Application>().Any())
-    //        {
-    //            UpdateDMMOParishIds().Wait();
-    //        }
-    //        //TODO - Add to audit log
-
-    //        return base.SaveChanges();
-    //    }
-
-    //    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    //    {
-    //        if (ChangeTracker.Entries<Job>().Any())
-    //        {
-    //            await UpdateMaintenanceJobParishIds();
-    //            await SetMaintenanceTeamForJob();
-    //            await SetLoggedByUserAsync();
-    //        }
-
-    //        if (ChangeTracker.Entries<InfrastructureItem>().Any())
-    //        {
-    //            await UpdateInfrastructureParishIds();
-    //            await SetMaintenanceTeamForInfrastructureItem();
-    //        }
-
-    //        if (ChangeTracker.Entries<LandownerDeposit>().Any())
-    //        {
-    //            await UpdateLandownerDepositParishIds();
-    //        }
-
-    //        if (ChangeTracker.Entries<Models.RightsOfWay.Route>().Any())
-    //        {
-    //            await UpdateRouteParishIds();
-    //            await SetMaintenanceTeamForRoute();
-    //            await FixClosureData();
-    //        }
-
-    //        if (ChangeTracker.Entries<Models.RightsOfWay.Statement>().Any())
-    //        {
-    //            await UpdateVersionOfStatement();
-    //        }
-
-    //        if (ChangeTracker.Entries<Models.DMMO.Application>().Any())
-    //        {
-    //            await UpdateDMMOParishIds();
-    //        }
-    //        //TODO - Add to audit log
-
-    //        return await base.SaveChangesAsync(cancellationToken);
-    //    }
-
-    //    /// <summary>
-    //    /// Updates the Parish ID of a new or updated job based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task UpdateMaintenanceJobParishIds()
-    //    {
-    //        var jobs = ChangeTracker.Entries<Job>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var job in jobs)
-    //        {
-    //            var parish = await context.Parishes.SingleOrDefaultAsync(p => p.Geom.Contains(job.Geom));
-    //            job.ParishId = parish?.ParishId;
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Updates the Parish ID of a new or updated infrastructure item based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task UpdateInfrastructureParishIds()
-    //    {
-    //        var infrastructureItems = ChangeTracker.Entries<InfrastructureItem>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var infrastructureItem in infrastructureItems)
-    //        {
-    //            var parish = await context.Parishes.SingleOrDefaultAsync(p => p.Geom.Contains(infrastructureItem.Geom));
-    //            infrastructureItem.ParishId = parish?.ParishId;
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Updates the Parish ID of a new or updated landowner deposit based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task UpdateLandownerDepositParishIds()
-    //    {
-    //        var landownerDeposits = ChangeTracker.Entries<LandownerDeposit>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var landownerDeposit in landownerDeposits)
-    //        {
-    //            var parishes = await context.Parishes.Where(p => p.Geom.Intersects(landownerDeposit.Geom)).ToArrayAsync();
-    //            landownerDeposit.LandownerDepositParishes.Clear();
-    //            foreach (var parish in parishes)
-    //            {
-    //                landownerDeposit.LandownerDepositParishes.Add(new LandownerDepositParish { ParishId = parish.ParishId, LandownerDepositId = landownerDeposit.Id });
-    //            }
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Updates the Parish ID of a new or updated job based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task UpdateRouteParishIds()
-    //    {
-    //        var routes = ChangeTracker.Entries<Models.RightsOfWay.Route>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var route in routes)
-    //        {
-    //            var bestParish = await context.Parishes.Where(p => p.Geom.Intersects(route.Geom)).OrderByDescending(p => p.Geom.Intersection(route.Geom).Length).FirstOrDefaultAsync();
-    //            route.ParishId = bestParish?.ParishId;
-    //        }
-    //    }
-
-    //    private async Task UpdateDMMOParishIds()
-    //    {
-    //        var applications = ChangeTracker.Entries<Models.DMMO.Application>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var application in applications)
-    //        {
-    //            var parishes = await context.Parishes.Where(p => p.Geom.Intersects(application.Geom)).ToArrayAsync();
-    //            var existingParishIds = application.DMMOParishes.Select(dp => dp.ParishId).ToList();
-    //            var newParishIds = parishes.Select(p => p.ParishId).ToList();
-
-    //            // Remove DMMOParishes that are not in the new list
-    //            var parishesToRemove = application.DMMOParishes.Where(dp => !newParishIds.Contains(dp.ParishId)).ToList();
-    //            foreach (var parishToRemove in parishesToRemove)
-    //            {
-    //                application.DMMOParishes.Remove(parishToRemove);
-    //            }
-
-    //            // Add new DMMOParishes that are not in the existing list
-    //            var parishesToAdd = parishes.Where(p => !existingParishIds.Contains(p.ParishId)).ToList();
-    //            foreach (var parishToAdd in parishesToAdd)
-    //            {
-    //                application.DMMOParishes.Add(new DMMOParish { ParishId = parishToAdd.ParishId, ApplicationId = application.Id });
-    //            }
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Sets the LoggedById and LoggedByName of a newly added job to the currently logged in user
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task SetLoggedByUserAsync()
-    //    {
-    //        var jobs = ChangeTracker.Entries<Job>()
-    //            .Where(e => e.State == EntityState.Added)
-    //            .Select(e => e.Entity);
-    //        var stateProvider = await authenticationStateProvider.GetAuthenticationStateAsync();
-    //        var user = stateProvider.User;
-    //        if (user is not null)
-    //        {
-    //            foreach (var job in jobs)
-    //            {
-    //                job.LoggedById = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-    //                job.LoggedByName = user.Identity?.Name;
-    //            }
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Sets the Maintenance Team ID of a newly created job based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task SetMaintenanceTeamForJob()
-    //    {
-    //        var jobs = ChangeTracker.Entries<Job>()
-    //            .Where(e => e.State == EntityState.Added)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var job in jobs)
-    //        {
-    //            var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(job.Geom)).FirstOrDefaultAsync();
-    //            job.MaintenanceTeamId = team?.Id;
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Sets the Maintenance Team ID of a new or updated infrastructure item based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task SetMaintenanceTeamForInfrastructureItem()
-    //    {
-    //        var infrastructureItems = ChangeTracker.Entries<InfrastructureItem>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var infrastructureItem in infrastructureItems)
-    //        {
-    //            var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(infrastructureItem.Geom)).FirstOrDefaultAsync();
-    //            infrastructureItem.MaintenanceTeamId = team?.Id;
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Sets the Maintenance Team ID of a newly created job based on a spatial contains query
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task SetMaintenanceTeamForRoute()
-    //    {
-    //        var routes = ChangeTracker.Entries<Models.RightsOfWay.Route>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var route in routes)
-    //        {
-    //            var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(route.Geom)).FirstOrDefaultAsync();
-    //            route.MaintenanceTeamId = team?.Id;
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Makes changes to the closure data of a Right of Way based on operational status
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task FixClosureData()
-    //    {
-    //        var routes = ChangeTracker.Entries<Models.RightsOfWay.Route>()
-    //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-    //            .Select(e => e.Entity);
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var route in routes)
-    //        {
-    //            var operationalStatus = await context.RouteOperationalStatuses.FindAsync(route.OperationalStatusId);
-    //            if (operationalStatus is not null && !operationalStatus.IsClosed)
-    //            {
-    //                route.ClosureStartDate = null;
-    //                route.ClosureEndDate = null;
-    //                route.ClosureIsIndefinite = false;
-    //            }
-    //            if(operationalStatus is not null && operationalStatus.IsClosed && route.ClosureIsIndefinite)
-    //            {
-    //                route.ClosureEndDate = null;
-    //            }
-                
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// Updates the version number of a new RoW Legal statement
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    private async Task UpdateVersionOfStatement()
-    //    {
-    //        var statements = ChangeTracker.Entries<Statement>()
-    //            .Where(e => e.State == EntityState.Added)
-    //            .Select(e => e.Entity);
-
-    //        using var context = contextFactory.CreateDbContext();
-    //        foreach (var statement in statements)
-    //        {
-    //            var highestVersionNumber = await context.Statements
-    //                .Where(s => s.RouteId == statement.RouteId)
-    //                .Select(s => (int?)s.Version)
-    //                .MaxAsync() ?? 0;
-    //            statement.Version = highestVersionNumber + 1;
-    //        }
-    //    }
     }
 }

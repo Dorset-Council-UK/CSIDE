@@ -6,7 +6,7 @@
 
     <BodyTemplate>
         @if(AuditLogEntry is not null){
-            <p>@AuditLogEntry.LogDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)</p>
+            <p>@AuditLogEntry.LogDate.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)</p>
             <p>@AuditLogEntry.UserName @AuditLogEntry.ChangeType.ToLower() @AuditLogEntry.EntityName @(!string.IsNullOrEmpty(AuditLogEntry.SecondaryEntityId) ? AuditLogEntry.SecondaryEntityId : AuditLogEntry.EntityId)</p>
             @if (Changes is not null && Changes.Count() != 0)
             {

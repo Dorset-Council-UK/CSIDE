@@ -30,7 +30,7 @@ else
     {
         <PageTitle>@localizer["Infrastructure Details Title", InfrastructureItem.Id]</PageTitle>
         <h1>@localizer["Infrastructure Details Title", InfrastructureItem.Id]</h1>
-        
+
         <AuthorizeView Roles="Administrator, Ranger">
             <a href="Infrastructure/Edit/@InfrastructureItem.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
         </AuthorizeView>
@@ -87,6 +87,176 @@ else
                                         </tr>
                                     </tbody>
                                 </table>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                @if (InfrastructureItem.InfrastructureType is not null && InfrastructureItem.InfrastructureType.IsBridge)
+                {
+                    <CollapsibleCard Id="infrastructure-bridge-details" Title="@localizer["Bridge Details Label"]" IsShownByDefault="true">
+                        <ChildContent>
+                            <ErrorBoundary>
+                                <ChildContent>
+                                    @if(InfrastructureItem.BridgeDetails is null)
+                                    {
+                                        <Alert Color="AlertColor.Info">@localizer["No Bridge Details Text"]</Alert>
+                                    }else{
+                                        <h4>@localizer["Bridge Survey Construction Title"]</h4>
+
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Beams Short Label"]</th>
+                                                    <td>
+                                                        @(InfrastructureItem.BridgeDetails.BeamMaterial?.Name ?? localizer["Not Provided Label"])
+                                                        @if (InfrastructureItem.BridgeDetails.BeamMaterial is not null && InfrastructureItem.BridgeDetails.BeamMaterial.IsWood)
+                                                        {
+                                                            <br />
+                                                            <span>@localizer["Bridge Num Timbers Short Label"]: @InfrastructureItem.BridgeDetails.NumBeamTimbers</span>
+                                                            <br />
+                                                            <span>@localizer["Bridge Timbers Size Short Label"]: @InfrastructureItem.BridgeDetails.BeamTimbersSize</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Decking Short Label"]</th>
+                                                    <td>
+                                                        @(InfrastructureItem.BridgeDetails.DeckingMaterial?.Name ?? localizer["Not Provided Label"])
+                                                        @if (InfrastructureItem.BridgeDetails.DeckingMaterial is not null && InfrastructureItem.BridgeDetails.DeckingMaterial.IsWood)
+                                                        {
+                                                            <br />
+                                                            <span>@localizer["Bridge Num Boards Short Label"]: @InfrastructureItem.BridgeDetails.NumDeckingBoards</span>
+                                                            <br />
+                                                            <span>@localizer["Bridge Timbers Size Short Label"]: @InfrastructureItem.BridgeDetails.DeckingBoardsSize</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Handrail Short Label"]</th>
+                                                    <td>
+                                                        @(InfrastructureItem.BridgeDetails.HandrailMaterial?.Name ?? localizer["Not Provided Label"])
+                                                        @if (InfrastructureItem.BridgeDetails.HandrailMaterial is not null && InfrastructureItem.BridgeDetails.HandrailMaterial.IsWood)
+                                                        {
+                                                            <br />
+                                                            <span>@localizer["Bridge Handrails In Place Short Label"]: <NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.HandrailsInPlace"></NullableBooleanDisplay></span>
+                                                            <br />
+                                                            <span>@localizer["Bridge Timbers Size Short Label"]: @InfrastructureItem.BridgeDetails.HandrailTimbersSize</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Handrail Posts Short Label"]</th>
+                                                    <td>
+                                                        @(InfrastructureItem.BridgeDetails.HandrailPostsMaterial?.Name ?? localizer["Not Provided Label"])
+                                                        @if (InfrastructureItem.BridgeDetails.HandrailPostsMaterial is not null && InfrastructureItem.BridgeDetails.HandrailPostsMaterial.IsWood)
+                                                        {
+                                                            <br />
+                                                            <span>@localizer["Bridge Num Timbers Short Label"]: @InfrastructureItem.BridgeDetails.NumHandrailPostsTimbers</span>
+                                                            <br />
+                                                            <span>@localizer["Bridge Timbers Size Short Label"]: @InfrastructureItem.BridgeDetails.HandrailPostsTimbersSize</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Bank Seat Short Label"]</th>
+                                                    <td>@(InfrastructureItem.BridgeDetails.BankSeatMaterial?.Name ?? localizer["Not Provided Label"])</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Anti Slip Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.AntiSlipInstalled"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Gates Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.GateInstalled"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Stiles Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.StileInstalled"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Ramps Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.RampInstalled"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Steps Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.StepsInstalled"></NullableBooleanDisplay></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <h4>@localizer["Bridge Survey Condition Title"]</h4>
+
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Beams Short Label"]</th>
+                                                    <td>@(InfrastructureItem.BridgeDetails.BeamCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Decking Short Label"]</th>
+                                                    <td>@(InfrastructureItem.BridgeDetails.DeckingCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Handrail Short Label"]</th>
+                                                    <td>@(InfrastructureItem.BridgeDetails.HandrailCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Handrail Posts Short Label"]</th>
+                                                    <td>@(InfrastructureItem.BridgeDetails.HandrailPostsCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Bank Seat Short Label"]</th>
+                                                    <td>@(InfrastructureItem.BridgeDetails.BankSeatCondition?.Name ?? localizer["Not Provided Label"])</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <h4>@localizer["Bridge Survey Repairs Title"]</h4>
+
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Overgrown Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.Overgrown"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Signs Of Bank Erosion Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.SignsOfBankErosion"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Seriously Eroded Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.SeriouslyEroded"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey High Usage Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.HighUsage"></NullableBooleanDisplay></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="w-25">@localizer["Bridge Survey Cover Boards In Place Short Label"]</th>
+                                                    <td><NullableBooleanDisplay Value="InfrastructureItem.BridgeDetails.CoverBoardsInPlace"></NullableBooleanDisplay></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    }
+                                </ChildContent>
+                                <ErrorContent Context="Exception">
+                                    <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                                </ErrorContent>
+                            </ErrorBoundary>
+                        </ChildContent>
+                    </CollapsibleCard>
+                }
+
+                <CollapsibleCard Id="infra-surveys" Title="@localizer["Surveys Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <InfrastructureSurveyList InfrastructureItemId="@InfrastructureItem.Id"></InfrastructureSurveyList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -160,7 +330,8 @@ else
 
     private string[] AuditLogSectionNames => new string[] {
         nameof(Data.Models.Infrastructure.InfrastructureItem),
-        nameof(Data.Models.Infrastructure.InfrastructureMedia)
+        nameof(Data.Models.Infrastructure.InfrastructureMedia),
+        nameof(Data.Models.Infrastructure.InfrastructureBridgeDetails)
     };
 
     protected override async Task OnParametersSetAsync()

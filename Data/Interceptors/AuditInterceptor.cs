@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using CSIDE.Data.Models.Audit;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
@@ -129,6 +130,12 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
         if (entry.Entity is Comment comment)
         {
             secondaryEntityId = comment.JobId.ToString();
+            (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
+        }
+        //infra bridge details, make the InfraId the primary entity ID and the BridgeDetailsId the secondary entity id
+        if(entry.Entity is InfrastructureBridgeDetails infrastructureBridgeDetails)
+        {
+            secondaryEntityId = infrastructureBridgeDetails.InfrastructureId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
         //Media and Contacts, make the primary entity id the id of the parent entity and the secondary entity id the id of the child entity

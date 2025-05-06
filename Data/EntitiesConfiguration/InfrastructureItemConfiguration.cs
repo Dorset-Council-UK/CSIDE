@@ -26,6 +26,10 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .Navigation(x => x.Parish)
                 .AutoInclude();
 
+            builder
+                .Navigation(x => x.BridgeDetails)
+                .AutoInclude();
+
             builder.HasOne(j => j.Parish).WithMany().HasForeignKey(j => j.ParishId).HasPrincipalKey(p => p.ParishId);
         }
     }
