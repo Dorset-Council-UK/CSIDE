@@ -6,18 +6,14 @@ using System.Globalization;
 
 namespace CSIDE.Components.DMMO
 {
-    public partial class DMMOEditForm
+    public partial class DMMOOrderEditForm
     {
         [Parameter, EditorRequired]
-        public Application? DMMOApplication { get; set; }
+        public Order? Order { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationCaseStatus[]? CaseStatuses { get; set; }
+        public OrderDecisionOfSecState[]? OrderDecisionsOfSecState { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationType[]? ApplicationTypes { get; set; }
-        [Parameter, EditorRequired]
-        public ApplicationClaimedStatus[]? ClaimedStatuses { get; set; }
-        [Parameter, EditorRequired]
-        public ApplicationDirectionOfSecState[]? DirectionsOfSecState { get; set; }
+        public OrderDeterminationProcess[]? OrderDeterminationProcesses { get; set; }
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]
@@ -46,33 +42,28 @@ namespace CSIDE.Components.DMMO
             return await fluentValidationValidator!.ValidateAsync();
         }
 
-        private void UpdateApplicationDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateDateSealedProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => DMMOApplication!.ApplicationDate = date);
+            UpdateDateProperty(eventArgs, date => Order!.DateSealed = date);
         }
 
-        private void UpdateDirectionOfSecStateDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateDatePublishedProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => DMMOApplication!.DateOfDirectionOfSecState = date);
+            UpdateDateProperty(eventArgs, date => Order!.DatePublished = date);
         }
 
-        private void UpdateDeterminationDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateObjectionsEndDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => DMMOApplication!.DeterminationDate = date);
+            UpdateDateProperty(eventArgs, date => Order!.ObjectionsEndDate = date);
         }
-
-        private void UpdateAppealDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateConfirmedDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => DMMOApplication!.AppealDate = date);
-        }
-        private void UpdateReceivedDateProperty(ChangeEventArgs eventArgs)
-        {
-            UpdateDateProperty(eventArgs, date => DMMOApplication!.ReceivedDate = date);
+            UpdateDateProperty(eventArgs, date => Order!.DateConfirmed = date);
         }
 
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate?> updateProperty)
         {
-            if (DMMOApplication is not null && eventArgs.Value is not null)
+            if (Order is not null && eventArgs.Value is not null)
             {
                 try
                 {

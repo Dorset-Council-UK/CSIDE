@@ -50,10 +50,14 @@ namespace CSIDE.Data
         public DbSet<ApplicationCaseStatus> DMMOApplicationCaseStatuses { get; set; }
         public DbSet<ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
         public DbSet<ApplicationType> DMMOApplicationTypes { get; set; }
+        public DbSet<ApplicationDirectionOfSecState> DMMOApplicationDirectionsOfSecState { get; set; }
+        public DbSet<OrderDecisionOfSecState> OrderDecisionsOfSecState { get; set; }
+        public DbSet<OrderDeterminationProcess> OrderDeterminationProcesses { get; set; }
         public DbSet<DMMOMedia> DMMOMedia { get; set; }
         public DbSet<DMMOContact> DMMOContact { get; set; }
         public DbSet<DMMOAddress> DMMOAddresses { get; set; }
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
+        public DbSet<Order> DMMOOrders { get; set; }
 
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<ContactType> ContactTypes { get; set; }

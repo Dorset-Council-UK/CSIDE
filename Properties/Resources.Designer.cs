@@ -196,6 +196,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new order.
+        /// </summary>
+        public static string Add_DMMO_Order_Label {
+            get {
+                return ResourceManager.GetString("Add DMMO Order Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Or add individual addresses by selecting them below.
         /// </summary>
         public static string Add_Individual_Addresses_Label {
@@ -327,6 +336,24 @@ namespace CSIDE.Properties {
         public static string All_Nearby_Infrastructure_Linked_Message {
             get {
                 return ResourceManager.GetString("All Nearby Infrastructure Linked Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date of appeal.
+        /// </summary>
+        public static string Appeal_Date_Label {
+            get {
+                return ResourceManager.GetString("Appeal Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appeal?.
+        /// </summary>
+        public static string Appeal_Label {
+            get {
+                return ResourceManager.GetString("Appeal Label", resourceCulture);
             }
         }
         
@@ -1708,6 +1735,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date of direction of Secretary of State.
+        /// </summary>
+        public static string Date_Direction_Of_Secretary_Of_State_Label {
+            get {
+                return ResourceManager.GetString("Date Direction Of Secretary Of State Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision of Secretary of State.
+        /// </summary>
+        public static string Decision_Of_Secretary_Of_State_Label {
+            get {
+                return ResourceManager.GetString("Decision Of Secretary Of State Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to delete this comment?.
         /// </summary>
         public static string Delete_Comment_Confirmation {
@@ -1780,6 +1825,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Determination date.
+        /// </summary>
+        public static string Determination_Date_Label {
+            get {
+                return ResourceManager.GetString("Determination Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determination process.
+        /// </summary>
+        public static string Determination_Process_Label {
+            get {
+                return ResourceManager.GetString("Determination Process Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direction of Secretary of State.
+        /// </summary>
+        public static string Direction_Of_Secretary_Of_State_Label {
+            get {
+                return ResourceManager.GetString("Direction Of Secretary Of State Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Display name.
         /// </summary>
         public static string Display_Name_Label {
@@ -1798,11 +1870,29 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new order for DMMO {0}.
+        /// </summary>
+        public static string DMMO_Create_Order_Title {
+            get {
+                return ResourceManager.GetString("DMMO Create Order Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DMMO {0}.
         /// </summary>
         public static string DMMO_Details_Title {
             get {
                 return ResourceManager.GetString("DMMO Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit order {0}/{1}.
+        /// </summary>
+        public static string DMMO_Edit_Order_Title {
+            get {
+                return ResourceManager.GetString("DMMO Edit Order Title", resourceCulture);
             }
         }
         
@@ -1830,6 +1920,42 @@ namespace CSIDE.Properties {
         public static string DMMO_Not_Found_Error_Message {
             get {
                 return ResourceManager.GetString("DMMO Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order details.
+        /// </summary>
+        public static string DMMO_Order_Details_Label {
+            get {
+                return ResourceManager.GetString("DMMO Order Details Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order &apos;{0}/{1}&apos;.
+        /// </summary>
+        public static string DMMO_Order_Details_Title {
+            get {
+                return ResourceManager.GetString("DMMO Order Details Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order &apos;{0}/{1}&apos; could not be found.
+        /// </summary>
+        public static string DMMO_Order_Not_Found_Error_Message {
+            get {
+                return ResourceManager.GetString("DMMO Order Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orders ({0}).
+        /// </summary>
+        public static string DMMO_Orders_Label {
+            get {
+                return ResourceManager.GetString("DMMO Orders Label", resourceCulture);
             }
         }
         
@@ -2995,6 +3121,24 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No contacts found for this item.
+        /// </summary>
+        public static string No_Contacts_Message {
+            get {
+                return ResourceManager.GetString("No Contacts Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No orders could be found.
+        /// </summary>
+        public static string No_DMMO_Orders_Message {
+            get {
+                return ResourceManager.GetString("No DMMO Orders Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to None of your files were uploaded.
         /// </summary>
         public static string No_Files_Uploaded_Error {
@@ -3211,6 +3355,33 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to End date for objections.
+        /// </summary>
+        public static string Objections_End_Date_Label {
+            get {
+                return ResourceManager.GetString("Objections End Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objections received?.
+        /// </summary>
+        public static string Objections_Received_Label {
+            get {
+                return ResourceManager.GetString("Objections Received Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objections withdrawn?.
+        /// </summary>
+        public static string Objections_Withdrawn_Label {
+            get {
+                return ResourceManager.GetString("Objections Withdrawn Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Old value.
         /// </summary>
         public static string Old_Value_Label {
@@ -3225,6 +3396,51 @@ namespace CSIDE.Properties {
         public static string Operational_Status_Label {
             get {
                 return ResourceManager.GetString("Operational Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date order confirmed.
+        /// </summary>
+        public static string Order_Confirmed_Date_Label {
+            get {
+                return ResourceManager.GetString("Order Confirmed Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date confirmed.
+        /// </summary>
+        public static string Order_Date_Confirmed_Label {
+            get {
+                return ResourceManager.GetString("Order Date Confirmed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date published.
+        /// </summary>
+        public static string Order_Date_Published_Label {
+            get {
+                return ResourceManager.GetString("Order Date Published Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date sealed.
+        /// </summary>
+        public static string Order_Date_Sealed_Label {
+            get {
+                return ResourceManager.GetString("Order Date Sealed Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order ID.
+        /// </summary>
+        public static string Order_ID_Label {
+            get {
+                return ResourceManager.GetString("Order ID Label", resourceCulture);
             }
         }
         
@@ -3868,6 +4084,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Submit to Planning Inspectorate?.
+        /// </summary>
+        public static string Submit_To_PINS_Label {
+            get {
+                return ResourceManager.GetString("Submit To PINS Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This survey is awaiting validation.
         /// </summary>
         public static string Survey_Awaiting_Validation_Message {
@@ -4179,6 +4404,15 @@ namespace CSIDE.Properties {
         public static string View_All_Recent_Jobs_Label {
             get {
                 return ResourceManager.GetString("View All Recent Jobs Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View details.
+        /// </summary>
+        public static string View_Details_Label {
+            get {
+                return ResourceManager.GetString("View Details Label", resourceCulture);
             }
         }
         

@@ -22,7 +22,7 @@ namespace CSIDE.Components.Pages.DMMO
         private ApplicationClaimedStatus[]? ClaimedStatuses;
         private ApplicationCaseStatus[]? CaseStatuses;
         private ApplicationType[]? ApplicationTypes;
-
+        private ApplicationDirectionOfSecState[]? DirectionsOfSecState;
 
         private DMMOEditForm? childDMMOEditForm;
 
@@ -48,6 +48,7 @@ namespace CSIDE.Components.Pages.DMMO
                 ClaimedStatuses = await context.DMMOApplicationClaimedStatuses.AsNoTracking().OrderBy(s => s.Id).ToArrayAsync();
                 CaseStatuses = await context.DMMOApplicationCaseStatuses.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
                 ApplicationTypes = await context.DMMOApplicationTypes.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
+                DirectionsOfSecState = await context.DMMOApplicationDirectionsOfSecState.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
                 DMMOApplication = new()
                 {
                     Geom = null,

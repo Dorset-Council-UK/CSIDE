@@ -29,6 +29,14 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .AutoInclude();
 
             builder
+                .Navigation(x => x.Orders)
+                .AutoInclude();
+
+            builder
+                .Navigation(x => x.DirectionOfSecState)
+                .AutoInclude();
+
+            builder
                 .Navigation(x => x.DMMOMedia)
                 .AutoInclude();
 

@@ -1512,4 +1512,82 @@
   <data name="Bridge Survey Create Maint Job Help Text" xml:space="preserve">
     <value>A maintenance job will be created at the bridge location with the details from the 'Repairs required' field.</value>
   </data>
+  <data name="No Contacts Message" xml:space="preserve">
+    <value>No contacts found for this item</value>
+  </data>
+  <data name="Determination Date Label" xml:space="preserve">
+    <value>Determination date</value>
+  </data>
+  <data name="Appeal Label" xml:space="preserve">
+    <value>Appeal?</value>
+  </data>
+  <data name="Appeal Date Label" xml:space="preserve">
+    <value>Date of appeal</value>
+  </data>
+  <data name="Direction Of Secretary Of State Label" xml:space="preserve">
+    <value>Direction of Secretary of State</value>
+  </data>
+  <data name="DMMO Orders Label" xml:space="preserve">
+    <value>Orders ({0})</value>
+  </data>
+  <data name="Order Date Confirmed Label" xml:space="preserve">
+    <value>Date confirmed</value>
+  </data>
+  <data name="Order Date Published Label" xml:space="preserve">
+    <value>Date published</value>
+  </data>
+  <data name="Order Date Sealed Label" xml:space="preserve">
+    <value>Date sealed</value>
+  </data>
+  <data name="View Details Label" xml:space="preserve">
+    <value>View details</value>
+  </data>
+  <data name="No DMMO Orders Message" xml:space="preserve">
+    <value>No orders could be found</value>
+  </data>
+  <data name="DMMO Order Details Title" xml:space="preserve">
+    <value>Order '{0}/{1}'</value>
+  </data>
+  <data name="DMMO Order Not Found Error Message" xml:space="preserve">
+    <value>Order '{0}/{1}' could not be found</value>
+  </data>
+  <data name="Add DMMO Order Label" xml:space="preserve">
+    <value>Create new order</value>
+  </data>
+  <data name="Objections End Date Label" xml:space="preserve">
+    <value>End date for objections</value>
+  </data>
+  <data name="Objections Received Label" xml:space="preserve">
+    <value>Objections received?</value>
+  </data>
+  <data name="Objections Withdrawn Label" xml:space="preserve">
+    <value>Objections withdrawn?</value>
+  </data>
+  <data name="Order Confirmed Date Label" xml:space="preserve">
+    <value>Date order confirmed</value>
+  </data>
+  <data name="Submit To PINS Label" xml:space="preserve">
+    <value>Submit to Planning Inspectorate?</value>
+  </data>
+  <data name="DMMO Create Order Title" xml:space="preserve">
+    <value>Create new order for DMMO {0}</value>
+  </data>
+  <data name="Decision Of Secretary Of State Label" xml:space="preserve">
+    <value>Decision of Secretary of State</value>
+  </data>
+  <data name="Determination Process Label" xml:space="preserve">
+    <value>Determination process</value>
+  </data>
+  <data name="DMMO Edit Order Title" xml:space="preserve">
+    <value>Edit order {0}/{1}</value>
+  </data>
+  <data name="DMMO Order Details Label" xml:space="preserve">
+    <value>Order details</value>
+  </data>
+  <data name="Order ID Label" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+  <data name="Date Direction Of Secretary Of State Label" xml:space="preserve">
+    <value>Date of direction of Secretary of State</value>
+  </data>
 </root>

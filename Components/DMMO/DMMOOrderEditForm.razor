@@ -1,0 +1,126 @@
+﻿@using CSIDE.Data.Models.DMMO
+
+@if (Order is not null)
+{
+    <EditForm Model="Order" OnSubmit="@SubmitFormAsync">
+
+        <FluentValidationValidator @ref="fluentValidationValidator" />
+        <ValidationSummary />
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="sealed-date">@localizer["Order Date Sealed Label"]</label>
+                @{
+                    string DateSealedStringRepresentation = "";
+                    if (Order.DateSealed.HasValue)
+                    {
+                        DateSealedStringRepresentation = Order.DateSealed.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="sealed-date" type="date" class="form-control" value="@DateSealedStringRepresentation" @onchange="UpdateDateSealedProperty" />
+            </div>
+            <ValidationMessage For="() => Order.DateSealed" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="publish-date">@localizer["Order Date Published Label"]</label>
+                @{
+                    string DatePublishedStringRepresentation = "";
+                    if (Order.DatePublished.HasValue)
+                    {
+                        DatePublishedStringRepresentation = Order.DatePublished.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="publish-date" type="date" class="form-control" value="@DatePublishedStringRepresentation" @onchange="UpdateDatePublishedProperty" />
+            </div>
+            <ValidationMessage For="() => Order.DateSealed" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="objection-end-date">@localizer["Objections End Date Label"]</label>
+                @{
+                    string ObjectionsEndDateStringRepresentation = "";
+                    if (Order.ObjectionsEndDate.HasValue)
+                    {
+                        ObjectionsEndDateStringRepresentation = Order.ObjectionsEndDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="objection-end-date" type="date" class="form-control" value="@ObjectionsEndDateStringRepresentation" @onchange="UpdateObjectionsEndDateProperty" />
+            </div>
+            <ValidationMessage For="() => Order.ObjectionsEndDate" />
+        </div>
+
+        <YesNoBoolean @bind-Value="Order.ObjectionsReceived" Label="@localizer["Objections Received Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+        <YesNoBoolean @bind-Value="Order.ObjectionsWithdrawn" Label="@localizer["Objections Withdrawn Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="det-process">@localizer["Determination Process Label"]</label>
+                <InputSelect id="det-process" class="form-select" @bind-Value="Order.DeterminationProcessId">
+                    <option value=""></option>
+                    @if (OrderDeterminationProcesses is not null)
+                    {
+                        @foreach (var process in OrderDeterminationProcesses.OrderBy(s => s.Name))
+                        {
+                            <option value="@process.Id">@process.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => Order.DeterminationProcessId" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="decision-of-sec-state">@localizer["Decision Of Secretary Of State Label"]</label>
+                <InputSelect id="decision-of-sec-state" class="form-select" @bind-Value="Order.DecisionOfSecStateId">
+                    <option value=""></option>
+                    @if (OrderDecisionsOfSecState is not null)
+                    {
+                        @foreach (var decision in OrderDecisionsOfSecState.OrderBy(s => s.Name))
+                        {
+                            <option value="@decision.Id">@decision.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => Order.DecisionOfSecStateId" />
+        </div>
+
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="confirmed-date">@localizer["Order Confirmed Date Label"]</label>
+                @{
+                    string OrderConfirmedDateStringRepresentation = "";
+                    if (Order.DateConfirmed.HasValue)
+                    {
+                        OrderConfirmedDateStringRepresentation = Order.DateConfirmed.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="confirmed-date" type="date" class="form-control" value="@OrderConfirmedDateStringRepresentation" @onchange="UpdateConfirmedDateProperty" />
+            </div>
+            <ValidationMessage For="() => Order.DateConfirmed" />
+        </div>
+
+        <YesNoBoolean @bind-Value="Order.SubmitToPINS" Label="@localizer["Submit To PINS Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+        @if (IsEdit)
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+        }
+        <button type="button" class="btn btn-link ms-2" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+
+
+    </EditForm>
+
+}

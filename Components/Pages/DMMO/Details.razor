@@ -85,9 +85,26 @@ else
                                             <th>@localizer["Case Officer Label"]</th>
                                             <td>@DMMOApplication.CaseOfficer</td>
                                         </tr>
+
                                         <tr>
-                                            <th>@localizer["Primary Contact Label"]</th>
-                                            <td>@DMMOApplication.PrimaryContact</td>
+                                            <th>@localizer["Determination Date Label"]</th>
+                                            <td>@DMMOApplication.DeterminationDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Appeal Label"]</th>
+                                            <td><NullableBooleanDisplay Value="DMMOApplication.Appeal"></NullableBooleanDisplay></td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Appeal Date Label"]</th>
+                                            <td>@DMMOApplication.AppealDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Direction Of Secretary Of State Label"]</th>
+                                            <td>@DMMOApplication.DirectionOfSecState?.Name</td>
+                                        </tr>
+                                        <tr>
+                                        <th class="w-25">@localizer["Date Direction Of Secretary Of State Label"]</th>
+                                            <td>@DMMOApplication.DateOfDirectionOfSecState</td>
                                         </tr>
                                         <tr>
                                             <th>@localizer["Private Comments Label"]</th>
@@ -99,6 +116,23 @@ else
                                         </tr>
                                     </tbody>
                                 </table>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-orders" Title="@localizer["DMMO Orders Label",DMMOApplication.Orders.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <DMMOOrdersList 
+                                    Orders="DMMOApplication.Orders.ToArray()"
+                                    IsEditable="UserCanEdit" 
+                                    DMMOApplicationId="DMMOApplication.Id">
+                                </DMMOOrdersList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -246,7 +280,8 @@ else
         nameof(Data.Models.DMMO.DMMOAddress),
         nameof(Data.Models.DMMO.DMMOContact),
         nameof(Data.Models.DMMO.DMMOLinkedRoute),
-        nameof(Data.Models.DMMO.DMMOMedia)
+        nameof(Data.Models.DMMO.DMMOMedia),
+        nameof(Data.Models.DMMO.Order)
     };
 
     protected override async Task OnParametersSetAsync()

@@ -138,6 +138,12 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
             secondaryEntityId = infrastructureBridgeDetails.InfrastructureId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
+        //DMMO Order, make the ApplicationId the primary entity ID and the OrderId the secondary entity id
+        if (entry.Entity is Order order)
+        {
+            secondaryEntityId = order.ApplicationId.ToString();
+            (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
+        }
         //Media and Contacts, make the primary entity id the id of the parent entity and the secondary entity id the id of the child entity
         //This allows us to track the deletion of child records when a parent with delete cascade rules is deleted
         //It is a little bit inefficient but is rarely used and allows for richer details in the audit log

@@ -37,7 +37,14 @@ namespace CSIDE.Data.Interceptors
             {
                 if (IsCorrectEntityType(entry) && (entry.State is EntityState.Added or EntityState.Modified))
                 {
-                    await UpdateDMMOParishIds((Models.DMMO.Application)entry.Entity);
+                    if (entry.Entity is Models.DMMO.Application application)
+                    {
+                        await UpdateDMMOParishIds(application);
+                    }else if(entry.Entity is Order order && entry.State is EntityState.Added)
+                    {
+                        await CreateOrderId(order);
+                    }
+                    
                 }
             }
         }
@@ -64,9 +71,21 @@ namespace CSIDE.Data.Interceptors
             }
         }
 
+        private async Task CreateOrderId(Models.DMMO.Order order)
+        {
+            using var context = contextFactory.CreateDbContext();
+            var highestOrderNumber = await context.DMMOOrders.Where(d => d.ApplicationId == order.ApplicationId)
+                .OrderByDescending(d => d.OrderId)
+                .Take(1)
+                .Select(d => d.OrderId)
+                .FirstOrDefaultAsync();
+            order.OrderId = highestOrderNumber + 1;
+        }
+
         private static bool IsCorrectEntityType(EntityEntry entry)
         {
-            return entry.Entity is Models.DMMO.Application;
+            return entry.Entity is Models.DMMO.Application or
+                                   Models.DMMO.Order;
         }
     }
 }

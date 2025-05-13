@@ -106,10 +106,69 @@
             <ValidationMessage For="() => DMMOApplication.ReceivedDate" />
         </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="primary-contact">@localizer["Primary Contact Label"]</label>
-            <InputText id="primary-contact" class="form-control" @bind-Value="DMMOApplication.PrimaryContact"></InputText>
-            <ValidationMessage For="() => DMMOApplication.PrimaryContact" />
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="dir-ss-date">@localizer["Determination Date Label"]</label>
+                @{
+                    string DeterminationDateStringRepresentation = "";
+                    if (DMMOApplication.DeterminationDate.HasValue)
+                    {
+                        DeterminationDateStringRepresentation = DMMOApplication.DeterminationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="dir-ss-date" type="date" class="form-control" value="@DeterminationDateStringRepresentation" @onchange="UpdateDeterminationDateProperty" />
+            </div>
+            <ValidationMessage For="() => DMMOApplication.DeterminationDate" />
+        </div>
+
+        <YesNoBoolean @bind-Value="DMMOApplication.Appeal" Label="@localizer["Appeal Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="appeal-date">@localizer["Appeal Date Label"]</label>
+                @{
+                    string AppealDateStringRepresentation = "";
+                    if (DMMOApplication.AppealDate.HasValue)
+                    {
+                        AppealDateStringRepresentation = DMMOApplication.AppealDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="appeal-date" type="date" class="form-control" value="@AppealDateStringRepresentation" @onchange="UpdateAppealDateProperty" />
+            </div>
+            <ValidationMessage For="() => DMMOApplication.AppealDate" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="dir-ss">@localizer["Direction Of Secretary Of State Label"]</label>
+                <InputSelect id="dir-ss" class="form-select" @bind-Value="DMMOApplication.DirectionOfSecStateId">
+                    @if (DirectionsOfSecState is not null)
+                    {
+                        <option value=""></option>
+                        @foreach (var direction in DirectionsOfSecState.OrderBy(r => r.Name))
+                        {
+                            <option value="@direction.Id">@direction.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => DMMOApplication.DirectionOfSecStateId" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="dir-ss-date">@localizer["Date Direction Of Secretary Of State Label"]</label>
+                @{
+                    string DateOfDirectionStringRepresentation = "";
+                    if (DMMOApplication.DateOfDirectionOfSecState.HasValue)
+                    {
+                        DateOfDirectionStringRepresentation = DMMOApplication.DateOfDirectionOfSecState.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="dir-ss-date" type="date" class="form-control" value="@DateOfDirectionStringRepresentation" @onchange="UpdateDirectionOfSecStateDateProperty" />
+            </div>
+            <ValidationMessage For="() => DMMOApplication.DateOfDirectionOfSecState" />
         </div>
 
         <div class="mb-3">

@@ -1523,4 +1523,82 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Bridge Survey Create Maint Job Help Text" xml:space="preserve">
     <value>Bydd swydd cynnal a chadw yn cael ei chreu yn lleoliad y bont gyda'r manylion o'r maes 'Atgyweiriadau sydd eu hangen'.</value>
   </data>
+  <data name="No Contacts Message" xml:space="preserve">
+    <value>Ni chanfuwyd manylion cyswllt ar gyfer yr eitem hon</value>
+  </data>
+  <data name="Determination Date Label" xml:space="preserve">
+    <value>Dyddiad penderfynu</value>
+  </data>
+  <data name="Appeal Label" xml:space="preserve">
+    <value>Apêl?</value>
+  </data>
+  <data name="Appeal Date Label" xml:space="preserve">
+    <value>Dyddiad yr apêl</value>
+  </data>
+  <data name="Direction Of Secretary Of State Label" xml:space="preserve">
+    <value>Cyfarwyddyd yr Ysgrifennydd Gwladol</value>
+  </data>
+  <data name="DMMO Orders Label" xml:space="preserve">
+    <value>Archebion ({0})</value>
+  </data>
+  <data name="Order Date Confirmed Label" xml:space="preserve">
+    <value>Dyddiad cadarnhau</value>
+  </data>
+  <data name="Order Date Published Label" xml:space="preserve">
+    <value>Dyddiad cyhoeddi</value>
+  </data>
+  <data name="Order Date Sealed Label" xml:space="preserve">
+    <value>Dyddiad selio</value>
+  </data>
+  <data name="View Details Label" xml:space="preserve">
+    <value>Gweld manylion</value>
+  </data>
+  <data name="No DMMO Orders Message" xml:space="preserve">
+    <value>Ni ellid dod o hyd i unrhyw archebion</value>
+  </data>
+  <data name="DMMO Order Details Title" xml:space="preserve">
+    <value>Gorchymyn '{0}/{1}'</value>
+  </data>
+  <data name="DMMO Order Not Found Error Message" xml:space="preserve">
+    <value>Ni ellid dod o hyd i'r archeb '{0}/{1}'</value>
+  </data>
+  <data name="Add DMMO Order Label" xml:space="preserve">
+    <value>Creu archeb newydd</value>
+  </data>
+  <data name="Objections End Date Label" xml:space="preserve">
+    <value>Dyddiad cau ar gyfer gwrthwynebiadau</value>
+  </data>
+  <data name="Objections Received Label" xml:space="preserve">
+    <value>Derbyniwyd gwrthwynebiadau?</value>
+  </data>
+  <data name="Objections Withdrawn Label" xml:space="preserve">
+    <value>Gwrthwynebiadau wedi'u tynnu'n ôl?</value>
+  </data>
+  <data name="Order Confirmed Date Label" xml:space="preserve">
+    <value>Dyddiad y cadarnhawyd y gorchymyn</value>
+  </data>
+  <data name="Submit To PINS Label" xml:space="preserve">
+    <value>Cyflwyno i'r Arolygiaeth Gynllunio?</value>
+  </data>
+  <data name="DMMO Create Order Title" xml:space="preserve">
+    <value>Creu archeb newydd ar gyfer GAMD {0}</value>
+  </data>
+  <data name="Decision Of Secretary Of State Label" xml:space="preserve">
+    <value>Penderfyniad yr Ysgrifennydd Gwladol</value>
+  </data>
+  <data name="Determination Process Label" xml:space="preserve">
+    <value>Proses benderfynu</value>
+  </data>
+  <data name="DMMO Edit Order Title" xml:space="preserve">
+    <value>Golygu archeb {0}/{1}</value>
+  </data>
+  <data name="DMMO Order Details Label" xml:space="preserve">
+    <value>Manylion yr archeb</value>
+  </data>
+  <data name="Order ID Label" xml:space="preserve">
+    <value>ID yr Archeb</value>
+  </data>
+  <data name="Date Direction Of Secretary Of State Label" xml:space="preserve">
+    <value>Dyddiad cyfarwyddyd yr Ysgrifennydd Gwladol</value>
+  </data>
 </root>

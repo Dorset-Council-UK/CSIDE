@@ -12,25 +12,30 @@ namespace CSIDE.Data.Models.DMMO
         public bool IsPublic { get; set; }
         public required string ApplicationDetails { get; set; }
         public string? LocationDescription { get; set; }
-        public string? PrimaryContact { get; set; }
-        public string? PrimaryContactUserId { get; set; }
         public string? CaseOfficer { get; set; }
         public string? CaseOfficerUserId { get; set; }
         public string? PrivateComments { get; set; }
         public string? PublicComments { get; set; }
+        public LocalDate? DeterminationDate { get; set; }
+        public bool? Appeal { get; set; }
+        public LocalDate? AppealDate { get; set; }
+        public LocalDate? DateOfDirectionOfSecState { get; set; }
+
         public required MultiLineString Geom { get; set; }
 
         //linked properties
         public int ApplicationTypeId { get; set; }
         public int CaseStatusId { get; set; }
         public int ClaimedStatusId { get; set; }
+        public int? DirectionOfSecStateId { get; set; }
 
         //navigation properties
         public ApplicationType? ApplicationType { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
         public ApplicationClaimedStatus? ClaimedStatus { get; set; }
-
+        public ApplicationDirectionOfSecState? DirectionOfSecState { get; set; } = null!;
         //one-many relationships
+        public ICollection<Order> Orders { get; } = [];
         public ICollection<DMMOContact> DMMOContacts { get; } = [];
         public ICollection<DMMOAddress> DMMOAddresses { get; } = [];
         public ICollection<DMMOParish> DMMOParishes { get; } = [];

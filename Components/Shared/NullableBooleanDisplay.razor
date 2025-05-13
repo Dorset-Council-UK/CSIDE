@@ -1,6 +1,8 @@
-﻿@(Value.HasValue ? (Value.Value ? localizer["Yes Label"] : localizer["No Label"]) : localizer["Not Provided Label"])
+﻿@(Value.HasValue ? (Value.Value ? localizer["Yes Label"] : localizer["No Label"]) : NullLabel ?? localizer["Not Provided Label"])
 
 @code {
     [Parameter, EditorRequired]
     public bool? Value { get; set; }
+    [Parameter]
+    public string? NullLabel{ get; set; }
 }
