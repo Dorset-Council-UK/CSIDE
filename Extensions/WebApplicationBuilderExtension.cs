@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Microsoft.AspNetCore.Builder;
@@ -40,6 +41,7 @@ internal static class WebApplicationBuilderExtension
         var sectionKeyVault = sectionCSIDE.GetSection(KeyVaultOptions.SectionName);
         var sectionTheme = sectionCSIDE.GetSection(ThemeOptions.SectionName);
         var sectionAzureBlobStorage = sectionCSIDE.GetSection(AzureBlobStorageOptions.SectionName);
+        var sectionNetworking = sectionCSIDE.GetSection(NetworkingOptions.SectionName);
 
         builder.Services
             .Configure<CSIDEOptions>(sectionCSIDE)
@@ -48,9 +50,28 @@ internal static class WebApplicationBuilderExtension
             .Configure<KeyVaultOptions>(sectionKeyVault)
             .Configure<ThemeOptions>(sectionTheme)
             .Configure<AzureBlobStorageOptions>(sectionAzureBlobStorage)
+            .Configure<NetworkingOptions>(sectionNetworking)
             .Configure<ForwardedHeadersOptions>(options =>
             {
+                
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+
+                var section = builder.Configuration
+                    .GetSection(CSIDEOptions.SectionName)
+                    .GetSection(NetworkingOptions.SectionName);
+
+                var networkingOptions = section.Get<NetworkingOptions>();
+                if (networkingOptions?.KnownProxies is not null)
+                {
+                    foreach (var proxy in networkingOptions.KnownProxies)
+                    {
+                        if (IPAddress.TryParse(proxy, out var ipAddress))
+                        {
+                            options.KnownProxies.Add(ipAddress);
+
+                        }
+                    }
+                }
             });
 
         return builder;

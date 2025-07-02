@@ -1,56 +1,35 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
-
 trigger:
-- main
+  tags:
+    include:
+      - v* # Run on all tags starting with 'v'
+pr:
+  branches:
+    include:
+      - main
 
-pool:
-  vmImage: 'windows-latest'
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: "Web Development/Pipelines"
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
-steps:
-- task: Npm@1
-  displayName: 'Install npm dependencies'
-  inputs:
-    command: 'install'
-
-- task: Npm@1
-  displayName: 'Webpack Build (prod)'
-  inputs:
-    command: 'custom'
-    customCommand: 'run build'
-
-- task: NuGetToolInstaller@1
-  displayName: 'Install NuGet'
-
-- task: NuGetCommand@2
-  displayName: 'Install NuGet packages'
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  displayName: Build
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  displayName: Test
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish build artifact'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+jobs:
+  - template: build/dotnet.yml@templates
+    parameters:
+      prebuildSteps:
+        - task: Npm@1
+          inputs:
+            command: "install"
+        - task: Npm@1
+          displayName: "Webpack Build (prod)"
+          inputs:
+            command: "custom"
+            customCommand: "run build"
+  - template: deploy/iis.yml@templates
+    parameters:
+      environment: "staging"
+      websiteName: "gi-staging"
+      virtualApplication: "cside"
+      variableGroup: "cside-staging-properties"
+      projectName: "s" # Since the project is in the root folder, the project outputs to a folder called s
+      dependsOn: build
