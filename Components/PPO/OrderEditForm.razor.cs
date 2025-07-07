@@ -1,15 +1,16 @@
 ﻿using Blazored.FluentValidation;
-using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.PPO;
+using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using NodaTime;
 using System.Globalization;
 
-namespace CSIDE.Components.DMMO
+namespace CSIDE.Components.PPO
 {
-    public partial class DMMOOrderEditForm
+    public partial class OrderEditForm
     {
         [Parameter, EditorRequired]
-        public Order? Order { get; set; }
+        public PPOOrder? Order { get; set; }
         [Parameter, EditorRequired]
         public OrderDecisionOfSecState[]? OrderDecisionsOfSecState { get; set; }
         [Parameter, EditorRequired]

@@ -11,6 +11,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -19,13 +20,40 @@ internal static class WebApplicationBuilderExtension
     /// <summary>
     /// Add resilience to the HttpClient
     /// </summary>
-    internal static WebApplicationBuilder AddResilience(this WebApplicationBuilder builder)
+    internal static WebApplicationBuilder AddCountrysideNetworking(this WebApplicationBuilder builder)
     {
+        //add reslience handlers to http client
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
             // Turn on resilience by default
             http.AddStandardResilienceHandler();
         });
+
+        //add optional forwarded headers middleware handler
+        var section = builder.Configuration
+            .GetSection(CSIDEOptions.SectionName)
+            .GetSection(NetworkingOptions.SectionName);
+        var networkingOptions = section.Get<NetworkingOptions>();
+
+        if(networkingOptions is not null && networkingOptions.UseForwardedHeadersMiddleware)
+        {
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+
+                if (networkingOptions.KnownProxies is not null)
+                {
+                    foreach (var proxy in networkingOptions.KnownProxies)
+                    {
+                        if (IPAddress.TryParse(proxy, out var ipAddress))
+                        {
+                            options.KnownProxies.Add(ipAddress);
+                        }
+                    }
+                }
+            });
+        }
+        
 
         return builder;
     }
@@ -50,29 +78,7 @@ internal static class WebApplicationBuilderExtension
             .Configure<KeyVaultOptions>(sectionKeyVault)
             .Configure<ThemeOptions>(sectionTheme)
             .Configure<AzureBlobStorageOptions>(sectionAzureBlobStorage)
-            .Configure<NetworkingOptions>(sectionNetworking)
-            .Configure<ForwardedHeadersOptions>(options =>
-            {
-                
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
-
-                var section = builder.Configuration
-                    .GetSection(CSIDEOptions.SectionName)
-                    .GetSection(NetworkingOptions.SectionName);
-
-                var networkingOptions = section.Get<NetworkingOptions>();
-                if (networkingOptions?.KnownProxies is not null)
-                {
-                    foreach (var proxy in networkingOptions.KnownProxies)
-                    {
-                        if (IPAddress.TryParse(proxy, out var ipAddress))
-                        {
-                            options.KnownProxies.Add(ipAddress);
-
-                        }
-                    }
-                }
-            });
+            .Configure<NetworkingOptions>(sectionNetworking);
 
         return builder;
     }

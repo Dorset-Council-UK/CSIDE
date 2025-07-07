@@ -3,16 +3,17 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Beta;
+
 
 namespace CSIDE.Services
 {
     public class UserService(IDbContextFactory<ApplicationDbContext> _contextFactory,
                              IMemoryCache _memoryCache,
-                             IOptions<CSIDEOptions> _csideOptions) : IUserService
+                             IOptions<CSIDEOptions> _csideOptions,
+                             ILogger<UserService> _logger) : IUserService
     {
 
         public async Task<List<Microsoft.Graph.Beta.Models.User>> GetUsers()
@@ -70,6 +71,41 @@ namespace CSIDE.Services
             return null;
         }
 
+        public async Task<IList<Microsoft.Graph.Beta.Models.User>> GetUsers(string[] userIds)
+        {
+            var graphClient = GetGraphClient();
+            if (graphClient is null || userIds == null || userIds.Length == 0)
+                return [];
+
+            var batchRequestContent = new Microsoft.Graph.BatchRequestContentCollection(graphClient);
+            var requestIds = new Dictionary<string, string>();
+
+            foreach (var userId in userIds)
+            {
+                var request = graphClient.Users[userId].ToGetRequestInformation();
+                var reqId = await batchRequestContent.AddBatchRequestStepAsync(request);
+                requestIds[reqId] = userId;
+            }
+
+            var response = await graphClient.Batch.PostAsync(batchRequestContent);
+            var users = new List<Microsoft.Graph.Beta.Models.User>();
+
+            foreach (var request in requestIds)
+            {
+                try
+                {
+                    var user = await response.GetResponseByIdAsync<Microsoft.Graph.Beta.Models.User>(request.Key);
+                    users.Add(user);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error retrieving user ID {userId} as part of a collection",request.Value);
+                }
+            }
+
+            return users;
+        }
+
         private GraphServiceClient? GetGraphClient()
         {
             AzureAdOptions AzureAdOptions = _csideOptions.Value.AzureAd;
@@ -112,6 +148,19 @@ namespace CSIDE.Services
         {
             using var context = _contextFactory.CreateDbContext();
             return await context.ApplicationUserRoles.Where(r => r.UserId == userId).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<IList<Microsoft.Graph.Beta.Models.User>> GetUsersInRole(string roleName)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var usersInRole = await context.ApplicationUserRoles
+                .Where(r => r.Role!.RoleName == roleName)
+                .Select(r => r.UserId)
+                .ToListAsync();
+            
+            var users = await GetUsers([.. usersInRole]);
+
+            return users;
         }
     }
 }

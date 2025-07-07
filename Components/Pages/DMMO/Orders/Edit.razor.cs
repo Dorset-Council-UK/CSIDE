@@ -2,6 +2,7 @@ using BlazorBootstrap;
 using CSIDE.Components.DMMO;
 using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,10 +19,10 @@ namespace CSIDE.Components.Pages.DMMO.Orders
         [Parameter]
         public int OrderId { get; init; }
 
-        private Order? Order { get; set; }
+        private DMMOOrder? Order { get; set; }
         private OrderDecisionOfSecState[]? DecisionOfSecStateOptions;
         private OrderDeterminationProcess[]? DeterminationProcessOptions;
-        private DMMOOrderEditForm? childDMMOOrderEditForm;
+        private OrderEditForm? childDMMOOrderEditForm;
         private bool IsBusy { get; set; } = false;
         private string? ErrorMessage { get; set; } = null;  
         protected override async Task OnParametersSetAsync()
@@ -31,7 +32,7 @@ namespace CSIDE.Components.Pages.DMMO.Orders
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
                 new BreadcrumbItem{ Text = localizer["DMMO Details Title", DMMOApplicationId], Href=$"DMMO/details/{DMMOApplicationId}" },
-                new BreadcrumbItem{ Text = localizer["DMMO Edit Order Title", DMMOApplicationId, OrderId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["Edit Order Title", DMMOApplicationId, OrderId], IsCurrentPage = true }
             ];
             IsBusy = true;
             using var context = contextFactory.CreateDbContext();

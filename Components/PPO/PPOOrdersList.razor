@@ -1,0 +1,110 @@
+﻿@using Data.Models.PPO
+@if (Orders is not null)
+{
+    if (IsEditable)
+    {
+        <a href="ppo/details/@PPOApplicationId/order/create" class="btn btn-sm btn-outline-primary me-2">@localizer["Add Order Label"]</a>
+
+    }
+
+    @if (Orders.Length != 0)
+    {
+        <div class="row">
+            @foreach (PPOOrder order in Orders.OrderBy(c => c.OrderId))
+            {
+                <div class="col-lg-6 my-2">
+                    <div class="card bg-light h-100" id="order-@order.OrderId">
+                        <div class="card-header">
+                            <strong>@(order.ApplicationId)/@(order.OrderId)</strong>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                @if (order.DateSealed.HasValue)
+                                {
+                                    <li><strong>@localizer["Order Date Sealed Label"]</strong>: @order.DateSealed</li>
+                                }
+                                @if (order.DatePublished.HasValue)
+                                {
+                                    <li><strong>@localizer["Order Date Published Label"]</strong>: @order.DatePublished</li>
+                                }
+                                @if (order.DateConfirmed.HasValue)
+                                {
+                                    <li><strong>@localizer["Order Date Confirmed Label"]</strong>: @order.DateConfirmed</li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-outline-primary me-2" type="button" disabled="@(IsBusy)" @onclick="() => ViewOrder(order.OrderId)">@localizer["View Details Label"]</button>
+                            @if (IsEditable)
+                            {
+                                <a href="ppo/edit/@order.ApplicationId/order/@order.OrderId" class="btn btn-sm btn-outline-primary me-2">@localizer["Edit Label"]</a>
+                                <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsBusy)" @onclick="() => DeleteOrder(PPOApplicationId, order.OrderId)">@localizer["Delete Label"]</button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+
+        <Modal @ref="OrderDetailsModal" Title="@localizer["PPO Order Details Label"]">
+
+            <BodyTemplate>
+                @if(SelectedOrder is not null)
+                {
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th>@localizer["Order ID Label"]</th>
+                                <td>@(SelectedOrder.ApplicationId)/@(SelectedOrder.OrderId)</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Order Date Sealed Label"]</th>
+                                <td>@SelectedOrder.DateSealed</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Order Date Published Label"]</th>
+                                <td>@SelectedOrder.DatePublished</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Objections End Date Label"]</th>
+                                <td>@SelectedOrder.ObjectionsEndDate</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Objections Received Label"]</th>
+                                <td><NullableBooleanDisplay Value="SelectedOrder.ObjectionsReceived" NullLabel="@localizer["Unknown Label"]"></NullableBooleanDisplay></td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Objections Withdrawn Label"]</th>
+                                <td><NullableBooleanDisplay Value="SelectedOrder.ObjectionsWithdrawn" NullLabel="@localizer["Unknown Label"]"></NullableBooleanDisplay></td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Determination Process Label"]</th>
+                                <td>@SelectedOrder.DeterminationProcess?.Name</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Decision Of Secretary Of State Label"]</th>
+                                <td>@SelectedOrder.DecisionOfSecState?.Name</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Order Confirmed Date Label"]</th>
+                                <td>@SelectedOrder.DateConfirmed</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Submit To PINS Label"]</th>
+                                <td><NullableBooleanDisplay Value="SelectedOrder.SubmitToPINS"></NullableBooleanDisplay></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+            </BodyTemplate>
+
+        </Modal>
+    }
+    else
+    {
+        <Alert Color="AlertColor.Info" Class="mt-2">@localizer["No Orders Message"]</Alert>
+    }
+}
+

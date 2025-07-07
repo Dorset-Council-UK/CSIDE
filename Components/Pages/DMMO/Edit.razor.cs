@@ -81,7 +81,12 @@ namespace CSIDE.Components.Pages.DMMO
                         //the DbContext is different from when the entity was queried
                         var existingApp = await context.DMMOApplication.FindAsync(DMMOApplication.Id) ?? throw new Exception($"DMMO Application being edited (ID: {DMMOApplication.Id}) was not found prior to updating");
 
+                        // Store the original version for concurrency checking
+                        uint originalVersion = DMMOApplication.Version;
+                        // Update values
                         context.Entry(existingApp).CurrentValues.SetValues(DMMOApplication);
+                        // Restore original version to ensure concurrency check works
+                        context.Entry(existingApp).Property(j => j.Version).OriginalValue = originalVersion;
 
                         await context.SaveChangesAsync();
                         //redirect

@@ -35,12 +35,13 @@ namespace CSIDE.Data.Models.DMMO
         public ApplicationClaimedStatus? ClaimedStatus { get; set; }
         public ApplicationDirectionOfSecState? DirectionOfSecState { get; set; } = null!;
         //one-many relationships
-        public ICollection<Order> Orders { get; } = [];
+        public ICollection<DMMOOrder> Orders { get; } = [];
         public ICollection<DMMOContact> DMMOContacts { get; } = [];
         public ICollection<DMMOAddress> DMMOAddresses { get; } = [];
         public ICollection<DMMOParish> DMMOParishes { get; } = [];
         public ICollection<DMMOMedia> DMMOMedia { get; } = [];
         public ICollection<DMMOLinkedRoute> DMMOLinkedRoutes { get; } = [];
+        public ICollection<DMMOComment> Comments { get; } = [];
         //Concurrency token
         public uint Version { get; set; }
 

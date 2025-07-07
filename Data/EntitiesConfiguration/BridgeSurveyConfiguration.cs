@@ -15,7 +15,8 @@ namespace CSIDE.Data.EntitiesConfiguration
 
             builder.Property(x => x.Status)
                 .IsRequired()
-                .HasDefaultValue(SurveyStatus.Incomplete);
+                // Use the PostgreSQL enum label as the default value
+                .HasDefaultValueSql("'incomplete'::survey_status");
 
             builder.Property(x => x.BeamTimbersSize)
                 .HasMaxLength(20);

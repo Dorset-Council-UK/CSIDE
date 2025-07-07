@@ -145,10 +145,10 @@
     <value>GAMD</value>
   </data>
   <data name="PPO Abbreviation" xml:space="preserve">
-    <value>GLC</value>
+    <value>OLC</value>
   </data>
   <data name="PPO Full Text" xml:space="preserve">
-    <value>Gorchmynion Llwybrau Cyhoeddus</value>
+    <value>Orchmynion Llwybrau Cyhoeddus</value>
   </data>
   <data name="DMMO Full Text" xml:space="preserve">
     <value>Gorchmynion Addasu Mapiau Diffiniol</value>
@@ -724,7 +724,7 @@ Disgrifiad</value>
     <value>Chwilio am GAMD</value>
   </data>
   <data name="DMMO ID Label" xml:space="preserve">
-    <value>rhif cyfeirnod GAMD</value>
+    <value>Rhif cyfeirnod GAMD</value>
   </data>
   <data name="Case Status Label" xml:space="preserve">
     <value>Statws achos</value>
@@ -744,7 +744,7 @@ Disgrifiad</value>
   <data name="Received Date From Label" xml:space="preserve">
     <value>Dyddiad derbyn y cais - dechrau</value>
   </data>
-  <data name="Received Date To" xml:space="preserve">
+  <data name="Received Date To Label" xml:space="preserve">
     <value>Dyddiad derbyn y cais - gorffen</value>
   </data>
   <data name="DMMO Not Found Error Message" xml:space="preserve">
@@ -1538,7 +1538,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Direction Of Secretary Of State Label" xml:space="preserve">
     <value>Cyfarwyddyd yr Ysgrifennydd Gwladol</value>
   </data>
-  <data name="DMMO Orders Label" xml:space="preserve">
+  <data name="Orders Label" xml:space="preserve">
     <value>Archebion ({0})</value>
   </data>
   <data name="Order Date Confirmed Label" xml:space="preserve">
@@ -1553,7 +1553,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="View Details Label" xml:space="preserve">
     <value>Gweld manylion</value>
   </data>
-  <data name="No DMMO Orders Message" xml:space="preserve">
+  <data name="No Orders Message" xml:space="preserve">
     <value>Ni ellid dod o hyd i unrhyw archebion</value>
   </data>
   <data name="DMMO Order Details Title" xml:space="preserve">
@@ -1562,7 +1562,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="DMMO Order Not Found Error Message" xml:space="preserve">
     <value>Ni ellid dod o hyd i'r archeb '{0}/{1}'</value>
   </data>
-  <data name="Add DMMO Order Label" xml:space="preserve">
+  <data name="Add Order Label" xml:space="preserve">
     <value>Creu archeb newydd</value>
   </data>
   <data name="Objections End Date Label" xml:space="preserve">
@@ -1589,7 +1589,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Determination Process Label" xml:space="preserve">
     <value>Proses benderfynu</value>
   </data>
-  <data name="DMMO Edit Order Title" xml:space="preserve">
+  <data name="Edit Order Title" xml:space="preserve">
     <value>Golygu archeb {0}/{1}</value>
   </data>
   <data name="DMMO Order Details Label" xml:space="preserve">
@@ -1600,5 +1600,80 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   </data>
   <data name="Date Direction Of Secretary Of State Label" xml:space="preserve">
     <value>Dyddiad cyfarwyddyd yr Ysgrifennydd Gwladol</value>
+  </data>
+  <data name="PPO ID Label" xml:space="preserve">
+    <value>Rhif cyfeirnod OLC</value>
+  </data>
+  <data name="Create New PPO Label" xml:space="preserve">
+    <value>Creu OLC newydd</value>
+  </data>
+  <data name="Create New PPO Text" xml:space="preserve">
+    <value>Ychwanegwch gais OLC newydd at y gronfa ddata drwy ei luniadu ar y map a llenwi'r manylion perthnasol.</value>
+  </data>
+  <data name="PPO Intents Label" xml:space="preserve">
+    <value>Bwriad y cais</value>
+  </data>
+  <data name="PPO Not Found Error Message" xml:space="preserve">
+    <value>OLC gyda'r cyfeirnod '{0}' heb ei ganfod</value>
+  </data>
+  <data name="Search PPO Title" xml:space="preserve">
+    <value>Chwilio am OLC</value>
+  </data>
+  <data name="PPO Details Title" xml:space="preserve">
+    <value>OLC {0}</value>
+  </data>
+  <data name="Application Received Label" xml:space="preserve">
+    <value>Cais wedi ei dderbyn</value>
+  </data>
+  <data name="Date of Direction Label" xml:space="preserve">
+    <value>Dyddiad y cyfarwyddyd</value>
+  </data>
+  <data name="Inspection Certification Label" xml:space="preserve">
+    <value>Arolygu ac ardystio</value>
+  </data>
+  <data name="Inspection Certification Date Label" xml:space="preserve">
+    <value>Dyddiad arolygu ac ardystio</value>
+  </data>
+  <data name="Council Land Affected Label" xml:space="preserve">
+    <value>Tir sy'n eiddo i'r Cyngor yr effeithir arno?</value>
+  </data>
+  <data name="Charge Label" xml:space="preserve">
+    <value>Tâl</value>
+  </data>
+  <data name="Box Number Label" xml:space="preserve">
+    <value>Rhif blwch</value>
+  </data>
+  <data name="Priority Label" xml:space="preserve">
+    <value>Blaenoriaeth</value>
+  </data>
+  <data name="Date Inspection Certification Label" xml:space="preserve">
+    <value>Dyddiad arolygu ac ardystio</value>
+  </data>
+  <data name="Edit PPO Label" xml:space="preserve">
+    <value>Golygu OLC {0}</value>
+  </data>
+  <data name="PPO Create Order Title" xml:space="preserve">
+    <value>Creu archeb newydd ar gyfer OLC {0}</value>
+  </data>
+  <data name="Delete Order Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod chi eisiau dileu'r archeb hon?</value>
+  </data>
+  <data name="No Affected Addresses Message" xml:space="preserve">
+    <value>Ni ychwanegwyd unrhyw gyfeiriadau yr effeithiwyd arnynt</value>
+  </data>
+  <data name="Date Confirmation Published Label" xml:space="preserve">
+    <value>Dyddiad cyhoeddi cadarnhad</value>
+  </data>
+  <data name="Comment Date Label" xml:space="preserve">
+    <value>Dyddiad y sylw</value>
+  </data>
+  <data name="No DMMO Comments Message" xml:space="preserve">
+    <value>Dim sylwadau ar gyfer y GAMD hwn</value>
+  </data>
+  <data name="No PPO Comments Message" xml:space="preserve">
+    <value>Dim sylwadau ar gyfer y OLC hwn</value>
+  </data>
+  <data name="No Landowner Deposit Comments Message" xml:space="preserve">
+    <value>Dim sylwadau ar gyfer y Blaendal Perchennog Tir hwn.</value>
   </data>
 </root>

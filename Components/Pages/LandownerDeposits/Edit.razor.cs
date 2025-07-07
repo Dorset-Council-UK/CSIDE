@@ -88,7 +88,12 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                         //the DbContext is different from when the entity was queried
                         var existingDeposit = await context.LandownerDeposits.FindAsync(LandownerDeposit.Id) ?? throw new Exception($"Landowner Deposit being edited (ID: {LandownerDeposit.Id}) was not found prior to updating");
 
+                        // Store the original version for concurrency checking
+                        uint originalVersion = LandownerDeposit.Version;
+                        // Update values
                         context.Entry(existingDeposit).CurrentValues.SetValues(LandownerDeposit);
+                        // Restore original version to ensure concurrency check works
+                        context.Entry(existingDeposit).Property(j => j.Version).OriginalValue = originalVersion;
 
                         await UpdateLandownerDepositTypes(SelectedLandownerDepositTypes, context);
                         await context.SaveChangesAsync();

@@ -1,0 +1,70 @@
+﻿@page "/PPO/Create"
+@using CSIDE.Data.Models.PPO
+@using CSIDE.Components.PPO
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.Pages.Account
+
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+    
+    <Authorized>
+        <PageTitle>@localizer["Create New PPO Label"]</PageTitle>
+
+        <div>
+            <Breadcrumb Items="NavItems"></Breadcrumb>
+        </div>
+
+        <h1>@localizer["Create New PPO Label"]</h1>
+        <p>@localizer["Create New PPO Text"]</p>
+        @if (PPOApplication is null && !IsBusy)
+        {
+            <Alert Color="AlertColor.Danger">@localizer["General Error Message"]</Alert>
+            <a href="rights-of-way" class="btn btn-primary">@localizer["Search PPO Title"]</a>
+        }
+        else
+        {
+            if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+
+            if (PPOApplication is not null)
+            {
+                <div class="row">
+                    <CreateMap @ref="@createMap"
+                               OnGetRouteMethod="async(coordinates) => await GetRoute(coordinates)"
+                               OnDrawEndMethod="ValidateGeometry"
+                               OnGetSnappablesMethod="async (bbox) => await GetSnappables(bbox)"
+                               GeomType="Line+RoutePicker"></CreateMap>
+                </div>
+                @if (!GeometryIsValid)
+                {
+                    <Alert Color="AlertColor.Danger">@localizer["Invalid Geometry Validation Message"]</Alert>
+                }
+            }
+            <div class="row mt-2">
+                <div class="col-md-8">
+                    <PPOEditForm PPOApplication="@PPOApplication"
+                                  ApplicationTypes="@ApplicationTypes"
+                                  CaseStatuses="@CaseStatuses"
+                                  Intents="@Intents"
+                                  Priorities="@Priorities"
+                                  IsBusy="@IsBusy"
+                                  IsEdit="false"
+                                  OnSubmit="SubmitFormAsync"
+                                  OnCancel="NavigateBackToPPOSearchPage"
+                                  SelectedIntents="@SelectedIntents"
+                                  @ref="childPPOEditForm" />
+                </div>
+            </div>
+
+            if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
+            }
+        }
+    </Authorized>
+
+</AuthorizeView>

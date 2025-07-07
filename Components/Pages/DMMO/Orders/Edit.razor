@@ -1,5 +1,5 @@
 ﻿@page "/dmmo/edit/{DMMOApplicationId:int}/order/{OrderId:int}"
-@using CSIDE.Components.DMMO
+@using CSIDE.Components.Shared
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -20,15 +20,15 @@
 }
 else
 {
-    <PageTitle>@localizer["DMMO Edit Order Title", DMMOApplicationId, OrderId]</PageTitle>
+    <PageTitle>@localizer["Edit Order Title", DMMOApplicationId, OrderId]</PageTitle>
 
-    <h1>@localizer["DMMO Edit Order Title", DMMOApplicationId, OrderId]</h1>
+    <h1>@localizer["Edit Order Title", DMMOApplicationId, OrderId]</h1>
 
     @if(ErrorMessage is not null)
     {
         <GenericErrorAlert Message="@ErrorMessage"></GenericErrorAlert>
     }
-    <DMMOOrderEditForm
+    <CSIDE.Components.DMMO.OrderEditForm
         Order="@Order"
         OrderDecisionsOfSecState="DecisionOfSecStateOptions"
         OrderDeterminationProcesses="DeterminationProcessOptions"

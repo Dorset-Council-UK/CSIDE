@@ -1,13 +1,10 @@
 ﻿using FluentValidation;
-using CSIDE.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using CSIDE.Data.Models.DMMO;
-using NodaTime;
 
 namespace CSIDE.Validators.DMMO
 {
-    public class DMMOOrderValidator : AbstractValidator<Order>
+    public class DMMOOrderValidator : AbstractValidator<DMMOOrder>
     {
         readonly IStringLocalizer<Properties.Resources> _localizer;
         public DMMOOrderValidator(IStringLocalizer<Properties.Resources> localizer)

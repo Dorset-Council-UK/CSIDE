@@ -2,7 +2,7 @@
 @using System.Text.Json
 @using CSIDE.Components.Mapping
 
-<Modal @ref="AuditLogEntryModal" Size="ModalSize.Large" Title="@localizer["Audit Log Entry Title"]">
+<Modal @ref="AuditLogEntryModal" Size="ModalSize.Large" Title="@localizer["Audit Log Entry Title"]" OnShown="HandleModalShown" OnHidden="HandleModalHidden">
 
     <BodyTemplate>
         @if(AuditLogEntry is not null){
@@ -50,8 +50,11 @@
                                 {
                                     <p>@localizer["Before Label"]</p>
                                 }
-                                
-                                <MiniMap Geometry="@geom"></MiniMap>
+
+                                @if (showMiniMap)
+                                {
+                                    <MiniMap Geometry="@geom"></MiniMap>
+                                }
                             </div>
                         }
                         @if (!string.IsNullOrEmpty(change.NewValue))
@@ -62,7 +65,10 @@
                                 {
                                     <p>@localizer["After Label"]</p>
                                 }
-                                <MiniMap Geometry="@geom"></MiniMap>
+                                @if (showMiniMap)
+                                {
+                                    <MiniMap Geometry="@geom"></MiniMap>
+                                }
                             </div>
                         }
                     </div>
@@ -80,7 +86,7 @@
 
 @code {
     private Modal AuditLogEntryModal = default!;
-
+    private bool showMiniMap = false;
     private Data.Models.Audit.AuditLog? AuditLogEntry{ get; set; }
     private List<AuditLogEntryChange>? Changes { get; set; }
 
@@ -133,8 +139,16 @@
         };
     }
 
+    private void HandleModalShown()
+    {
+        showMiniMap = true;
+        StateHasChanged();
+    }
 
-
+    private void HandleModalHidden()
+    {
+        showMiniMap = false;
+    }
 
     public class AuditLogEntryChange
     {

@@ -34,6 +34,7 @@ namespace CSIDE.Data.Models.LandownerDeposits
         public ICollection<LandownerDepositContact> LandownerDepositContacts { get; } = [];
         public ICollection<LandownerDepositAddress> LandownerDepositAddresses { get; } = [];
         public ICollection<LandownerDepositParish> LandownerDepositParishes { get; } = [];
+        public ICollection<LandownerDepositComment> Comments { get; } = [];
 
         //Concurrency token
         public uint Version { get; set; }

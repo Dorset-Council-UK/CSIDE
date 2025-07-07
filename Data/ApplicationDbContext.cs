@@ -12,6 +12,7 @@ using CSIDE.Data.Interceptors;
 using CSIDE.Data.Models.Audit;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Models.PPO;
 
 namespace CSIDE.Data
 {
@@ -22,6 +23,7 @@ namespace CSIDE.Data
                                       IInfrastructureInterceptor infrastructureInterceptor,
                                       ILandownerDepositInterceptor landownerDepositInterceptor,
                                       IDMMOInterceptor dmmoInterceptor,
+                                      IPPOInterceptor ppoInterceptor,
                                       ISurveyInterceptor surveyInterceptor) : DbContext(options)
     {
         public DbSet<AuditLog> AuditLogs { get; set; }
@@ -33,7 +35,7 @@ namespace CSIDE.Data
         public DbSet<JobStatus> MaintenanceJobStatuses { get; set; }
         public DbSet<Team> MaintenanceTeams { get; set; }
         public DbSet<TeamUser> MaintenanceTeamUsers { get; set; }
-        public DbSet<Comment> MaintenanceComments { get; set; }
+        public DbSet<Models.Maintenance.Comment> MaintenanceComments { get; set; }
         public DbSet<JobContact> MaintenanceJobContact { get; set; }
         public DbSet<JobMedia> MaintenanceJobMedia { get; set; }
         public DbSet<JobInfrastructure> MaintenanceJobInfrastructure { get; set; }
@@ -46,18 +48,34 @@ namespace CSIDE.Data
         public DbSet<LegalStatus> RouteLegalStatuses { get; set; }
         public DbSet<RouteMedia> RouteMedia { get; set; }
 
-        public DbSet<Application> DMMOApplication { get; set; }
-        public DbSet<ApplicationCaseStatus> DMMOApplicationCaseStatuses { get; set; }
-        public DbSet<ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
-        public DbSet<ApplicationType> DMMOApplicationTypes { get; set; }
-        public DbSet<ApplicationDirectionOfSecState> DMMOApplicationDirectionsOfSecState { get; set; }
-        public DbSet<OrderDecisionOfSecState> OrderDecisionsOfSecState { get; set; }
-        public DbSet<OrderDeterminationProcess> OrderDeterminationProcesses { get; set; }
+        public DbSet<Models.DMMO.Application> DMMOApplication { get; set; }
+        public DbSet<Models.DMMO.ApplicationCaseStatus> DMMOApplicationCaseStatuses { get; set; }
+        public DbSet<Models.DMMO.ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
+        public DbSet<Models.DMMO.ApplicationType> DMMOApplicationTypes { get; set; }
+        public DbSet<Models.DMMO.ApplicationDirectionOfSecState> DMMOApplicationDirectionsOfSecState { get; set; }
+
         public DbSet<DMMOMedia> DMMOMedia { get; set; }
         public DbSet<DMMOContact> DMMOContact { get; set; }
         public DbSet<DMMOAddress> DMMOAddresses { get; set; }
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
-        public DbSet<Order> DMMOOrders { get; set; }
+        public DbSet<DMMOOrder> DMMOOrders { get; set; }
+        public DbSet<Models.DMMO.DMMOComment> DMMOComments { get; set; }
+
+        public DbSet<Models.PPO.Application> PPOApplication { get; set; }
+        public DbSet<Models.PPO.ApplicationCaseStatus> PPOApplicationCaseStatuses { get; set; }
+        public DbSet<Models.PPO.ApplicationType> PPOApplicationTypes { get; set; }
+        public DbSet<ApplicationIntent> PPOApplicationIntents { get; set; }
+        public DbSet<ApplicationPriority> PPOApplicationPriorities { get; set; }
+
+        public DbSet<PPOMedia> PPOMedia { get; set; }
+        public DbSet<PPOContact> PPOContact { get; set; }
+        public DbSet<PPOOrder> PPOOrders { get; set; }
+        public DbSet<PPOParish> PPOParishes { get; set; }
+        public DbSet<PPOIntent> PPOIntents { get; set; }
+        public DbSet<Models.PPO.PPOComment> PPOComments { get; set; }
+
+        public DbSet<OrderDecisionOfSecState> OrderDecisionsOfSecState { get; set; }
+        public DbSet<OrderDeterminationProcess> OrderDeterminationProcesses { get; set; }
 
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<ContactType> ContactTypes { get; set; }
@@ -76,6 +94,7 @@ namespace CSIDE.Data
         public DbSet<LandownerDepositAddress> LandownerDepositAddresses { get; set; }
         public DbSet<LandownerDepositMediaType> LandownerDepositMediaTypes { get; set; }
         public DbSet<LandownerDepositParish> LandownerDepositParishes { get; set; }
+        public DbSet<Models.LandownerDeposits.LandownerDepositComment> LandownerDepositComments { get; set; }
 
         public DbSet<BridgeSurvey> BridgeSurveys { get; set; }
         public DbSet<Condition> Conditions { get; set; }
@@ -84,6 +103,7 @@ namespace CSIDE.Data
         public DbSet<Parish> Parishes { get; set; }
         public DbSet<ParishCode> ParishCodes { get; set; }
         public DbSet<DMMOMediaType> DMMOMediaType { get; set; }
+        public DbSet<PPOMediaType> PPOMediaType { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -93,6 +113,7 @@ namespace CSIDE.Data
                 maintenanceInterceptor,
                 infrastructureInterceptor,
                 dmmoInterceptor,
+                ppoInterceptor,
                 landownerDepositInterceptor,
                 surveyInterceptor,
                 auditInterceptor,

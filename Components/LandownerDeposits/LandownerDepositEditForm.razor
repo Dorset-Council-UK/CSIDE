@@ -6,6 +6,13 @@
 		<FluentValidationValidator @ref="fluentValidationValidator" />
 		<ValidationSummary />
 
+		<datalist id="landownerdeposit-case-officers">
+			@foreach (var caseOfficer in CaseOfficerSuggestions)
+			{
+				<option value="@caseOfficer">@caseOfficer</option>
+			}
+		</datalist>
+
 		@if (LandownerDepositTypeNames is not null && LandownerDepositTypeNames.Length != 0)
 		{
 			<div class="mb-3">
@@ -219,7 +226,7 @@
 		<div class="mb-3 row">
 			<div class="col-sm-4 col-md-6 col-lg-4">
 				<label class="form-label" for="primary-contact-landowner-deposit">@localizer["Primary Contact Label"]</label>
-				<InputText id="primary-contact-landowner-deposit" class="form-control" @bind-Value="LandownerDeposit.PrimaryContact"></InputText>
+				<InputText id="primary-contact-landowner-deposit" class="form-control" list="landownerdeposit-case-officers" @bind-Value="LandownerDeposit.PrimaryContact"></InputText>
 				<ValidationMessage For="() => LandownerDeposit.PrimaryContact" />
 			</div>
 		</div>	

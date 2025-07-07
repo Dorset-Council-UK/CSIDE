@@ -1,11 +1,12 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace CSIDE.Components.LandownerDeposits
 {
-    public partial class LandownerDepositEditForm
+    public partial class LandownerDepositEditForm(IUserService userService)
     {
         [Parameter]
         public LandownerDeposit? LandownerDeposit { get; set; }
@@ -22,8 +23,14 @@ namespace CSIDE.Components.LandownerDeposits
         public EventCallback OnCancel { get; set; }
         [Parameter]
         public IList<int> SelectedLandownerDepositTypes { get; set; } = [];
+        public IList<string> CaseOfficerSuggestions = [];
 
         private FluentValidationValidator? fluentValidationValidator;
+
+        protected override async Task OnInitializedAsync()
+        {
+            CaseOfficerSuggestions = await GetCaseOfficerSuggestions();
+        }
 
         private async Task SubmitFormAsync()
         {
@@ -218,5 +225,14 @@ namespace CSIDE.Components.LandownerDeposits
             }
         }
 
+        private async Task<IList<string>> GetCaseOfficerSuggestions()
+        {
+            var users = await userService.GetUsersInRole("RoW Officer");
+            if (users is not null)
+            {
+                return [.. users.Select(u => u.DisplayName ?? string.Empty).OrderBy(u => u)];
+            }
+            return [];
+        }
     }
 }

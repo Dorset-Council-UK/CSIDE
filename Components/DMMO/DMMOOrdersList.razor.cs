@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using CSIDE.Data.Models.DMMO;
 using Microsoft.EntityFrameworkCore;
 using CSIDE.Data;
 using BlazorBootstrap;
+using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Models.DMMO;
 
 namespace CSIDE.Components.DMMO
 {
     public partial class DMMOOrdersList(IJSRuntime JS, IDbContextFactory<ApplicationDbContext> contextFactory)
     {
         [Parameter]
-        public Order[]? Orders { get; set; }
+        public DMMOOrder[]? Orders { get; set; }
         [Parameter]
         public int DMMOApplicationId { get; set; }
         [Parameter]
@@ -19,7 +20,7 @@ namespace CSIDE.Components.DMMO
         private bool IsBusy { get; set; } = false;
 
         private Modal OrderDetailsModal = default!;
-        private Order? SelectedOrder { get; set; }
+        private DMMOOrder? SelectedOrder { get; set; }
 
         private async Task DeleteOrder(int ApplicationId, int OrderId)
         {

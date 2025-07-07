@@ -1,12 +1,13 @@
-﻿using Blazored.FluentValidation;
+﻿using System.Globalization;
+using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Services;
 using Microsoft.AspNetCore.Components;
 using NodaTime;
-using System.Globalization;
 
 namespace CSIDE.Components.DMMO
 {
-    public partial class DMMOEditForm
+    public partial class DMMOEditForm(IUserService userService)
     {
         [Parameter, EditorRequired]
         public Application? DMMOApplication { get; set; }
@@ -26,8 +27,14 @@ namespace CSIDE.Components.DMMO
         public EventCallback OnSubmit { get; set; }
         [Parameter, EditorRequired]
         public EventCallback OnCancel { get; set; }
+        public IList<string> CaseOfficerSuggestions = [];
 
         private FluentValidationValidator? fluentValidationValidator;
+
+        protected override async Task OnInitializedAsync()
+        {
+            CaseOfficerSuggestions = await GetCaseOfficerSuggestions();
+        }
 
         private async Task SubmitFormAsync()
         {
@@ -87,6 +94,15 @@ namespace CSIDE.Components.DMMO
             }
         }
 
+        private async Task<IList<string>> GetCaseOfficerSuggestions()
+        {
+            var users = await userService.GetUsersInRole("RoW Officer");
+            if (users is not null)
+            {
+                return [.. users.Select(u => u.DisplayName ?? string.Empty).OrderBy(u => u)];
+            }
+            return [];
+        }
 
         private async Task HandleCancel()
         {

@@ -33,6 +33,10 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .AutoInclude();
 
             builder
+                .Navigation(x => x.Comments)
+                .AutoInclude();
+
+            builder
                 .Navigation(x => x.DirectionOfSecState)
                 .AutoInclude();
 

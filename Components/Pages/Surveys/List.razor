@@ -98,7 +98,7 @@
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName
                             </GridColumn>
-                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["End Date Label"]" PropertyName="EndDate" SortKeySelector="item => item.EndDate">
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["End Date Label"]" PropertyName="EndDate" SortKeySelector="item => item.EndDate" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
                                 @(context.EndDate.HasValue ? context.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Status Label"]" PropertyName="Status" SortKeySelector="item => item.Status">

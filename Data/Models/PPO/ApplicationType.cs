@@ -1,6 +1,6 @@
-﻿namespace CSIDE.Data.Models.DMMO
+﻿namespace CSIDE.Data.Models.PPO
 {
-    public class OrderDecisionOfSecState
+    public class ApplicationType
     {
         public int Id { get; set; }
         public required string Name { get; set; }

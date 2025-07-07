@@ -1,0 +1,343 @@
+﻿@page "/PPO/Details/{Id:int}"
+@using CSIDE.Data.Models.PPO
+@using CSIDE.Components.PPO
+@using CSIDE.Components.Mapping
+@using CSIDE.Components.Layout
+@using System.Globalization
+@using CSIDE.Data.Models.Shared
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+
+@if (PPOApplication is null && !IsBusy)
+{
+    <PageTitle>@localizer["PPO Not Found Error Message", Id]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["PPO Job Not Found Error Message", Id]</Alert>
+}
+else
+{
+    if (PPOApplication is not null)
+    {
+        <PageTitle>@localizer["PPO Details Title", PPOApplication.Id]</PageTitle>
+        <h1>@localizer["PPO Details Title", PPOApplication.Id]</h1>
+
+        <AuthorizeView Roles="Administrator, RoW Officer">
+            <a href="PPO/Edit/@PPOApplication.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        </AuthorizeView>
+        
+        <div class="row">
+            <div class="col-md-8">
+
+                <CollapsibleCard Id="ppo-basic-details" Title="@localizer["Basic Details Label"]" IsShownByDefault="true">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <Badge Class="mb-3" Color="@(PPOApplication.IsPublic ? BadgeColor.Success : BadgeColor.Warning)">
+                                    <i class="bi bi-eye@(PPOApplication.IsPublic ? "" : "-slash")"></i> @(PPOApplication.IsPublic ? localizer["Public Label"] : localizer["Not Public Label"])
+                                </Badge>
+
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th class="w-25">@localizer["Reference Number Label"]</th>
+                                            <td>@PPOApplication.Id</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Application Type Label"]</th>
+                                            <td>@PPOApplication.ApplicationType?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Case Status Label"]</th>
+                                            <td>@PPOApplication.CaseStatus?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["PPO Intents Label"]</th>
+                                            <td>
+                                                @if (PPOApplication.PPOIntents.Count != 0)
+                                                {
+                                                    <ul class="list-unstyled">
+                                                        @foreach (var intent in PPOApplication.PPOIntents)
+                                                        {
+                                                            <li>@intent?.Intent.Name</li>
+                                                        }
+                                                    </ul>
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Application Details Label"]</th>
+                                            <td class="text-break comment-field">@PPOApplication.ApplicationDetails</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Location Description Label"]</th>
+                                            <td class="text-break comment-field">@PPOApplication.LocationDescription</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Application Received Label"]</th>
+                                            <td>@PPOApplication.ReceivedDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Case Officer Label"]</th>
+                                            <td>@PPOApplication.CaseOfficer</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Determination Date Label"]</th>
+                                            <td>@PPOApplication.DeterminationDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Date of Direction Label"]</th>
+                                            <td>@PPOApplication.DateOfDirection</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Inspection Certification Label"]</th>
+                                            <td><NullableBooleanDisplay Value="PPOApplication.InspectionCertification"></NullableBooleanDisplay></td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Inspection Certification Date Label"]</th>
+                                            <td>@PPOApplication.InspectionCertificationDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Date Confirmation Published Label"]</th>
+                                            <td>@PPOApplication.ConfirmationPublishedDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Council Land Affected Label"]</th>
+                                            <td><NullableBooleanDisplay Value="PPOApplication.CouncilLandAffected"></NullableBooleanDisplay></td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Charge Label"]</th>
+                                            <td>£@PPOApplication.Charge</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Box Number Label"]</th>
+                                            <td>@PPOApplication.BoxNumber</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Private Comments Label"]</th>
+                                            <td class="text-break comment-field">@PPOApplication.PrivateComments</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Public Comments Label"]</th>
+                                            <td class="text-break comment-field">@PPOApplication.PublicComments</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="ppo-comments" Title="@localizer["Comments Label", PPOApplication.Comments.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <CommentsList PPOApplication="PPOApplication" IsEditable="UserCanEdit"></CommentsList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="ppo-orders" Title="@localizer["Orders Label",PPOApplication.Orders.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <PPOOrdersList 
+                                    Orders="PPOApplication.Orders.ToArray()"
+                                    IsEditable="UserCanEdit" 
+                                    PPOApplicationId="PPOApplication.Id">
+                                </PPOOrdersList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="ppo-contacts" Title="@localizer["Contacts Label",PPOApplication.PPOContacts.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <ContactsList 
+                                Contacts="@PPOApplication.PPOContacts.Select(d => d.Contact).ToArray()" 
+                                IsEditable="UserCanEdit" 
+                                OnSubmit="AddContact"
+                                OnRefresh="RefreshContactsList"></ContactsList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="ppo-parishes" Title="@localizer["Parishes Label",PPOApplication.PPOParishes.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                @if (PPOApplication.PPOParishes.Count == 0)
+                                {
+                                    <Alert Color="AlertColor.Warning">@localizer["No Parishes Found Message"]</Alert>
+                                }
+                                else
+                                {
+                                    <Alert Color="AlertColor.Info">@localizer["Automatic Parishes Information Message"]</Alert>
+                                    <table class="table table-striped mt-2">
+                                        <tbody>
+                                            @foreach (var parish in PPOApplication.PPOParishes)
+                                            {
+                                                <tr><td>@parish.Parish.Name</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="ppo-media" Title="@localizer["Media Label",PPOApplication.PPOMedia.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <MediaList PPOApplication="@PPOApplication" IsEditable="UserCanEdit"></MediaList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="ppo-audit" Title="@localizer["Audit Log Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <AuditLogList SectionNames="AuditLogSectionNames" EntityId="@PPOApplication.Id.ToString()"></AuditLogList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+            </div>
+            <div class="col-md-4">
+                <ErrorBoundary>
+                    <ChildContent>
+                        @if (PPOApplication.Geom is not null)
+                        {
+                            <MiniMap Geometry="@PPOApplication.Geom"></MiniMap>
+                        }
+                        <table class="table table-striped table-sm">
+                            <tbody>
+                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(PPOApplication.Geom?.Centroid.X)</td></tr>
+                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(PPOApplication.Geom?.Centroid.Y)</td></tr>
+                            </tbody>
+                        </table>
+                    </ChildContent>
+                    <ErrorContent Context="Exception">
+                        <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </div>
+        </div>
+    }
+}
+@code {
+    private List<BreadcrumbItem>? NavItems;
+
+    [Parameter]
+    public int Id { get; set; }
+    private Application? PPOApplication { get; set; }
+
+    private bool IsBusy { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+
+    private string[] AuditLogSectionNames => new string[] { 
+        nameof(Data.Models.PPO.Application),
+        nameof(Data.Models.PPO.PPOContact),
+        nameof(Data.Models.PPO.PPOMedia),
+        nameof(Data.Models.PPO.PPOOrder),
+        nameof(Data.Models.PPO.PPOIntent),
+        nameof(Data.Models.PPO.PPOComment)
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
+            new BreadcrumbItem{ Text = localizer["PPO Abbreviation"], Href="PPO" },
+            new BreadcrumbItem{ Text = localizer["PPO Details Title", Id], IsCurrentPage = true }
+        };
+
+        IsBusy = true;
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            PPOApplication = await context.PPOApplication.FindAsync(Id);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
+            }
+        }
+    }
+
+    private async Task AddContact(Contact NewContact)
+    {
+
+        if (NewContact is not null && PPOApplication is not null)
+        {
+            using var context = contextFactory.CreateDbContext();
+
+            context.Contacts.Add(NewContact);
+            await context.SaveChangesAsync();
+            context.PPOContact.Add(new PPOContact { ContactId = NewContact.Id, ApplicationId = PPOApplication.Id });
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private async Task RefreshContactsList(){
+        using var context = contextFactory.CreateDbContext();
+        PPOApplication = await context.PPOApplication.FindAsync(Id);
+        StateHasChanged();
+    }
+}
+

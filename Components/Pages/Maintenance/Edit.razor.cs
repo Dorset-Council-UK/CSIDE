@@ -77,12 +77,19 @@ namespace CSIDE.Components.Pages.Maintenance
                     {
                         using var context = contextFactory.CreateDbContext();
 
-                        //get the existing job to enable the smarter change tracker.
-                        //Without this, all properties are identified as tracked, since
-                        //the DbContext is different from when the entity was queried
-                        var existingJob = await context.MaintenanceJobs.FindAsync(Job.Id) ?? throw new Exception($"Maintenance job being edited (ID: {Job.Id}) was not found prior to updating");
+                        // Get the existing entity with tracking enabled
+                        var existingJob = await context.MaintenanceJobs.FindAsync(Job.Id)
+                            ?? throw new Exception($"Maintenance job being edited (ID: {Job.Id}) was not found prior to updating");
 
+                        // Save the original version for concurrency checking
+                        uint originalVersion = Job.Version;
+
+                        // Update values while preserving change tracking for auditing
                         context.Entry(existingJob).CurrentValues.SetValues(Job);
+
+                        // Explicitly tell EF Core to use originalVersion as the concurrency token
+                        // This is the critical line that makes concurrency checking work
+                        context.Entry(existingJob).Property(j => j.Version).OriginalValue = originalVersion;
 
                         await UpdateMaintenanceProblemTypes(SelectedProblemTypes, context);
                         await context.SaveChangesAsync();

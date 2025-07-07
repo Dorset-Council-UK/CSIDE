@@ -1,8 +1,9 @@
-﻿using NodaTime;
+﻿using CSIDE.Data.Models.Shared;
+using NodaTime;
 
 namespace CSIDE.Data.Models.DMMO
 {
-    public class Order
+    public class DMMOOrder
     {
         public int OrderId { get; set; }
         public required int ApplicationId { get; set; }

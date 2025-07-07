@@ -3,14 +3,14 @@
 {
     if (IsEditable)
     {
-        <a href="dmmo/details/@DMMOApplicationId/order/create" class="btn btn-sm btn-outline-primary me-2">@localizer["Add DMMO Order Label"]</a>
+        <a href="dmmo/details/@DMMOApplicationId/order/create" class="btn btn-sm btn-outline-primary me-2">@localizer["Add Order Label"]</a>
 
     }
 
     @if (Orders.Length != 0)
     {
         <div class="row">
-            @foreach (Order order in Orders.OrderBy(c => c.OrderId))
+            @foreach (DMMOOrder order in Orders.OrderBy(c => c.OrderId))
             {
                 <div class="col-lg-6 my-2">
                     <div class="card bg-light h-100" id="order-@order.OrderId">
@@ -104,7 +104,7 @@
     }
     else
     {
-        <Alert Color="AlertColor.Info">@localizer["No DMMO Orders Message"]</Alert>
+        <Alert Color="AlertColor.Info" Class="mt-2">@localizer["No Orders Message"]</Alert>
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
@@ -18,6 +19,7 @@ namespace CSIDE.Data.Models.Shared
         
         public ICollection<JobMedia>? JobMedia { get; set; }
         public ICollection<DMMOMedia>? DMMOMedia { get; set; }
+        public ICollection<PPOMedia>? PPOMedia { get; set; }
         public ICollection<LandownerDepositMedia>? LandownerDepositMedia { get; set; }
         public ICollection<InfrastructureMedia>? InfrastructureMedia { get; set; }
         public ICollection<RouteMedia>? RouteMedia { get; set; }

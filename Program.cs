@@ -12,7 +12,7 @@ using NodaTime;
 var builder = WebApplication.CreateBuilder(args);
 
 builder
-    .AddResilience()
+    .AddCountrysideNetworking()
     .AddCountrysideOptions()
     .AddCountrysideTelemetry()
     .AddCountrysideAzureKeyVault()
@@ -45,6 +45,7 @@ builder.Services.AddScoped<IMaintenanceInterceptor, MaintenanceInterceptor>();
 builder.Services.AddScoped<IInfrastructureInterceptor, InfrastructureInterceptor>();
 builder.Services.AddScoped<ILandownerDepositInterceptor, LandownerDepositInterceptor>();
 builder.Services.AddScoped<IDMMOInterceptor, DMMOInterceptor>();
+builder.Services.AddScoped<IPPOInterceptor, PPOInterceptor>();
 builder.Services.AddScoped<ISurveyInterceptor, SurveyInterceptor>();
 
 builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);

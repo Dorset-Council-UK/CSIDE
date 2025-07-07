@@ -4,6 +4,7 @@ using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -132,14 +133,29 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
             secondaryEntityId = comment.JobId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
+        if (entry.Entity is PPOComment ppoComment)
+        {
+            secondaryEntityId = ppoComment.ApplicationId.ToString();
+            (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
+        }
+        if (entry.Entity is DMMOComment dmmoComment)
+        {
+            secondaryEntityId = dmmoComment.ApplicationId.ToString();
+            (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
+        }
+        if (entry.Entity is LandownerDepositComment landownerDepositComment)
+        {
+            secondaryEntityId = landownerDepositComment.LandownerDepositId.ToString();
+            (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
+        }
         //infra bridge details, make the InfraId the primary entity ID and the BridgeDetailsId the secondary entity id
-        if(entry.Entity is InfrastructureBridgeDetails infrastructureBridgeDetails)
+        if (entry.Entity is InfrastructureBridgeDetails infrastructureBridgeDetails)
         {
             secondaryEntityId = infrastructureBridgeDetails.InfrastructureId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
         //DMMO Order, make the ApplicationId the primary entity ID and the OrderId the secondary entity id
-        if (entry.Entity is Order order)
+        if (entry.Entity is DMMOOrder order)
         {
             secondaryEntityId = order.ApplicationId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);

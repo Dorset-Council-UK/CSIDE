@@ -1,10 +1,7 @@
 ﻿using CSIDE.Data.Models.DMMO;
-using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.LandownerDeposits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CSIDE.Data.Interceptors
 {
@@ -40,7 +37,7 @@ namespace CSIDE.Data.Interceptors
                     if (entry.Entity is Models.DMMO.Application application)
                     {
                         await UpdateDMMOParishIds(application);
-                    }else if(entry.Entity is Order order && entry.State is EntityState.Added)
+                    }else if(entry.Entity is DMMOOrder order && entry.State is EntityState.Added)
                     {
                         await CreateOrderId(order);
                     }
@@ -71,7 +68,7 @@ namespace CSIDE.Data.Interceptors
             }
         }
 
-        private async Task CreateOrderId(Models.DMMO.Order order)
+        private async Task CreateOrderId(DMMOOrder order)
         {
             using var context = contextFactory.CreateDbContext();
             var highestOrderNumber = await context.DMMOOrders.Where(d => d.ApplicationId == order.ApplicationId)
@@ -85,7 +82,7 @@ namespace CSIDE.Data.Interceptors
         private static bool IsCorrectEntityType(EntityEntry entry)
         {
             return entry.Entity is Models.DMMO.Application or
-                                   Models.DMMO.Order;
+                                   DMMOOrder;
         }
     }
 }

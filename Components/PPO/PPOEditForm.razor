@@ -1,0 +1,239 @@
+﻿@using CSIDE.Data.Models.PPO
+
+@if(PPOApplication is not null){
+    <EditForm Model="PPOApplication" OnSubmit="@SubmitFormAsync">
+
+        <FluentValidationValidator @ref="fluentValidationValidator" />
+        <ValidationSummary />
+
+        <datalist id="ppo-case-officers">
+            @foreach (var caseOfficer in CaseOfficerSuggestions)
+            {
+                <option value="@caseOfficer">@caseOfficer</option>
+            } 
+        </datalist>
+
+        <div class="form-check form-switch my-2">
+            <InputCheckbox @bind-Value="PPOApplication.IsPublic" class="form-check-input" id="is-public" />
+            <label class="form-check-label" for="is-public">@localizer["Is Public Label"]</label>
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="app-type">@localizer["Application Type Label"]</label>
+                <InputSelect id="app-type" class="form-select" @bind-Value="PPOApplication.ApplicationTypeId">
+                    @if (ApplicationTypes is not null)
+                    {
+                        @foreach (var type in ApplicationTypes.OrderBy(r => r.Name))
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => PPOApplication.ApplicationTypeId" />
+        </div>
+
+        @if (Intents is not null && Intents.Length != 0)
+        {
+            <div class="mb-3">
+                <fieldset>
+                    <legend class="form-label fs-6">@localizer["PPO Intents Label"]</legend>
+
+                    @foreach (var Intent in Intents)
+                    {
+                        var selected = PPOApplication.PPOIntents.Select(j => j.IntentId).Contains(Intent.Id);
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@Intent.Id" checked="@selected" id="Intent__@Intent.Id" @onchange="(e) => { IntentChanged(Intent, e); }">
+                            <label class="form-check-label" for="Intent__@Intent.Id">
+                                @Intent.Name
+                            </label>
+                        </div>
+
+                    }
+                </fieldset>
+            </div>
+        }
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="case-status">@localizer["Case Status Label"]</label>
+
+                <InputSelect id="case-status" class="form-select" @bind-Value="PPOApplication.CaseStatusId">
+                    @if (CaseStatuses is not null)
+                    {
+                        @foreach (var status in CaseStatuses.OrderBy(r => r.Name))
+                        {
+                            <option value="@status.Id">@status.Name</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => PPOApplication.CaseStatusId" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="priority">@localizer["Priority Label"]</label>
+
+                <InputSelect id="priority" class="form-select" @bind-Value="PPOApplication.PriorityId">
+                    @if (Priorities is not null)
+                    {
+                        @foreach (var priority in Priorities.OrderBy(r => r.SortOrder))
+                        {
+                            <option value="@priority.Id">@priority.Description</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => PPOApplication.PriorityId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="app-details">@localizer["Application Details Label"]</label>
+            <InputTextArea id="app-details" class="form-control" @bind-Value="PPOApplication.ApplicationDetails"></InputTextArea>
+            <ValidationMessage For="() => PPOApplication.ApplicationDetails" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="location-description">@localizer["Location Description Label"]</label>
+            <InputTextArea id="location-description" class="form-control" @bind-Value="PPOApplication.LocationDescription"></InputTextArea>
+            <ValidationMessage For="() => PPOApplication.LocationDescription" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="received-date">@localizer["Received Date Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string ReceivedDateStringRepresentation = "";
+                    if (PPOApplication.ReceivedDate.HasValue)
+                    {
+                        ReceivedDateStringRepresentation = PPOApplication.ReceivedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="received-date" type="date" class="form-control" value="@ReceivedDateStringRepresentation" @onchange="UpdateReceivedDateProperty" />
+            </div>
+            <ValidationMessage For="() => PPOApplication.ReceivedDate" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="dir-ss-date">@localizer["Determination Date Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string DeterminationDateStringRepresentation = "";
+                    if (PPOApplication.DeterminationDate.HasValue)
+                    {
+                        DeterminationDateStringRepresentation = PPOApplication.DeterminationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="dir-ss-date" type="date" class="form-control" value="@DeterminationDateStringRepresentation" @onchange="UpdateDeterminationDateProperty" />
+            </div>
+            <ValidationMessage For="() => PPOApplication.DeterminationDate" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="dir-ss-date">@localizer["Date of Direction Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string DateOfDirectionStringRepresentation = "";
+                    if (PPOApplication.DateOfDirection.HasValue)
+                    {
+                        DateOfDirectionStringRepresentation = PPOApplication.DateOfDirection.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="dir-ss-date" type="date" class="form-control" value="@DateOfDirectionStringRepresentation" @onchange="UpdateDirectionDateProperty" />
+            </div>
+            <ValidationMessage For="() => PPOApplication.DateOfDirection" />
+        </div>
+
+
+        <YesNoBoolean @bind-Value="PPOApplication.InspectionCertification" Label="@localizer["Inspection Certification Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+        
+        <div class="mb-3 row">
+            <label class="form-label" for="dir-ss-date">@localizer["Date Inspection Certification Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string DateInspectionStringRepresentation = "";
+                    if (PPOApplication.InspectionCertificationDate.HasValue)
+                    {
+                        DateInspectionStringRepresentation = PPOApplication.InspectionCertificationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="insp-cer-date" type="date" class="form-control" value="@DateInspectionStringRepresentation" @onchange="UpdateInspectionCertificationDateProperty" />
+            </div>
+            <ValidationMessage For="() => PPOApplication.InspectionCertificationDate" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="confirmation-published-date">@localizer["Date Confirmation Published Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string DateConfirmationPublishedStringRepresentation = "";
+                    if (PPOApplication.ConfirmationPublishedDate.HasValue)
+                    {
+                        DateConfirmationPublishedStringRepresentation = PPOApplication.ConfirmationPublishedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="confirmation-published-date" type="date" class="form-control" value="@DateConfirmationPublishedStringRepresentation" @onchange="UpdateConfirmationPublishedDateProperty" />
+            </div>
+            <ValidationMessage For="() => PPOApplication.ConfirmationPublishedDate" />
+        </div>
+
+        <YesNoBoolean @bind-Value="PPOApplication.CouncilLandAffected" Label="@localizer["Council Land Affected Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="charge">@localizer["Charge Label"]</label>
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <div class="input-group">
+                    <span class="input-group-text">£</span>
+                    <CurrencyInput TValue="decimal?" HideCurrencySymbol="true" id="charge" class="form-control" @bind-Value="PPOApplication.Charge"></CurrencyInput>
+                </div>
+            </div>
+            <ValidationMessage For="() => PPOApplication.Charge" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="box-number">@localizer["Box Number Label"]</label>
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <InputText id="box-number" class="form-control" @bind-Value="PPOApplication.BoxNumber"></InputText>
+            </div>
+            <ValidationMessage For="() => PPOApplication.BoxNumber" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="case-officer">@localizer["Case Officer Label"]</label>
+            <div class="col-sm-8 col-lg-6">
+                <InputText id="case-officer" class="form-control" list="ppo-case-officers" @bind-Value="PPOApplication.CaseOfficer"></InputText>
+            </div>
+            <ValidationMessage For="() => PPOApplication.CaseOfficer" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="private-comments">@localizer["Private Comments Label"]</label>
+            <InputTextArea id="private-comments" class="form-control" @bind-Value="PPOApplication.PrivateComments"></InputTextArea>
+            <ValidationMessage For="() => PPOApplication.PrivateComments" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="public-comments">@localizer["Public Comments Label"]</label>
+            <InputTextArea id="public-comments" class="form-control" @bind-Value="PPOApplication.PublicComments"></InputTextArea>
+            <ValidationMessage For="() => PPOApplication.PublicComments" />
+        </div>
+
+        @if (IsEdit)
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+            <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+        }
+
+    </EditForm>
+
+}

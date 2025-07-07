@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
-    internal class DMMOOrderConfiguration: IEntityTypeConfiguration<Order>
+    internal class DMMOOrderConfiguration: IEntityTypeConfiguration<DMMOOrder>
     {
-        public void Configure(EntityTypeBuilder<Order> builder)
+        public void Configure(EntityTypeBuilder<DMMOOrder> builder)
         {
             builder.HasKey(x => new { x.OrderId, x.ApplicationId });
             builder

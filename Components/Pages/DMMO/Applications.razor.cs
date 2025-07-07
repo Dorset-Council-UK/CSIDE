@@ -114,7 +114,7 @@ namespace CSIDE.Components.Pages.DMMO
                 }
                 if (ApplicationDateTo is not null)
                 {
-                    query = query.Where(d => d.ApplicationDate >= NodaTime.LocalDate.FromDateOnly(ApplicationDateTo.Value));
+                    query = query.Where(d => d.ApplicationDate <= NodaTime.LocalDate.FromDateOnly(ApplicationDateTo.Value));
                 }
                 if (ReceivedDateFrom is not null)
                 {
@@ -122,13 +122,13 @@ namespace CSIDE.Components.Pages.DMMO
                 }
                 if (ReceivedDateTo is not null)
                 {
-                    query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
+                    query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
                 }
 
                 SearchResults = await query.OrderByDescending(d => d.Id).Take(MaxResults).ToListAsync();
             }catch(Exception ex)
             {
-                logger.LogError(ex, "An error occurred rendering the jobs list component");
+                logger.LogError(ex, "An error occurred rendering the applications list component");
             }
             finally
             {

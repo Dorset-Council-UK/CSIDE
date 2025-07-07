@@ -2,9 +2,9 @@ using BlazorBootstrap;
 using CSIDE.Components.DMMO;
 using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Components.Pages.DMMO.Orders
 {
@@ -17,10 +17,10 @@ namespace CSIDE.Components.Pages.DMMO.Orders
         public int DMMOApplicationId { get; init; }
 
         private Application? DMMOApplication { get; set; }
-        private Order? Order { get; set; }
+        private DMMOOrder? Order { get; set; }
         private OrderDecisionOfSecState[]? DecisionOfSecStateOptions;
         private OrderDeterminationProcess[]? DeterminationProcessOptions;
-        private DMMOOrderEditForm? childDMMOOrderEditForm;
+        private OrderEditForm? childDMMOOrderEditForm;
         private bool IsBusy { get; set; } = false;
         private string? ErrorMessage { get; set; } = null;  
         protected override async Task OnParametersSetAsync()
@@ -45,7 +45,7 @@ namespace CSIDE.Components.Pages.DMMO.Orders
                     .AsNoTracking()
                     .OrderBy(p => p.Name)
                     .ToArrayAsync();
-                Order = new Order() { ApplicationId = DMMOApplicationId };
+                Order = new DMMOOrder() { ApplicationId = DMMOApplicationId };
             }
             IsBusy = false;
         }

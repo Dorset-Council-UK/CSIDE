@@ -10,5 +10,8 @@ namespace CSIDE.Services
         Task<List<string>> GetActiveUserIds();
         Task<List<ApplicationUserRole>> GetApplicationUserRoles(string userId);
         Task<List<ApplicationRole>> GetApplicationRoles();
+        Task<IList<User>> GetUsers(string[] userIds);
+        Task<IList<User>> GetUsersInRole(string roleName);
+
     }
 }

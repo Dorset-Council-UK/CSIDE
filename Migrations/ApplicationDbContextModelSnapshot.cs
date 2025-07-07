@@ -21,7 +21,7 @@ namespace CSIDE.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("cside")
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "survey_status", new[] { "completed", "incomplete", "rejected", "verified" });
@@ -313,6 +313,42 @@ namespace CSIDE.Migrations
                     b.ToTable("DMMOAddresses", "cside");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorName")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Instant>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("DMMOComments", "cside");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOContact", b =>
                 {
                     b.Property<int>("ApplicationId")
@@ -391,22 +427,7 @@ namespace CSIDE.Migrations
                     b.ToTable("DMMOMediaType", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOParish", b =>
-                {
-                    b.Property<int>("ApplicationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ParishId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ApplicationId", "ParishId");
-
-                    b.HasIndex("ParishId");
-
-                    b.ToTable("DMMOParish", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.DMMO.Order", b =>
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOOrder", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");
@@ -452,38 +473,19 @@ namespace CSIDE.Migrations
                     b.ToTable("DMMOOrders", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.DMMO.OrderDecisionOfSecState", b =>
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOParish", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ApplicationId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OrderDecisionsOfSecState", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.DMMO.OrderDeterminationProcess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ParishId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.HasKey("ApplicationId", "ParishId");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.HasIndex("ParishId");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("OrderDeterminationProcesses", "cside");
+                    b.ToTable("DMMOParish", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureBridgeDetails", b =>
@@ -807,6 +809,42 @@ namespace CSIDE.Migrations
                     b.HasKey("LandownerDepositId", "UPRN");
 
                     b.ToTable("LandownerDepositAddresses", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorName")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Instant>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("LandownerDepositId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LandownerDepositId");
+
+                    b.ToTable("LandownerDepositComments", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositContact", b =>
@@ -1199,6 +1237,342 @@ namespace CSIDE.Migrations
                     b.ToTable("MaintenanceTeamUsers", "cside");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.Application", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationDetails")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ApplicationTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("BoxNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CaseOfficer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CaseOfficerUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CaseStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("Charge")
+                        .HasColumnType("numeric");
+
+                    b.Property<LocalDate?>("ConfirmationPublishedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("CouncilLandAffected")
+                        .HasColumnType("boolean");
+
+                    b.Property<LocalDate?>("DateOfDirection")
+                        .HasColumnType("date");
+
+                    b.Property<LocalDate?>("DeterminationDate")
+                        .HasColumnType("date");
+
+                    b.Property<MultiLineString>("Geom")
+                        .IsRequired()
+                        .HasColumnType("geometry (multilinestring)");
+
+                    b.Property<bool?>("InspectionCertification")
+                        .HasColumnType("boolean");
+
+                    b.Property<LocalDate?>("InspectionCertificationDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LocationDescription")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PriorityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PrivateComments")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicComments")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate?>("ReceivedDate")
+                        .HasColumnType("date");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationTypeId");
+
+                    b.HasIndex("CaseStatusId");
+
+                    b.HasIndex("PriorityId");
+
+                    b.ToTable("PPOApplication", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationCaseStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PPOApplicationCaseStatuses", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationIntent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PPOApplicationIntents", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationPriority", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PPOApplicationPriorities", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PPOApplicationTypes", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AuthorName")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Instant>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("PPOComments", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationId", "ContactId");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("PPOContact", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOIntent", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IntentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationId", "IntentId");
+
+                    b.HasIndex("IntentId");
+
+                    b.ToTable("PPOIntents", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOMedia", b =>
+                {
+                    b.Property<int>("PPOId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PPOApplicationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PPOId", "MediaId");
+
+                    b.HasIndex("MediaId");
+
+                    b.HasIndex("MediaTypeId");
+
+                    b.HasIndex("PPOApplicationId");
+
+                    b.ToTable("PPOMedia", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOMediaType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileTypesLimit")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumFilesLimit")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PPOMediaType", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOOrder", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDate?>("DateConfirmed")
+                        .HasColumnType("date");
+
+                    b.Property<LocalDate?>("DatePublished")
+                        .HasColumnType("date");
+
+                    b.Property<LocalDate?>("DateSealed")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("DecisionOfSecStateId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("DeterminationProcessId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDate?>("ObjectionsEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("ObjectionsReceived")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("ObjectionsWithdrawn")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("SubmitToPINS")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("OrderId", "ApplicationId");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("DecisionOfSecStateId");
+
+                    b.HasIndex("DeterminationProcessId");
+
+                    b.ToTable("PPOOrders", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOParish", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ParishId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationId", "ParishId");
+
+                    b.HasIndex("ParishId");
+
+                    b.ToTable("PPOParishes", "cside");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.LegalStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -1445,6 +1819,40 @@ namespace CSIDE.Migrations
                     b.ToTable("Media", "cside");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.Shared.OrderDecisionOfSecState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderDecisionsOfSecState", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.Shared.OrderDeterminationProcess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderDeterminationProcesses", "cside");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Parish", b =>
                 {
                     b.Property<int>("ParishId")
@@ -1553,7 +1961,7 @@ namespace CSIDE.Migrations
                     b.Property<SurveyStatus>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("survey_status")
-                        .HasDefaultValue(SurveyStatus.Incomplete);
+                        .HasDefaultValueSql("'incomplete'::survey_status");
 
                     b.Property<string>("SurveyorId")
                         .HasColumnType("text");
@@ -1786,6 +2194,17 @@ namespace CSIDE.Migrations
                     b.Navigation("DMMOApplication");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOComment", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
+                        .WithMany("Comments")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DMMOApplication");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOContact", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
@@ -1851,6 +2270,27 @@ namespace CSIDE.Migrations
                     b.Navigation("MediaType");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOOrder", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.DMMO.Application", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.OrderDecisionOfSecState", "DecisionOfSecState")
+                        .WithMany()
+                        .HasForeignKey("DecisionOfSecStateId");
+
+                    b.HasOne("CSIDE.Data.Models.Shared.OrderDeterminationProcess", "DeterminationProcess")
+                        .WithMany()
+                        .HasForeignKey("DeterminationProcessId");
+
+                    b.Navigation("DecisionOfSecState");
+
+                    b.Navigation("DeterminationProcess");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOParish", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.DMMO.Application", "DMMOApplication")
@@ -1868,27 +2308,6 @@ namespace CSIDE.Migrations
                     b.Navigation("DMMOApplication");
 
                     b.Navigation("Parish");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.DMMO.Order", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.DMMO.Application", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.DMMO.OrderDecisionOfSecState", "DecisionOfSecState")
-                        .WithMany()
-                        .HasForeignKey("DecisionOfSecStateId");
-
-                    b.HasOne("CSIDE.Data.Models.DMMO.OrderDeterminationProcess", "DeterminationProcess")
-                        .WithMany()
-                        .HasForeignKey("DeterminationProcessId");
-
-                    b.Navigation("DecisionOfSecState");
-
-                    b.Navigation("DeterminationProcess");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureBridgeDetails", b =>
@@ -2012,6 +2431,17 @@ namespace CSIDE.Migrations
                 {
                     b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
                         .WithMany("LandownerDepositAddresses")
+                        .HasForeignKey("LandownerDepositId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LandownerDeposit");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositComment", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
+                        .WithMany("Comments")
                         .HasForeignKey("LandownerDepositId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2238,6 +2668,149 @@ namespace CSIDE.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.Application", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.ApplicationType", "ApplicationType")
+                        .WithMany()
+                        .HasForeignKey("ApplicationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.PPO.ApplicationCaseStatus", "CaseStatus")
+                        .WithMany()
+                        .HasForeignKey("CaseStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.PPO.ApplicationPriority", "Priority")
+                        .WithMany()
+                        .HasForeignKey("PriorityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationType");
+
+                    b.Navigation("CaseStatus");
+
+                    b.Navigation("Priority");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOComment", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
+                        .WithMany("Comments")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PPOApplication");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
+                        .WithMany("PPOContacts")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("PPOApplication");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOIntent", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", "Application")
+                        .WithMany("PPOIntents")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.PPO.ApplicationIntent", "Intent")
+                        .WithMany()
+                        .HasForeignKey("IntentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Intent");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOMedia", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
+                        .WithMany("PPOMedia")
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.PPO.PPOMediaType", "MediaType")
+                        .WithMany()
+                        .HasForeignKey("MediaTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
+                        .WithMany("PPOMedia")
+                        .HasForeignKey("PPOApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Media");
+
+                    b.Navigation("MediaType");
+
+                    b.Navigation("PPOApplication");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOOrder", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.OrderDecisionOfSecState", "DecisionOfSecState")
+                        .WithMany()
+                        .HasForeignKey("DecisionOfSecStateId");
+
+                    b.HasOne("CSIDE.Data.Models.Shared.OrderDeterminationProcess", "DeterminationProcess")
+                        .WithMany()
+                        .HasForeignKey("DeterminationProcessId");
+
+                    b.Navigation("DecisionOfSecState");
+
+                    b.Navigation("DeterminationProcess");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOParish", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
+                        .WithMany("PPOParishes")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
+                        .WithMany()
+                        .HasForeignKey("ParishId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PPOApplication");
+
+                    b.Navigation("Parish");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.LegalStatus", "LegalStatus")
@@ -2419,6 +2992,8 @@ namespace CSIDE.Migrations
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.Application", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("DMMOAddresses");
 
                     b.Navigation("DMMOContacts");
@@ -2441,6 +3016,8 @@ namespace CSIDE.Migrations
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("LandownerDepositAddresses");
 
                     b.Navigation("LandownerDepositContacts");
@@ -2470,6 +3047,21 @@ namespace CSIDE.Migrations
                     b.Navigation("TeamUsers");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.Application", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("PPOContacts");
+
+                    b.Navigation("PPOIntents");
+
+                    b.Navigation("PPOMedia");
+
+                    b.Navigation("PPOParishes");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>
                 {
                     b.Navigation("RouteMedia");
@@ -2495,6 +3087,8 @@ namespace CSIDE.Migrations
                     b.Navigation("JobMedia");
 
                     b.Navigation("LandownerDepositMedia");
+
+                    b.Navigation("PPOMedia");
 
                     b.Navigation("RouteMedia");
                 });
