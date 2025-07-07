@@ -77,8 +77,14 @@ namespace CSIDE.Components.Pages.Infrastructure
                         //Without this, all properties are identified as tracked, since
                         //the DbContext is different from when the entity was queried
                         var existingInfra = await context.Infrastructure.FindAsync(InfrastructureItem.Id) ?? throw new Exception($"Infrastructure Item being edited (ID: {InfrastructureItem.Id}) was not found prior to updating");
-                        
+
+                        // Store the original version for concurrency checking
+                        uint originalVersion = InfrastructureItem.Version;
+                        // Update values
                         context.Entry(existingInfra).CurrentValues.SetValues(InfrastructureItem);
+                        // Restore original version to ensure concurrency check works
+                        context.Entry(existingInfra).Property(j => j.Version).OriginalValue = originalVersion;
+
                         if (existingInfra.InfrastructureType is not null && existingInfra.InfrastructureType.IsBridge && InfrastructureItem.BridgeDetails is not null)
                         {
                             var existingBridgeDetails = await context.InfrastructureBridgeDetails.Where(i => i.InfrastructureId == InfrastructureItem.Id).FirstOrDefaultAsync();

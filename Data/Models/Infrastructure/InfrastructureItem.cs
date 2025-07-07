@@ -30,6 +30,8 @@ namespace CSIDE.Data.Models.Infrastructure
         public Parish? Parish { get; set; }
         public Team? MaintenanceTeam { get; set; } 
         public InfrastructureBridgeDetails? BridgeDetails { get; set; }
-        /*TODO - Add concurrency token*/
+
+        //Concurrency token
+        public uint Version { get; set; }
     }
 }

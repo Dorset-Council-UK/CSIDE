@@ -1,15 +1,16 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Components.Mapping;
-using CSIDE.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.IO;
-using NetTopologySuite.Features;
-using FluentValidation;
 using CSIDE.Components.RightsOfWay;
-using NetTopologySuite.Geometries;
+using CSIDE.Data;
+using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Services;
+using FluentValidation;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 
 namespace CSIDE.Components.Pages.RightsOfWay
 {
@@ -82,8 +83,12 @@ namespace CSIDE.Components.Pages.RightsOfWay
                         //Without this, all properties are identified as tracked, since
                         //the DbContext is different from when the entity was queried
                         var existingRoute = await context.Routes.FindAsync(Route.RouteCode) ?? throw new Exception($"Route being edited (ID: {Route.RouteCode}) was not found prior to updating");
-
+                        // Store the original version for concurrency checking
+                        uint originalVersion = Route.Version;
+                        // Update values
                         context.Entry(existingRoute).CurrentValues.SetValues(Route);
+                        // Restore original version to ensure concurrency check works
+                        context.Entry(existingRoute).Property(j => j.Version).OriginalValue = originalVersion;
 
                         await context.SaveChangesAsync();
                         //redirect

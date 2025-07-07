@@ -10,6 +10,7 @@ namespace CSIDE.Data.EntitiesConfiguration
         {
             builder.Property(x => x.Description).HasMaxLength(1000);
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (point)");
+            builder.Property(x => x.Version).IsRowVersion();
 
             builder.Navigation(x => x.InfrastructureType)
                 .AutoInclude();

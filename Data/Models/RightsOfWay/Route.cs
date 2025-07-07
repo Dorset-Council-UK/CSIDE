@@ -30,5 +30,8 @@ namespace CSIDE.Data.Models.RightsOfWay
         public LegalStatus? LegalStatus { get; set; }
         public Maintenance.Team? MaintenanceTeam { get; set; }
         public Parish? Parish { get; set; }
+
+        //Concurrency token
+        public uint Version { get; set; }
     }
 }
