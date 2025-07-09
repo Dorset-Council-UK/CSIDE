@@ -4,9 +4,11 @@
 @using CSIDE.Components.Mapping
 @using CSIDE.Components.Layout
 @using System.Globalization
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
-
+@inject IOptions<MappingOptions> mappingOptions
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -186,6 +188,11 @@ else
                                     <tr><th>@localizer["End Easting Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.Last().X)</td></tr>
                                     <tr><th>@localizer["End Northing Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.Last().Y)</td></tr>
                                     <tr><th>@localizer["Approximate Length Label"]</th><td>@Convert.ToInt32(Route.Geom?.Length)m</td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <MapLink Template="@mappingOptions.Value.RouteMapLinkTemplateURL" Geometry="@Route.Geom" IncludeIcon="true"></MapLink>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         }

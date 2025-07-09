@@ -1665,4 +1665,10 @@
   <data name="No Landowner Deposit Comments Message" xml:space="preserve">
     <value>No comments for this Landowner Deposit.</value>
   </data>
+  <data name="Map Text" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="Open Map Link Label" xml:space="preserve">
+    <value>View on {0}</value>
+  </data>
 </root>

@@ -1676,4 +1676,10 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="No Landowner Deposit Comments Message" xml:space="preserve">
     <value>Dim sylwadau ar gyfer y Blaendal Perchennog Tir hwn.</value>
   </data>
+  <data name="Map Text" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="Open Map Link Label" xml:space="preserve">
+    <value>Gweld ar {0}</value>
+  </data>
 </root>

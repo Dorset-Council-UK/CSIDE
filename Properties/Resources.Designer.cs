@@ -3094,6 +3094,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Map.
+        /// </summary>
+        public static string Map_Text {
+            get {
+                return ResourceManager.GetString("Map Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You&apos;ve added the max number of files ({0}) to this category. If you want to replace a file, delete it first..
         /// </summary>
         public static string Max_Allowed_Files_For_Type_Warning_Message {
@@ -3540,6 +3549,15 @@ namespace CSIDE.Properties {
         public static string Old_Value_Label {
             get {
                 return ResourceManager.GetString("Old Value Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View on {0}.
+        /// </summary>
+        public static string Open_Map_Link_Label {
+            get {
+                return ResourceManager.GetString("Open Map Link Label", resourceCulture);
             }
         }
         

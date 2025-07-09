@@ -5,8 +5,12 @@
 @using CSIDE.Components.Layout
 @using CSIDE.Data.Models.Shared
 @using System.Globalization
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
+@inject IOptions<MappingOptions> mappingOptions
+
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -247,6 +251,17 @@ else
                         {
                             <MiniMap Geometry="@LandownerDeposit.Geom"></MiniMap>
                         }
+                        <table class="table table-striped table-sm">
+                            <tbody>
+                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(LandownerDeposit.Geom?.Centroid.X)</td></tr>
+                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(LandownerDeposit.Geom?.Centroid.Y)</td></tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <MapLink Template="@mappingOptions.Value.LandownerDepositMapLinkTemplateURL" Geometry="@LandownerDeposit.Geom" IncludeIcon="true"></MapLink>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </ChildContent>
                     <ErrorContent Context="Exception">
                         <GenericErrorAlert Exception="Exception"></GenericErrorAlert>

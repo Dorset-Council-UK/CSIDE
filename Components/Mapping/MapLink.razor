@@ -1,0 +1,61 @@
+﻿@using CSIDE.Options
+@using CSIDE.Services
+@using Microsoft.Extensions.Options
+@inject IOptions<MappingOptions> mappingOptions
+@inject IMapLinkHelperService MapLinkHelper
+
+@if (!string.IsNullOrEmpty(Url))
+{
+    <a href="@Url" target="_blank">
+        @if (IncludeIcon == true)
+        {
+            <Icon Name="IconName.Map" Class="me-2" />
+        }
+        @localizer["Open Map Link Label",
+            string.IsNullOrEmpty(mappingOptions.Value.ExternalMappingSystemName)
+            ? localizer["Map Text"]
+            : mappingOptions.Value.ExternalMappingSystemName]
+    </a>
+}
+@code {
+    [Parameter, EditorRequired]
+    public string Template { get; set; } = "";
+    [Parameter, EditorRequired]
+    public required Geometry Geometry { get; set; }
+    [Parameter]
+    public bool IncludeIcon { get; set; } = true;
+
+    public string? Url = "";
+
+    protected override void OnInitialized()
+    {
+        if (Geometry is null)
+        {
+            return;
+        }
+        if(string.IsNullOrEmpty(Template))
+        {
+            return;
+        }
+        if(Geometry is Point point)
+        {
+            //point
+            Url = MapLinkHelper.GenerateMapLink(Template, point.X, point.Y, 18);
+        }
+        else
+        {
+            //check if there is a bbox in the template
+            if (Template.Contains("{bbox}"))
+            {
+                //bbox
+                double[] coords = [Geometry.EnvelopeInternal.MinX, Geometry.EnvelopeInternal.MinY,
+                Geometry.EnvelopeInternal.MaxX,Geometry.EnvelopeInternal.MaxY];
+                Url = MapLinkHelper.GenerateMapLink(Template, coords, ',');
+            }
+            else
+            {
+                Url = MapLinkHelper.GenerateMapLink(Template, Geometry.Centroid.X, Geometry.Centroid.Y, 16);
+            }
+        }
+    }
+}

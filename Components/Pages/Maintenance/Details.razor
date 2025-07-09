@@ -5,8 +5,12 @@
 @using CSIDE.Components.Layout
 @using System.Globalization
 @using CSIDE.Data.Models.Shared
+@using CSIDE.Options
+@using CSIDE.Services
+@using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
+@inject IOptions<MappingOptions> mappingOptions
 
 
 <div>
@@ -198,6 +202,11 @@ else
                             <tbody>
                                 <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(Job.Geom?.X)</td></tr>
                                 <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(Job.Geom?.Y)</td></tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <MapLink Template="@mappingOptions.Value.MaintJobMapLinkTemplateURL" Geometry="@Job.Geom" IncludeIcon="true"></MapLink>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </ChildContent>
@@ -261,7 +270,7 @@ else
             {
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("Ranger");
             }
-        }
+        }       
     }
     private async Task AddContact(Contact NewContact){
         

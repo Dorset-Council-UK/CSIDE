@@ -4,8 +4,11 @@
 @using CSIDE.Components.Mapping
 @using CSIDE.Components.Layout
 @using System.Globalization
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
+@inject IOptions<MappingOptions> mappingOptions
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -303,6 +306,11 @@ else
                             <tbody>
                                 <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom?.X)</td></tr>
                                 <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom?.Y)</td></tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <MapLink Template="@mappingOptions.Value.InfraItemMapLinkTemplateURL" Geometry="@InfrastructureItem.Geom" IncludeIcon="true"></MapLink>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </ChildContent>
