@@ -56,12 +56,14 @@ Responsive="true">
     public string[]? SectionNames{ get; set; }
     [Parameter]
     public string? EntityId{ get; set; }
+    [Parameter]
+    public string? UserId { get; set; }
 
     public required AuditLogModal AuditLogModalComponent { get; set; }
 
     private async Task<GridDataProviderResult<Data.Models.Audit.AuditLog>> AuditLogDataProvider(GridDataProviderRequest<Data.Models.Audit.AuditLog> request)
     {
-        var result = await _auditService.GetLogsAsync(request.PageNumber, request.PageSize, SectionNames, EntityId, request.CancellationToken);
+        var result = await _auditService.GetLogsAsync(request.PageNumber, request.PageSize, SectionNames, EntityId, UserId, request.CancellationToken);
         return await Task.FromResult(new GridDataProviderResult<Data.Models.Audit.AuditLog> { Data = result.AuditLogs, TotalCount = result.TotalCount });
     }
 

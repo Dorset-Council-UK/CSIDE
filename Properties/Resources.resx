@@ -973,7 +973,7 @@
     <value>No</value>
   </data>
   <data name="Audit Log Title" xml:space="preserve">
-    <value>Audit Log</value>
+    <value>Audit log</value>
   </data>
   <data name="Item ID Label" xml:space="preserve">
     <value>Item ID</value>
@@ -1670,5 +1670,14 @@
   </data>
   <data name="Open Map Link Label" xml:space="preserve">
     <value>View on {0}</value>
+  </data>
+  <data name="Audit Log For User Title" xml:space="preserve">
+    <value>My activity</value>
+  </data>
+  <data name="Account Title" xml:space="preserve">
+    <value>My account</value>
+  </data>
+  <data name="My Activity Label" xml:space="preserve">
+    <value>My activity</value>
   </data>
 </root>

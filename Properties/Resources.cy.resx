@@ -984,7 +984,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
     <value>Nac ydw</value>
   </data>
   <data name="Audit Log Title" xml:space="preserve">
-    <value>Log Archwilio</value>
+    <value>Log archwilio</value>
   </data>
   <data name="Item ID Label" xml:space="preserve">
     <value>ID Eitem</value>
@@ -1681,5 +1681,14 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   </data>
   <data name="Open Map Link Label" xml:space="preserve">
     <value>Gweld ar {0}</value>
+  </data>
+  <data name="Audit Log For User Title" xml:space="preserve">
+    <value>Fy ngweithgaredd</value>
+  </data>
+  <data name="Account Title" xml:space="preserve">
+    <value>Fy cyfrif</value>
+  </data>
+  <data name="My Activity Label" xml:space="preserve">
+    <value>Fy ngweithgaredd</value>
   </data>
 </root>

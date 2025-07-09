@@ -106,6 +106,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to My account.
+        /// </summary>
+        public static string Account_Title {
+            get {
+                return ResourceManager.GetString("Account Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string Action_Label {
@@ -457,6 +466,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to My activity.
+        /// </summary>
+        public static string Audit_Log_For_User_Title {
+            get {
+                return ResourceManager.GetString("Audit Log For User Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View the audit logs for {0}.
         /// </summary>
         public static string Audit_Log_Text {
@@ -466,7 +484,7 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Audit Log.
+        ///   Looks up a localized string similar to Audit log.
         /// </summary>
         public static string Audit_Log_Title {
             get {
@@ -3171,6 +3189,15 @@ namespace CSIDE.Properties {
         public static string My_Account_Label {
             get {
                 return ResourceManager.GetString("My Account Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My activity.
+        /// </summary>
+        public static string My_Activity_Label {
+            get {
+                return ResourceManager.GetString("My Activity Label", resourceCulture);
             }
         }
         
