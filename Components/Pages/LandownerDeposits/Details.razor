@@ -26,15 +26,15 @@
 
 @if (LandownerDeposit is null && !IsBusy)
 {
-    <PageTitle>@localizer["Landowner Deposit Not Found Error Message", ItemId]</PageTitle>
-    <Alert Color="AlertColor.Danger">@localizer["Landowner Deposit Not Found Error Message", ItemId]</Alert>
+    <PageTitle>@localizer["Landowner Deposit Not Found Error Message", $"{IDPrefixOptions.Value.LandownerDeposit}{ItemId}"]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["Landowner Deposit Not Found Error Message", $"{IDPrefixOptions.Value.LandownerDeposit}{ItemId}"]</Alert>
 }
 else
 {
     if (LandownerDeposit is not null)
     {
-        <PageTitle>@localizer["Landowner Deposit Details Title", LandownerDeposit.Id]</PageTitle>
-        <h1>@localizer["Landowner Deposit Details Title", LandownerDeposit.Id]</h1>
+        <PageTitle>@localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}"]</PageTitle>
+        <h1>@localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}"]</h1>
         
         <AuthorizeView Roles="Administrator, RoW Officer">
             <a href="landowner-deposits/Edit/@LandownerDeposit.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
@@ -52,7 +52,7 @@ else
                                     <tbody>
                                         <tr>
                                             <th class="w-25">@localizer["Landowner Deposit ID Label"]</th>
-                                            <td>@LandownerDeposit.Id</td>
+                                            <td>@IDPrefixOptions.Value.LandownerDeposit@LandownerDeposit.Id</td>
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Landowner Deposit Type Label"]</th>
@@ -300,7 +300,7 @@ else
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["Landowner Deposit Title"], Href="landowner-deposit" },
-            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", ItemId], IsCurrentPage = true }
+            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{ItemId}"], IsCurrentPage = true }
         };
 
         IsBusy = true;

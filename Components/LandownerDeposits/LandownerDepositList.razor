@@ -26,7 +26,7 @@ Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-            <a href="landowner-deposits/Details/@context.Id">@context.Id</a>
+            <a href="landowner-deposits/Details/@context.Id">@IDPrefixOptions.Value.LandownerDeposit@context.Id</a>
         </GridColumn>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit Type Label"]" PropertyName="LandownerDepositTypes">
             @foreach(var landownerDepositType in context.LandownerDepositTypes){

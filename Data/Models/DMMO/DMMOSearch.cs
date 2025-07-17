@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace CSIDE.Data.Models.DMMO
+﻿namespace CSIDE.Data.Models.DMMO
 {
     public class DMMOSearch
     {

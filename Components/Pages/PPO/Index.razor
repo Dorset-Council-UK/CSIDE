@@ -24,9 +24,13 @@
     }
     <div class="row">
         <div class="col-sm-6 col-lg-4">
-            <label class="form-label" for="job-id-search">@localizer["PPO ID Label"]</label>
+            <label class="form-label" for="ppo-id-search">@localizer["PPO ID Label"]</label>
             <div class="input-group mb-3">
-                <InputText id="infrastructure-id-search" @bind-Value="PPOIDSearch" class="form-control"></InputText>
+                @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance))
+                {
+                    <span class="input-group-text" id="ppo-id-prefix">@IDPrefixOptions.Value.PPO</span>
+                }
+                <InputText id="ppo-id-search" @bind-Value="PPOIDSearch" class="form-control"></InputText>
                 <button class="btn btn-outline-secondary" type="submit" id="search-PPO-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
             </div>
         </div>

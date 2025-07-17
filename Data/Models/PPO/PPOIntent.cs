@@ -1,6 +1,4 @@
-﻿using CSIDE.Data.Models.Shared;
-
-namespace CSIDE.Data.Models.PPO
+﻿namespace CSIDE.Data.Models.PPO
 {
     public class PPOIntent
     {

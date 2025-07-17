@@ -5,7 +5,6 @@ using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Components.Pages.DMMO.Orders
 {

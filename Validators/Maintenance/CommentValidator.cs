@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using CSIDE.Data.Models.Maintenance;
-using CSIDE.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
 namespace CSIDE.Validators.Maintenance

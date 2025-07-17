@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace CSIDE.Data.Models.Infrastructure
+﻿namespace CSIDE.Data.Models.Infrastructure
 {
     public class InfrastructureSearch
     {

@@ -4,7 +4,6 @@ using CSIDE.Components.Infrastructure;
 using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;

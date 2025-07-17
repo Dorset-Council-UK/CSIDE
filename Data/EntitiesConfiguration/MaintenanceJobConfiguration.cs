@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.Maintenance;
-using CSIDE.Data.Models.Shared;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {

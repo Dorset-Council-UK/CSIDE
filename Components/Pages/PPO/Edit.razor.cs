@@ -2,7 +2,6 @@
 using CSIDE.Components.Mapping;
 using CSIDE.Components.PPO;
 using CSIDE.Data;
-using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Services;
 using FluentValidation;
@@ -41,8 +40,8 @@ namespace CSIDE.Components.Pages.PPO
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["PPO Abbreviation"], Href="PPO" },
-                new BreadcrumbItem{ Text = localizer["PPO Details Title", PPOApplicationId], Href=$"PPO/Details/{PPOApplicationId}"},
-                new BreadcrumbItem{ Text = localizer["Edit PPO Label", PPOApplicationId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["PPO Details Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"], Href=$"PPO/Details/{PPOApplicationId}"},
+                new BreadcrumbItem{ Text = localizer["Edit PPO Label", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             try

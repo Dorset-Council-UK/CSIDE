@@ -6,7 +6,7 @@
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
-<h1>@localizer["Start New Bridge Survey Title",InfraId]</h1>
+<h1>@localizer["Start New Bridge Survey Title", $"{IDPrefixOptions.Value.Infrastructure}{InfraId}"]</h1>
 
 @if (ErrorMessage is not null)
 {
@@ -28,7 +28,7 @@
     <Authorized>
         @if (InfrastructureItem is not null)
         {
-            <PageTitle>@localizer["Start New Bridge Survey Title", InfraId]</PageTitle>
+            <PageTitle>@localizer["Start New Bridge Survey Title", $"{IDPrefixOptions.Value.Infrastructure}{InfraId}"]</PageTitle>
 
 
             <div class="row">

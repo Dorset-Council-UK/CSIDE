@@ -3,7 +3,6 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Maintenance

@@ -1,11 +1,9 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Components.PPO;
 using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Components.PPO

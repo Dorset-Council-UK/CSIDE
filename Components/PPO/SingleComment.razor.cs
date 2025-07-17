@@ -3,7 +3,6 @@ using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using NodaTime;
 

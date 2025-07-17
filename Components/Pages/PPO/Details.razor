@@ -25,15 +25,15 @@
 
 @if (PPOApplication is null && !IsBusy)
 {
-    <PageTitle>@localizer["PPO Not Found Error Message", Id]</PageTitle>
-    <Alert Color="AlertColor.Danger">@localizer["PPO Job Not Found Error Message", Id]</Alert>
+    <PageTitle>@localizer["PPO Not Found Error Message", $"{IDPrefixOptions.Value.PPO}{Id}"]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["PPO Job Not Found Error Message", $"{IDPrefixOptions.Value.PPO}{Id}"]</Alert>
 }
 else
 {
     if (PPOApplication is not null)
     {
-        <PageTitle>@localizer["PPO Details Title", PPOApplication.Id]</PageTitle>
-        <h1>@localizer["PPO Details Title", PPOApplication.Id]</h1>
+        <PageTitle>@localizer["PPO Details Title", $"{IDPrefixOptions.Value.PPO}{PPOApplication.Id}"]</PageTitle>
+        <h1>@localizer["PPO Details Title", $"{IDPrefixOptions.Value.PPO}{PPOApplication.Id}"]</h1>
 
         <AuthorizeView Roles="Administrator, RoW Officer">
             <a href="PPO/Edit/@PPOApplication.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
@@ -54,7 +54,7 @@ else
                                     <tbody>
                                         <tr>
                                             <th class="w-25">@localizer["Reference Number Label"]</th>
-                                            <td>@PPOApplication.Id</td>
+                                            <td>@IDPrefixOptions.Value.PPO@PPOApplication.Id</td>
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Application Type Label"]</th>

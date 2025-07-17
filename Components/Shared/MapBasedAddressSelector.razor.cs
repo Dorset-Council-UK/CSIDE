@@ -1,8 +1,6 @@
-using CSIDE.Data;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
 namespace CSIDE.Components.Shared

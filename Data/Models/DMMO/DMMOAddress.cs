@@ -1,6 +1,4 @@
-﻿using CSIDE.Data.Models.Shared;
-
-namespace CSIDE.Data.Models.DMMO
+﻿namespace CSIDE.Data.Models.DMMO
 {
     public class DMMOAddress
     {

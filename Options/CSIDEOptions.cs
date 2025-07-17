@@ -6,6 +6,7 @@ public record CSIDEOptions
     public const string ConnectionStringName = "CSIDE";
 
     public required MappingOptions Mapping { get; init; }
+    public required IDPrefixOptions IDPrefixes { get; init; }
     public required ApplicationInsightsOptions ApplicationInsights { get; init; }
     public required AzureAdOptions AzureAd { get; init; }
     public required AzureBlobStorageOptions AzureBlobStorage { get; init; }

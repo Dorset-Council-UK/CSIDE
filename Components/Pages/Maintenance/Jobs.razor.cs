@@ -4,7 +4,6 @@ using CSIDE.Data.Models.Maintenance;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 
 namespace CSIDE.Components.Pages.Maintenance

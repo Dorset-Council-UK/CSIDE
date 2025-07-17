@@ -24,6 +24,9 @@
 @using NetTopologySuite.Features
 @using NetTopologySuite.IO
 @using FluentValidation
+@using CSIDE.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<IDPrefixOptions> IDPrefixOptions;
 @inject IStringLocalizer<CSIDE.Properties.Resources> localizer
 
 @attribute [Authorize]

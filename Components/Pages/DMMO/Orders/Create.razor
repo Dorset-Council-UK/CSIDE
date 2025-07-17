@@ -20,9 +20,10 @@
 }
 else
 {
-    <PageTitle>@localizer["DMMO Create Order Title", DMMOApplicationId]</PageTitle>
+    <PageTitle>
+    @localizer["DMMO Create Order Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplicationId}"]</PageTitle>
 
-    <h1>@localizer["DMMO Create Order Title", DMMOApplicationId]</h1>
+    <h1>@localizer["DMMO Create Order Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplicationId}"]</h1>
 
     @if(ErrorMessage is not null)
     {

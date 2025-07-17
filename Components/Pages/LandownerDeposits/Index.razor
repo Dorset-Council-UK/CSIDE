@@ -33,6 +33,10 @@
         <div class="col-sm-6 col-lg-4">
             <label class="form-label" for="landowner-deposit-id-search">@localizer["Landowner Deposit ID Label"]</label>
             <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.LandownerDeposit))
+                {
+                    <span class="input-group-text" id="landowner-deposit-id-prefix">@IDPrefixOptions.Value.LandownerDeposit</span>
+                }
                 <InputText id="landowner-deposit-id-search" @bind-Value="LandownerDepositIDSearch" class="form-control"></InputText>
                 <button class="btn btn-outline-secondary" type="submit" id="search-landowner-deposit-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
             </div>

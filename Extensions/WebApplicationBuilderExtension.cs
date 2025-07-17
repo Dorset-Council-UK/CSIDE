@@ -11,7 +11,6 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -70,6 +69,7 @@ internal static class WebApplicationBuilderExtension
         var sectionTheme = sectionCSIDE.GetSection(ThemeOptions.SectionName);
         var sectionAzureBlobStorage = sectionCSIDE.GetSection(AzureBlobStorageOptions.SectionName);
         var sectionNetworking = sectionCSIDE.GetSection(NetworkingOptions.SectionName);
+        var sectionIDPrefixes = sectionCSIDE.GetSection(IDPrefixOptions.SectionName);
 
         builder.Services
             .Configure<CSIDEOptions>(sectionCSIDE)
@@ -78,7 +78,8 @@ internal static class WebApplicationBuilderExtension
             .Configure<KeyVaultOptions>(sectionKeyVault)
             .Configure<ThemeOptions>(sectionTheme)
             .Configure<AzureBlobStorageOptions>(sectionAzureBlobStorage)
-            .Configure<NetworkingOptions>(sectionNetworking);
+            .Configure<NetworkingOptions>(sectionNetworking)
+            .Configure<IDPrefixOptions>(sectionIDPrefixes);
 
         return builder;
     }

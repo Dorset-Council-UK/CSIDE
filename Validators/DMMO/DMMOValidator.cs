@@ -1,6 +1,4 @@
 ﻿using FluentValidation;
-using CSIDE.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using CSIDE.Data.Models.DMMO;
 using NodaTime;

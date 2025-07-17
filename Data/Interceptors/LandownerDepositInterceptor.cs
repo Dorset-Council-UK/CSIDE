@@ -1,5 +1,4 @@
-﻿using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.LandownerDeposits;
+﻿using CSIDE.Data.Models.LandownerDeposits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

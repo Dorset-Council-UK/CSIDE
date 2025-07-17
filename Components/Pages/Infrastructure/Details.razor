@@ -24,15 +24,15 @@
 
 @if (InfrastructureItem is null && !IsBusy)
 {
-    <PageTitle>@localizer["Infrastructure Job Not Found Error Message", ItemId]</PageTitle>
-    <Alert Color="AlertColor.Danger">@localizer["Infrastructure Job Not Found Error Message", ItemId]</Alert>
+    <PageTitle>@localizer["Infrastructure Job Not Found Error Message", $"{IDPrefixOptions.Value.Infrastructure}{ItemId}"]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["Infrastructure Job Not Found Error Message", $"{IDPrefixOptions.Value.Infrastructure}{ItemId}"]</Alert>
 }
 else
 {
     if (InfrastructureItem is not null)
     {
-        <PageTitle>@localizer["Infrastructure Details Title", InfrastructureItem.Id]</PageTitle>
-        <h1>@localizer["Infrastructure Details Title", InfrastructureItem.Id]</h1>
+        <PageTitle>@localizer["Infrastructure Details Title", $"{IDPrefixOptions.Value.Infrastructure}{InfrastructureItem.Id}"]</PageTitle>
+        <h1>@localizer["Infrastructure Details Title", $"{IDPrefixOptions.Value.Infrastructure}{InfrastructureItem.Id}"]</h1>
 
         <AuthorizeView Roles="Administrator, Ranger">
             <a href="Infrastructure/Edit/@InfrastructureItem.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
@@ -50,7 +50,7 @@ else
                                     <tbody>
                                         <tr>
                                             <th class="w-25">@localizer["Infrastructure ID Label"]</th>
-                                            <td>@InfrastructureItem.Id</td>
+                                            <td>@IDPrefixOptions.Value.Infrastructure@InfrastructureItem.Id</td>
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Infrastructure Type Label"]</th>
@@ -348,7 +348,7 @@ else
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
-            new BreadcrumbItem{ Text = localizer["Infrastructure Details Title", ItemId], IsCurrentPage = true }
+            new BreadcrumbItem{ Text = localizer["Infrastructure Details Title", $"{IDPrefixOptions.Value.Infrastructure}{ItemId}"], IsCurrentPage = true }
         };
 
         IsBusy = true;

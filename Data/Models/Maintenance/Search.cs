@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace CSIDE.Data.Models.Maintenance
+﻿namespace CSIDE.Data.Models.Maintenance
 {
     public class Search
     {

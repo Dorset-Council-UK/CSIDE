@@ -2,7 +2,6 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.JSInterop;
 
 namespace CSIDE.Components.Infrastructure
 {

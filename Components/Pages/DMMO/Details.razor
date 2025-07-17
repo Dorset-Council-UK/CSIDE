@@ -32,8 +32,10 @@ else
 {
     if (DMMOApplication is not null)
     {
-        <PageTitle>@localizer["DMMO Details Title", DMMOApplication.Id]</PageTitle>
-        <h1>@localizer["DMMO Details Title", DMMOApplication.Id]</h1>
+        <PageTitle>
+        @localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplication.Id}"]</PageTitle>
+        <h1>
+        @localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplication.Id}"]</h1>
 
         <AuthorizeView Roles="Administrator, RoW Officer">
             <a href="DMMO/Edit/@DMMOApplication.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
@@ -54,7 +56,7 @@ else
                                     <tbody>
                                         <tr>
                                             <th class="w-25">@localizer["Reference Number Label"]</th>
-                                            <td>@DMMOApplication.Id</td>
+                                            <td>@IDPrefixOptions.Value.DMMO@DMMOApplication.Id</td>
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Application Type Label"]</th>
@@ -312,7 +314,7 @@ else
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
-            new BreadcrumbItem{ Text = localizer["DMMO Details Title", Id], IsCurrentPage = true }
+            new BreadcrumbItem{ Text = localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{Id}"], IsCurrentPage = true }
         };
 
         IsBusy = true;

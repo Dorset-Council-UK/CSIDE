@@ -28,7 +28,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         NavItems =
         [
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
-            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", Id], Href=$"landowner-deposits/Details/{Id}" },
+            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{Id}"], Href=$"landowner-deposits/Details/{Id}" },
             new BreadcrumbItem{ Text = localizer["Add Addresses From Map Label"], IsCurrentPage = true }
         ];
         IsBusy = true;

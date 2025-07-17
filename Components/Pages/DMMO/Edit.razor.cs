@@ -39,8 +39,8 @@ namespace CSIDE.Components.Pages.DMMO
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
-                new BreadcrumbItem{ Text = localizer["DMMO Details Title", DMMOApplicationId], Href=$"DMMO/Details/{DMMOApplicationId}"},
-                new BreadcrumbItem{ Text = localizer["Edit DMMO Label", DMMOApplicationId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplicationId}"], Href=$"DMMO/Details/{DMMOApplicationId}"},
+                new BreadcrumbItem{ Text = localizer["Edit DMMO Label", $"{IDPrefixOptions.Value.DMMO}{DMMOApplicationId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             try
@@ -95,7 +95,7 @@ namespace CSIDE.Components.Pages.DMMO
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["DMMO Details Title", DMMOApplication.Id]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplication.Id}"]];
                     logger.LogError(ex, "An concurrency conflict occurred when creating a DMMO");
                 }
                 catch (Exception ex)

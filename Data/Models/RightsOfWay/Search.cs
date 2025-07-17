@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace CSIDE.Data.Models.RightsOfWay
+﻿namespace CSIDE.Data.Models.RightsOfWay
 {
     public class Search
     {

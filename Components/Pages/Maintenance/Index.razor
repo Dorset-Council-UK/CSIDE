@@ -31,6 +31,10 @@
         <div class="col-sm-6 col-lg-4">
             <label class="form-label" for="job-id-search">@localizer["Job ID Label"]</label>
             <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance))
+                {
+                    <span class="input-group-text" id="job-id-prefix">@IDPrefixOptions.Value.Maintenance</span>
+                }
                 <InputText id="job-id-search" @bind-Value="JobIDSearch" class="form-control"></InputText>
                 <button class="btn btn-outline-secondary" type="submit" id="search-job-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
             </div>

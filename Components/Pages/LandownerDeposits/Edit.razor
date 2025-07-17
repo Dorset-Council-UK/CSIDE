@@ -13,17 +13,17 @@
         </NotAuthorized>
 
         <Authorized>
-            <PageTitle>@localizer["Landowner Deposit Edit Title", LandownerDepositId]</PageTitle>
+        <PageTitle>@localizer["Landowner Deposit Edit Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"]</PageTitle>
 
             <div>
                 <Breadcrumb Items="NavItems"></Breadcrumb>
             </div>
 
-            <h1>@localizer["Landowner Deposit Edit Title", LandownerDepositId]</h1>
+        <h1>@localizer["Landowner Deposit Edit Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"]</h1>
 
             @if (LandownerDeposit is null && !IsBusy)
             {
-                <Alert Color="AlertColor.Danger">@localizer["Landowner Deposit Not Found Error Message", LandownerDepositId]</Alert>
+            <Alert Color="AlertColor.Danger">@localizer["Landowner Deposit Not Found Error Message", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"]</Alert>
                 <a href="landowner-deposits" class="btn btn-primary">@localizer["Search Landowner Deposits Title"]</a>
             }
             else

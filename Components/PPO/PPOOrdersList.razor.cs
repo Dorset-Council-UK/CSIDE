@@ -3,7 +3,6 @@ using Microsoft.JSInterop;
 using Microsoft.EntityFrameworkCore;
 using CSIDE.Data;
 using BlazorBootstrap;
-using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.PPO;
 
 namespace CSIDE.Components.PPO

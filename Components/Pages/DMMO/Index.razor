@@ -25,9 +25,13 @@
     }
     <div class="row">
         <div class="col-sm-6 col-lg-4">
-            <label class="form-label" for="job-id-search">@localizer["DMMO ID Label"]</label>
+            <label class="form-label" for="dmmo-id-search">@localizer["DMMO ID Label"]</label>
             <div class="input-group mb-3">
-                <InputText id="infrastructure-id-search" @bind-Value="DMMOIDSearch" class="form-control"></InputText>
+                @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.DMMO))
+                {
+                    <span class="input-group-text" id="dmmo-id-prefix">@IDPrefixOptions.Value.DMMO</span>
+                }
+                <InputText id="dmmo-id-search" @bind-Value="DMMOIDSearch" class="form-control"></InputText>
                 <button class="btn btn-outline-secondary" type="submit" id="search-dmmo-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
             </div>
         </div>

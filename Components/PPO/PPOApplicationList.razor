@@ -26,7 +26,7 @@ Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-            <a href="PPO/Details/@context.Id">@context.Id</a>
+            <a href="PPO/Details/@context.Id">@IDPrefixOptions.Value.PPO@context.Id</a>
         </GridColumn>
         <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Application Type Label"]" PropertyName="ApplicationType" SortKeySelector="item => item.ApplicationType != null ? item.ApplicationType.Name : string.Empty">
             @context.ApplicationType?.Name

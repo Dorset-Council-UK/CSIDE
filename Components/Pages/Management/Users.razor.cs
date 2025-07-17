@@ -1,15 +1,9 @@
-using Azure.Identity;
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Options;
 using CSIDE.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph.Beta;
 using Microsoft.Graph.Beta.Models;
-using System.Threading.Tasks;
 
 namespace CSIDE.Components.Pages.Management
 {

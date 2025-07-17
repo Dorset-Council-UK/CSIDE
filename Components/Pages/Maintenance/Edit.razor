@@ -9,17 +9,17 @@
     </NotAuthorized>
 
     <Authorized>
-        <PageTitle>@localizer["Maintenance Edit Title", JobId]</PageTitle>
+        <PageTitle>@localizer["Maintenance Edit Title", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</PageTitle>
 
         <div>
             <Breadcrumb Items="NavItems"></Breadcrumb>
         </div>
 
-        <h1>@localizer["Maintenance Edit Title", JobId]</h1>
+        <h1>@localizer["Maintenance Edit Title", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</h1>
 
         @if (Job is null && !IsBusy)
         {
-            <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message", JobId]</Alert>
+            <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</Alert>
             <a href="Maintenance" class="btn btn-primary">@localizer["Search Jobs Title"]</a>
         }
         else

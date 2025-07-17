@@ -26,7 +26,7 @@ Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-            <a href="DMMO/Details/@context.Id">@context.Id</a>
+            <a href="DMMO/Details/@context.Id">@IDPrefixOptions.Value.DMMO@context.Id</a>
         </GridColumn>
         <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Application Date Label"]" PropertyName="ApplicationDate" SortKeySelector="item => item.ApplicationDate">
             @(context.ApplicationDate.HasValue ? context.ApplicationDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")

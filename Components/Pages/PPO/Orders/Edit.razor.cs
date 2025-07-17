@@ -5,7 +5,6 @@ using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace CSIDE.Components.Pages.PPO.Orders
 {
@@ -31,8 +30,8 @@ namespace CSIDE.Components.Pages.PPO.Orders
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["PPO Abbreviation"], Href="PPO" },
-                new BreadcrumbItem{ Text = localizer["PPO Details Title", PPOApplicationId], Href=$"PPO/details/{PPOApplicationId}" },
-                new BreadcrumbItem{ Text = localizer["Edit Order Title", PPOApplicationId, OrderId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["PPO Details Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"], Href=$"PPO/details/{PPOApplicationId}" },
+                new BreadcrumbItem{ Text = localizer["Edit Order Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}", OrderId], IsCurrentPage = true }
             ];
             IsBusy = true;
             using var context = contextFactory.CreateDbContext();
@@ -83,7 +82,7 @@ namespace CSIDE.Components.Pages.PPO.Orders
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", Order.ApplicationId]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", $"{IDPrefixOptions.Value.PPO}{Order.ApplicationId}"]];
                     logger.LogError(ex, "An concurrency conflict occurred when editing an Order for a PPO");
                 }
                 catch (Exception ex)

@@ -29,8 +29,8 @@ namespace CSIDE.Components.Pages.PPO.Orders
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["PPO Abbreviation"], Href="PPO" },
-                new BreadcrumbItem{ Text = localizer["PPO Details Title", PPOApplicationId], Href=$"PPO/details/{PPOApplicationId}" },
-                new BreadcrumbItem{ Text = localizer["PPO Create Order Title", PPOApplicationId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["PPO Details Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"], Href=$"PPO/details/{PPOApplicationId}" },
+                new BreadcrumbItem{ Text = localizer["PPO Create Order Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             using var context = contextFactory.CreateDbContext();
@@ -74,7 +74,7 @@ namespace CSIDE.Components.Pages.PPO.Orders
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", Order.ApplicationId]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", $"{IDPrefixOptions.Value.PPO}{Order.ApplicationId}"]];
                     logger.LogError(ex, "An concurrency conflict occurred when creating an Order for a PPO");
                 }
                 catch (Exception ex)

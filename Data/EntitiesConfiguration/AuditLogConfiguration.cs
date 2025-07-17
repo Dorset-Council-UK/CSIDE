@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Audit;
 
 namespace CSIDE.Data.EntitiesConfiguration

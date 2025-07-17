@@ -20,9 +20,9 @@
 }
 else
 {
-    <PageTitle>@localizer["PPO Create Order Title", PPOApplicationId]</PageTitle>
+    <PageTitle>@localizer["PPO Create Order Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"]</PageTitle>
 
-    <h1>@localizer["PPO Create Order Title", PPOApplicationId]</h1>
+    <h1>@localizer["PPO Create Order Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"]</h1>
 
     @if(ErrorMessage is not null)
     {

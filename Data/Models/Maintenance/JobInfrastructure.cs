@@ -1,6 +1,4 @@
-﻿using CSIDE.Data.Models.Shared;
-
-namespace CSIDE.Data.Models.Maintenance
+﻿namespace CSIDE.Data.Models.Maintenance
 {
     public class JobInfrastructure
     {

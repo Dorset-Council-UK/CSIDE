@@ -7,7 +7,6 @@ using CSIDE.Validators.DMMO;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.IO;
 
 namespace CSIDE.Components.Pages.DMMO;
 

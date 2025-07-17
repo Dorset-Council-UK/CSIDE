@@ -40,8 +40,8 @@ namespace CSIDE.Components.Pages.Maintenance
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
-                new BreadcrumbItem{ Text = localizer["Maintenance Details Title", JobId], Href=$"Maintenance/Details/{JobId}"},
-                new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", JobId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["Maintenance Details Title", $"{IDPrefixOptions.Value.Maintenance}{JobId}"], Href=$"Maintenance/Details/{JobId}"},
+                new BreadcrumbItem{ Text = localizer["Maintenance Edit Title", $"{IDPrefixOptions.Value.Maintenance}{JobId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             try
@@ -101,7 +101,7 @@ namespace CSIDE.Components.Pages.Maintenance
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["Maintenance Details Title", Job.Id]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["Maintenance Details Title", $"{IDPrefixOptions.Value.Maintenance}{Job.Id}"]];
                     logger.LogWarning(ex, "A concurrency conflict occurred when updating a maintenance job");
                 }
                 catch (Exception ex)

@@ -1,14 +1,14 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Components.Infrastructure;
 using CSIDE.Components.Mapping;
-using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data;
+using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.IO;
 using NetTopologySuite.Features;
-using FluentValidation;
-using CSIDE.Services;
+using NetTopologySuite.IO;
 
 namespace CSIDE.Components.Pages.Infrastructure
 {
@@ -36,8 +36,8 @@ namespace CSIDE.Components.Pages.Infrastructure
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
-                new BreadcrumbItem{ Text = localizer["Infrastructure Details Title", InfrastructureId], Href=$"Infrastructure/Details/{InfrastructureId}"},
-                new BreadcrumbItem{ Text = localizer["Infrastructure Edit Title", InfrastructureId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["Infrastructure Details Title", $"{IDPrefixOptions.Value.Infrastructure}{InfrastructureId}"], Href=$"Infrastructure/Details/{InfrastructureId}"},
+                new BreadcrumbItem{ Text = localizer["Infrastructure Edit Title", $"{IDPrefixOptions.Value.Infrastructure}{InfrastructureId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             try
@@ -114,7 +114,7 @@ namespace CSIDE.Components.Pages.Infrastructure
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["Infrastructure Details Title", InfrastructureItem.Id]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["Infrastructure Details Title", $"{IDPrefixOptions.Value.Infrastructure}{InfrastructureItem.Id}"]];
                 }
                 catch (Exception ex)
                 {

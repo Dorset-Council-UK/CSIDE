@@ -38,8 +38,8 @@ namespace CSIDE.Components.Pages.LandownerDeposits
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Landowner Deposit Title"], Href="landowner-deposits" },
-                new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", LandownerDepositId], Href=$"landowner-deposits/Details/{LandownerDepositId}"},
-                new BreadcrumbItem{ Text = localizer["Landowner Deposit Edit Title", LandownerDepositId], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"], Href=$"landowner-deposits/Details/{LandownerDepositId}"},
+                new BreadcrumbItem{ Text = localizer["Landowner Deposit Edit Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             try
@@ -103,7 +103,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["Landowner Deposit Details Title", LandownerDeposit.Id]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}"]];
                     logger.LogWarning(ex, "A concurrency conflict occurred when updating a landowner deposit");
                 }
                 catch (Exception ex)

@@ -27,14 +27,14 @@
 
 @if (Job is null && !IsBusy)
 {
-    <PageTitle>@localizer["Maintenance Job Not Found Error Message", JobId]</PageTitle>
-    <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message",JobId]</Alert>
+    <PageTitle>@localizer["Maintenance Job Not Found Error Message", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</Alert>
 }
 else
 {
     if(Job is not null){
-        <PageTitle>@localizer["Maintenance Details Title", Job.Id]</PageTitle>
-        <h1>@localizer["Maintenance Details Title", Job.Id]</h1>
+        <PageTitle>@localizer["Maintenance Details Title", $"{IDPrefixOptions.Value.Maintenance}{Job.Id}"]</PageTitle>
+        <h1>@localizer["Maintenance Details Title", $"{IDPrefixOptions.Value.Maintenance}{Job.Id}"]</h1>
 
         <a href="Maintenance/Edit/@Job.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
 
@@ -50,7 +50,7 @@ else
                                     <tbody>
                                         <tr>
                                             <th class="w-25">@localizer["Job ID Label"]</th>
-                                            <td>@Job.Id</td>
+                                            <td>@IDPrefixOptions.Value.Maintenance@Job.Id</td>
                                         </tr>
                                         <tr>
                                             <th>@localizer["Log Date Label"]</th>
@@ -247,7 +247,7 @@ else
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
             new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
-            new BreadcrumbItem{ Text = localizer["Maintenance Details Title", JobId], IsCurrentPage = true }
+            new BreadcrumbItem{ Text = localizer["Maintenance Details Title", $"{IDPrefixOptions.Value.Maintenance}{JobId}"], IsCurrentPage = true }
         };
 
         IsBusy = true;

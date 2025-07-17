@@ -1,10 +1,7 @@
 ﻿using CSIDE.Data;
-using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.Maintenance;
 using CSIDE.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Localization;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
