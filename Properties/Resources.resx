@@ -1680,4 +1680,13 @@
   <data name="My Activity Label" xml:space="preserve">
     <value>My activity</value>
   </data>
+  <data name="Recent Maintenance Jobs Card Title" xml:space="preserve">
+    <value>New maintenance jobs in your area</value>
+  </data>
+  <data name="Maintenance Jobs Card Error Message" xml:space="preserve">
+    <value>There was a problem loading this data. Try again or contact your system administrator.</value>
+  </data>
+  <data name="No Job Message" xml:space="preserve">
+    <value>You have no maintenance jobs</value>
+  </data>
 </root>

@@ -3058,6 +3058,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem loading this data. Try again or contact your system administrator..
+        /// </summary>
+        public static string Maintenance_Jobs_Card_Error_Message {
+            get {
+                return ResourceManager.GetString("Maintenance Jobs Card Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance team.
         /// </summary>
         public static string Maintenance_Team_Label {
@@ -3324,6 +3333,15 @@ namespace CSIDE.Properties {
         public static string No_Job_Infra_Message {
             get {
                 return ResourceManager.GetString("No Job Infra Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have no maintenance jobs.
+        /// </summary>
+        public static string No_Job_Message {
+            get {
+                return ResourceManager.GetString("No Job Message", resourceCulture);
             }
         }
         
@@ -3882,6 +3900,15 @@ namespace CSIDE.Properties {
         public static string Received_Date_To_Label {
             get {
                 return ResourceManager.GetString("Received Date To Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New maintenance jobs in your area.
+        /// </summary>
+        public static string Recent_Maintenance_Jobs_Card_Title {
+            get {
+                return ResourceManager.GetString("Recent Maintenance Jobs Card Title", resourceCulture);
             }
         }
         

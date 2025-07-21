@@ -1691,4 +1691,13 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="My Activity Label" xml:space="preserve">
     <value>Fy ngweithgaredd</value>
   </data>
+  <data name="Recent Maintenance Jobs Card Title" xml:space="preserve">
+    <value>Swyddi cynnal a chadw newydd yn eich ardal</value>
+  </data>
+  <data name="Maintenance Jobs Card Error Message" xml:space="preserve">
+    <value>Bu problem wrth lwytho'r data hwn. Ceisiwch eto neu cysylltwch â gweinyddwr eich system.</value>
+  </data>
+  <data name="No Job Message" xml:space="preserve">
+    <value>Nid oes gennych unrhyw swyddi cynnal a chadw</value>
+  </data>
 </root>

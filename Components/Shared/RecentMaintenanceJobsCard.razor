@@ -1,0 +1,97 @@
+﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Options
+@using NodaTime
+@using Humanizer
+@using System.Globalization
+
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject ILogger<RecentMaintenanceJobsCard> logger
+
+@if (IsBusy)
+{
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row justify-content-start row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 ">
+            <div class="col">
+                <Card>
+                    <CardBody>
+                        <CardTitle>@localizer["Recent Maintenance Jobs Card Title"]</CardTitle>
+                        <CardText>
+                            @if (ErrorMessage is not null)
+                            {
+                                <div class="alert alert-danger">@ErrorMessage</div>
+                            }
+                            @if (Jobs is not null && Jobs.Count != 0)
+                            {
+                                <ul class="list-unstyled">
+                                    @foreach (Job job in Jobs.OrderByDescending(l => l.LogDate))
+                                    {
+                                        <li>
+                                            <a class="fs-5 fw-bold" href="Maintenance/Details/@job.Id">@IDPrefixOptions.Value.Maintenance@job.Id</a>
+                                            <span class="fs-6 fw-light">@(job.LogDate.HasValue? job.LogDate.Value.ToDateTimeUtc().Humanize() : localizer["Unknown Label"])</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <Alert Color="AlertColor.Info">@localizer["No Job Message"]</Alert>
+                            }
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public ICollection<Job>? Jobs { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private string? UserID { get; set; }
+    private TeamUser? MaintenanceTeam { get; set; }
+    private bool IsBusy { get; set; }
+    private string? ErrorMessage { get; set; } = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsBusy = true;
+        ErrorMessage = null;
+
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            var user = (await authenticationStateTask).User;
+            UserID = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            MaintenanceTeam = await context.MaintenanceTeamUsers
+            .AsNoTracking()
+            .Where(t => t.UserId == UserID)
+            .FirstOrDefaultAsync();
+
+            Jobs = await context.MaintenanceJobs
+            .AsNoTracking()
+            .Where(job => job.MaintenanceTeamId == MaintenanceTeam.TeamId)
+            .Where(job => job.JobStatus!.IsComplete == false)
+            .OrderByDescending(job => job.LogDate)
+            .Take(5)
+            .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = localizer["Maintenance Jobs Card Error Message"];
+            logger.LogError(ex, "An error occurred loading a user's recent maintenance jobs in the card component");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+}
