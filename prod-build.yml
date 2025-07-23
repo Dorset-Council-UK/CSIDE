@@ -30,6 +30,7 @@ jobs:
       environment: "staging"
       websiteName: "gi-staging"
       virtualApplication: "cside"
-      variableGroup: "cside-staging-properties"
+      variableGroups:
+        - "cside-staging-properties"
       projectName: "s" # Since the project is in the root folder, the project outputs to a folder called s
       dependsOn: build
