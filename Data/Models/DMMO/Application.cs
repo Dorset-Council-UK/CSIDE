@@ -41,7 +41,7 @@ namespace CSIDE.Data.Models.DMMO
         public ICollection<DMMOParish> DMMOParishes { get; } = [];
         public ICollection<DMMOMedia> DMMOMedia { get; } = [];
         public ICollection<DMMOLinkedRoute> DMMOLinkedRoutes { get; } = [];
-        public ICollection<DMMOComment> Comments { get; } = [];
+        public ICollection<DMMOEvent> Events { get; } = [];
         //Concurrency token
         public uint Version { get; set; }
 

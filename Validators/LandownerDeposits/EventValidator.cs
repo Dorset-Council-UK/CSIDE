@@ -4,20 +4,20 @@ using Microsoft.Extensions.Localization;
 
 namespace CSIDE.Validators.LandownerDeposits
 {
-    public class CommentValidator : AbstractValidator<LandownerDepositComment>
+    public class EventValidator : AbstractValidator<LandownerDepositEvent>
     {
         readonly IStringLocalizer<Properties.Resources> _localizer;
-        public CommentValidator(IStringLocalizer<Properties.Resources> localizer)
+        public EventValidator(IStringLocalizer<Properties.Resources> localizer)
         {
             _localizer = localizer;
-            RuleFor(comment => comment.CommentText)
+            RuleFor(ldEvent => ldEvent.EventText)
                 .NotEmpty()
                 .MaximumLength(4000)
-                .WithName(_localizer["Comment Label"]);
+                .WithName(_localizer["Event Label"]);
 
-            RuleFor(comment => comment.CommentDate)
+            RuleFor(ldEvent => ldEvent.EventDate)
                 .NotEmpty()
-                .WithName(_localizer["Comment Date Label"]);
+                .WithName(_localizer["Event Date Label"]);
         }
     }
 }

@@ -144,11 +144,11 @@ else
                     </ChildContent>
                 </CollapsibleCard>
 
-                <CollapsibleCard Id="ppo-comments" Title="@localizer["Comments Label", PPOApplication.Comments.Count]">
+                <CollapsibleCard Id="ppo-event-log" Title="@localizer["Event Log Label", PPOApplication.Events.Count]">
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <CommentsList PPOApplication="PPOApplication" IsEditable="UserCanEdit"></CommentsList>
+                                <EventsList PPOApplication="PPOApplication" IsEditable="UserCanEdit"></EventsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -293,7 +293,7 @@ else
         nameof(Data.Models.PPO.PPOMedia),
         nameof(Data.Models.PPO.PPOOrder),
         nameof(Data.Models.PPO.PPOIntent),
-        nameof(Data.Models.PPO.PPOComment)
+        nameof(Data.Models.PPO.PPOEvent)
     };
 
     protected override async Task OnParametersSetAsync()

@@ -1,23 +1,23 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data;
-using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.LandownerDeposits;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using NodaTime;
 
-namespace CSIDE.Components.DMMO
+namespace CSIDE.Components.LandownerDeposits
 {
-    public partial class SingleComment(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<SingleComment> logger)
+    public partial class SingleEvent(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<SingleEvent> logger)
     {
         [Parameter]
-        public required DMMOComment Comment { get; set; }
+        public required LandownerDepositEvent Event { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
         [Parameter]
         public EventCallback OnRefresh { get; set; }
 
-        private FluentValidationValidator? editCommentValidator;
+        private FluentValidationValidator? editEventValidator;
 
         private bool IsBusy { get; set; }
         private bool IsEditing { get; set; }
@@ -26,45 +26,45 @@ namespace CSIDE.Components.DMMO
 
         protected override void OnParametersSet()
         {
-            OriginalValue = Comment.CommentText;
+            OriginalValue = Event.EventText;
         }
 
-        private async Task DeleteComment(int CommentId)
+        private async Task DeleteEvent(int EventId)
         {
-            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Comment Confirmation"].Value);
+            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Event Confirmation"].Value);
             if (ConfirmDelete)
             {
                 using var context = contextFactory.CreateDbContext();
-                var commentToDelete = await context.DMMOComments.FindAsync([CommentId]);
-                if (commentToDelete is not null)
+                var eventToDelete = await context.LandownerDepositEvents.FindAsync([EventId]);
+                if (eventToDelete is not null)
                 {
-                    context.Remove(commentToDelete);
+                    context.Remove(eventToDelete);
                     await context.SaveChangesAsync();
                     await RefreshComponent();
                 }
             }
         }
 
-        private async Task EditComment(DMMOComment comment)
+        private async Task EditEvent(LandownerDepositEvent ldEvent)
         {
             if (IsBusy)
             {
                 ErrorMessage = null;
                 return;
             }
-            if (await editCommentValidator!.ValidateAsync())
+            if (await editEventValidator!.ValidateAsync())
             {
                 IsBusy = true;
 
                 try
                 {
-                    if (comment is not null)
+                    if (ldEvent is not null)
                     {
                         
                         using var context = contextFactory.CreateDbContext();
-                        var existingComment = await context.DMMOComments.FindAsync(Comment.Id) ?? throw new Exception($"DMMO Comment being edited (ID: {Comment.Id}) was not found prior to updating");
+                        var existingEvent = await context.LandownerDepositEvents.FindAsync(Event.Id) ?? throw new Exception($"Landowner Deposit Event being edited (ID: {Event.Id}) was not found prior to updating");
 
-                        context.Entry(existingComment).CurrentValues.SetValues(Comment);
+                        context.Entry(existingEvent).CurrentValues.SetValues(Event);
 
                         await context.SaveChangesAsync();
                         //refresh component by simply switching off editing mode. We don't need to refetch the data, its already there!
@@ -74,7 +74,7 @@ namespace CSIDE.Components.DMMO
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred updating a comment");
+                    logger.LogError(ex, "An error occurred updating an event");
                 }
                 finally
                 {
@@ -82,9 +82,9 @@ namespace CSIDE.Components.DMMO
                 }
             }
         }
-        private void UpdateCommentDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateEventDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => Comment!.CommentDate = date);
+            UpdateDateProperty(eventArgs, date => Event!.EventDate = date);
         }
 
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate> updateProperty)
@@ -107,7 +107,7 @@ namespace CSIDE.Components.DMMO
             //reset
             if (OriginalValue is not null)
             {
-                Comment.CommentText = OriginalValue;
+                Event.EventText = OriginalValue;
             }
         }
 

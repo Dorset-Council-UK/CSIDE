@@ -1,0 +1,52 @@
+﻿@using CSIDE.Data.Models.PPO
+@using System.Globalization
+
+@if(PPOApplication is not null)
+{
+    @if(ErrorMessage is not null){
+        <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+    }
+    //add event section
+    @if (NewEvent is not null && IsEditable)
+    {
+        <EditForm Model="NewEvent" OnSubmit="SubmitFormAsync" class="mb-2">
+            <FluentValidationValidator @ref="newEventValidator" />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label class="form-label" for="new-event">@localizer["New Event Label"]</label>
+                <InputTextArea id="new-event" class="form-control" @bind-Value="NewEvent.EventText"></InputTextArea>
+            </div>
+            <div class="mb-3 row">
+                <label class="form-label" for="event-date">@localizer["Event Date Label"]</label>
+                <div class="col-md-8 col-lg-6 col-xl-4">
+                    @{
+                        string EventDateStringRepresentation = NewEvent.EventDate.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                    <input id="event-date" type="date" class="form-control" value="@EventDateStringRepresentation" @onchange="UpdateEventDateProperty" />
+                </div>
+                <ValidationMessage For="() => NewEvent.EventDate" />
+            </div>
+
+            <button type="submit" class="btn btn-sm btn-outline-primary" disabled="@IsBusy">
+                @if (IsBusy)
+                {
+                    <span class="spinner-border spinner-border-sm"></span>
+                }
+                @localizer["Add Event Label"]
+            </button>
+        </EditForm>
+    }
+
+    if (PPOApplication.Events is not null && PPOApplication.Events.Count != 0)
+    {
+        @foreach (PPOEvent ppoEvent in PPOApplication.Events.OrderByDescending(c => c.EventDate))
+        {
+            ppoEvent.PPOApplication = null;
+            <SingleEvent Event="@ppoEvent" IsEditable="@IsEditable" OnRefresh="RefreshComponent"></SingleEvent>
+        }
+    }
+    else
+    {
+        <Alert Color="AlertColor.Info">@localizer["No PPO Events Message"]</Alert>
+    }
+}

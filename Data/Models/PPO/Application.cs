@@ -41,7 +41,7 @@ namespace CSIDE.Data.Models.PPO
         public ICollection<PPOParish> PPOParishes { get; } = [];
         public ICollection<PPOMedia> PPOMedia { get; } = [];
         public ICollection<PPOIntent> PPOIntents { get; } = [];
-        public ICollection<PPOComment> Comments { get; } = [];
+        public ICollection<PPOEvent> Events { get; } = [];
         //Concurrency token
         public uint Version { get; set; }
     }

@@ -3,33 +3,33 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
-using CSIDE.Data.Models.LandownerDeposits;
+using CSIDE.Data.Models.DMMO;
 using NodaTime;
 
-namespace CSIDE.Components.LandownerDeposits
+namespace CSIDE.Components.DMMO
 {
-    public partial class CommentsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<CommentsList> logger)
+    public partial class EventsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<EventsList> logger)
     {
         [Parameter]
-        public LandownerDeposit? LandownerDeposit { get; set; }
+        public Application? DMMOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-        private FluentValidationValidator? newCommentValidator;
+        private FluentValidationValidator? newEventValidator;
 
         private bool IsBusy { get; set; }
-        private LandownerDepositComment? NewComment { get; set; }
+        private DMMOEvent? NewEvent { get; set; }
         private string? ErrorMessage { get; set; }
 
         protected override void OnParametersSet()
         {
-            NewComment = new LandownerDepositComment()
+            NewEvent = new DMMOEvent()
             {
-                LandownerDepositId = LandownerDeposit!.Id,
-                CommentText = string.Empty,
-                CommentDate = LocalDate.FromDateTime(DateTime.Now),
+                ApplicationId = DMMOApplication!.Id,
+                EventText = string.Empty,
+                EventDate = LocalDate.FromDateTime(DateTime.Now),
             };
 
         }
@@ -41,21 +41,21 @@ namespace CSIDE.Components.LandownerDeposits
                 ErrorMessage = null;
                 return;
             }
-            if (await newCommentValidator!.ValidateAsync())
+            if (await newEventValidator!.ValidateAsync())
             {
                 IsBusy = true;
 
                 try
                 {
-                    if (NewComment is not null)
+                    if (NewEvent is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
 
                         var user = (await AuthenticationStateTask).User;
-                        NewComment.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                        NewComment.AuthorName = user.Identity?.Name;
+                        NewEvent.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                        NewEvent.AuthorName = user.Identity?.Name;
 
-                        context.LandownerDepositComments.Add(NewComment);
+                        context.DMMOEvents.Add(NewEvent);
                         await context.SaveChangesAsync();
                         await RefreshComponent();
                     }
@@ -63,7 +63,7 @@ namespace CSIDE.Components.LandownerDeposits
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred creating a comment");
+                    logger.LogError(ex, "An error occurred creating an avent");
                 }
                 finally
                 {
@@ -72,14 +72,14 @@ namespace CSIDE.Components.LandownerDeposits
             }
         }
 
-        private void UpdateCommentDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateEventDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => NewComment!.CommentDate = date);
+            UpdateDateProperty(eventArgs, date => NewEvent!.EventDate = date);
         }
 
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate> updateProperty)
         {
-            if (LandownerDeposit is not null && eventArgs.Value is not null)
+            if (DMMOApplication is not null && eventArgs.Value is not null)
             {
                 try
                 {
@@ -96,16 +96,16 @@ namespace CSIDE.Components.LandownerDeposits
 
         private async Task RefreshComponent()
         {
-            if (LandownerDeposit is not null)
+            if (DMMOApplication is not null)
             {
-                NewComment = new()
+                NewEvent = new()
                 {
-                    LandownerDepositId = LandownerDeposit.Id,
-                    CommentText = string.Empty,
-                    CommentDate = LocalDate.FromDateTime(DateTime.Now),
+                    ApplicationId = DMMOApplication.Id,
+                    EventText = string.Empty,
+                    EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
                 using var context = contextFactory.CreateDbContext();
-                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id]);
+                DMMOApplication = await context.DMMOApplication.FindAsync([DMMOApplication.Id]);
                 StateHasChanged();
             }
         }

@@ -56,7 +56,7 @@ namespace CSIDE.Data
         public DbSet<DMMOAddress> DMMOAddresses { get; set; }
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
         public DbSet<DMMOOrder> DMMOOrders { get; set; }
-        public DbSet<Models.DMMO.DMMOComment> DMMOComments { get; set; }
+        public DbSet<Models.DMMO.DMMOEvent> DMMOEvents { get; set; }
 
         public DbSet<Models.PPO.Application> PPOApplication { get; set; }
         public DbSet<Models.PPO.ApplicationCaseStatus> PPOApplicationCaseStatuses { get; set; }
@@ -69,7 +69,7 @@ namespace CSIDE.Data
         public DbSet<PPOOrder> PPOOrders { get; set; }
         public DbSet<PPOParish> PPOParishes { get; set; }
         public DbSet<PPOIntent> PPOIntents { get; set; }
-        public DbSet<Models.PPO.PPOComment> PPOComments { get; set; }
+        public DbSet<Models.PPO.PPOEvent> PPOEvents { get; set; }
 
         public DbSet<OrderDecisionOfSecState> OrderDecisionsOfSecState { get; set; }
         public DbSet<OrderDeterminationProcess> OrderDeterminationProcesses { get; set; }
@@ -91,7 +91,7 @@ namespace CSIDE.Data
         public DbSet<LandownerDepositAddress> LandownerDepositAddresses { get; set; }
         public DbSet<LandownerDepositMediaType> LandownerDepositMediaTypes { get; set; }
         public DbSet<LandownerDepositParish> LandownerDepositParishes { get; set; }
-        public DbSet<Models.LandownerDeposits.LandownerDepositComment> LandownerDepositComments { get; set; }
+        public DbSet<Models.LandownerDeposits.LandownerDepositEvent> LandownerDepositEvents { get; set; }
 
         public DbSet<BridgeSurvey> BridgeSurveys { get; set; }
         public DbSet<Condition> Conditions { get; set; }

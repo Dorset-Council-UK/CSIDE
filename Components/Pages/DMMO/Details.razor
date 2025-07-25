@@ -129,11 +129,11 @@ else
                     </ChildContent>
                 </CollapsibleCard>
 
-                <CollapsibleCard Id="dmmo-comments" Title="@localizer["Comments Label", DMMOApplication.Comments.Count]">
+                <CollapsibleCard Id="dmmo-event-log" Title="@localizer["Event Log Label", DMMOApplication.Events.Count]">
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <CommentsList DMMOApplication="DMMOApplication" IsEditable="UserCanEdit"></CommentsList>
+                                <EventsList DMMOApplication="DMMOApplication" IsEditable="UserCanEdit"></EventsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -305,7 +305,7 @@ else
         nameof(Data.Models.DMMO.DMMOLinkedRoute),
         nameof(Data.Models.DMMO.DMMOMedia),
         nameof(Data.Models.DMMO.DMMOOrder),
-        nameof(Data.Models.DMMO.DMMOComment)
+        nameof(Data.Models.DMMO.DMMOEvent)
     };
 
     protected override async Task OnParametersSetAsync()

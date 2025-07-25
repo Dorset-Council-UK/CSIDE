@@ -4,16 +4,16 @@ using CSIDE.Data.Models.DMMO;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
-    internal class DMMOCommentConfiguration : IEntityTypeConfiguration<DMMOComment>
+    internal class DMMOEventConfiguration : IEntityTypeConfiguration<DMMOEvent>
     {
-        public void Configure(EntityTypeBuilder<DMMOComment> builder)
+        public void Configure(EntityTypeBuilder<DMMOEvent> builder)
         {
             builder
                 .Property(x => x.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(x => x.CommentDate)
+            builder.Property(x => x.EventDate)
                 .IsRequired();
         }
     }

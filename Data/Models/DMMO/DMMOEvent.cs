@@ -1,18 +1,18 @@
 ﻿using NodaTime;
 
-namespace CSIDE.Data.Models.PPO
+namespace CSIDE.Data.Models.DMMO
 {
-    public class PPOComment
+    public class DMMOEvent
     {
         public int Id { get; set; }
         public required int ApplicationId { get; set; }
         public Instant CreatedAt { get; set; }
-        public LocalDate CommentDate { get; set; }
-        public required string CommentText { get; set; } = string.Empty;
+        public LocalDate EventDate { get; set; }
+        public required string EventText { get; set; } = string.Empty;
         public string? AuthorId { get; set; }
         public string? AuthorName {  get; set; }
 
-        public Application? PPOApplication { get; set; } = null;
+        public Application? DMMOApplication { get; set; } = null;
 
     }
 }

@@ -133,19 +133,19 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
             secondaryEntityId = comment.JobId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
-        if (entry.Entity is PPOComment ppoComment)
+        if (entry.Entity is PPOEvent ppoEvent)
         {
-            secondaryEntityId = ppoComment.ApplicationId.ToString();
+            secondaryEntityId = ppoEvent.ApplicationId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
-        if (entry.Entity is DMMOComment dmmoComment)
+        if (entry.Entity is DMMOEvent dmmoEvent)
         {
-            secondaryEntityId = dmmoComment.ApplicationId.ToString();
+            secondaryEntityId = dmmoEvent.ApplicationId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
-        if (entry.Entity is LandownerDepositComment landownerDepositComment)
+        if (entry.Entity is LandownerDepositEvent landownerDepositEvent)
         {
-            secondaryEntityId = landownerDepositComment.LandownerDepositId.ToString();
+            secondaryEntityId = landownerDepositEvent.LandownerDepositId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
         //infra bridge details, make the InfraId the primary entity ID and the BridgeDetailsId the secondary entity id

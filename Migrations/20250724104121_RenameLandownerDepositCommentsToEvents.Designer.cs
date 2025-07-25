@@ -4,6 +4,7 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -14,9 +15,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250724104121_RenameLandownerDepositCommentsToEvents")]
+    partial class RenameLandownerDepositCommentsToEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1404,22 +1407,7 @@ namespace CSIDE.Migrations
                     b.ToTable("PPOApplicationTypes", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
-                {
-                    b.Property<int>("ApplicationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ContactId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ApplicationId", "ContactId");
-
-                    b.HasIndex("ContactId");
-
-                    b.ToTable("PPOContact", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOEvent", b =>
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1436,23 +1424,38 @@ namespace CSIDE.Migrations
                     b.Property<string>("AuthorName")
                         .HasColumnType("text");
 
+                    b.Property<LocalDate>("CommentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Instant>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<LocalDate>("EventDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("EventText")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationId");
 
-                    b.ToTable("PPOEvents", "cside");
+                    b.ToTable("PPOComments", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApplicationId", "ContactId");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("PPOContact", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOIntent", b =>
@@ -2707,6 +2710,17 @@ namespace CSIDE.Migrations
                     b.Navigation("Priority");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOComment", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
+                        .WithMany("Comments")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PPOApplication");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
@@ -2722,17 +2736,6 @@ namespace CSIDE.Migrations
                         .IsRequired();
 
                     b.Navigation("Contact");
-
-                    b.Navigation("PPOApplication");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOEvent", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.PPO.Application", "PPOApplication")
-                        .WithMany("Events")
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("PPOApplication");
                 });
@@ -3061,7 +3064,7 @@ namespace CSIDE.Migrations
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.Application", b =>
                 {
-                    b.Navigation("Events");
+                    b.Navigation("Comments");
 
                     b.Navigation("Orders");
 

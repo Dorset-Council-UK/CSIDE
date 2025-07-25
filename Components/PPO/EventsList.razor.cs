@@ -3,33 +3,33 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
-using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.PPO;
 using NodaTime;
 
-namespace CSIDE.Components.DMMO
+namespace CSIDE.Components.PPO
 {
-    public partial class CommentsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<CommentsList> logger)
+    public partial class EventsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<EventsList> logger)
     {
         [Parameter]
-        public Application? DMMOApplication { get; set; }
+        public Application? PPOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-        private FluentValidationValidator? newCommentValidator;
+        private FluentValidationValidator? newEventValidator;
 
         private bool IsBusy { get; set; }
-        private DMMOComment? NewComment { get; set; }
+        private PPOEvent? NewEvent { get; set; }
         private string? ErrorMessage { get; set; }
 
         protected override void OnParametersSet()
         {
-            NewComment = new DMMOComment()
+            NewEvent = new PPOEvent()
             {
-                ApplicationId = DMMOApplication!.Id,
-                CommentText = string.Empty,
-                CommentDate = LocalDate.FromDateTime(DateTime.Now),
+                ApplicationId = PPOApplication!.Id,
+                EventText = string.Empty,
+                EventDate = LocalDate.FromDateTime(DateTime.Now),
             };
 
         }
@@ -41,21 +41,21 @@ namespace CSIDE.Components.DMMO
                 ErrorMessage = null;
                 return;
             }
-            if (await newCommentValidator!.ValidateAsync())
+            if (await newEventValidator!.ValidateAsync())
             {
                 IsBusy = true;
 
                 try
                 {
-                    if (NewComment is not null)
+                    if (NewEvent is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
 
                         var user = (await AuthenticationStateTask).User;
-                        NewComment.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                        NewComment.AuthorName = user.Identity?.Name;
+                        NewEvent.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                        NewEvent.AuthorName = user.Identity?.Name;
 
-                        context.DMMOComments.Add(NewComment);
+                        context.PPOEvents.Add(NewEvent);
                         await context.SaveChangesAsync();
                         await RefreshComponent();
                     }
@@ -63,7 +63,7 @@ namespace CSIDE.Components.DMMO
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred creating a comment");
+                    logger.LogError(ex, "An error occurred creating an event");
                 }
                 finally
                 {
@@ -72,14 +72,14 @@ namespace CSIDE.Components.DMMO
             }
         }
 
-        private void UpdateCommentDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateEventDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => NewComment!.CommentDate = date);
+            UpdateDateProperty(eventArgs, date => NewEvent!.EventDate = date);
         }
 
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate> updateProperty)
         {
-            if (DMMOApplication is not null && eventArgs.Value is not null)
+            if (PPOApplication is not null && eventArgs.Value is not null)
             {
                 try
                 {
@@ -96,16 +96,16 @@ namespace CSIDE.Components.DMMO
 
         private async Task RefreshComponent()
         {
-            if (DMMOApplication is not null)
+            if (PPOApplication is not null)
             {
-                NewComment = new()
+                NewEvent = new()
                 {
-                    ApplicationId = DMMOApplication.Id,
-                    CommentText = string.Empty,
-                    CommentDate = LocalDate.FromDateTime(DateTime.Now),
+                    ApplicationId = PPOApplication.Id,
+                    EventText = string.Empty,
+                    EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
                 using var context = contextFactory.CreateDbContext();
-                DMMOApplication = await context.DMMOApplication.FindAsync([DMMOApplication.Id]);
+                PPOApplication = await context.PPOApplication.FindAsync([PPOApplication.Id]);
                 StateHasChanged();
             }
         }

@@ -162,11 +162,11 @@ else
                     </ChildContent>
                 </CollapsibleCard>
 
-                <CollapsibleCard Id="landowner-deposit-comments" Title="@localizer["Comments Label", LandownerDeposit.Comments.Count]">
+                <CollapsibleCard Id="landowner-deposit-event-log" Title="@localizer["Event Log Label", LandownerDeposit.Events.Count]">
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <CommentsList LandownerDeposit="LandownerDeposit" IsEditable="UserCanEdit"></CommentsList>
+                                <EventsList LandownerDeposit="LandownerDeposit" IsEditable="UserCanEdit"></EventsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -291,7 +291,7 @@ else
         nameof(Data.Models.LandownerDeposits.LandownerDepositAddress),
         nameof(Data.Models.LandownerDeposits.LandownerDepositContact),
         nameof(Data.Models.LandownerDeposits.LandownerDepositMedia),
-        nameof(Data.Models.LandownerDeposits.LandownerDepositComment)
+        nameof(Data.Models.LandownerDeposits.LandownerDepositEvent)
     };
 
     protected override async Task OnParametersSetAsync()

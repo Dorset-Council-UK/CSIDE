@@ -1656,14 +1656,14 @@
   <data name="Comment Date Label" xml:space="preserve">
     <value>Comment date</value>
   </data>
-  <data name="No DMMO Comments Message" xml:space="preserve">
-    <value>No comments for this DMMO.</value>
+  <data name="No DMMO Events Message" xml:space="preserve">
+    <value>No events for this DMMO</value>
   </data>
-  <data name="No PPO Comments Message" xml:space="preserve">
-    <value>No comments for this PPO.</value>
+  <data name="No PPO Events Message" xml:space="preserve">
+    <value>No events for this PPO.</value>
   </data>
-  <data name="No Landowner Deposit Comments Message" xml:space="preserve">
-    <value>No comments for this Landowner Deposit.</value>
+  <data name="No Landowner Deposit Events Message" xml:space="preserve">
+    <value>No events for this Landowner Deposit.</value>
   </data>
   <data name="Map Text" xml:space="preserve">
     <value>Map</value>
@@ -1688,5 +1688,23 @@
   </data>
   <data name="No Job Message" xml:space="preserve">
     <value>You have no maintenance jobs</value>
+  </data>
+  <data name="Event Date Label" xml:space="preserve">
+    <value>Event date</value>
+  </data>
+  <data name="Event Label" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="New Event Label" xml:space="preserve">
+    <value>Add new event</value>
+  </data>
+  <data name="Add Event Label" xml:space="preserve">
+    <value>Add event</value>
+  </data>
+  <data name="Event Log Label" xml:space="preserve">
+    <value>Event log ({0})</value>
+  </data>
+  <data name="Delete Event Confirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this event?</value>
   </data>
 </root>

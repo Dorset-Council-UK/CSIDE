@@ -3,33 +3,33 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using CSIDE.Data;
 using Microsoft.EntityFrameworkCore;
-using CSIDE.Data.Models.PPO;
+using CSIDE.Data.Models.LandownerDeposits;
 using NodaTime;
 
-namespace CSIDE.Components.PPO
+namespace CSIDE.Components.LandownerDeposits
 {
-    public partial class CommentsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<CommentsList> logger)
+    public partial class EventsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<EventsList> logger)
     {
         [Parameter]
-        public Application? PPOApplication { get; set; }
+        public LandownerDeposit? LandownerDeposit { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-        private FluentValidationValidator? newCommentValidator;
+        private FluentValidationValidator? newEventValidator;
 
         private bool IsBusy { get; set; }
-        private PPOComment? NewComment { get; set; }
+        private LandownerDepositEvent? NewEvent { get; set; }
         private string? ErrorMessage { get; set; }
 
         protected override void OnParametersSet()
         {
-            NewComment = new PPOComment()
+            NewEvent = new LandownerDepositEvent()
             {
-                ApplicationId = PPOApplication!.Id,
-                CommentText = string.Empty,
-                CommentDate = LocalDate.FromDateTime(DateTime.Now),
+                LandownerDepositId = LandownerDeposit!.Id,
+                EventText = string.Empty,
+                EventDate = LocalDate.FromDateTime(DateTime.Now),
             };
 
         }
@@ -41,21 +41,21 @@ namespace CSIDE.Components.PPO
                 ErrorMessage = null;
                 return;
             }
-            if (await newCommentValidator!.ValidateAsync())
+            if (await newEventValidator!.ValidateAsync())
             {
                 IsBusy = true;
 
                 try
                 {
-                    if (NewComment is not null)
+                    if (NewEvent is not null)
                     {
                         using var context = contextFactory.CreateDbContext();
 
                         var user = (await AuthenticationStateTask).User;
-                        NewComment.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-                        NewComment.AuthorName = user.Identity?.Name;
+                        NewEvent.AuthorId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+                        NewEvent.AuthorName = user.Identity?.Name;
 
-                        context.PPOComments.Add(NewComment);
+                        context.LandownerDepositEvents.Add(NewEvent);
                         await context.SaveChangesAsync();
                         await RefreshComponent();
                     }
@@ -63,7 +63,7 @@ namespace CSIDE.Components.PPO
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred creating a comment");
+                    logger.LogError(ex, "An error occurred creating an event");
                 }
                 finally
                 {
@@ -72,14 +72,14 @@ namespace CSIDE.Components.PPO
             }
         }
 
-        private void UpdateCommentDateProperty(ChangeEventArgs eventArgs)
+        private void UpdateEventDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => NewComment!.CommentDate = date);
+            UpdateDateProperty(eventArgs, date => NewEvent!.EventDate = date);
         }
 
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate> updateProperty)
         {
-            if (PPOApplication is not null && eventArgs.Value is not null)
+            if (LandownerDeposit is not null && eventArgs.Value is not null)
             {
                 try
                 {
@@ -96,16 +96,16 @@ namespace CSIDE.Components.PPO
 
         private async Task RefreshComponent()
         {
-            if (PPOApplication is not null)
+            if (LandownerDeposit is not null)
             {
-                NewComment = new()
+                NewEvent = new()
                 {
-                    ApplicationId = PPOApplication.Id,
-                    CommentText = string.Empty,
-                    CommentDate = LocalDate.FromDateTime(DateTime.Now),
+                    LandownerDepositId = LandownerDeposit.Id,
+                    EventText = string.Empty,
+                    EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
                 using var context = contextFactory.CreateDbContext();
-                PPOApplication = await context.PPOApplication.FindAsync([PPOApplication.Id]);
+                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id]);
                 StateHasChanged();
             }
         }

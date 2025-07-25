@@ -205,6 +205,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add event.
+        /// </summary>
+        public static string Add_Event_Label {
+            get {
+                return ResourceManager.GetString("Add Event Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Or add individual addresses by selecting them below.
         /// </summary>
         public static string Add_Individual_Addresses_Label {
@@ -1897,6 +1906,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this event?.
+        /// </summary>
+        public static string Delete_Event_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Event Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to unlink this infrastructure from the maintenance job?.
         /// </summary>
         public static string Delete_Infra_Link_Confirmation {
@@ -2208,6 +2226,33 @@ namespace CSIDE.Properties {
         public static string Error_Title {
             get {
                 return ResourceManager.GetString("Error Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event date.
+        /// </summary>
+        public static string Event_Date_Label {
+            get {
+                return ResourceManager.GetString("Event Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event.
+        /// </summary>
+        public static string Event_Label {
+            get {
+                return ResourceManager.GetString("Event Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event log ({0}).
+        /// </summary>
+        public static string Event_Log_Label {
+            get {
+                return ResourceManager.GetString("Event Log Label", resourceCulture);
             }
         }
         
@@ -3265,6 +3310,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add new event.
+        /// </summary>
+        public static string New_Event_Label {
+            get {
+                return ResourceManager.GetString("New Event Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New value.
         /// </summary>
         public static string New_Value_Label {
@@ -3301,11 +3355,11 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No comments for this DMMO..
+        ///   Looks up a localized string similar to No events for this DMMO.
         /// </summary>
-        public static string No_DMMO_Comments_Message {
+        public static string No_DMMO_Events_Message {
             get {
-                return ResourceManager.GetString("No DMMO Comments Message", resourceCulture);
+                return ResourceManager.GetString("No DMMO Events Message", resourceCulture);
             }
         }
         
@@ -3355,11 +3409,11 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No comments for this Landowner Deposit..
+        ///   Looks up a localized string similar to No events for this Landowner Deposit..
         /// </summary>
-        public static string No_Landowner_Deposit_Comments_Message {
+        public static string No_Landowner_Deposit_Events_Message {
             get {
-                return ResourceManager.GetString("No Landowner Deposit Comments Message", resourceCulture);
+                return ResourceManager.GetString("No Landowner Deposit Events Message", resourceCulture);
             }
         }
         
@@ -3427,11 +3481,11 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No comments for this PPO..
+        ///   Looks up a localized string similar to No events for this PPO..
         /// </summary>
-        public static string No_PPO_Comments_Message {
+        public static string No_PPO_Events_Message {
             get {
-                return ResourceManager.GetString("No PPO Comments Message", resourceCulture);
+                return ResourceManager.GetString("No PPO Events Message", resourceCulture);
             }
         }
         

@@ -1,34 +1,34 @@
 ﻿@using CSIDE.Data.Models.DMMO
 @using System.Globalization
 
-<div class="card comment-card bg-light mb-1" id="comment-@Comment.Id">
+<div class="card comment-card bg-light mb-1" id="event-@Event.Id">
     <div class="card-header d-flex justify-content-between">
         <span class="@(IsEditing ? "visually-hidden" : "")">
-            @Comment.CommentDate.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)
+            @Event.EventDate.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)
         </span>
 
     </div>
     <div class="card-body py-1">
         <div class="">
             <span class="comment-field @(IsEditing ? "visually-hidden":"")">
-                @Comment.CommentText
+                @Event.EventText
             </span>
             <div class="@(IsEditing ? "":"visually-hidden")">
-                <EditForm Model="Comment" OnSubmit="() => EditComment(Comment)" class="border-start border-2 ps-3">
-                    <FluentValidationValidator @ref="editCommentValidator" />
+                <EditForm Model="Event" OnSubmit="() => EditEvent(Event)" class="border-start border-2 ps-3">
+                    <FluentValidationValidator @ref="editEventValidator" />
                     <ValidationSummary />
                     <div class="mb-3 row">
-                        <label class="form-label" for="comment-edit-date">@localizer["Comment Date Label"]</label>
+                        <label class="form-label" for="event-edit-date">@localizer["Event Date Label"]</label>
                         <div class="col-md-8 col-lg-6">
                             @{
-                                string CommentDateStringRepresentation = Comment.CommentDate.ToDateOnly().ToString("yyyy-MM-dd");
+                                string CommentDateStringRepresentation = Event.EventDate.ToDateOnly().ToString("yyyy-MM-dd");
                             }
-                            <input id="comment-edit-date" type="date" class="form-control" value="@CommentDateStringRepresentation" @onchange="UpdateCommentDateProperty" />
+                            <input id="event-edit-date" type="date" class="form-control" value="@CommentDateStringRepresentation" @onchange="UpdateEventDateProperty" />
                         </div>
-                        <ValidationMessage For="() => Comment.CommentDate" />
+                        <ValidationMessage For="() => Event.EventDate" />
                     </div>
-                    <label class="form-label" for="comment-edit-text">@localizer["Comment Label"]</label>
-                    <InputTextArea @bind-Value="Comment.CommentText" class="form-control" id="comment-edit-text" />
+                    <label class="form-label" for="event-edit-text">@localizer["Event Label"]</label>
+                    <InputTextArea @bind-Value="Event.EventText" class="form-control" id="event-edit-text" />
 
                     <button type="submit" disabled="@IsBusy" class="btn btn-sm btn-outline-primary mt-1">@localizer["Update Label"]</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary mt-1" @onclick="CancelUpdate">@localizer["Cancel Label"]</button>
@@ -41,7 +41,7 @@
         @if (IsEditable)
         {
             <button class="btn btn-sm btn-outline-primary" type="button" disabled="@(IsEditing || IsBusy)" @onclick="() => IsEditing = true">@localizer["Edit Label"]</button>
-            <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsEditing || IsBusy)" @onclick="() => DeleteComment(Comment.Id)">@localizer["Delete Label"]</button>
+            <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsEditing || IsBusy)" @onclick="() => DeleteEvent(Event.Id)">@localizer["Delete Label"]</button>
         }
     </div>
     

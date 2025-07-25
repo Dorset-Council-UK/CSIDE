@@ -33,7 +33,7 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .AutoInclude();
 
             builder
-                .Navigation(x => x.Comments)
+                .Navigation(x => x.Events)
                 .AutoInclude();
 
             builder
