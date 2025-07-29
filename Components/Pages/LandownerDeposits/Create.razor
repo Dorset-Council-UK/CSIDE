@@ -1,4 +1,4 @@
-﻿@page "/landowner-deposits/Create"
+﻿@page "/landowner-deposits/Create/{ExistingDepositId:int?}/{ExistingDepositSecondaryId:int?}"
 @using CSIDE.Components.Mapping
 @using CSIDE.Components.LandownerDeposits
 @using CSIDE.Data.Models.LandownerDeposits
@@ -14,11 +14,26 @@
         <div>
             <Breadcrumb Items="@NavItems"></Breadcrumb>
         </div>
+        @if (ExistingDepositId != null && ExistingDepositSecondaryId != null && LandownerDeposit != null)
+        {
+            <h1>@localizer["Landowner Deposit Create Linked Deposit Title",$"{IDPrefixOptions.Value.LandownerDeposit}{ExistingDepositId}/{ExistingDepositSecondaryId}"]</h1>
+        }
+        else
+        {
+            <h1>@localizer["Landowner Deposit Create Title"]</h1>
+        }
 
-        <h1>@localizer["Landowner Deposit Create Title"]</h1>
 
         <div class="row">
-            <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" GeomType="Polygon"></CreateMap>
+            @if(ExistingDepositId != null && ExistingDepositSecondaryId != null && LandownerDeposit?.Geom != null)
+            {
+                <EditMap @ref="@editMap" OnDrawEndMethod="ValidateGeometry" GeomType="Polygon" Geometry="LandownerDeposit.Geom"></EditMap>
+            }
+            else
+            {
+                <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" GeomType="Polygon"></CreateMap>
+            }
+            
         </div>
         @if (!GeometryIsValid)
         {

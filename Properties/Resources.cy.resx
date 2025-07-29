@@ -1718,4 +1718,16 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Delete Event Confirmation" xml:space="preserve">
     <value>Ydych chi'n siŵr eich bod am ddileu'r digwyddiad hwn?</value>
   </data>
+  <data name="Create Linked Landowner Deposit Label" xml:space="preserve">
+    <value>Ychwanegu Blaendal Tirfeddiannwr cysylltiedig</value>
+  </data>
+  <data name="Landowner Deposit Create Linked Deposit Title" xml:space="preserve">
+    <value>Creu blaendal tirfeddiannwr cysylltiedig o {0}</value>
+  </data>
+  <data name="Linked Landowner Deposits Label" xml:space="preserve">
+    <value>Blaendaliadau cysylltiedig ({0})</value>
+  </data>
+  <data name="No Linked Deposits Found Message" xml:space="preserve">
+    <value>Dim Blaendaliadau Tirfeddianwyr yn gysylltiedig â'r blaendal hwn</value>
+  </data>
 </root>

@@ -10,22 +10,23 @@ namespace CSIDE.Validators.LandownerDeposits
     {
         readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         readonly IStringLocalizer<Properties.Resources> _localizer;
-        
-        public LandownerDepositAddressValidator(IDbContextFactory<ApplicationDbContext> contextFactory,IStringLocalizer<Properties.Resources> localizer)
+
+        public LandownerDepositAddressValidator(IDbContextFactory<ApplicationDbContext> contextFactory, IStringLocalizer<Properties.Resources> localizer)
         {
             _localizer = localizer;
             _contextFactory = contextFactory;
             RuleFor(d => d.UPRN)
                 .NotEmpty().WithName(localizer["UPRN Label"])
-                .MustAsync((landownerDepositAddress, UPRN, ct) => UPRNNotAlreadyExists(UPRN, landownerDepositAddress.LandownerDepositId, ct))
+                .MustAsync((landownerDepositAddress, UPRN, ct) =>
+                    UPRNNotAlreadyExists(UPRN, landownerDepositAddress.LandownerDepositId, landownerDepositAddress.LandownerDepositSecondaryId, ct))
                 .WithMessage(localizer["UPRN Already Exists Validation Message"]);
         }
 
-        private async Task<bool> UPRNNotAlreadyExists(long UPRN, int LandownerDepositId, CancellationToken ct)
+        private async Task<bool> UPRNNotAlreadyExists(long UPRN, int LandownerDepositId, int LandownerDepositSecondaryId, CancellationToken ct)
         {
             using var context = _contextFactory.CreateDbContext();
-            var landownerDepositAddress = await context.LandownerDepositAddresses.FindAsync([LandownerDepositId, UPRN], cancellationToken: ct);
-            return (landownerDepositAddress is null); 
+            var landownerDepositAddress = await context.LandownerDepositAddresses.FindAsync([LandownerDepositId, LandownerDepositSecondaryId, UPRN], cancellationToken: ct);
+            return (landownerDepositAddress is null);
         }
     }
 }

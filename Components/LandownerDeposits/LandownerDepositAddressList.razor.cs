@@ -15,8 +15,10 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
 {
     [Parameter]
     public required ICollection<LandownerDepositAddress>? Addresses { get; set; }
-    [Parameter]
+    [Parameter, EditorRequired]
     public required int LandownerDepositId { get; init; }
+    [Parameter, EditorRequired]
+    public required int LandownerDepositSecondaryId { get; init; }
     [Parameter]
     public bool IsEditable { get; set; }
     public bool IsBusy { get; set; }
@@ -31,7 +33,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
     private async Task OpenAddAddressModal()
     {
         ErrorMessage = null;
-        NewLandownerDepositAddress = new() { LandownerDepositId = LandownerDepositId };
+        NewLandownerDepositAddress = new() { LandownerDepositId = LandownerDepositId, LandownerDepositSecondaryId = LandownerDepositSecondaryId };
         await AddAddressModal.ShowAsync();
     }
 
@@ -42,7 +44,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
         if (ConfirmDelete)
         {
             using var context = contextFactory.CreateDbContext();
-            var LandownerDepositAddressToDelete = await context.LandownerDepositAddresses.FindAsync([LandownerDepositId, UPRN]);
+            var LandownerDepositAddressToDelete = await context.LandownerDepositAddresses.FindAsync([LandownerDepositId, LandownerDepositSecondaryId, UPRN]);
             if (LandownerDepositAddressToDelete is not null)
             {
                 context.Remove(LandownerDepositAddressToDelete);
@@ -64,7 +66,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
             {
                 //send to API and get results (use AddressSearchService)
                 AddressSearchAddresses = await addressSearchService.GetAddresses(AddressSearchInput);
-                if(AddressSearchAddresses.Count == 0)
+                if (AddressSearchAddresses.Count == 0)
                 {
                     ErrorMessage = localizer["Address Search No Results Message"];
                 }
@@ -74,7 +76,8 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
                 //validation error
                 ErrorMessage = localizer["Enter At Least X Characters Validation Message", 3];
             }
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             ErrorMessage = localizer["Address Search Error Message"];
             logger.LogError(ex, "Error searching for addresses");
@@ -92,7 +95,13 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
         try
         {
             //submit
-            var LandownerDepositAddressToAdd = new LandownerDepositAddress() { LandownerDepositId = LandownerDepositId, UPRN = address.UPRN, Address = address.Address };
+            var LandownerDepositAddressToAdd = new LandownerDepositAddress()
+            {
+                LandownerDepositId = LandownerDepositId,
+                LandownerDepositSecondaryId = LandownerDepositSecondaryId,
+                UPRN = address.UPRN,
+                Address = address.Address,
+            };
             //validate with fluent validation 
             var validator = new LandownerDepositAddressValidator(contextFactory, localizer);
             var validationResult = await validator.ValidateAsync(LandownerDepositAddressToAdd);

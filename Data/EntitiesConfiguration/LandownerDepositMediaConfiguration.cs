@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<LandownerDepositMedia> builder)
         {
-            builder.HasKey(x => new { x.LandownerDepositId, x.MediaId });
+            builder.HasKey(x => new { x.LandownerDepositId, x.LandownerDepositSecondaryId, x.MediaId });
 
             builder.Navigation(x => x.Media)
                 .AutoInclude();

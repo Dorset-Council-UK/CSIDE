@@ -1,7 +1,7 @@
 ﻿@if (IsEditable)
 {
     <button type="button" class="btn btn-sm btn-outline-primary" @onclick="OpenAddAddressModal">@localizer["Add Address Label"]</button>
-    <a href="landowner-deposits/AddressesFromMap/@LandownerDepositId" class="btn btn-sm btn-outline-primary">@localizer["Add Addresses From Map Label"]</a>
+    <a href="landowner-deposits/AddressesFromMap/@LandownerDepositId/@LandownerDepositSecondaryId" class="btn btn-sm btn-outline-primary">@localizer["Add Addresses From Map Label"]</a>
 }
 
 @if (Addresses is not null && Addresses.Count != 0)
@@ -14,7 +14,7 @@
                 <th>@localizer["Address Label"]</th>
                 @if (IsEditable)
                 {
-                <th></th>
+                    <th></th>
                 }
             </tr>
         </thead>
@@ -38,7 +38,7 @@
 }
 else
 {
-    <Alert Color="AlertColor.Warning">@localizer["No Affected Addresses Message"]</Alert>
+    <Alert Color="AlertColor.Warning" Class="mt-2">@localizer["No Affected Addresses Message"]</Alert>
 }
 
 @if (IsEditable)
@@ -71,9 +71,12 @@ else
                 </div>
             }
             <hr />
-            @if(!ManualAddressFormShown){
-                <p><button class="btn btn-link" @onclick="() => {ManualAddressFormShown = true;}">@localizer["Manual Address Search Text"]</button></p>
-            }else{
+            @if (!ManualAddressFormShown)
+            {
+                <p><button class="btn btn-link" @onclick="() => { ManualAddressFormShown = true; }">@localizer["Manual Address Search Text"]</button></p>
+            }
+            else
+            {
 
                 <EditForm Model="NewLandownerDepositAddress" OnSubmit="SubmitFormAsync">
                     <FluentValidationValidator @ref="LandownerDepositAddressValidator" />
@@ -91,7 +94,7 @@ else
                     <button type="submit" class="btn btn-primary btn-sm" disabled="@IsBusy">@localizer["Add Address Label"]</button>
                 </EditForm>
             }
-            
+
         </BodyTemplate>
 
     </Modal>

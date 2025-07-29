@@ -45,13 +45,16 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                 LandownerDepositIDSearchErrorMessage = null;
                 try
                 {
-                    if (int.TryParse(LandownerDepositIDSearch, CultureInfo.InvariantCulture, out int LandownerDepositIDSearchInt))
+                    if (LandownerDepositIDSearch.Split("/").Length == 2 &&
+                        int.TryParse(LandownerDepositIDSearch.Split("/")[0], CultureInfo.InvariantCulture, out int PrimaryId) &&
+                        int.TryParse(LandownerDepositIDSearch.Split("/")[1], CultureInfo.InvariantCulture, out int SecondaryId)
+                        )
                     {
                         using var context = contextFactory.CreateDbContext();
-                        var landownerDepositExists = await context.LandownerDeposits.AnyAsync(l => l.Id == LandownerDepositIDSearchInt);
+                        var landownerDepositExists = await context.LandownerDeposits.AnyAsync(l => l.Id == PrimaryId && l.SecondaryId == SecondaryId);
                         if (landownerDepositExists)
                         {
-                            navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDepositIDSearchInt}");
+                            navigationManager.NavigateTo($"landowner-deposits/Details/{PrimaryId}/{SecondaryId}");
                             return;
                         }
                         else

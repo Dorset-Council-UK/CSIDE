@@ -56,9 +56,10 @@ namespace CSIDE.Components.LandownerDeposits
                         LandownerDeposit.LandownerDepositMedia.Add(new LandownerDepositMedia
                         {
                             LandownerDepositId = LandownerDeposit.Id,
+                            LandownerDepositSecondaryId = LandownerDeposit.SecondaryId,
                             Media = media,
                             MediaTypeId = mediaType.Id,
-                            MediaType = mediaType
+                            MediaType = mediaType,
                         });
                     }
                     await context.SaveChangesAsync();
@@ -75,7 +76,7 @@ namespace CSIDE.Components.LandownerDeposits
             if (LandownerDeposit is not null)
             {
                 using var context = contextFactory.CreateDbContext();
-                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id]);
+                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id, LandownerDeposit.SecondaryId]);
                 StateHasChanged();
             }
         }

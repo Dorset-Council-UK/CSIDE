@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<LandownerDepositContact> builder)
         {
-            builder.HasKey(x => new { x.LandownerDepositId, x.ContactId });
+            builder.HasKey(x => new { x.LandownerDepositId, x.LandownerDepositSecondaryId, x.ContactId });
 
             builder.Navigation(x => x.Contact)
                 .AutoInclude();

@@ -1707,4 +1707,16 @@
   <data name="Delete Event Confirmation" xml:space="preserve">
     <value>Are you sure you want to delete this event?</value>
   </data>
+  <data name="Create Linked Landowner Deposit Label" xml:space="preserve">
+    <value>Add a linked Landowner Deposit</value>
+  </data>
+  <data name="Landowner Deposit Create Linked Deposit Title" xml:space="preserve">
+    <value>Create linked landowner deposit from {0}</value>
+  </data>
+  <data name="Linked Landowner Deposits Label" xml:space="preserve">
+    <value>Linked deposits ({0})</value>
+  </data>
+  <data name="No Linked Deposits Found Message" xml:space="preserve">
+    <value>No Landowner Deposits linked to this deposit</value>
+  </data>
 </root>

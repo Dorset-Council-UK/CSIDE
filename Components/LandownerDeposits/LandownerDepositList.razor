@@ -7,39 +7,46 @@
 
 <a href="landowner-deposits#search-form">@localizer["Search Again Label"]</a>
 
-@if(LandownerDeposits?.Count == MaxResults){
+@if (LandownerDeposits?.Count == MaxResults)
+{
     <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
 }
 
 <Grid TItem="LandownerDeposit"
-Class="table table-hover table-bordered table-striped mt-2"
-DataProvider="LandownerDepositDataProvider"
-AllowFiltering="true"
-AllowPaging="true"
-PageSize="20"
-AllowSorting="true"
-AllowSelection="false"
-AllowRowClick="true"
-OnRowClick="OnRowClick"
-AutoHidePaging="true"
-Responsive="true">
+      Class="table table-hover table-bordered table-striped mt-2"
+      DataProvider="LandownerDepositDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="20"
+      AllowSorting="true"
+      AllowSelection="false"
+      AllowRowClick="true"
+      OnRowClick="OnRowClick"
+      AutoHidePaging="true"
+      Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-            <a href="landowner-deposits/Details/@context.Id">@IDPrefixOptions.Value.LandownerDeposit@context.Id</a>
+            <a href="landowner-deposits/Details/@context.Id/@context.SecondaryId">@IDPrefixOptions.Value.LandownerDeposit@context.Id/@context.SecondaryId</a>
         </GridColumn>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit Type Label"]" PropertyName="LandownerDepositTypes">
-            @foreach(var landownerDepositType in context.LandownerDepositTypes){
+            @foreach (var landownerDepositType in context.LandownerDepositTypes)
+            {
                 <p>@landownerDepositType.LandownerDepositTypeName?.Name</p>
             }
         </GridColumn>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit Date Received Label"]" PropertyName="ReceivedDate" SortKeySelector="item => item.ReceivedDate">
-            @(context.ReceivedDate.HasValue ? context.ReceivedDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
+            @(context.ReceivedDate.HasValue? context.ReceivedDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
         </GridColumn>
         <GridColumn TItem="LandownerDeposit" Class="comment-field" Sortable="false" HeaderText="@localizer["Landowner Deposit Location Label"]" PropertyName="Location" SortKeySelector="item => item.Location">
-            @if (context.Location?.Length > 200){
-                @context.Location?.Substring(0, 200)<text>&hellip;</text>
-            }else{
+            @if (context.Location?.Length > 200)
+            {
+                @context.Location?.Substring(0, 200)
+            
+                <text>&hellip;</text>
+            }
+            else
+            {
                 @context.Location
             }
         </GridColumn>
@@ -73,5 +80,5 @@ Responsive="true">
         return result;
     }
 
-    private void OnRowClick(GridRowEventArgs<LandownerDeposit> args) => navigationManager.NavigateTo($"landowner-deposits/Details/{args.Item.Id}");
+    private void OnRowClick(GridRowEventArgs<LandownerDeposit> args) => navigationManager.NavigateTo($"landowner-deposits/Details/{args.Item.Id}/{args.Item.SecondaryId}");
 }

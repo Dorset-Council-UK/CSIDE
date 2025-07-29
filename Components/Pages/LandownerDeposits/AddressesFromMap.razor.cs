@@ -16,7 +16,8 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
 
     [Parameter]
     public int Id { get; set; }
-
+    [Parameter]
+    public int SecondaryId { get; set; }
     private LandownerDeposit? LandownerDeposit { get; set; }
     private List<SimpleAddress>? ExistingAddresses { get; set; }
 
@@ -28,17 +29,17 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         NavItems =
         [
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
-            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{Id}"], Href=$"landowner-deposits/Details/{Id}" },
+            new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{Id}/{SecondaryId}"], Href=$"landowner-deposits/Details/{Id}/{SecondaryId}" },
             new BreadcrumbItem{ Text = localizer["Add Addresses From Map Label"], IsCurrentPage = true }
         ];
         IsBusy = true;
         try
         {
             using var context = contextFactory.CreateDbContext();
-            LandownerDeposit = await context.LandownerDeposits.FindAsync(Id);
+            LandownerDeposit = await context.LandownerDeposits.FindAsync(Id, SecondaryId);
             if (LandownerDeposit is null)
             {
-                throw new InvalidOperationException("DMMO Application not found");
+                throw new InvalidOperationException("Landowner Deposit not found");
             }
             ExistingAddresses = LandownerDeposit.LandownerDepositAddresses
                 .Select(x => new SimpleAddress(x.UPRN, x.Address))
@@ -62,11 +63,12 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         try
         {
             //submit
-            var LandownerDepositAddressToAdd = new LandownerDepositAddress() 
-            { 
-                LandownerDepositId = Id, 
-                UPRN = address.UPRN, 
-                Address = address.Address 
+            var LandownerDepositAddressToAdd = new LandownerDepositAddress()
+            {
+                LandownerDepositId = Id,
+                LandownerDepositSecondaryId = SecondaryId,
+                UPRN = address.UPRN,
+                Address = address.Address
             };
             //validate with fluent validation 
             var validator = new LandownerDepositAddressValidator(contextFactory, localizer);
@@ -104,27 +106,32 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
 
             //fetch existing addresses again just in case some have been added/removed between them being shown and being committed here
             //for single addresses we just use FluentValidation, but for multiple addresses its probably quicker to just check again
-            ExistingAddresses = context.LandownerDepositAddresses.Where(d => d.LandownerDepositId == Id).Select(x => new SimpleAddress(x.UPRN, x.Address)).ToList();
+            ExistingAddresses = context.LandownerDepositAddresses
+                .Where(d => d.LandownerDepositId == Id && d.LandownerDepositSecondaryId == SecondaryId)
+                .Select(x => new SimpleAddress(x.UPRN, x.Address))
+                .ToList();
+
             foreach (var address in addresses.Where(a => ExistingAddresses is not null && !ExistingAddresses.Any(e => e.UPRN == a.UPRN)))
             {
-                var landownerDepositAddressToAdd = new LandownerDepositAddress() 
-                { 
-                    LandownerDepositId = Id, 
-                    UPRN = address.UPRN, 
-                    Address = address.Address 
+                var landownerDepositAddressToAdd = new LandownerDepositAddress()
+                {
+                    LandownerDepositId = Id,
+                    LandownerDepositSecondaryId = SecondaryId,
+                    UPRN = address.UPRN,
+                    Address = address.Address
                 };
                 context.Add(landownerDepositAddressToAdd);
             }
             await context.SaveChangesAsync();
             if (finished)
             {
-                navigationManager.NavigateTo($"landowner-deposits/Details/{Id}");
+                navigationManager.NavigateTo($"landowner-deposits/Details/{Id}/{SecondaryId}");
             }
             else
             {
                 await RefreshComponent();
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -143,7 +150,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         try
         {
             using var context = contextFactory.CreateDbContext();
-            LandownerDeposit = await context.LandownerDeposits.FindAsync(Id);
+            LandownerDeposit = await context.LandownerDeposits.FindAsync(Id, SecondaryId);
             if (LandownerDeposit is null)
             {
                 throw new InvalidOperationException("Landowner deposit not found");

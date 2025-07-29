@@ -16,14 +16,19 @@ namespace CSIDE.Components.Pages.LandownerDeposits
 {
     public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService rightsOfWayHelperService)
     {
+        [Parameter]
+        public int? ExistingDepositId { get; set; }
+        [Parameter]
+        public int? ExistingDepositSecondaryId { get; set; }
         private Modal routeValidationModal = default!;
         private Modal errorModal = default!;
 
         private CreateMap? createMap;
+        private EditMap? editMap;
 
         private List<BreadcrumbItem>? NavItems;
-        
-        private LandownerDeposit? LandownerDeposit {  get; set; }
+
+        private LandownerDeposit? LandownerDeposit { get; set; }
         private LandownerDepositTypeName[]? LandownerDepositTypeNames { get; set; }
 
         private bool IsBusy { get; set; }
@@ -51,6 +56,18 @@ namespace CSIDE.Components.Pages.LandownerDeposits
             {
                 Geom = null
             };
+            if(ExistingDepositId != null && ExistingDepositSecondaryId != null)
+            {
+                //get the existing deposit
+                var existingDeposit = await context.LandownerDeposits
+                    .IgnoreAutoIncludes()
+                    .FirstOrDefaultAsync(l => l.Id == ExistingDepositId && l.SecondaryId == ExistingDepositSecondaryId);
+                if(existingDeposit is not null)
+                {
+                    LandownerDeposit.Id = existingDeposit.Id;
+                    LandownerDeposit.Geom = existingDeposit.Geom;
+                }
+            }
             GeometryIsValid = true;
         }
 
@@ -71,19 +88,24 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                     {
                         using var context = contextFactory.CreateDbContext();
 
+                        //TODO - get the highest secondary ID for this primary ID and increment it
+                        var maxSecondaryId = await context.LandownerDeposits
+                            .Where(ld => ld.Id == LandownerDeposit.Id)
+                            .MaxAsync(ld => (int?)ld.SecondaryId) ?? 0;
+                        LandownerDeposit.SecondaryId = maxSecondaryId + 1;
                         context.LandownerDeposits.Add(LandownerDeposit);
 
                         await context.SaveChangesAsync();
-                        CreateLandownerDepositTypes(SelectedLandownerDepositTypes, LandownerDeposit.Id, context);
+                        CreateLandownerDepositTypes(SelectedLandownerDepositTypes, LandownerDeposit.Id, LandownerDeposit.SecondaryId, context);
                         await context.SaveChangesAsync();
                         //redirect
-                        navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDeposit.Id}");
+                        navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}");
                     }
                 }
                 catch (Exception ex)
                 {
                     ErrorMessage = localizer["Save Error Message"];
-                    logger.LogError(ex, "An error occurred creating a maintenance job");
+                    logger.LogError(ex, "An error occurred creating a landowner deposit");
                 }
                 finally
                 {
@@ -92,12 +114,12 @@ namespace CSIDE.Components.Pages.LandownerDeposits
             }
         }
 
-        private static void CreateLandownerDepositTypes(List<int> selectedLandownerDepositTypes, int LandownerDepositId, ApplicationDbContext context)
+        private static void CreateLandownerDepositTypes(List<int> selectedLandownerDepositTypes, int LandownerDepositId, int LandownerDepositSecondaryId, ApplicationDbContext context)
         {
             //add new landowner deposit types
             foreach (int landownerDepositType in selectedLandownerDepositTypes)
             {
-                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = LandownerDepositId });
+                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = LandownerDepositId, LandownerDepositSecondaryId = LandownerDepositSecondaryId });
             }
             return;
         }
@@ -127,7 +149,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                     }
                     LandownerDeposit.Geom = (MultiPolygon)geom;
                     LandownerDeposit.Geom.SRID = 27700;
-                }    
+                }
             }
             else
             {
@@ -142,7 +164,14 @@ namespace CSIDE.Components.Pages.LandownerDeposits
             {
                 LandownerDeposit.Geom = null;
             }
-            await createMap!.ClearDrawnGeometries();
+            if(createMap != null)
+            {
+                await createMap.ClearDrawnGeometries();
+            }
+            if(editMap != null)
+            {
+                await editMap.ClearDrawnGeometries();
+            }
             await routeValidationModal.HideAsync();
             await errorModal.HideAsync();
         }

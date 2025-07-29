@@ -6,6 +6,7 @@ namespace CSIDE.Data.Models.LandownerDeposits
     public class LandownerDeposit
     {
         public int Id { get; set; }
+        public int SecondaryId { get; set; }
         public LocalDate? ReceivedDate { get; set; }
         public string? Location { get; set; }
         public LocalDate? WebsiteNoticePublished { get; set; }

@@ -118,7 +118,8 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
     private static AuditLog CreateAuditLog(EntityEntry entry, IKey keyColumn, string? userId, string userName, JsonSerializerOptions jsonSerializerOpts, DbContext context, EntityState? stateOverride = null)
     {
         var primaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).FirstOrDefault()?.ToString() ?? string.Empty;
-        var secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).Skip(1).SingleOrDefault()?.ToString() ?? string.Empty;
+        var secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).Skip(1).FirstOrDefault()?.ToString() ?? string.Empty;
+
 
         //manual interventions for entities that don't follow the standard pattern
         //RoW Statements, make the RouteId the primary entity id and the version the secondary entity id
@@ -143,11 +144,47 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
             secondaryEntityId = dmmoEvent.ApplicationId.ToString();
             (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
         }
-        if (entry.Entity is LandownerDepositEvent landownerDepositEvent)
+
+        //Landowner deposits use composite keys, which work differently again
+        if (entry.Entity is LandownerDeposit)
         {
-            secondaryEntityId = landownerDepositEvent.LandownerDepositId.ToString();
-            (primaryEntityId, secondaryEntityId) = (secondaryEntityId, primaryEntityId);
+            //The base table uses a composite key, so the primaryEntityId should be made of the first two 
+            primaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            secondaryEntityId = null;
         }
+        if (entry.Entity is LandownerDepositAddress)
+        {
+            //for linked tables, the primaryEntityId should be the first two concatenated together, and the secondaryEntityId should be 3rd (or last) key column
+            primaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            //get the key for the linked entity. Assumption that this will be just 1 key column, and not another composite
+            secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).LastOrDefault()?.ToString() ?? string.Empty;
+        }
+        if (entry.Entity is LandownerDepositEvent)
+        {
+            primaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).LastOrDefault()?.ToString() ?? string.Empty;
+        }
+        if (entry.Entity is LandownerDepositContact)
+        {
+            primaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).LastOrDefault()?.ToString() ?? string.Empty;
+        }
+        if (entry.Entity is LandownerDepositMedia)
+        {
+            primaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).LastOrDefault()?.ToString() ?? string.Empty;
+        }
+        if (entry.Entity is LandownerDepositParish)
+        {
+            primaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).LastOrDefault()?.ToString() ?? string.Empty;
+        }
+        if (entry.Entity is LandownerDepositType)
+        {
+            secondaryEntityId = $"{primaryEntityId}/{secondaryEntityId}";
+            secondaryEntityId = keyColumn.Properties.Select(p => entry.Property(p.Name).CurrentValue).LastOrDefault()?.ToString() ?? string.Empty;
+        }
+
         //infra bridge details, make the InfraId the primary entity ID and the BridgeDetailsId the secondary entity id
         if (entry.Entity is InfrastructureBridgeDetails infrastructureBridgeDetails)
         {
@@ -187,12 +224,12 @@ public class AuditInterceptor(ILogger<AuditInterceptor> logger,
             .Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue))
             .ToDictionary(p => p.Metadata.Name, p => ConvertGeometryToSerializableFormat(p.CurrentValue));
 
-        if(entry.State == EntityState.Added || stateOverride == EntityState.Added)
+        if (entry.State == EntityState.Added || stateOverride == EntityState.Added)
         {
             changedPropertiesNew = entry.Properties
                     .ToDictionary(p => p.Metadata.Name, p => ConvertGeometryToSerializableFormat(p.CurrentValue));
         }
-        if(entry.State == EntityState.Deleted || stateOverride == EntityState.Deleted)
+        if (entry.State == EntityState.Deleted || stateOverride == EntityState.Deleted)
         {
             changedPropertiesOld = entry.Properties
                     .ToDictionary(p => p.Metadata.Name, p => ConvertGeometryToSerializableFormat(p.OriginalValue));

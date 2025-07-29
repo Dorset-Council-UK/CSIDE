@@ -17,6 +17,8 @@ namespace CSIDE.Components.Pages.LandownerDeposits
     {
         [Parameter]
         public int LandownerDepositId { get; set; }
+        [Parameter]
+        public int SecondaryId { get; set; }
 
         private LandownerDeposit? LandownerDeposit { get; set; }
         private LandownerDepositTypeName[]? LandownerDepositTypeNames { get; set; }
@@ -38,8 +40,8 @@ namespace CSIDE.Components.Pages.LandownerDeposits
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
                 new BreadcrumbItem{ Text = localizer["Landowner Deposit Title"], Href="landowner-deposits" },
-                new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"], Href=$"landowner-deposits/Details/{LandownerDepositId}"},
-                new BreadcrumbItem{ Text = localizer["Landowner Deposit Edit Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}"], IsCurrentPage = true }
+                new BreadcrumbItem{ Text = localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}/{SecondaryId}"], Href=$"landowner-deposits/Details/{LandownerDepositId}/{SecondaryId}"},
+                new BreadcrumbItem{ Text = localizer["Landowner Deposit Edit Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDepositId}/{SecondaryId}"], IsCurrentPage = true }
             ];
             IsBusy = true;
             try
@@ -53,7 +55,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                     .IgnoreAutoIncludes()
                     .Include(l => l.LandownerDepositTypes)
                     .Include(l => l.LandownerDepositParishes)
-                    .FirstOrDefaultAsync(i => i.Id == LandownerDepositId);
+                    .FirstOrDefaultAsync(i => i.Id == LandownerDepositId && i.SecondaryId == SecondaryId);
                 SelectedLandownerDepositTypes = LandownerDeposit!.LandownerDepositTypes
                     .Select(t => t.LandownerDepositTypeNameId)
                     .ToList();
@@ -86,7 +88,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                         //get the existing job to enable the smarter change tracker.
                         //Without this, all properties are identified as tracked, since
                         //the DbContext is different from when the entity was queried
-                        var existingDeposit = await context.LandownerDeposits.FindAsync(LandownerDeposit.Id) ?? throw new Exception($"Landowner Deposit being edited (ID: {LandownerDeposit.Id}) was not found prior to updating");
+                        var existingDeposit = await context.LandownerDeposits.FindAsync(LandownerDeposit.Id, LandownerDeposit.SecondaryId) ?? throw new Exception($"Landowner Deposit being edited (ID: {LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}) was not found prior to updating");
 
                         // Store the original version for concurrency checking
                         uint originalVersion = LandownerDeposit.Version;
@@ -103,7 +105,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}"]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["Landowner Deposit Details Title", $"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}"]];
                     logger.LogWarning(ex, "A concurrency conflict occurred when updating a landowner deposit");
                 }
                 catch (Exception ex)
@@ -131,16 +133,16 @@ namespace CSIDE.Components.Pages.LandownerDeposits
 
             //delete types not needed anymore
             await context.LandownerDepositTypes
-                .Where(c => c.LandownerDepositId == LandownerDepositId && !selectedLandownerDepositTypes
+                .Where(c => (c.LandownerDepositId == LandownerDepositId && c.LandownerDepositSecondaryId == SecondaryId) && !selectedLandownerDepositTypes
                 .Contains(c.LandownerDepositTypeNameId))
                 .ExecuteDeleteAsync();
 
             //add new landowner deposit types
             foreach (int landownerDepositType in selectedLandownerDepositTypes)
             {
-                if (!context.LandownerDepositTypes.Where(c => c.LandownerDepositId == LandownerDeposit.Id && c.LandownerDepositTypeNameId == landownerDepositType).Any())
+                if (!context.LandownerDepositTypes.Where(c => (c.LandownerDepositId == LandownerDepositId && c.LandownerDepositSecondaryId == SecondaryId) && c.LandownerDepositTypeNameId == landownerDepositType).Any())
                 {
-                    context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = LandownerDeposit.Id });
+                    context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = LandownerDeposit.Id, LandownerDepositSecondaryId = SecondaryId });
                 }
             }
             return;
@@ -148,7 +150,7 @@ namespace CSIDE.Components.Pages.LandownerDeposits
 
         private void NavigateBackToLandownerDepositDetailsPage()
         {
-            navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDepositId}");
+            navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDepositId}/{SecondaryId}");
         }
 
         private async Task ValidateGeometry(string features)

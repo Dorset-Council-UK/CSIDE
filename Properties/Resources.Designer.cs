@@ -1708,6 +1708,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a linked Landowner Deposit.
+        /// </summary>
+        public static string Create_Linked_Landowner_Deposit_Label {
+            get {
+                return ResourceManager.GetString("Create Linked Landowner Deposit Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add DMMO.
         /// </summary>
         public static string Create_New_DMMO_Label {
@@ -2707,6 +2716,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create linked landowner deposit from {0}.
+        /// </summary>
+        public static string Landowner_Deposit_Create_Linked_Deposit_Title {
+            get {
+                return ResourceManager.GetString("Landowner Deposit Create Linked Deposit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create a Landowner Deposit.
         /// </summary>
         public static string Landowner_Deposit_Create_Title {
@@ -2928,6 +2946,15 @@ namespace CSIDE.Properties {
         public static string Linked_Item_ID_Label {
             get {
                 return ResourceManager.GetString("Linked Item ID Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linked deposits ({0}).
+        /// </summary>
+        public static string Linked_Landowner_Deposits_Label {
+            get {
+                return ResourceManager.GetString("Linked Landowner Deposits Label", resourceCulture);
             }
         }
         
@@ -3414,6 +3441,15 @@ namespace CSIDE.Properties {
         public static string No_Landowner_Deposit_Events_Message {
             get {
                 return ResourceManager.GetString("No Landowner Deposit Events Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Landowner Deposits linked to this deposit.
+        /// </summary>
+        public static string No_Linked_Deposits_Found_Message {
+            get {
+                return ResourceManager.GetString("No Linked Deposits Found Message", resourceCulture);
             }
         }
         

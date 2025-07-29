@@ -28,6 +28,7 @@ namespace CSIDE.Components.LandownerDeposits
             NewEvent = new LandownerDepositEvent()
             {
                 LandownerDepositId = LandownerDeposit!.Id,
+                LandownerDepositSecondaryId = LandownerDeposit!.SecondaryId,
                 EventText = string.Empty,
                 EventDate = LocalDate.FromDateTime(DateTime.Now),
             };
@@ -101,11 +102,12 @@ namespace CSIDE.Components.LandownerDeposits
                 NewEvent = new()
                 {
                     LandownerDepositId = LandownerDeposit.Id,
+                    LandownerDepositSecondaryId = LandownerDeposit!.SecondaryId,
                     EventText = string.Empty,
                     EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
                 using var context = contextFactory.CreateDbContext();
-                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id]);
+                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id, LandownerDeposit.SecondaryId]);
                 StateHasChanged();
             }
         }

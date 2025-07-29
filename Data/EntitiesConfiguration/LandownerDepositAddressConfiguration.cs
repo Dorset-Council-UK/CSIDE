@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<LandownerDepositAddress> builder)
         {
-            builder.HasKey(x => new { x.LandownerDepositId, x.UPRN });
+            builder.HasKey(x => new { x.LandownerDepositId, x.LandownerDepositSecondaryId, x.UPRN });
         }
     }
 }

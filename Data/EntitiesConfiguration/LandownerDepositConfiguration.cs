@@ -8,6 +8,11 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<LandownerDeposit> builder)
         {
+            builder.HasKey(x => new { x.Id, x.SecondaryId });
+
+            builder.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (multipolygon)");
 
             builder.Property(x => x.Version)
