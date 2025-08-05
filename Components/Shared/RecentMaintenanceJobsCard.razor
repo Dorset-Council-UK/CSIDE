@@ -7,51 +7,51 @@
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject ILogger<RecentMaintenanceJobsCard> logger
 
-@if (IsBusy)
-{
-    <p class="fs-4">
-        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
-    </p>
-}
-else
-{
-    <div class="container-fluid">
-        <div class="row justify-content-start row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 ">
-            <div class="col">
-                <Card>
-                    <CardBody>
-                        <CardTitle>@localizer["Recent Maintenance Jobs Card Title"]</CardTitle>
-                        <CardText>
-                            @if (ErrorMessage is not null)
-                            {
-                                <div class="alert alert-danger">@ErrorMessage</div>
-                            }
-                            @if (Jobs is not null && Jobs.Count != 0)
-                            {
-                                <ul class="list-unstyled">
-                                    @foreach (Job job in Jobs.OrderByDescending(l => l.LogDate))
-                                    {
-                                        <li>
-                                            <a class="fs-5 fw-bold" href="Maintenance/Details/@job.Id">@IDPrefixOptions.Value.Maintenance@job.Id</a>
-                                            <span class="fs-6 fw-light">@(job.LogDate.HasValue? job.LogDate.Value.ToDateTimeUtc().Humanize() : localizer["Unknown Label"])</span>
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                            else
-                            {
-                                <Alert Color="AlertColor.Info">@localizer["No Job Message"]</Alert>
-                            }
-                        </CardText>
-                    </CardBody>
-                </Card>
-            </div>
-        </div>
-    </div>
-}
+<Card>
+    <CardBody>
+        <CardTitle Class="mb-4">@localizer["Recent Maintenance Jobs Card Title"]</CardTitle>
+        <CardText>
+            @if (IsBusy)
+            {
+                <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-6"></span>
+                    <span class="placeholder col-8"></span>
+                </p>
+            }
+            else
+            {
+                if (ErrorMessage is not null)
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+                if (Jobs is not null && Jobs.Count != 0)
+                {
+                    <div class="list-group">
+                        @foreach (Job job in Jobs.OrderByDescending(l => l.LogDate))
+                        {
+                            <a href="Maintenance/Details/@job.Id" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">@IDPrefixOptions.Value.Maintenance@job.Id</h5>
+                                    <small>@(job.LogDate.HasValue? job.LogDate.Value.ToDateTimeUtc().Humanize() : localizer["Unknown Label"])</small>
+                                </div>
+                                <p class="mb-1">@job.ProblemDescription?.ReplaceLineEndings(" ").Truncate(50)</p>
+                            </a>
+                      }
+                    </div>
+                }
+                else
+                {
+                    <Alert Color="AlertColor.Info">@localizer["No Job Message"]</Alert>
+                }
+            }
+        </CardText>
+    </CardBody>
+</Card>
 
 @code {
-    [Parameter]
     public ICollection<Job>? Jobs { get; set; }
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -60,11 +60,11 @@ else
     private bool IsBusy { get; set; }
     private string? ErrorMessage { get; set; } = null;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         IsBusy = true;
         ErrorMessage = null;
-
+        StateHasChanged();
         try
         {
             using var context = contextFactory.CreateDbContext();
@@ -76,13 +76,20 @@ else
             .Where(t => t.UserId == UserID)
             .FirstOrDefaultAsync();
 
-            Jobs = await context.MaintenanceJobs
-            .AsNoTracking()
-            .Where(job => job.MaintenanceTeamId == MaintenanceTeam.TeamId)
-            .Where(job => job.JobStatus!.IsComplete == false)
-            .OrderByDescending(job => job.LogDate)
-            .Take(5)
-            .ToListAsync();
+            if (MaintenanceTeam is not null)
+            {
+                Jobs = await context.MaintenanceJobs
+                .AsNoTracking()
+                .Where(job => job.MaintenanceTeamId == MaintenanceTeam.TeamId)
+                .Where(job => job.JobStatus!.IsComplete == false)
+                .OrderByDescending(job => job.LogDate)
+                .Take(5)
+                .ToListAsync();
+            }
+            else
+            {
+                ErrorMessage = localizer["Maintenance Jobs Card No Team Error Message"];
+            }
         }
         catch (Exception ex)
         {
@@ -92,6 +99,7 @@ else
         finally
         {
             IsBusy = false;
+            StateHasChanged();
         }
     }
 }

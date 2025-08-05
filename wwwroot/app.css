@@ -82,6 +82,9 @@ fieldset.valid.modified:not([type=checkbox]){
   --bs-pagination-hover-color: var(--primary-color-dark);
   --bs-pagination-active-border-color: var(--primary-color-dark);
 }
+.list-group-item-action{
+  color:#000;
+}
 .comment-field {
   white-space: pre-line;
 }

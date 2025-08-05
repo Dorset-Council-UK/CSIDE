@@ -1,0 +1,113 @@
+﻿@using CSIDE.Data.Models.Shared
+@using CSIDE.Options
+@using CSIDE.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using NodaTime
+@using Humanizer
+@using System.Globalization
+
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject ILogger<MyWorkCard> logger
+@inject ISettingsService settingsService
+
+<Card>
+    <CardBody>
+        <CardTitle Class="mb-4">@localizer["My Work Card Title"]</CardTitle>
+        <CardText>
+            @if (IsBusy)
+            {
+                <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-6"></span>
+                    <span class="placeholder col-8"></span>
+                </p>
+            }
+            else
+            {
+                if (ErrorMessage is not null)
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+                if (RecentWork is not null && RecentWork.Count != 0)
+                {
+                    <div class="list-group">
+                        @foreach (RecentWork work in RecentWork.Reverse())
+                        {
+                            <a href="@work.URL" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1"><span class="bi @GetIconForWorkType(work.EntityType)"></span> @work.EntityId</h5>
+                                    <small>@(work.VisitTime.Humanize())</small>
+                                </div>
+                                <p class="mb-1">@work.EntityDescription?.ReplaceLineEndings(" ")</p>
+
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <Alert Color="AlertColor.Info">@localizer["No Recent Work Message"]</Alert>
+                }
+            }
+            
+        </CardText>
+    </CardBody>
+</Card>
+
+
+@code {
+    private bool IsBusy { get; set; }
+    private string? ErrorMessage { get; set; } = null;
+    private IList<RecentWork>? RecentWork { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            IsBusy = true;
+            StateHasChanged();
+            ErrorMessage = null;
+
+            try
+            {
+                RecentWork = await settingsService.GetRecentWork();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["My Work Card Error Message"];
+                logger.LogError(ex, "An error occurred loading a user's recent work in the card component");
+            }
+            finally
+            {
+                IsBusy = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private string GetIconForWorkType(string workType)
+    {
+        switch (workType)
+        {
+            case "Maintenance":
+                return "bi-tools";
+            case "RightsOfWay":
+                return "bi-person-walking";
+            case "Infrastructure":
+                return "bi-signpost-split-fill";
+            case "Survey":
+                return "bi-clipboard-fill";
+            case "DMMO":
+                return "bi-file-earmark-text-fill";
+            case "PPO":
+                return "bi-sign-merge-right-fill";
+            case "LandownerDeposit":
+                return "bi-archive-fill";
+        }
+        return "";
+    }
+
+
+}

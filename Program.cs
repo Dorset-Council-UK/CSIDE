@@ -47,6 +47,7 @@ builder.Services.AddScoped<ILandownerDepositInterceptor, LandownerDepositInterce
 builder.Services.AddScoped<IDMMOInterceptor, DMMOInterceptor>();
 builder.Services.AddScoped<IPPOInterceptor, PPOInterceptor>();
 builder.Services.AddScoped<ISurveyInterceptor, SurveyInterceptor>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddSingleton<IMapLinkHelperService, MapLinkHelperService>();
 
 builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);

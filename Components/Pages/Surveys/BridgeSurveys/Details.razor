@@ -22,14 +22,14 @@
 }
 @if (Survey is not null)
 {
-    <PageTitle>@localizer["Bridge Survey Details Title", SurveyId]</PageTitle>
+    <PageTitle>@localizer["Bridge Survey Details Title", $"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{SurveyId}"]</PageTitle>
 
     <AuthorizeView Policy="IsSurveyor" Resource="Survey" Context="SurveyDetailsView">
         <NotAuthorized>
             <AccessDenied></AccessDenied>
         </NotAuthorized>
         <Authorized>
-            <h1>@localizer["Bridge Survey Details Title", SurveyId]</h1>
+            <h1>@localizer["Bridge Survey Details Title", $"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{SurveyId}"]</h1>
 
             @if(Survey.Status is SurveyStatus.Completed)
             {
@@ -57,7 +57,7 @@
                 <dd>@(Survey.EndDate.HasValue ? Survey.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])</dd>
 
                 <dt>@localizer["Infrastructure ID Label"]</dt>
-                <dd><a href="infrastructure/details/@Survey.InfrastructureItemId">@Survey.InfrastructureItemId</a></dd>
+                <dd><a href="infrastructure/details/@Survey.InfrastructureItemId">@IDPrefixOptions.Value.Infrastructure@Survey.InfrastructureItemId</a></dd>
 
 
             </dl>

@@ -6,11 +6,13 @@
 @using CSIDE.Data.Models.Shared
 @using System.Globalization
 @using CSIDE.Options
+@using CSIDE.Services
+@using Humanizer
 @using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
-
+@inject ISettingsService settingsService
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -363,6 +365,16 @@ else
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
             }
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (LandownerDeposit is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}", "LandownerDeposit", LandownerDeposit.Location.Truncate(50), $"landowner-deposits/Details/{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task AddContact(Contact NewContact)

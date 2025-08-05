@@ -7,10 +7,13 @@
 @using CSIDE.Data.Models.Shared
 @using CSIDE.Options
 @using CSIDE.Services
+@using Humanizer
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
+@inject ISettingsService settingsService
 
 
 <div>
@@ -270,8 +273,19 @@ else
             {
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("Ranger");
             }
-        }       
+        }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Job is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Maintenance}{Job.Id}", "Maintenance", Job.ProblemDescription.Truncate(50), $"Maintenance/Details/{Job.Id}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private async Task AddContact(Contact NewContact){
         
         if (NewContact is not null && Job is not null)

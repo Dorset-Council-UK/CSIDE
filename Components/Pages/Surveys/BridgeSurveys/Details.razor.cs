@@ -1,6 +1,8 @@
 using BlazorBootstrap;
 using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +11,8 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
 {
     public partial class Details(
         IDbContextFactory<ApplicationDbContext> contextFactory,
-        NavigationManager navigationManager)
+        NavigationManager navigationManager,
+        ISettingsService settingsService)
     {
         [CascadingParameter]
         private Task<AuthenticationState>? authenticationState { get; set; }
@@ -68,6 +71,15 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
 
                 }
             }
+        }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (Survey is not null)
+            {
+                //add to recent work store
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+            }
+            await base.OnAfterRenderAsync(firstRender);
         }
     }
 }

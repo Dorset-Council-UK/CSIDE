@@ -2,6 +2,8 @@ using BlazorBootstrap;
 using Blazored.FluentValidation;
 using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +12,8 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
     public partial class Construction(
         IDbContextFactory<ApplicationDbContext> contextFactory,
         NavigationManager navigationManager,
-        ILogger<Construction> logger)
+        ILogger<Construction> logger,
+        ISettingsService settingsService)
     {
         [Parameter]
         public int SurveyId { get; init; }
@@ -59,6 +62,15 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
             OnRadioChange();
         }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (Survey is not null)
+            {
+                //add to recent work store
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+            }
+            await base.OnAfterRenderAsync(firstRender);
+        }
         public async Task SubmitFormAsync()
         {
             if (Survey is null || IsBusy)

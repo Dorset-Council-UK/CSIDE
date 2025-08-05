@@ -2,6 +2,7 @@ using BlazorBootstrap;
 using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using CSIDE.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -13,7 +14,8 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
         NavigationManager navigationManager, 
         ILogger<Summary> logger,
         IGovNotifyEmailSender emailSender,
-        IClock clock)
+        IClock clock,
+        ISettingsService settingsService)
     {
     
         [Parameter]
@@ -36,7 +38,15 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
                 new BreadcrumbItem{ Text = localizer["Bridge Survey Summary Title"], IsCurrentPage = true },
             ];
         }
-
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (Survey is not null)
+            {
+                //add to recent work store
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+            }
+            await base.OnAfterRenderAsync(firstRender);
+        }
         protected override async Task OnParametersSetAsync()
         {
             //get survey

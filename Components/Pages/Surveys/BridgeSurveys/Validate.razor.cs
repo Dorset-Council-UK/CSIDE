@@ -2,14 +2,16 @@ using AutoMapper;
 using BlazorBootstrap;
 using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-using ProjNet.CoordinateSystems;
-using CSIDE.Data.Models.Maintenance;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using CSIDE.Data.Models.Shared;
+using ProjNet.CoordinateSystems;
 
 namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
 {
@@ -17,7 +19,8 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
         IDbContextFactory<ApplicationDbContext> contextFactory,
         NavigationManager navigationManager,
         ILogger<Validate> logger,
-        IMapper mapper)
+        IMapper mapper,
+        ISettingsService settingsService)
     {
         [CascadingParameter]
         private Task<AuthenticationState>? authenticationState { get; set; }
@@ -73,7 +76,15 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
             SurveyHasUpdatedLocation = (Survey.UpdatedX is not null && Survey.UpdatedY is not null && Survey.LocationAccuracy is not null);
 
         }
-
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (Survey is not null)
+            {
+                //add to recent work store
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+            }
+            await base.OnAfterRenderAsync(firstRender);
+        }
         public async Task SubmitFormAsync()
         {
             if (Survey is null || IsBusy)

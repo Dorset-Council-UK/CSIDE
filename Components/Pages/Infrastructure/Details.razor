@@ -5,10 +5,12 @@
 @using CSIDE.Components.Layout
 @using System.Globalization
 @using CSIDE.Options
+@using CSIDE.Services
 @using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
+@inject ISettingsService settingsService
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -372,6 +374,22 @@ else
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("Ranger");
             }
         }
+
+        if (InfrastructureItem is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{InfrastructureItem.Id}", "Infrastructure", InfrastructureItem.InfrastructureType?.Name ?? "", $"Infrastructure/Details/{InfrastructureItem.Id}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (InfrastructureItem is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{InfrastructureItem.Id}", "Infrastructure", InfrastructureItem.InfrastructureType?.Name ?? "", $"Infrastructure/Details/{InfrastructureItem.Id}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 }
 

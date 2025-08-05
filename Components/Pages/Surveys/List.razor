@@ -48,7 +48,7 @@
 
                         <GridColumns>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                                <a href="surveys/bridge/@context.Id/details">@(IDPrefixOptions.Value.Infrastructure)@(context.InfrastructureItemId)/@(context.Id)</a>
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
@@ -90,7 +90,7 @@
 
                         <GridColumns>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                                <a href="surveys/bridge/@context.Id/details">@(IDPrefixOptions.Value.Infrastructure)@(context.InfrastructureItemId)/@(context.Id)</a>
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
@@ -131,7 +131,7 @@
 
                         <GridColumns>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                                <a href="surveys/bridge/@context.Id/details">@(IDPrefixOptions.Value.Infrastructure)@(context.InfrastructureItemId)/@(context.Id)</a>
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
@@ -180,7 +180,7 @@
 
                         <GridColumns>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                                <a href="surveys/bridge/@context.Id/details">@(IDPrefixOptions.Value.Infrastructure)@(context.InfrastructureItemId)/@(context.Id)</a>
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
@@ -221,7 +221,7 @@
 
                         <GridColumns>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Survey ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
-                                <a href="surveys/bridge/@context.Id/details">@(context.InfrastructureItemId)/@(context.Id)</a>
+                                <a href="surveys/bridge/@context.Id/details">@(IDPrefixOptions.Value.Infrastructure)@(context.InfrastructureItemId)/@(context.Id)</a>
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
@@ -253,13 +253,3 @@
         }
     </Authorized>
 </AuthorizeView>
-
-
-
-
-@*If user is validator, provide list of surveys awaiting validation*@
-
-@*Else show a list of the users surveys*@
-
-
-

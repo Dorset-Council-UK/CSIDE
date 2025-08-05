@@ -3139,6 +3139,15 @@ namespace CSIDE.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You aren&apos;t in a maintenance team, so no results could be displayed.
+        /// </summary>
+        public static string Maintenance_Jobs_Card_No_Team_Error_Message {
+            get {
+                return ResourceManager.GetString("Maintenance Jobs Card No Team Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance team.
         /// </summary>
         public static string Maintenance_Team_Label {
@@ -3288,6 +3297,24 @@ namespace CSIDE.Properties {
         public static string My_Roles_Header {
             get {
                 return ResourceManager.GetString("My Roles Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred fetching this data. Refresh the page to try again..
+        /// </summary>
+        public static string My_Work_Card_Error_Message {
+            get {
+                return ResourceManager.GetString("My Work Card Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recently viewed.
+        /// </summary>
+        public static string My_Work_Card_Title {
+            get {
+                return ResourceManager.GetString("My Work Card Title", resourceCulture);
             }
         }
         
@@ -3522,6 +3549,15 @@ namespace CSIDE.Properties {
         public static string No_PPO_Events_Message {
             get {
                 return ResourceManager.GetString("No PPO Events Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing viewed recently. Start exploring and what you view will appear here.
+        /// </summary>
+        public static string No_Recent_Work_Message {
+            get {
+                return ResourceManager.GetString("No Recent Work Message", resourceCulture);
             }
         }
         

@@ -5,10 +5,12 @@
 @using CSIDE.Components.Layout
 @using System.Globalization
 @using CSIDE.Options
+@using CSIDE.Services
 @using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
+@inject ISettingsService settingsService
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -257,5 +259,15 @@ else
                 UserCanEditStatements = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("RoW Statement Editor");
             }
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Route is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{Route.RouteCode}", "RightsOfWay", Route.RouteType?.Name ?? "", $"rights-of-way/Details/{Route.RouteCode}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 }

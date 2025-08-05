@@ -43,7 +43,7 @@
                 <dd>@(Survey.EndDate.HasValue ? Survey.EndDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : localizer["Unknown Label"])</dd>
 
                 <dt>@localizer["Infrastructure ID Label"]</dt>
-                <dd><a href="infrastructure/details/@Survey.InfrastructureItemId">@Survey.InfrastructureItemId</a></dd>
+                <dd><a href="infrastructure/details/@Survey.InfrastructureItemId">@IDPrefixOptions.Value.Infrastructure@Survey.InfrastructureItemId</a></dd>
 
 
             </dl>

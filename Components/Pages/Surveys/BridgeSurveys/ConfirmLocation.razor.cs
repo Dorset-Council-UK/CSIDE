@@ -1,6 +1,8 @@
 using BlazorBootstrap;
 using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
@@ -11,7 +13,8 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
         IDbContextFactory<ApplicationDbContext> contextFactory, 
         NavigationManager navigationManager, 
         ILogger<ConfirmLocation> logger,
-        IJSRuntime JS)  : IAsyncDisposable
+        IJSRuntime JS,
+        ISettingsService settingsService)  : IAsyncDisposable
     {
     
         [Parameter]
@@ -68,6 +71,11 @@ namespace CSIDE.Components.Pages.Surveys.BridgeSurveys
                 self ??= DotNetObjectReference.Create(this);
                 _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/locationFetcher.js");
                 
+            }
+            if (Survey is not null)
+            {
+                //add to recent work store
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
             }
             await base.OnAfterRenderAsync(firstRender);
         }

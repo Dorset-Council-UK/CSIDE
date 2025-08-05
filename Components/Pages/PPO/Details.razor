@@ -6,10 +6,13 @@
 @using System.Globalization
 @using CSIDE.Data.Models.Shared
 @using CSIDE.Options
+@using CSIDE.Services
+@using Humanizer
 @using Microsoft.Extensions.Options
 @inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
+@inject ISettingsService settingsService
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -326,6 +329,22 @@ else
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
             }
         }
+
+        if (PPOApplication is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.PPO}{PPOApplication.Id}", "PPO", PPOApplication.ApplicationDetails.Truncate(50), $"PPO/Details/{PPOApplication.Id}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (PPOApplication is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.PPO}{PPOApplication.Id}", "PPO", PPOApplication.ApplicationDetails.Truncate(50), $"PPO/Details/{PPOApplication.Id}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task AddContact(Contact NewContact)
