@@ -1,0 +1,273 @@
+﻿@page "/rights-of-way/Details/{*RouteID}"
+@using CSIDE.Data.Models.RightsOfWay
+@using CSIDE.Web.Components.RightsOfWay
+@using CSIDE.Web.Components.Mapping
+@using CSIDE.Web.Components.Layout
+@using System.Globalization
+@using CSIDE.Shared.Options
+@using CSIDE.Web.Services
+@using Microsoft.Extensions.Options
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+@inject IOptions<MappingOptions> mappingOptions
+@inject ISettingsService settingsService
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+
+@if (Route is null && !IsBusy)
+{
+    <PageTitle>@localizer["Right of Way Not Found Error Message", RouteId]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["Rights of Way Not Found Error Message", RouteId]</Alert>
+}
+else
+{
+    if (Route is not null)
+    {
+        <PageTitle>@localizer["Rights of Way Details Title", Route.RouteCode]</PageTitle>
+        <h1>@localizer["Rights of Way Details Title", Route.RouteCode]</h1>
+
+        @if (Route.OperationalStatus is not null && Route.OperationalStatus.IsClosed && !Route.ClosureIsIndefinite)
+        {
+            @if (Route.ClosureEndDate.HasValue && LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)) > Route.ClosureEndDate)
+            {
+                var daysOverdue = Period.DaysBetween(Route.ClosureEndDate.Value, LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)));
+                var friendlyTimeSpan = localizer["X Days Ago Label", daysOverdue];
+                if(daysOverdue == 1){
+                    friendlyTimeSpan = localizer["Yesterday Label"];
+                }
+                <div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> @localizer["Closure End Date Passed Warning Text", friendlyTimeSpan]</div>
+            }
+        }
+
+        <AuthorizeView Roles="Administrator, RoW Officer, Ranger">
+            <a href="rights-of-way/Edit/@(Uri.EscapeDataString(Route.RouteCode))" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        </AuthorizeView> 
+
+        <div class="row">
+            <div class="col-lg-8">
+
+                <CollapsibleCard Id="maint-basic-details" Title="@localizer["Basic Details Label"]" IsShownByDefault="true">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th class="w-25">@localizer["Route ID Label"]</th>
+                                            <td>@Route.RouteCode</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Name Label"]</th>
+                                            <td>@Route.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Path Type Label"]</th>
+                                            <td>@Route.RouteType?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Parish Label"]</th>
+                                            <td>@Route.Parish?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Legal Status Label"]</th>
+                                            <td>@Route.LegalStatus?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Operational Status Label"]</th>
+                                            <td>@Route.OperationalStatus?.Name</td>
+                                        </tr>
+                                        @if(Route.OperationalStatus is not null && Route.OperationalStatus.IsClosed){
+                                            <tr>
+                                                <th>@localizer["Closure Start Date Label"]</th>
+                                                <td>@(Route.ClosureStartDate.HasValue ? Route.ClosureStartDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")</td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>@localizer["Closure End Date Label"]</th>
+                                                <td>
+                                                    @if(Route.ClosureIsIndefinite){
+                                                        @localizer["Indefinite Closure Text"]
+                                                    }else{
+                                                        @(Route.ClosureEndDate.HasValue ? Route.ClosureEndDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
+                                                        @if (Route.ClosureEndDate.HasValue && LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)) > Route.ClosureEndDate)
+                                                        {
+                                                            <br/>
+                                                            <span class="text-danger"><i class="bi bi-exclamation-circle"></i> @localizer["Closure End Date Passed Short Warning Text"]</span>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <th>@localizer["Maintenance Team Label"]</th>
+                                            <td>@Route.MaintenanceTeam?.Name</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="route-statements" Title="@localizer["Statements Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <StatementsList Statements="@Route.Statements" RouteId="@Route.RouteCode" IsEditable="UserCanEditStatements"></StatementsList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="route-infrastructure" Title="@localizer["Infrastructure Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <InfrastructureList RouteId="@Route.RouteCode"></InfrastructureList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="route-media" Title="@localizer["Media Label",Route.RouteMedia.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <MediaList Route="@Route" IsEditable="UserCanEdit"></MediaList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard> 
+                
+                <CollapsibleCard Id="route-audit" Title="@localizer["Audit Log Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <AuditLogList SectionNames="@AuditLogSectionNames" EntityId="@Route.RouteCode"></AuditLogList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+            </div>
+            <div class="col-lg-4">
+                <ErrorBoundary>
+                    <ChildContent>
+                        @if (Route?.Geom is not null)
+                        {
+                            <MiniMap Geometry="@Route.Geom"></MiniMap>
+
+                            <table class="table table-striped table-sm">
+                                <tbody>
+                                    <tr><th>@localizer["Start Easting Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.First().X)</td></tr>
+                                    <tr><th>@localizer["Start Northing Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.First().Y)</td></tr>
+                                    <tr><th>@localizer["End Easting Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.Last().X)</td></tr>
+                                    <tr><th>@localizer["End Northing Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.Last().Y)</td></tr>
+                                    <tr><th>@localizer["Approximate Length Label"]</th><td>@Convert.ToInt32(Route.Geom?.Length)m</td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <MapLink Template="@mappingOptions.Value.RouteMapLinkTemplateURL" Geometry="@Route.Geom" IncludeIcon="true"></MapLink>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                    </ChildContent>
+                    <ErrorContent Context="Exception">
+                        <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </div>
+        </div>
+    }
+}
+@code {
+    private List<BreadcrumbItem>? NavItems;
+
+    [Parameter]
+    public required string RouteId { get; set; }
+    private Route? Route { get; set; }
+
+    private bool IsBusy{ get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+    private bool UserCanEditStatements { get; set; } = false;
+
+    private string[] AuditLogSectionNames => new string[] {
+        nameof(Data.Models.RightsOfWay.Route),
+        nameof(Data.Models.RightsOfWay.RouteMedia),
+        nameof(Data.Models.RightsOfWay.Statement)
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
+            new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
+            new BreadcrumbItem{ Text = localizer["Rights of Way Details Title", RouteId], IsCurrentPage = true }
+        };
+
+        IsBusy = true;
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            Route = await context.Routes.FindAsync(RouteId);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (AuthenticationState is not null)
+        {
+            var authState = await AuthenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
+                UserCanEditStatements = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("RoW Statement Editor");
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Route is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{Route.RouteCode}", "RightsOfWay", Route.RouteType?.Name ?? "", $"rights-of-way/Details/{Route.RouteCode}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

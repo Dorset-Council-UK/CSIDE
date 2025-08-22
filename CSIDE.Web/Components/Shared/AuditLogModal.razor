@@ -1,0 +1,159 @@
+﻿@using System.Globalization
+@using System.Text.Json
+@using CSIDE.Web.Components.Mapping
+
+<Modal @ref="AuditLogEntryModal" Size="ModalSize.Large" Title="@localizer["Audit Log Entry Title"]" OnShown="HandleModalShown" OnHidden="HandleModalHidden">
+
+    <BodyTemplate>
+        @if(AuditLogEntry is not null){
+            <p>@AuditLogEntry.LogDate.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)</p>
+            <p>@AuditLogEntry.UserName @AuditLogEntry.ChangeType.ToLower() @AuditLogEntry.EntityName @(!string.IsNullOrEmpty(AuditLogEntry.SecondaryEntityId) ? AuditLogEntry.SecondaryEntityId : AuditLogEntry.EntityId)</p>
+            @if (Changes is not null && Changes.Count() != 0)
+            {
+                if(Changes.Where(c => c.PropertyName.ToLower() != "geom").Count() != 0)
+                {
+                    <h6>@localizer["Property Changes Label"]</h6>
+                    //non geom properties
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@localizer["Property Name Label"]</th>
+                                <th>@localizer["Old Value Label"]</th>
+                                <th>@localizer["New Value Label"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var change in Changes.Where(c => c.PropertyName.ToLower() != "geom"))
+                            {
+                                <tr>
+                                    <td>@change.PropertyName</td>
+                                    <td>@change.OldValue</td>
+                                    <td>@change.NewValue</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                @if(Changes.Where(c => c.PropertyName.ToLower() == "geom").SingleOrDefault() is not null)
+                {
+                    var change = Changes.Where(c => c.PropertyName.ToLower() == "geom").Single();
+                    var hasBoth = (!string.IsNullOrEmpty(change.OldValue) && !string.IsNullOrEmpty(change.NewValue));
+                    //render a mini map
+                    var wktParser = new NetTopologySuite.IO.WKTReader(new NtsGeometryServices(new PrecisionModel(), 27700));
+                    <h6>@localizer["Geometry Changes Label"]</h6>
+                    <div class="row">
+                        @if (!string.IsNullOrEmpty(change.OldValue))
+                        {
+                            var geom = wktParser.Read(change.OldValue);
+                            <div class="col">
+                                @if (hasBoth)
+                                {
+                                    <p>@localizer["Before Label"]</p>
+                                }
+
+                                @if (showMiniMap)
+                                {
+                                    <MiniMap Geometry="@geom"></MiniMap>
+                                }
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(change.NewValue))
+                        {
+                            var geom = wktParser.Read(change.NewValue);
+                            <div class="col">
+                                @if (hasBoth)
+                                {
+                                    <p>@localizer["After Label"]</p>
+                                }
+                                @if (showMiniMap)
+                                {
+                                    <MiniMap Geometry="@geom"></MiniMap>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No changes to display.</p>
+            }
+        }
+    </BodyTemplate>
+
+</Modal>
+
+
+@code {
+    private Modal AuditLogEntryModal = default!;
+    private bool showMiniMap = false;
+    private Data.Models.Audit.AuditLog? AuditLogEntry{ get; set; }
+    private List<AuditLogEntryChange>? Changes { get; set; }
+
+    public async Task ShowAudit(Data.Models.Audit.AuditLog auditEntry)
+    {
+        AuditLogEntry = auditEntry;
+        if (auditEntry.OldValues is not null || auditEntry.NewValues is not null)
+        {
+            Changes = MergeAuditLogEntries(auditEntry.OldValues, auditEntry.NewValues);
+        }
+        
+        await AuditLogEntryModal.ShowAsync();
+    }
+
+    public List<AuditLogEntryChange> MergeAuditLogEntries(JsonDocument? oldValues, JsonDocument? newValues)
+    {
+        var changes = new List<AuditLogEntryChange>();
+
+        var oldValuesDict = oldValues?.RootElement.EnumerateObject().ToDictionary(p => p.Name, p => GetValueAsString(p.Value)) ?? new Dictionary<string, string?>();
+        var newValuesDict = newValues?.RootElement.EnumerateObject().ToDictionary(p => p.Name, p => GetValueAsString(p.Value)) ?? new Dictionary<string, string?>();
+
+        var allKeys = new HashSet<string>(oldValuesDict.Keys.Concat(newValuesDict.Keys));
+
+        foreach (var key in allKeys)
+        {
+            oldValuesDict.TryGetValue(key, out var oldValue);
+            newValuesDict.TryGetValue(key, out var newValue);
+
+            changes.Add(new AuditLogEntryChange
+                {
+                    PropertyName = key,
+                    OldValue = oldValue,
+                    NewValue = newValue
+                });
+        }
+
+        return changes;
+    }
+
+    private string? GetValueAsString(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString(),
+            JsonValueKind.Number => element.TryGetInt32(out var intValue) ? intValue.ToString() : element.GetDouble().ToString(CultureInfo.InvariantCulture),
+            JsonValueKind.True => "true",
+            JsonValueKind.False => "false",
+            JsonValueKind.Null => null,
+            _ => element.GetRawText()
+        };
+    }
+
+    private void HandleModalShown()
+    {
+        showMiniMap = true;
+        StateHasChanged();
+    }
+
+    private void HandleModalHidden()
+    {
+        showMiniMap = false;
+    }
+
+    public class AuditLogEntryChange
+    {
+        public required string PropertyName { get; set; }
+        public string? OldValue { get; set; }
+        public string? NewValue { get; set; }
+    }
+}

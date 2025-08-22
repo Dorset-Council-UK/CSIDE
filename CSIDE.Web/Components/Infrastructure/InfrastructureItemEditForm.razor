@@ -1,0 +1,478 @@
+﻿@using CSIDE.Data.Models.Infrastructure
+@using CSIDE.Web.Components.Layout
+
+@if(InfrastructureItem is not null) {
+
+	<EditForm Model="InfrastructureItem" OnSubmit="@SubmitFormAsync">
+		<FluentValidationValidator @ref="fluentValidationValidator" />
+		<ValidationSummary />
+
+		<datalist id="timber-sizes">
+			<option value="4x2"></option>
+			<option value="4x4"></option>
+			<option value="6x2"></option>
+			<option value="6x3"></option>
+			<option value="6x4"></option>
+			<option value="8x2"></option>
+			<option value="8x3"></option>
+			<option value="10x4"></option>
+			<option value="12x4"></option>
+			<option value="12x6"></option>
+		</datalist>
+
+		<div class="mb-3 row">
+			<div class=" col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="route-code">@localizer["Route ID Label"]</label>
+				<InputText id="route-code" class="form-control" @bind-Value="InfrastructureItem.RouteId"></InputText>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.RouteId" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class="col-sm-8 col-lg-6">
+				<label class="form-label" for="infrastructure-type">@localizer["Infrastructure Type Label"]</label>
+				<InputSelect id="infrastructure-type" class="form-select" @bind-Value="InfrastructureItem.InfrastructureTypeId" @bind-Value:after="OnRadioChange">
+					@if (InfrastructureTypes is not null)
+					{
+						@foreach (var type in InfrastructureTypes.OrderBy(s => s.Name))
+						{
+							<option value="@type.Id">@type.Name</option>
+						}
+					}
+				</InputSelect>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.InfrastructureTypeId" />
+		</div>
+
+		<div class="mb-3 row">
+			<label class="form-label" for="infrastructure-length">@localizer["Infrastructure Length Label"]</label>
+			<div class="col-10 col-sm-6 col-lg-4">
+				<div class="input-group">
+					<InputNumber step=".1" id="infrastructure-length" class="form-control" @bind-Value="InfrastructureItem.Length"></InputNumber>
+					<span class="input-group-text">@localizer["Metres Label"]</span>
+				</div>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.Length" />
+		</div>
+
+		<div class="mb-3 row">
+			<label class="form-label" for="infrastructure-width">@localizer["Infrastructure Width Label"]</label>
+			<div class="col-10 col-sm-6 col-lg-4">
+				<div class="input-group">
+					<InputNumber step=".1" id="infrastructure-width" class="form-control" @bind-Value="InfrastructureItem.Width"></InputNumber>
+					<span class="input-group-text">@localizer["Metres Label"]</span>
+				</div>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.Width" />
+		</div>
+
+		<div class="mb-3 row">
+			<label class="form-label" for="infrastructure-height">@localizer["Infrastructure Height Label"]</label>
+			<div class="col-10 col-sm-6 col-lg-4">
+				<div class="input-group">
+					<InputNumber step=".1" id="infrastructure-height" class="form-control" @bind-Value="InfrastructureItem.Height"></InputNumber>
+					<span class="input-group-text">@localizer["Metres Label"]</span>
+				</div>
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.Height" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="infrastructure-description">@localizer["Infrastructure Description Label"]</label>
+			<InputTextArea id="infrastructure-description" class="form-control" @bind-Value="InfrastructureItem.Description"></InputTextArea>
+			<ValidationMessage For="() => InfrastructureItem.Description" />
+		</div>
+
+		<div class="mb-3 row">
+			<div class=" col-sm-4 col-md-6 col-lg-4">
+				<label class="form-label" for="installation-date">@localizer["Infrastructure Installation Date Label"]</label>
+				@{
+					string CompleteDateStringRepresentation = "";
+					if (InfrastructureItem.InstallationDate.HasValue)
+					{
+						CompleteDateStringRepresentation = InfrastructureItem.InstallationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+					}
+				}
+				<input type="date" class="form-control" value="@CompleteDateStringRepresentation" @onchange="UpdateInstallationDateProperty" />
+			</div>
+			<ValidationMessage For="() => InfrastructureItem.InstallationDate" />
+		</div>
+
+		@if (InfrastructureItem.InfrastructureType is not null 
+			&& InfrastructureItem.InfrastructureType.IsBridge
+			&& BridgeMaterials is not null
+			&& BridgeConditions is not null)
+		{
+			if(InfrastructureItem.BridgeDetails is null)
+			{
+				InfrastructureItem.BridgeDetails = new();
+			}
+			<CollapsibleCard Id="bridge-details-editing" Title="@localizer["Bridge Details Label"]">
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Beam Material Label"]</legend>
+					<InputRadioGroup Name="beam-material" @bind-Value="InfrastructureItem.BridgeDetails.BeamMaterialId" @bind-Value:after="OnRadioChange">
+
+						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
+						{
+							var id = $"beam-material-{material.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="beam-material"
+											Value="material.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@material.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				@if (ShowBeamTimbersSection)
+				{
+					<div class="border-start border-3 ps-2 my-3">
+						<div class="mb-3 row">
+							<label class="form-label" for="num-beam-timbers">@localizer["Bridge Survey Num Beam Timbers Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputNumber id="num-beam-timbers" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.NumBeamTimbers"></InputNumber>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.NumBeamTimbers" />
+						</div>
+
+						<div class="mb-3 row">
+							<label class="form-label" for="size-beam-timbers">@localizer["Bridge Survey Size Beam Timbers Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputText id="size-beam-timbers" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.BeamTimbersSize" list="timber-sizes"></InputText>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.BeamTimbersSize" />
+						</div>
+					</div>
+				}
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Decking Material Label"]</legend>
+					<InputRadioGroup Name="decking-material" @bind-Value="InfrastructureItem.BridgeDetails.DeckingMaterialId" @bind-Value:after="OnRadioChange">
+
+						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
+						{
+							var id = $"decking-material-{material.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="decking-material"
+											Value="material.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@material.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				@if (ShowDeckingBoardsSection)
+				{
+					<div class="border-start border-3 ps-2 my-3">
+						<div class="mb-3 row">
+							<label class="form-label" for="num-decking-boards">@localizer["Bridge Survey Num Decking Boards Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputNumber id="num-decking-boards" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.NumDeckingBoards"></InputNumber>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.NumDeckingBoards" />
+						</div>
+
+						<div class="mb-3 row">
+							<label class="form-label" for="size-decking-boards">@localizer["Bridge Survey Size Decking Boards Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputText id="size-decking-boards" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.DeckingBoardsSize" list="timber-sizes"></InputText>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.DeckingBoardsSize" />
+						</div>
+
+						<div class="mb-3 row">
+							<label class="form-label" for="length-decking-boards">@localizer["Bridge Survey Length Decking Boards Label"]</label>
+							<div class="col-10 col-sm-6 col-lg-4">
+								<div class="input-group">
+									<InputNumber step=".1" id="length-decking-boards" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.DeckingBoardsLength"></InputNumber>
+									<span class="input-group-text">@localizer["Metres Label"]</span>
+								</div>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.DeckingBoardsLength" />
+						</div>
+					</div>
+				}
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Handrail Material Label"]</legend>
+					<InputRadioGroup Name="handrail-material" @bind-Value="InfrastructureItem.BridgeDetails.HandrailMaterialId" @bind-Value:after="OnRadioChange">
+
+						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
+						{
+							var id = $"handrail-material-{material.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="handrail-material"
+											Value="material.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@material.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				@if (ShowHandrailTimbersSection)
+				{
+					<div class="border-start border-3 ps-2 my-3">
+
+						<div class="mb-3 row">
+							<label class="form-label" for="size-handrail-timbers">@localizer["Bridge Survey Size Handrail Timbers Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputText id="size-handrail-timbers" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.HandrailTimbersSize" list="timber-sizes"></InputText>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.HandrailTimbersSize" />
+						</div>
+
+						<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.HandrailsInPlace" Label="@localizer["Bridge Survey Handrails In Place Label"]" HintText="@localizer["Bridge Survey Handrails In Place Hint Text"]" class="my-3"></YesNoBoolean>
+						<div class="form-text">@localizer["Bridge Survey Handrails In Place Additional Text"]</div>
+					</div>
+				}
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Handrail Posts Material Label"]</legend>
+					<InputRadioGroup Name="handrail-posts-material" @bind-Value="InfrastructureItem.BridgeDetails.HandrailPostsMaterialId" @bind-Value:after="OnRadioChange">
+
+						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
+						{
+							var id = $"handrail-posts-material-{material.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="handrail-posts-material"
+											Value="material.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@material.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				@if (ShowHandrailPostsTimbersSection)
+				{
+					<div class="border-start border-3 ps-2 my-3">
+						<div class="mb-3 row">
+							<label class="form-label" for="num-handrail-post-timbers">@localizer["Bridge Survey Num Handrail Posts Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputNumber id="num-handrail-post-timbers" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.NumHandrailPostsTimbers"></InputNumber>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.NumHandrailPostsTimbers" />
+						</div>
+
+						<div class="mb-3 row">
+							<label class="form-label" for="size-handrail-post-timbers">@localizer["Bridge Survey Size Handrail Posts Label"]</label>
+							<div class="col-8 col-sm-3 col-lg-2">
+								<InputText id="size-handrail-post-timbers" class="form-control" @bind-Value="InfrastructureItem.BridgeDetails.HandrailPostsTimbersSize" list="timber-sizes"></InputText>
+							</div>
+							<ValidationMessage For="() => InfrastructureItem.BridgeDetails.HandrailPostsTimbersSize" />
+						</div>
+					</div>
+				}
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Bank Seat Material Label"]</legend>
+					<InputRadioGroup Name="bank-seat-material" @bind-Value="InfrastructureItem.BridgeDetails.BankSeatMaterialId">
+
+						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
+						{
+							var id = $"bank-seat-material-{material.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="bank-seat-material"
+											Value="material.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@material.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.AntiSlipInstalled" Label="@localizer["Bridge Survey Anti Slip Installed Label"]" class="my-3"></YesNoBoolean>
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.GateInstalled" Label="@localizer["Bridge Survey Gates Installed Label"]" class="my-3"></YesNoBoolean>
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.StileInstalled" Label="@localizer["Bridge Survey Stiles Installed Label"]" class="my-3"></YesNoBoolean>
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.RampInstalled" Label="@localizer["Bridge Survey Ramp Installed Label"]" class="my-3"></YesNoBoolean>
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.StepsInstalled" Label="@localizer["Bridge Survey Steps Installed Label"]" class="my-3"></YesNoBoolean>
+
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Beam Condition Label"]</legend>
+					<InputRadioGroup Name="beam-condition" @bind-Value="InfrastructureItem.BridgeDetails.BeamConditionId">
+
+						@foreach (var condition in BridgeConditions.OrderBy(c => c.SortOrder))
+						{
+							var id = $"beam-condition-{condition.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="beam-condition"
+											Value="condition.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@condition.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Decking Condition Label"]</legend>
+					<InputRadioGroup Name="decking-condition" @bind-Value="InfrastructureItem.BridgeDetails.DeckingConditionId">
+
+						@foreach (var condition in BridgeConditions.OrderBy(c => c.SortOrder))
+						{
+							var id = $"decking-condition-{condition.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="decking-condition"
+											Value="condition.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@condition.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Handrail Condition Label"]</legend>
+					<InputRadioGroup Name="handrail-condition" @bind-Value="InfrastructureItem.BridgeDetails.HandrailConditionId">
+
+						@foreach (var condition in BridgeConditions.OrderBy(c => c.SortOrder))
+						{
+							var id = $"handrail-condition-{condition.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="handrail-condition"
+											Value="condition.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@condition.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Handrail Posts Condition Label"]</legend>
+					<InputRadioGroup Name="handrail-posts-condition" @bind-Value="InfrastructureItem.BridgeDetails.HandrailPostsConditionId">
+
+						@foreach (var condition in BridgeConditions.OrderBy(c => c.SortOrder))
+						{
+							var id = $"handrail-posts-condition-{condition.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="handrail-posts-condition"
+											Value="condition.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@condition.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+
+
+				<fieldset class="my-3">
+					<legend>@localizer["Bridge Survey Bank Seat Condition Label"]</legend>
+					<InputRadioGroup Name="bank-seat-condition" @bind-Value="InfrastructureItem.BridgeDetails.BankSeatConditionId">
+
+						@foreach (var condition in BridgeConditions.OrderBy(c => c.SortOrder))
+						{
+							var id = $"bank-seat-condition-{condition.Id}";
+							<div class="form-check">
+
+								<InputRadio TValue="int"
+											class="form-check-input"
+											id="@id"
+											Name="bank-seat-condition"
+											Value="condition.Id"
+											@key="@id" />
+
+								<label class="form-check-label" for="@id">
+									@condition.Name
+								</label>
+							</div>
+						}
+					</InputRadioGroup>
+				</fieldset>
+
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.Overgrown" Label="@localizer["Bridge Survey Overgrown Label"]" class="my-3"></YesNoBoolean>
+
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.SignsOfBankErosion" Label="@localizer["Bridge Survey Signs Of Bank Erosion Label"]" class="my-3"></YesNoBoolean>
+
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.SeriouslyEroded" Label="@localizer["Bridge Survey Seriously Eroded Label"]" class="my-3"></YesNoBoolean>
+
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.HighUsage" Label="@localizer["Bridge Survey High Usage Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+				<YesNoBoolean @bind-Value="InfrastructureItem.BridgeDetails.CoverBoardsInPlace" Label="@localizer["Bridge Survey Cover Boards In Place Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+			</CollapsibleCard>
+		}
+		<ValidationSummary />
+		@if (IsEdit)
+		{
+			<button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
+			<button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+		}
+		else
+		{
+			<button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
+		}
+
+	</EditForm>
+}
+

@@ -1,0 +1,94 @@
+﻿@using CSIDE.Shared.Options
+@using CSIDE.Data.Services
+@using Microsoft.Extensions.Options
+
+@inject IOptions<CSIDEOptions> CsideOptions
+@inject IMapLinkHelperService MapLinkHelper
+
+<div class="top-row ps-1 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">
+            <img src="@(_csideOptions.Theme.IconsRoot)/brand_logo.svg" width="32" class="d-inline-block" alt="Logo">
+            <span class="d-none d-md-inline-block"> @(_csideOptions.AppName)</span>
+        </a>
+    </div>
+</div>
+
+<div class="nav-scrollable d-flex flex-column align-items-center align-items-md-start">
+    <nav class="flex-grow-1">
+
+        <div class="nav-item px-1 px-md-2">
+            <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door-fill mx-2 fs-5" aria-hidden="true"></i>
+                <span class="mx-2 text-center text-md-start">@localizer["Home Title"]</span>
+            </NavLink>
+        </div>
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="rights-of-way">
+                        <i class="bi bi-person-walking mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["Rights of Way Title"]</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="maintenance">
+                        <i class="bi bi-tools mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["Maintenance Title"]</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="infrastructure">
+                        <i class="bi bi-signpost-split-fill mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["Infrastructure Title"]</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="surveys">
+                        <i class="bi bi-clipboard-fill mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["Surveys Title"]</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="dmmo">
+                        <i class="bi bi-file-earmark-text-fill mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["DMMO Abbreviation"]</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="ppo">
+                        <i class="bi bi-sign-merge-right-fill mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["PPO Abbreviation"]</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-1 px-md-2">
+                    <NavLink class="nav-link d-flex flex-column flex-md-row align-items-center" href="landowner-deposits">
+                        <i class="bi bi-archive-fill mx-2 fs-5" aria-hidden="true"></i>
+                        <span class="mx-2 text-center text-md-start">@localizer["Landowner Deposits Title"]</span>
+                    </NavLink>
+                </div>
+
+                @if (!string.IsNullOrEmpty(@_csideOptions.Mapping.ExternalMappingSystemURL))
+                {
+                    <div class="nav-item px-1 px-md-2">
+                        <a class="nav-link d-flex flex-column flex-md-row align-items-center" href="@_csideOptions.Mapping.ExternalMappingSystemURL" target="_blank">
+                            <i class="bi bi-map-fill mx-2 fs-5" aria-hidden="true"></i>
+                            <span class="mx-2 text-center text-md-start">@(string.IsNullOrEmpty(_csideOptions.Mapping.ExternalMappingSystemName) ? localizer["Map Text"] : _csideOptions.Mapping.ExternalMappingSystemName)</span>
+                        </a>
+                    </div>
+                }
+            </Authorized>
+        </AuthorizeView>
+    </nav>
+    <div class="mt-auto p-2 small d-none d-md-flex nav-credit"><a href="https://github.com/Dorset-Council-UK"><i class="bi bi-github"></i> CSIDE @(_csideOptions.Version)</a></div>
+</div>
+
+@code {
+    private CSIDEOptions _csideOptions => CsideOptions.Value;
+}

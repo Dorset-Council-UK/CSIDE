@@ -1,0 +1,68 @@
+﻿@inherits LayoutComponentBase
+@inject IHostEnvironment HostEnvironment
+
+<div class="page flex-row">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main class="flex-grow-1">
+        <div class="top-row px-4">
+            <CultureSelector></CultureSelector>
+            <AuthorizeView Policy="AuthenticatedOnly">
+                <Authorized>
+                    <ul class="navbar-nav ps-3">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> @context.GetUserName()
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
+                                <li><h6 class="dropdown-header">@(context.GetUserEmail() ?? "")</h6></li>
+                                <AuthorizeView Policy="CanAccessApp" Context="InnerAccountBox">
+                                    <li><a class="dropdown-item" href="Account/MyAccount">@localizer["My Account Label"]</a></li>
+                                    @if (InnerAccountBox.User.IsInRole("Administrator"))
+                                    {
+                                        <li><a class="dropdown-item" href="management">@localizer["Manage Application Label"]</a></li>
+                                    }
+                                </AuthorizeView>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="MicrosoftIdentity/Account/SignOut">
+                                        <button id="logout" class="btn btn-outline-danger btn-sm ms-2"><i class="bi-door-open"></i> @localizer["Logout Label"]</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+
+                </Authorized>
+                <NotAuthorized>
+                    <a id="login" class="btn btn-outline-primary btn-sm ms-2" href="MicrosoftIdentity/Account/SignIn"><i class="bi-door-open"></i> @localizer["Sign In Label"]</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+        <article class="content px-4 pb-5">
+            @Body
+        </article>
+    </main>
+</div>
+
+<Toasts class="p-3" AutoHide="true" Delay="10000" Placement="ToastsPlacement.TopCenter" />
+
+
+
+<div id="blazor-error-ui">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    @if (HostEnvironment.IsProduction())
+    {
+        <span>@localizer["General Error Message"] </span>
+    }
+    else
+    {
+        <span>An unhandled exception occurred. </span>
+    }
+    <a href="" class="reload btn btn-lg btn-dark ms-3"><i class="bi bi-arrow-clockwise"></i> @localizer["Reload Label"]</a>
+    <a class="dismiss">🗙</a>
+</div>

@@ -1,0 +1,65 @@
+﻿@page "/surveys/bridge/{SurveyId:int}/confirm-location"
+@using CSIDE.Web.Components.Authorization
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (ErrorMessage is not null)
+{
+    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+}
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+@if (Survey is not null)
+{
+    <PageTitle>@localizer["Bridge Survey Confirm Location Title"]</PageTitle>
+
+    <AuthorizeView Policy="IsSurveyor" Resource="Survey" Context="SurveyEdit">
+        <NotAuthorized>
+            <AccessDenied></AccessDenied>
+        </NotAuthorized>
+        <Authorized>
+            @if(Survey.UpdatedX is not null && Survey.UpdatedY is not null && Survey.LocationAccuracy is not null)
+            {
+                <Alert Color="AlertColor.Info">
+                    <h1>@localizer["Bridge Survey Location Confirmed Title"]</h1>
+                    <p>@localizer["Bridge Survey Location Confirmed Text", Survey.LocationAccuracy]</p>
+                    <a href="surveys/bridge/@SurveyId/construction" class="btn btn-outline-primary">@localizer["Continue Button Text"] <span class="bi bi-chevron-right"></span></a>
+                </Alert>
+            }
+
+            <h1>@localizer["Bridge Survey Confirm Location Question"]</h1>
+            <p>@localizer["Bridge Survey Confirm Location Question Text"]</p>
+            <h2>@localizer["Bridge Survey Confirm Location At Location Title"]</h2>
+
+            <CSIDE.Web.Components.Shared.Markdown Text="@localizer["Bridge Survey Confirm Location At Location Text"]"></CSIDE.Web.Components.Shared.Markdown>
+
+            @if (LocationFetchErrrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@LocationFetchErrrorMessage</Alert>
+            }
+            <Button Color="ButtonColor.Primary" Outline="true" Type="ButtonType.Button" disabled="@(IsBusy || IsLocating)" @onclick="OnLocationRequest">
+                <Spinner Type="SpinnerType.Grow" Visible="@IsLocating" Size="SpinnerSize.Small"></Spinner> @(IsLocating ? localizer["Locating Label"] : @localizer["Locate Me Label"])
+            </Button>
+
+            @if (IsLocating && LocationAccuracy is not null)
+            {
+                <p>@localizer["Bridge Survey Confirm Location Current Accuracy Label", LocationAccuracy]</p>
+            }
+
+            <h2>@localizer["Bridge Survey Confirm Location Not At Location Title"]</h2>
+            <CSIDE.Web.Components.Shared.Markdown Text="@localizer["Bridge Survey Confirm Location Not At Location Text"]"></CSIDE.Web.Components.Shared.Markdown>
+
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Type="ButtonType.Button" disabled="@IsBusy" @onclick="SubmitFormAsync">@localizer["Continue Button Text"] <span class="bi bi-chevron-right"></span></Button>
+
+        </Authorized>
+    </AuthorizeView>
+    
+}

@@ -1,0 +1,28 @@
+﻿<h3>@localizer["Access Denied Title"]</h3>
+
+<p>@localizer["Access Denied Text"]</p>
+
+<p class="text-muted">@localizer["User ID Label"]: @UserID</p>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    private string? UserID { get; set; }
+    private string? UserDisplayName { get; set; }
+    private string? UserPrimaryEmailAddress { get; set; }
+    private string? UserIdentityProvider { get; set; }
+    private List<ApplicationRole>? ApplicationRoles { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask != null)
+        {
+            var authState = await AuthenticationStateTask;
+            UserID = authState.GetUserId();
+            UserDisplayName = authState.GetUserName();
+            UserPrimaryEmailAddress = authState.GetUserEmail();
+            UserIdentityProvider = authState.GetUserIdentityProvider();
+        }
+    }
+}

@@ -1,0 +1,32 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using CSIDE.Web
+@using CSIDE.Web.Components
+@using CSIDE.Web.Components.Shared
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using CSIDE.Data
+@using CSIDE.Data.Models
+@using CSIDE.Data.Models.Authorization
+@using Microsoft.Extensions.Localization
+@using BlazorBootstrap
+@using Blazored.FluentValidation
+@using NodaTime
+@using NetTopologySuite
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.Features
+@using NetTopologySuite.IO
+@using FluentValidation
+@using CSIDE.Shared.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<IDPrefixOptions> IDPrefixOptions;
+@inject IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer
+
+@attribute [Authorize]

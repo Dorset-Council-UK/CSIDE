@@ -1,0 +1,82 @@
+﻿@using CSIDE.Data.Models.Shared
+@using CSIDE.Shared.Options
+@using Microsoft.Extensions.Options
+@using NetTopologySuite.Geometries
+@using NetTopologySuite.IO
+@using System.Text.Json
+@using System.Text.Json.Serialization
+
+@inject IJSRuntime JS
+@inject IOptions<MappingOptions> MappingOptions
+
+@implements IAsyncDisposable
+
+<div id="@MapId" @key="@MapId" style="width:100%;height:300px;"></div>
+
+@code {
+    [Parameter]
+    public Geometry? Geometry{ get; set; }
+    [Parameter]
+    public int? GeometrySRID { get; set; } = 27700;
+
+    private string MapId = $"mini-map-{new Random().Next()}";
+
+    private IJSObjectReference? _jsModule;
+    private MappingOptions _mappingOptions => MappingOptions.Value;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        GeoJsonWriter _geoJsonWriter = new GeoJsonWriter();
+        var GeoJson = _geoJsonWriter.Write(Geometry);
+
+        // For testing below
+        @* GeoJson = @"{""type"": ""FeatureCollection"",""features"": [{""type"": ""Feature"",""geometry"": {""coordinates"": [[361648, 90563],[361650, 90633],[361649, 90694],[361657, 90751]],""type"": ""LineString""}}]}"; *@
+
+        var mapConfigClass = new MapConfiguration()
+        {
+            MapId = MapId,
+            OSMapsAPIKey = _mappingOptions.OSMapsAPIKey,
+            OSLicenceNumber = _mappingOptions.OSLicenceNumber,
+            Basemap = BasemapLayer.Outdoor,
+            Overlays = [
+                new() {
+                    MapServiceBaseURL = _mappingOptions.MapServerRoot,
+                    LayerName = _mappingOptions.RouteLayer
+                }
+            ]
+        };
+
+        JsonSerializerOptions opts = new(JsonSerializerDefaults.Web);
+        opts.Converters.Add(new JsonStringEnumConverter());
+        var mapConfigJson = JsonSerializer.Serialize(mapConfigClass, opts);
+        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/miniMap.js");
+        if (firstRender)
+        {
+            await _jsModule.InvokeVoidAsync("initMap", GeoJson, GeometrySRID, mapConfigJson);
+        }
+        else
+        {
+            await _jsModule.InvokeVoidAsync("updateMap", GeoJson, GeometrySRID, 18, MapId);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
+}

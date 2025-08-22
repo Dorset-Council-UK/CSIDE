@@ -1,0 +1,69 @@
+﻿@page "/DMMO/Create"
+@using CSIDE.Data.Models.DMMO
+@using CSIDE.Web.Components.DMMO
+@using CSIDE.Web.Components.Mapping
+@using CSIDE.Web.Components.Pages.Account
+
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+    
+    <Authorized>
+        <PageTitle>@localizer["Create New DMMO Label"]</PageTitle>
+
+        <div>
+            <Breadcrumb Items="NavItems"></Breadcrumb>
+        </div>
+
+        <h1>@localizer["Create New DMMO Label"]</h1>
+        <p>@localizer["Create New DMMO Text"]</p>
+        @if (DMMOApplication is null && !IsBusy)
+        {
+            <Alert Color="AlertColor.Danger">@localizer["General Error Message"]</Alert>
+            <a href="rights-of-way" class="btn btn-primary">@localizer["Search DMMO Title"]</a>
+        }
+        else
+        {
+            if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+
+            if (DMMOApplication is not null)
+            {
+                <div class="row">
+                    <CreateMap @ref="@createMap"
+                               OnGetRouteMethod="async(coordinates) => await GetRoute(coordinates)"
+                               OnDrawEndMethod="ValidateGeometry"
+                               OnGetSnappablesMethod="async (bbox) => await GetSnappables(bbox)"
+                               GeomType="Line+RoutePicker"></CreateMap>
+                </div>
+                @if (!GeometryIsValid)
+                {
+                    <Alert Color="AlertColor.Danger">@localizer["Invalid Geometry Validation Message"]</Alert>
+                }
+            }
+            <div class="row mt-2">
+                <div class="col-md-8">
+                    <DMMOEditForm DMMOApplication="@DMMOApplication"
+                                  ApplicationTypes="@ApplicationTypes"
+                                  CaseStatuses="@CaseStatuses"
+                                  ClaimedStatuses="@ClaimedStatuses"
+                                  DirectionsOfSecState="@DirectionsOfSecState"
+                                  IsBusy="@IsBusy"
+                                  IsEdit="false"
+                                  OnSubmit="SubmitFormAsync"
+                                  OnCancel="NavigateBackToRouteSearchPage"
+                                  @ref="childDMMOEditForm" />
+                </div>
+            </div>
+
+            if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger" Class="mt-2">@ErrorMessage</Alert>
+            }
+        }
+    </Authorized>
+
+</AuthorizeView>

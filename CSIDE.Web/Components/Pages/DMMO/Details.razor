@@ -1,0 +1,376 @@
+﻿@page "/DMMO/Details/{Id:int}"
+@using CSIDE.Data.Models.DMMO
+@using CSIDE.Web.Components.DMMO
+@using CSIDE.Web.Components.Mapping
+@using CSIDE.Web.Components.Layout
+@using System.Globalization
+@using CSIDE.Data.Models.Shared
+@using CSIDE.Shared.Options
+@using CSIDE.Web.Services
+@using Humanizer
+@using Microsoft.Extensions.Options
+@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject NavigationManager navigationManager
+@inject IOptions<MappingOptions> mappingOptions
+@inject ISettingsService settingsService
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+
+@if (DMMOApplication is null && !IsBusy)
+{
+    <PageTitle>@localizer["DMMO Not Found Error Message", Id]</PageTitle>
+    <Alert Color="AlertColor.Danger">@localizer["DMMO Job Not Found Error Message", Id]</Alert>
+}
+else
+{
+    if (DMMOApplication is not null)
+    {
+        <PageTitle>
+        @localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplication.Id}"]</PageTitle>
+        <h1>
+        @localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{DMMOApplication.Id}"]</h1>
+
+        <AuthorizeView Roles="Administrator, RoW Officer">
+            <a href="DMMO/Edit/@DMMOApplication.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
+        </AuthorizeView>
+        
+        <div class="row">
+            <div class="col-md-8">
+
+                <CollapsibleCard Id="infrastructure-basic-details" Title="@localizer["Basic Details Label"]" IsShownByDefault="true">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <Badge Class="mb-3" Color="@(DMMOApplication.IsPublic ? BadgeColor.Success : BadgeColor.Warning)">
+                                    <i class="bi bi-eye@(DMMOApplication.IsPublic ? "" : "-slash")"></i> @(DMMOApplication.IsPublic ? localizer["Public Label"] : localizer["Not Public Label"])
+                                </Badge>
+
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th class="w-25">@localizer["Reference Number Label"]</th>
+                                            <td>@IDPrefixOptions.Value.DMMO@DMMOApplication.Id</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Application Type Label"]</th>
+                                            <td>@DMMOApplication.ApplicationType?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Claimed Status Label"]</th>
+                                            <td>@DMMOApplication.ClaimedStatus?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Case Status Label"]</th>
+                                            <td>@DMMOApplication.CaseStatus?.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Application Details Label"]</th>
+                                            <td class="text-break comment-field">@DMMOApplication.ApplicationDetails</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Location Description Label"]</th>
+                                            <td class="text-break comment-field">@DMMOApplication.LocationDescription</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Application Date Label"]</th>
+                                            <td>@DMMOApplication.ApplicationDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Received Date Label"]</th>
+                                            <td>@DMMOApplication.ReceivedDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Case Officer Label"]</th>
+                                            <td>@DMMOApplication.CaseOfficer</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>@localizer["Determination Date Label"]</th>
+                                            <td>@DMMOApplication.DeterminationDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Appeal Label"]</th>
+                                            <td><NullableBooleanDisplay Value="DMMOApplication.Appeal"></NullableBooleanDisplay></td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Appeal Date Label"]</th>
+                                            <td>@DMMOApplication.AppealDate</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="w-25">@localizer["Direction Of Secretary Of State Label"]</th>
+                                            <td>@DMMOApplication.DirectionOfSecState?.Name</td>
+                                        </tr>
+                                        <tr>
+                                        <th class="w-25">@localizer["Date Direction Of Secretary Of State Label"]</th>
+                                            <td>@DMMOApplication.DateOfDirectionOfSecState</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Private Comments Label"]</th>
+                                            <td class="text-break comment-field">@DMMOApplication.PrivateComments</td>
+                                        </tr>
+                                        <tr>
+                                            <th>@localizer["Public Comments Label"]</th>
+                                            <td class="text-break comment-field">@DMMOApplication.PublicComments</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-event-log" Title="@localizer["Event Log Label", DMMOApplication.Events.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <EventsList DMMOApplication="DMMOApplication" IsEditable="UserCanEdit"></EventsList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-orders" Title="@localizer["Orders Label",DMMOApplication.Orders.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <DMMOOrdersList 
+                                    Orders="DMMOApplication.Orders.ToArray()"
+                                    IsEditable="UserCanEdit" 
+                                    DMMOApplicationId="DMMOApplication.Id">
+                                </DMMOOrdersList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-contacts" Title="@localizer["Contacts Label",DMMOApplication.DMMOContacts.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <ContactsList 
+                                Contacts="@DMMOApplication.DMMOContacts.Select(d => d.Contact).ToArray()" 
+                                IsEditable="UserCanEdit" 
+                                OnSubmit="AddContact"
+                                OnRefresh="RefreshContactsList"></ContactsList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-addresses" Title="@localizer["Affected Addresses Label",DMMOApplication.DMMOAddresses.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <DMMOAddressList Addresses="DMMOApplication.DMMOAddresses" ApplicationId="DMMOApplication.Id" IsEditable="UserCanEdit"></DMMOAddressList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-linked-routes" Title="@localizer["Linked Routes Label",DMMOApplication.DMMOLinkedRoutes.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <DMMOLinkedRoutesList LinkedRoutes="@DMMOApplication.DMMOLinkedRoutes" ApplicationId="DMMOApplication.Id" IsEditable="UserCanEdit"></DMMOLinkedRoutesList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-parishes" Title="@localizer["Parishes Label",DMMOApplication.DMMOParishes.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                @if (DMMOApplication.DMMOParishes.Count == 0)
+                                {
+                                    <Alert Color="AlertColor.Warning">@localizer["No Parishes Found Message"]</Alert>
+                                }
+                                else
+                                {
+                                    <Alert Color="AlertColor.Info">@localizer["Automatic Parishes Information Message"]</Alert>
+                                    <table class="table table-striped mt-2">
+                                        <tbody>
+                                            @foreach (var parish in DMMOApplication.DMMOParishes)
+                                            {
+                                                <tr><td>@parish.Parish.Name</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-media" Title="@localizer["Media Label",DMMOApplication.DMMOMedia.Count]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <MediaList DMMOApplication="@DMMOApplication" IsEditable="UserCanEdit"></MediaList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+                <CollapsibleCard Id="dmmo-audit" Title="@localizer["Audit Log Title"]">
+                    <ChildContent>
+                        <ErrorBoundary>
+                            <ChildContent>
+                                <AuditLogList SectionNames="AuditLogSectionNames" EntityId="@DMMOApplication.Id.ToString()"></AuditLogList>
+                            </ChildContent>
+                            <ErrorContent Context="Exception">
+                                <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                            </ErrorContent>
+                        </ErrorBoundary>
+                    </ChildContent>
+                </CollapsibleCard>
+
+            </div>
+            <div class="col-md-4">
+                <ErrorBoundary>
+                    <ChildContent>
+                        @if (DMMOApplication.Geom is not null)
+                        {
+                            <MiniMap Geometry="@DMMOApplication.Geom"></MiniMap>
+                        }
+                        <table class="table table-striped table-sm">
+                            <tbody>
+                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(DMMOApplication.Geom?.Centroid.X)</td></tr>
+                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(DMMOApplication.Geom?.Centroid.Y)</td></tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <MapLink Template="@mappingOptions.Value.DMMOMapLinkTemplateURL" Geometry="@DMMOApplication.Geom" IncludeIcon="true"></MapLink>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </ChildContent>
+                    <ErrorContent Context="Exception">
+                        <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </div>
+        </div>
+    }
+}
+@code {
+    private List<BreadcrumbItem>? NavItems;
+
+    [Parameter]
+    public int Id { get; set; }
+    private Application? DMMOApplication { get; set; }
+
+    private bool IsBusy { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private bool UserCanEdit { get; set; } = false;
+
+    private string[] AuditLogSectionNames => new string[] { 
+        nameof(Data.Models.DMMO.Application),
+        nameof(Data.Models.DMMO.DMMOAddress),
+        nameof(Data.Models.DMMO.DMMOContact),
+        nameof(Data.Models.DMMO.DMMOLinkedRoute),
+        nameof(Data.Models.DMMO.DMMOMedia),
+        nameof(Data.Models.DMMO.DMMOOrder),
+        nameof(Data.Models.DMMO.DMMOEvent)
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        NavItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
+            new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
+            new BreadcrumbItem{ Text = localizer["DMMO Details Title", $"{IDPrefixOptions.Value.DMMO}{Id}"], IsCurrentPage = true }
+        };
+
+        IsBusy = true;
+        try
+        {
+            using var context = contextFactory.CreateDbContext();
+            DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
+        //check user has permission to edit
+        if (AuthenticationState is not null)
+        {
+            var authState = await AuthenticationState;
+            var user = authState?.User;
+            if (user is not null)
+            {
+                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (DMMOApplication is not null)
+        {
+            //add to recent work store
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.DMMO}{DMMOApplication.Id}", "DMMO", DMMOApplication.ApplicationDetails.Truncate(50), $"DMMO/Details/{DMMOApplication.Id}");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task AddContact(Contact NewContact)
+    {
+
+        if (NewContact is not null && DMMOApplication is not null)
+        {
+            using var context = contextFactory.CreateDbContext();
+
+            context.Contacts.Add(NewContact);
+            await context.SaveChangesAsync();
+            context.DMMOContact.Add(new DMMOContact { ContactId = NewContact.Id, ApplicationId = DMMOApplication.Id });
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private async Task RefreshContactsList(){
+        using var context = contextFactory.CreateDbContext();
+        DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+        StateHasChanged();
+    }
+}
+

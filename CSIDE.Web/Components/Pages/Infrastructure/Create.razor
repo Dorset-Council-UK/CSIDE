@@ -1,0 +1,64 @@
+﻿@page "/Infrastructure/Create"
+@using CSIDE.Web.Components.Mapping
+@using CSIDE.Web.Components.Infrastructure
+@using CSIDE.Data.Models.Infrastructure
+@using CSIDE.Web.Components.Pages.Account
+
+<AuthorizeView Roles="Administrator, Ranger">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+
+    <Authorized>
+        <PageTitle>@localizer["Infrastructure Create Title"]</PageTitle>
+        <div>
+            <Breadcrumb Items="@NavItems"></Breadcrumb>
+        </div>
+
+        <h1>@localizer["Infrastructure Create Title"]</h1>
+
+        <div class="row">
+            <CreateMap @ref="@createMap" OnDrawEndMethod="ValidateGeometry" GeomType="Point"></CreateMap>
+        </div>
+
+        <div class="row mt-2">
+            @if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+            <div class="col-md-8">
+                <InfrastructureItemEditForm InfrastructureItem="@InfrastructureItem"
+                                            InfrastructureTypes="@InfrastructureTypes"
+                                            IsBusy="@IsBusy"
+                                            OnSubmit="@SubmitFormAsync"
+                                            @ref="@childInfrastructureItemEditForm" />
+            </div>
+            @if (ErrorMessage is not null)
+            {
+                <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+            }
+        </div>
+
+        @*TODO - These are duplicated in Edit.razor - Componentize them? Or make it part of the EditForm?*@
+        <Modal @ref="routeValidationModal" Title="@localizer["Error Title"]">
+            <BodyTemplate>
+                @localizer["No Rights of Way Near Geometry Validation Message"]<br />
+                @localizer["No Rights of Way Near Geometry Options Text"]
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" @onclick="HideRouteValidationModal">@localizer["Route ID Manual Entry Label"]</Button>
+                <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
+            </FooterTemplate>
+
+        </Modal>
+
+        <Modal @ref="errorModal" Title="@localizer["Error Title"]">
+            <BodyTemplate>
+                @localizer["Invalid Geometry Validation Message"]
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Primary" @onclick="ClearDrawnGeometries">@localizer["Redraw Label"]</Button>
+            </FooterTemplate>
+        </Modal>
+    </Authorized>
+</AuthorizeView>

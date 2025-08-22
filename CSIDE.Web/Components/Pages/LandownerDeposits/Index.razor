@@ -1,0 +1,105 @@
+﻿@page "/landowner-deposits"
+
+<PageTitle>@localizer["Landowner Deposits Title"]</PageTitle>
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+<h1>@localizer["Landowner Deposits Title"]</h1>
+
+@if (CsideOptions.LandownerDepositsPublicRegisterURL != "")
+{
+    <a href="@CsideOptions.LandownerDepositsPublicRegisterURL" target="_blank" class="btn btn-secondary">
+        @localizer["Landowner Deposits Public Register Label"]</a>
+    <hr />
+}
+
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <p>@localizer["Create New Landowner Deposit Text"]</p>
+    <a href="landowner-deposits/Create" class="btn btn-primary">@localizer["Create New Landowner Deposit Label"]</a>
+
+    <hr />
+</AuthorizeView>
+
+<h2 class="mb-3">@localizer["Search Landowner Deposits Title"]</h2>
+
+<form method="post" @onsubmit="@OnLandownerDepositIDSearchSubmit" @formname="LandownerDepositIDSearch" class="mt-3">
+    @if (LandownerDepositIDSearchErrorMessage is not null)
+    {
+        <Alert Color="AlertColor.Danger">@LandownerDepositIDSearchErrorMessage</Alert>
+    }
+    <div class="row">
+        <div class="col-sm-6 col-lg-4">
+            <label class="form-label" for="landowner-deposit-id-search">@localizer["Landowner Deposit ID Label"]</label>
+            <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.LandownerDeposit))
+                {
+                    <span class="input-group-text" id="landowner-deposit-id-prefix">@IDPrefixOptions.Value.LandownerDeposit</span>
+                }
+                <InputText id="landowner-deposit-id-search" @bind-Value="LandownerDepositIDSearch" class="form-control"></InputText>
+                <button class="btn btn-outline-secondary" type="submit" id="search-landowner-deposit-id-button" disabled="@IsBusy">@localizer["Search Label"]</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+@if (SearchParams is not null)
+{
+    <EditForm Model="SearchParams" OnSubmit="@OnLandownerDepositSearchSubmit" class="mt-3" id="search-form">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <ValidationSummary />
+        <div class="row">
+            <div class="col-md-10 col-lg-6">
+                <div class="mb-3">
+                    <label class="form-label" for="landowner-deposit-location-search">@localizer["Location Label"]</label>
+                    <InputText id="landowner-deposit-location-search" @bind-Value="SearchParams.Location" class="form-control"></InputText>
+                    <div class="form-text">@localizer["Location Help Text"]</div>
+                </div>
+
+                @if (UseMultiParishSelect)
+                {
+                    <div class="mb-3">
+                        <label class="form-label" for="parish-multi-search">@localizer["Parish Label"]</label>
+                        <div class="form-text">@localizer["Multi Select Instructions Text"]</div>
+                        <InputSelect id="parish-multi-search" class="form-select" @bind-Value="SearchParams.ParishIds">
+                            @if (Parishes is not null)
+                            {
+                                <option value=""></option>
+                                @foreach (var parish in Parishes)
+                                {
+                                    <option value="@parish.ParishId">@parish.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label" for="parish-search">@localizer["Parish Label"]</label>
+                        <InputSelect id="parish-search" class="form-select" @bind-Value="SearchParams.ParishId">
+                            @if (Parishes is not null)
+                            {
+                                <option value=""></option>
+                                @foreach (var parish in Parishes)
+                                {
+                                    <option value="@parish.ParishId">@parish.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                }
+                <div class="form-check form-switch mt-1 mb-2">
+                    <InputCheckbox @bind-Value="UseMultiParishSelect" class="form-check-input" id="use-multi-parish-select" />
+                    <label class="form-check-label" for="use-multi-parish-select">@localizer["Select Multiple Parishes Label"]</label>
+                </div>
+
+                <button class="btn btn-lg btn-outline-secondary" type="submit" id="search-landowner-deposit-button" disabled="@IsBusy"><span class="bi bi-search"></span> @localizer["Search Label"]</button>
+
+            </div>
+        </div>
+    </EditForm>
+}

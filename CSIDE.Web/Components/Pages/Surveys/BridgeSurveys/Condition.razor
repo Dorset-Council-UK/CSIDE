@@ -1,0 +1,160 @@
+﻿@page "/surveys/bridge/{SurveyId:int}/condition"
+@using CSIDE.Web.Components.Authorization
+
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
+
+@if (ErrorMessage is not null)
+{
+    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+}
+
+@if (IsBusy)
+{
+    <PageTitle>@localizer["Loading Text"]</PageTitle>
+    <p class="fs-4">
+        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
+    </p>
+}
+@if (Survey is not null && Conditions is not null)
+{
+    <PageTitle>@localizer["Bridge Survey Condition Title"]</PageTitle>
+
+        <AuthorizeView Policy="IsSurveyor" Resource="Survey" Context="SurveyEdit">
+            <NotAuthorized>
+                <AccessDenied></AccessDenied>
+            </NotAuthorized>
+            <Authorized>
+            <h1>@localizer["Bridge Survey Condition Question"]</h1>
+
+            <EditForm Model="Survey" OnValidSubmit="SubmitFormAsync">
+                <fieldset class="my-3">
+                    <legend>@localizer["Bridge Survey Beam Condition Label"]</legend>
+                    <InputRadioGroup Name="beam-condition" @bind-Value="Survey.BeamConditionId">
+
+                        @foreach (var condition in Conditions.OrderBy(c => c.SortOrder))
+                        {
+                            var id = $"beam-condition-{condition.Id}";
+                            <div class="form-check">
+
+                                <InputRadio TValue="int"
+                                            class="form-check-input"
+                                            id="@id"
+                                            Name="beam-condition"
+                                            Value="condition.Id"
+                                            @key="@id" />
+
+                                <label class="form-check-label" for="@id">
+                                    @condition.Name
+                                </label>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+
+                <fieldset class="my-3">
+                    <legend>@localizer["Bridge Survey Decking Condition Label"]</legend>
+                    <InputRadioGroup Name="decking-condition" @bind-Value="Survey.DeckingConditionId">
+
+                        @foreach (var condition in Conditions.OrderBy(c => c.SortOrder))
+                        {
+                            var id = $"decking-condition-{condition.Id}";
+                            <div class="form-check">
+
+                                <InputRadio TValue="int"
+                                            class="form-check-input"
+                                            id="@id"
+                                            Name="decking-condition"
+                                            Value="condition.Id"
+                                            @key="@id" />
+
+                                <label class="form-check-label" for="@id">
+                                    @condition.Name
+                                </label>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+
+
+                <fieldset class="my-3">
+                    <legend>@localizer["Bridge Survey Handrail Condition Label"]</legend>
+                    <InputRadioGroup Name="handrail-condition" @bind-Value="Survey.HandrailConditionId">
+
+                        @foreach (var condition in Conditions.OrderBy(c => c.SortOrder))
+                        {
+                            var id = $"handrail-condition-{condition.Id}";
+                            <div class="form-check">
+
+                                <InputRadio TValue="int"
+                                            class="form-check-input"
+                                            id="@id"
+                                            Name="handrail-condition"
+                                            Value="condition.Id"
+                                            @key="@id" />
+
+                                <label class="form-check-label" for="@id">
+                                    @condition.Name
+                                </label>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+
+
+                <fieldset class="my-3">
+                    <legend>@localizer["Bridge Survey Handrail Posts Condition Label"]</legend>
+                    <InputRadioGroup Name="handrail-posts-condition" @bind-Value="Survey.HandrailPostsConditionId">
+
+                        @foreach (var condition in Conditions.OrderBy(c => c.SortOrder))
+                        {
+                            var id = $"handrail-posts-condition-{condition.Id}";
+                            <div class="form-check">
+
+                                <InputRadio TValue="int"
+                                            class="form-check-input"
+                                            id="@id"
+                                            Name="handrail-posts-condition"
+                                            Value="condition.Id"
+                                            @key="@id" />
+
+                                <label class="form-check-label" for="@id">
+                                    @condition.Name
+                                </label>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+
+
+
+                <fieldset class="my-3">
+                    <legend>@localizer["Bridge Survey Bank Seat Condition Label"]</legend>
+                    <InputRadioGroup Name="bank-seat-condition" @bind-Value="Survey.BankSeatConditionId">
+
+                        @foreach (var condition in Conditions.OrderBy(c => c.SortOrder))
+                        {
+                            var id = $"bank-seat-condition-{condition.Id}";
+                            <div class="form-check">
+
+                                <InputRadio TValue="int"
+                                            class="form-check-input"
+                                            id="@id"
+                                            Name="bank-seat-condition"
+                                            Value="condition.Id"
+                                            @key="@id" />
+
+                                <label class="form-check-label" for="@id">
+                                    @condition.Name
+                                </label>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+
+                <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Type="ButtonType.Submit">@localizer["Continue Button Text"] <span class="bi bi-chevron-right"></span></Button>
+            </EditForm>
+            </Authorized>
+        </AuthorizeView>
+}

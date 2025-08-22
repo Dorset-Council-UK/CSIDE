@@ -1,0 +1,79 @@
+﻿@using System.Globalization
+@using CSIDE.Data.Services
+<Grid TItem="Data.Models.Audit.AuditLog"
+Class="table table-hover table-bordered table-striped mt-2"
+DataProvider="AuditLogDataProvider"
+AllowFiltering="false"
+AllowPaging="true"
+PageSize="20"
+AllowSorting="false"
+AllowSelection="false"
+AllowRowClick="true"
+OnRowClick="OnRowClick"
+AutoHidePaging="true"
+Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Log Date Label"]" PropertyName="LogDate" SortKeySelector="item => item.LogDate">
+            @context.LogDate.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)
+        </GridColumn>
+        <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Section Label"]" PropertyName="EntityName" SortKeySelector="item => item.EntityName">
+            @context.EntityName
+        </GridColumn>
+        <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Item ID Label"]" PropertyName="EntityId" SortKeySelector="item => item.EntityId">
+            @context.EntityId
+        </GridColumn>
+        <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Linked Item ID Label"]" PropertyName="SecondaryEntityId" SortKeySelector="item => item.SecondaryEntityId">
+            @context.SecondaryEntityId
+        </GridColumn>
+        <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Action Label"]" PropertyName="ChangeType" SortKeySelector="item => item.ChangeType">
+            @context.ChangeType
+        </GridColumn>
+        <GridColumn TItem="Data.Models.Audit.AuditLog" HeaderText="@localizer["Name Label"]" PropertyName="UserName" SortKeySelector="item => item.UserName">
+            @context.UserName
+        </GridColumn>
+
+    </GridColumns>
+    <GridTemplates>
+        <GridEmptyDataTemplate TItem="Data.Models.Audit.AuditLog">
+            <div class="text-center text-muted">
+                <span class="bi bi-inbox fs-2"></span>
+                <div>
+                    <p>@localizer["No Results Found Label"]</p>
+                </div>
+            </div>
+        </GridEmptyDataTemplate>
+    </GridTemplates>
+</Grid>
+
+<AuditLogModal @ref="AuditLogModalComponent"></AuditLogModal>
+
+@code {
+
+    [Inject] public IAuditLogService _auditService { get; set; } = default!;
+
+    [Parameter]
+    public string[]? SectionNames{ get; set; }
+    [Parameter]
+    public string? EntityId{ get; set; }
+    [Parameter]
+    public string? UserId { get; set; }
+
+    public required AuditLogModal AuditLogModalComponent { get; set; }
+
+    private async Task<GridDataProviderResult<Data.Models.Audit.AuditLog>> AuditLogDataProvider(GridDataProviderRequest<Data.Models.Audit.AuditLog> request)
+    {
+        var result = await _auditService.GetLogsAsync(request.PageNumber, request.PageSize, SectionNames, EntityId, UserId, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Data.Models.Audit.AuditLog> { Data = result.AuditLogs, TotalCount = result.TotalCount });
+    }
+
+
+    private async Task ShowAuditLogDetails(Data.Models.Audit.AuditLog auditLog)
+    {
+        //TODO - Show details in Blazor bootstrap modal
+        await AuditLogModalComponent.ShowAudit(auditLog);
+    }
+
+    private async Task OnRowClick(GridRowEventArgs<Data.Models.Audit.AuditLog> args) => await ShowAuditLogDetails(args.Item);
+
+}

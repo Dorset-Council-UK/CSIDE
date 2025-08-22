@@ -20,11 +20,13 @@ jobs:
         - task: Npm@1
           inputs:
             command: "install"
+            workingDir: "CSIDE.Web"
         - task: Npm@1
           displayName: "Webpack Build (prod)"
           inputs:
             command: "custom"
             customCommand: "run build"
+            workingDir: "CSIDE.Web"
   - template: deploy/iis.yml@templates
     parameters:
       environment: "staging"
@@ -32,5 +34,5 @@ jobs:
       virtualApplication: "cside"
       variableGroups:
         - "cside-staging-properties"
-      projectName: "s" # Since the project is in the root folder, the project outputs to a folder called s
+      projectName: "CSIDE.Web" # Since the project is in the root folder, the project outputs to a folder called s
       dependsOn: build

@@ -363,4 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 #Generated JavaScript
-/wwwroot/js
+**/wwwroot/**/*.js
+**/wwwroot/**/*.js.map

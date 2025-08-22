@@ -1,0 +1,39 @@
+﻿@using CSIDE.Web.Components.Mapping
+@using CSIDE.Data.Models.Shared
+@using CSIDE.Data.Services
+@using NetTopologySuite.Geometries
+
+@if (Geom is not null)
+{
+    <EditMap GeomType="PolygonSelector" Geometry="Geom" OnDrawEndMethod="GetAddresses"></EditMap> 
+}
+
+@if (IsFetchingAddresses)
+{
+    <p class="my-3"><Spinner Size="SpinnerSize.Small" Class="me-1" /> @localizer["Loading Text"]</p>
+}
+
+@if (AddressSearchAddresses is not null && AddressSearchAddresses.Count != 0)
+{
+
+    <div class="my-2">
+        <Button Color="ButtonColor.Primary" @onclick="async () => await AddAllAddressesClicked(true)">@localizer["Add All Addresses And Go Back Label"]</Button>
+        <Button Color="ButtonColor.Primary" @onclick="async () => await AddAllAddressesClicked(false)">@localizer["Add All Addresses And Continue Label"]</Button>
+    </div>
+    <p>@localizer["Add Individual Addresses Label"]</p>
+
+    <div class="list-group mt-2">
+        @foreach (var address in AddressSearchAddresses)
+        {
+            bool exists = ExistingAddresses is not null ? ExistingAddresses.Any(a => a.UPRN == address.UPRN) : false;
+            <button type="button"
+            class="list-group-item list-group-item-action"
+            disabled="@(IsBusy || exists)"
+            @onclick="async() => await SingleAddressClicked(address)">
+                <i class="bi bi-@(exists ? "check-circle" : "plus-circle") @(exists ? "text-success" : "")"></i>
+                @address.Address
+            </button>
+        }
+    </div>
+}
+

@@ -1,0 +1,41 @@
+﻿@page "/landowner-deposits/AddressesFromMap/{Id:int}/{SecondaryId:int}"
+@using CSIDE.Web.Components.Mapping
+@using CSIDE.Web.Components.Shared
+@using CSIDE.Data.Models.LandownerDeposits
+@using CSIDE.Data.Services
+@using CSIDE.Data.Models.Shared
+@using CSIDE.Web.Components.Pages.Account
+
+<AuthorizeView Roles="Administrator, RoW Officer">
+    <NotAuthorized>
+        <AccessDenied></AccessDenied>
+    </NotAuthorized>
+
+    <Authorized>
+        <div>
+            <Breadcrumb Items="NavItems"></Breadcrumb>
+        </div>
+
+        <PageTitle>@localizer["Add Addresses From Map Label"]</PageTitle>
+
+        <h1>@localizer["Add Addresses From Map Label"]</h1>
+        <a href="landowner-deposits/Details/@Id/@SecondaryId" class="my-2"><Icon Name="IconName.ArrowLeftCircle"></Icon> @localizer["Back To Landowner Deposits Label"]</a>
+        <p>@localizer["Add Addresses From Map Help Text"]</p>
+
+        @if (ErrorMessage is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @ErrorMessage
+            </div>
+        }
+
+        @if (LandownerDeposit is not null)
+        {
+            <MapBasedAddressSelector ExistingAddresses="ExistingAddresses"
+                                     Geom="LandownerDeposit.Geom"
+                                     OnMultipleAddressesSelected="HandleMultipleAddressesSelected"
+                                     OnSingleAddressSelected="HandleSingleAddressSelected">
+            </MapBasedAddressSelector>
+        }
+    </Authorized>
+</AuthorizeView>
