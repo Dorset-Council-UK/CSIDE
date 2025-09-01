@@ -1,15 +1,15 @@
 using BlazorBootstrap;
 using CSIDE.Web.Components.DMMO;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.Pages.DMMO.Orders
 {
     public partial class Create(
-        IDbContextFactory<ApplicationDbContext> contextFactory, 
+        IDMMOService dmmoService, 
         NavigationManager navigationManager,
         ILogger<Create> logger) {
         private List<BreadcrumbItem>? NavItems;
@@ -18,8 +18,8 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
 
         private Application? DMMOApplication { get; set; }
         private DMMOOrder? Order { get; set; }
-        private OrderDecisionOfSecState[]? DecisionOfSecStateOptions;
-        private OrderDeterminationProcess[]? DeterminationProcessOptions;
+        private ICollection<OrderDecisionOfSecState>? DecisionOfSecStateOptions;
+        private ICollection<OrderDeterminationProcess>? DeterminationProcessOptions;
         private OrderEditForm? childDMMOOrderEditForm;
         private bool IsBusy { get; set; } = false;
         private string? ErrorMessage { get; set; } = null;  
@@ -33,18 +33,11 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
                 new BreadcrumbItem{ Text = localizer["DMMO Create Order Title", DMMOApplicationId], IsCurrentPage = true },
             ];
             IsBusy = true;
-            using var context = contextFactory.CreateDbContext();
-            DMMOApplication = await context.DMMOApplication.FindAsync(DMMOApplicationId);
+            DMMOApplication = await dmmoService.GetDMMOApplicationById(DMMOApplicationId);
             if(DMMOApplication is not null)
             {
-                DecisionOfSecStateOptions = await context.OrderDecisionsOfSecState
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
-                DeterminationProcessOptions = await context.OrderDeterminationProcesses
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
+                DecisionOfSecStateOptions = await dmmoService.GetOrderDecisionOfSecStateOptions();
+                DeterminationProcessOptions = await dmmoService.GetOrderDeterminationProcessOptions();
                 Order = new DMMOOrder() { ApplicationId = DMMOApplicationId };
             }
             IsBusy = false;
@@ -65,9 +58,7 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
                 {
                     if (Order is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        context.Add(Order);
-                        await context.SaveChangesAsync();
+                        await dmmoService.AddOrderToDMMO(Order);
                         //redirect
                         navigationManager.NavigateTo($"DMMO/Details/{Order.ApplicationId}");
                     }

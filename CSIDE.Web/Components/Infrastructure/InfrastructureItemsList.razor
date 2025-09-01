@@ -1,6 +1,5 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.Infrastructure
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <a href="Infrastructure#search-form">@localizer["Search Again Label"]</a>
@@ -55,7 +54,7 @@
 
 @code {
     [Parameter]
-    public required List<InfrastructureItem> InfrastructureItems { get; set; }
+    public required ICollection<InfrastructureItem> InfrastructureItems { get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 

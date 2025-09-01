@@ -11,9 +11,9 @@ namespace CSIDE.Web.Components.PPO
         [Parameter, EditorRequired]
         public PPOOrder? Order { get; set; }
         [Parameter, EditorRequired]
-        public OrderDecisionOfSecState[]? OrderDecisionsOfSecState { get; set; }
+        public IReadOnlyCollection<OrderDecisionOfSecState>? OrderDecisionsOfSecState { get; set; }
         [Parameter, EditorRequired]
-        public OrderDeterminationProcess[]? OrderDeterminationProcesses { get; set; }
+        public IReadOnlyCollection<OrderDeterminationProcess>? OrderDeterminationProcesses { get; set; }
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]

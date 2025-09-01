@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> _contextFactory
+@using CSIDE.Data.Services
 @inject ILogger<StatementsList> logger
+@inject IRightsOfWayService rightsOfWayService
 
 @if(IsEditable){
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ShowEditStatementModal" Class="my-2">@localizer["Modify Statement Label"]</Button>
@@ -105,12 +106,7 @@ else
 
             try
             {
-
-                using var context = _contextFactory.CreateDbContext();
-
-                context.Add(editableStatement);
-                await context.SaveChangesAsync();
-
+                await rightsOfWayService.AddStatement(editableStatement);
                 await HideEditStatementModal();
                 //refresh component
                 await RefreshComponent();
@@ -139,8 +135,7 @@ else
 
     private async Task RefreshComponent()
     {
-        using var context = _contextFactory.CreateDbContext();
-        statements = await context.Statements.Where(s => s.RouteId == RouteId).ToArrayAsync();
+        statements = await rightsOfWayService.GetStatementsByRouteId(RouteId);
         var currentStatementDetails = statements.OrderByDescending(s => s.Version).First();
         editableStatement = new CSIDE.Data.Models.RightsOfWay.Statement()
             {

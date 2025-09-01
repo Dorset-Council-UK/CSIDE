@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.LandownerDeposits;
 using CSIDE.Web.Components.Mapping;
-using CSIDE.Data;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Services;
 using FluentValidation;
@@ -13,7 +12,7 @@ using NetTopologySuite.Geometries;
 
 namespace CSIDE.Web.Components.Pages.LandownerDeposits
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayHelperService rightsOfWayHelperService)
+    public partial class Edit(ILandownerDepositService landownerDepositService, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayService rightsOfWayHelperService)
     {
         [Parameter]
         public int LandownerDepositId { get; set; }
@@ -21,7 +20,7 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
         public int SecondaryId { get; set; }
 
         private LandownerDeposit? LandownerDeposit { get; set; }
-        private LandownerDepositTypeName[]? LandownerDepositTypeNames { get; set; }
+        private ICollection<LandownerDepositTypeName> LandownerDepositTypeNames { get; set; } = [];
         private List<int> SelectedLandownerDepositTypes { get; set; } = [];
         private LandownerDepositEditForm? childLandownerDepositEditForm;
 
@@ -46,16 +45,8 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                LandownerDepositTypeNames = await context.LandownerDepositTypeNames
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
-                LandownerDeposit = await context.LandownerDeposits
-                    .IgnoreAutoIncludes()
-                    .Include(l => l.LandownerDepositTypes)
-                    .Include(l => l.LandownerDepositParishes)
-                    .FirstOrDefaultAsync(i => i.Id == LandownerDepositId && i.SecondaryId == SecondaryId);
+                LandownerDepositTypeNames = await landownerDepositService.GetLandownerDepositTypeNameOptions();
+                LandownerDeposit = await landownerDepositService.GetLandownerDepositById(LandownerDepositId, SecondaryId);
                 SelectedLandownerDepositTypes = [.. LandownerDeposit!.LandownerDepositTypes.Select(t => t.LandownerDepositTypeNameId)];
                 GeometryIsValid = true;
             }
@@ -80,23 +71,8 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
                 {
                     if (LandownerDeposit is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
+                        await landownerDepositService.UpdateLandownerDeposit(LandownerDeposit, SelectedLandownerDepositTypes);
 
-
-                        //get the existing job to enable the smarter change tracker.
-                        //Without this, all properties are identified as tracked, since
-                        //the DbContext is different from when the entity was queried
-                        var existingDeposit = await context.LandownerDeposits.FindAsync(LandownerDeposit.Id, LandownerDeposit.SecondaryId) ?? throw new Exception($"Landowner Deposit being edited (ID: {LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}) was not found prior to updating");
-
-                        // Store the original version for concurrency checking
-                        uint originalVersion = LandownerDeposit.Version;
-                        // Update values
-                        context.Entry(existingDeposit).CurrentValues.SetValues(LandownerDeposit);
-                        // Restore original version to ensure concurrency check works
-                        context.Entry(existingDeposit).Property(j => j.Version).OriginalValue = originalVersion;
-
-                        await UpdateLandownerDepositTypes(SelectedLandownerDepositTypes, context);
-                        await context.SaveChangesAsync();
                         //redirect
                         NavigateBackToLandownerDepositDetailsPage();
                     }
@@ -118,34 +94,6 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
             }
         }
 
-        private async Task UpdateLandownerDepositTypes(List<int> selectedLandownerDepositTypes, ApplicationDbContext context)
-        {
-            if (LandownerDeposit is null) return;
-            if (selectedLandownerDepositTypes == null)
-            {
-                await context.LandownerDepositTypes
-                    .Where(c => c.LandownerDepositId == LandownerDeposit.Id)
-                    .ExecuteDeleteAsync();
-                return;
-            }
-
-            //delete types not needed anymore
-            await context.LandownerDepositTypes
-                .Where(c => (c.LandownerDepositId == LandownerDepositId && c.LandownerDepositSecondaryId == SecondaryId) && !selectedLandownerDepositTypes
-                .Contains(c.LandownerDepositTypeNameId))
-                .ExecuteDeleteAsync();
-
-            //add new landowner deposit types
-            foreach (int landownerDepositType in selectedLandownerDepositTypes)
-            {
-                if (!context.LandownerDepositTypes.Any(c => (c.LandownerDepositId == LandownerDepositId && c.LandownerDepositSecondaryId == SecondaryId) && c.LandownerDepositTypeNameId == landownerDepositType))
-                {
-                    context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = LandownerDeposit.Id, LandownerDepositSecondaryId = SecondaryId });
-                }
-            }
-            return;
-        }
-
         private void NavigateBackToLandownerDepositDetailsPage()
         {
             navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDepositId}/{SecondaryId}");
@@ -156,7 +104,7 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, rightsOfWayHelperService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayHelperService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Polygon"));
             if (result.IsValid)

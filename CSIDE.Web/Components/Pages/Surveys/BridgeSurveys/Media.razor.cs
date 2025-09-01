@@ -1,15 +1,14 @@
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using CSIDE.Web.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
     public partial class Media(
-        IDbContextFactory<ApplicationDbContext> contextFactory,
+        IInfrastructureService infrastructureService,
         NavigationManager navigationManager,
         ILogger<Media> logger,
         ISettingsService settingsService)
@@ -37,8 +36,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         protected override async Task OnParametersSetAsync()
         {
             //get survey
-            using var context = contextFactory.CreateDbContext();
-            Survey = await context.BridgeSurveys.IgnoreAutoIncludes().Include(x => x.SurveyMedia).ThenInclude(x => x.Media).Where(s => s.Id == SurveyId).FirstOrDefaultAsync();
+            Survey = await infrastructureService.GetBridgeSurveyById(SurveyId);
 
             if (Survey is null)
             {
@@ -56,7 +54,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             if (Survey is not null)
             {
                 //add to recent work store
-                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{Survey.Id}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -70,15 +68,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                //get the existing job to enable the smarter change tracker.
-                //Without this, all properties are identified as tracked, since
-                //the DbContext is different from when the entity was queried
-                var existingSurvey = await context.BridgeSurveys.IgnoreAutoIncludes().Where(s => s.Id == SurveyId).FirstAsync() ?? throw new Exception($"Survey being edited (ID: {SurveyId}) was not found prior to updating");
-
-                context.Entry(existingSurvey).CurrentValues.SetValues(Survey);
-
-                await context.SaveChangesAsync();
+                await infrastructureService.UpdateBridgeSurvey(SurveyId, Survey);
                 navigationManager.NavigateTo($"surveys/bridge/{Survey.Id}/media");
             }
             catch (Exception ex)

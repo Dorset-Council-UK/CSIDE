@@ -1,14 +1,12 @@
 ﻿using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Maintenance
 {
-    public partial class CommentsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<CommentsList> logger, IMaintenanceJobsService maintenanceJobsService)
+    public partial class CommentsList(ILogger<CommentsList> logger, IMaintenanceJobsService maintenanceJobsService)
     {
         [Parameter]
         public Job? Job { get; set; }
@@ -48,8 +46,6 @@ namespace CSIDE.Web.Components.Maintenance
                 {
                     if (NewComment is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-
                         if (AuthenticationStateTask != null)
                         {
                             var authState = await AuthenticationStateTask;
@@ -57,8 +53,8 @@ namespace CSIDE.Web.Components.Maintenance
                             NewComment.AuthorName = authState.GetUserName();
                         }
 
-                        context.MaintenanceComments.Add(NewComment);
-                        await context.SaveChangesAsync();
+                        await maintenanceJobsService.CreateMaintenanceComment(NewComment);
+
                         await RefreshComponent();
                     }
                 }

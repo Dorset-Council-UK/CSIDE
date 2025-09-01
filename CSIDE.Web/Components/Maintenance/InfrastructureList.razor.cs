@@ -1,6 +1,5 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Services;
@@ -10,7 +9,11 @@ using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.Maintenance
 {
-    public partial class InfrastructureList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<InfrastructureList> logger, IMaintenanceJobsService maintenanceJobsService)
+    public partial class InfrastructureList(
+        IInfrastructureService infrastructureService,
+        IMaintenanceJobsService maintenanceJobsService,
+        IJSRuntime JS,
+        ILogger<InfrastructureList> logger)
     {
         [Parameter]
         public ICollection<JobInfrastructure>? JobInfrastructure { get; set; }
@@ -22,7 +25,7 @@ namespace CSIDE.Web.Components.Maintenance
         public bool IsBusy { get; set; }
         private string? ErrorMessage { get; set; }
 
-        private List<InfrastructureWithDistance> NearbyInfra { get; set; } = [];
+        private ICollection<InfrastructureWithDistance> NearbyInfra { get; set; } = [];
         private JobInfrastructure NewJobInfrastructure { get; set; } = default!;
         private Modal AddInfraLinkModal = default!;
         private FluentValidationValidator? JobInfrastructureValidator;
@@ -42,12 +45,9 @@ namespace CSIDE.Web.Components.Maintenance
             {
                 //get nearest 10 infra items within 50m of job
                 var existingIds = JobInfrastructure?.Select(j => j.InfrastructureId);
-                using var context = contextFactory.CreateDbContext();
-                NearbyInfra = await context.Infrastructure
-                    .Where(i => i.Geom.IsWithinDistance(job.Geom, 50))
-                    .OrderBy(i => i.Geom.Distance(job.Geom))
-                    .Select(i => new InfrastructureWithDistance() { Infrastructure = i, Distance = i.Geom.Distance(job.Geom), AlreadyLinked = existingIds == null || (existingIds.Contains(i.Id)) })
-                    .ToListAsync();
+                var nearestInfra = await infrastructureService.GetNearbyInfrastructure(job.Geom!, 50);
+                
+                NearbyInfra = [.. nearestInfra.Select(i => new InfrastructureWithDistance() { Infrastructure = i, Distance = i.Geom!.Distance(job.Geom), AlreadyLinked = existingIds == null || (existingIds.Contains(i.Id)) })];
             }
         }
 
@@ -60,9 +60,7 @@ namespace CSIDE.Web.Components.Maintenance
                 if (await JobInfrastructureValidator!.ValidateAsync())
                 {
                     //submit
-                    using var context = contextFactory.CreateDbContext();
-                    context.Add(NewJobInfrastructure);
-                    await context.SaveChangesAsync();
+                    await maintenanceJobsService.AddInfrastructureToJob(NewJobInfrastructure);
                     await AddInfraLinkModal.HideAsync();
                     await RefreshComponent();
                 }
@@ -86,9 +84,7 @@ namespace CSIDE.Web.Components.Maintenance
             {
                 //submit
                 var InfraJobToAdd = new JobInfrastructure() { InfrastructureId = infra.Infrastructure.Id, JobId = JobId };
-                using var context = contextFactory.CreateDbContext();
-                context.Add(InfraJobToAdd);
-                await context.SaveChangesAsync();
+                await maintenanceJobsService.AddInfrastructureToJob(InfraJobToAdd);
                 infra.AlreadyLinked = true;
                 await RefreshComponent();
 
@@ -107,25 +103,30 @@ namespace CSIDE.Web.Components.Maintenance
         private async Task DeleteInfraLink(int InfrastructureId, int JobId)
         {
             IsBusy = true;
-            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Infra Link Confirmation"].Value);
-            if (ConfirmDelete)
+            try
             {
-                using var context = contextFactory.CreateDbContext();
-                var infraToDelete = await context.MaintenanceJobInfrastructure.FindAsync([JobId, InfrastructureId]);
-                if (infraToDelete is not null)
+                bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Infra Link Confirmation"].Value);
+                if (ConfirmDelete)
                 {
-                    context.Remove(infraToDelete);
-                    await context.SaveChangesAsync();
+                    await maintenanceJobsService.RemoveInfrastructureFromJob(JobId, InfrastructureId);
                     await RefreshComponent();
+
                 }
             }
-            IsBusy = false;
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Delete Error Message"];
+                logger.LogError(ex, "An error occurred deleting a job-infrastructure link");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task RefreshComponent()
         {
-            using var context = contextFactory.CreateDbContext();
-            JobInfrastructure = await context.MaintenanceJobInfrastructure.Where(j => j.JobId == JobId).ToListAsync();
+            JobInfrastructure = await maintenanceJobsService.GetLinkedInfrastructureForJob(JobId);
         }
     }
 }

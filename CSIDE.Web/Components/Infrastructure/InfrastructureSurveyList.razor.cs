@@ -1,16 +1,15 @@
-using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Infrastructure
 {
-    public partial class InfrastructureSurveyList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<InfrastructureMediaList> logger)
+    public partial class InfrastructureSurveyList(IInfrastructureService infrastructureService, ILogger<InfrastructureMediaList> logger)
     {
         [Parameter, EditorRequired]
         public required int InfrastructureItemId { get; set; }
 
-        private List<BridgeSurvey>? Surveys { get; set; } = null;
+        private ICollection<BridgeSurvey>? Surveys { get; set; } = null;
         public bool IsLoading { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
@@ -18,8 +17,7 @@ namespace CSIDE.Web.Components.Infrastructure
             IsLoading = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                Surveys = await context.BridgeSurveys.Where(s => s.InfrastructureItemId == InfrastructureItemId && s.Status == SurveyStatus.Verified).ToListAsync();
+                Surveys = await infrastructureService.GetValidatedBridgeSurveysByInfrastructureItemId(InfrastructureItemId);
             }
             catch(Exception ex)
             {

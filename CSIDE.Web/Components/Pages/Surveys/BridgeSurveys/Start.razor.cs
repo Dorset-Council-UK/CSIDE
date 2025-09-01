@@ -1,12 +1,11 @@
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
-    public partial class Start(IDbContextFactory<ApplicationDbContext> contextFactory,
+    public partial class Start(IInfrastructureService infrastructureService,
                                NavigationManager navigationManager,
                                ILogger<Start> logger,
                                ToastService toastService)
@@ -36,9 +35,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             IsBusy = true;
 
             //fetch infrastructure
-            using var context = contextFactory.CreateDbContext();
-
-            InfrastructureItem = await context.Infrastructure.FindAsync(InfraId);
+            InfrastructureItem = await infrastructureService.GetInfrastructureItemById(InfraId);
 
             //TODO - Make this more flexible
             if (InfrastructureItem is null || !string.Equals(InfrastructureItem.InfrastructureType?.Name, "Bridge", StringComparison.OrdinalIgnoreCase))
@@ -58,13 +55,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 IsBusy = true;
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    var newSurvey = new Data.Models.Surveys.BridgeSurvey
-                    {
-                        InfrastructureItemId = InfrastructureItem.Id,
-                    };
-                    context.BridgeSurveys.Add(newSurvey);
-                    await context.SaveChangesAsync();
+                    var newSurvey = await infrastructureService.CreateBridgeSurveyForInfrastructureItem(InfrastructureItem.Id);
                     navigationManager.NavigateTo($"surveys/bridge/{newSurvey.Id}/confirm-location");
                 }
                 catch(Exception ex)

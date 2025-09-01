@@ -1,25 +1,23 @@
 using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.PPO
 {
-    public partial class Index(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Index(IPPOService ppoService, ISharedDataService sharedDataService, NavigationManager navigationManager)
     {
-
         private List<BreadcrumbItem>? NavItems;
         private PPOSearch? SearchParams;
         private string? PPOIDSearch;
-        private ApplicationCaseStatus[]? CaseStatuses;
-        private ApplicationIntent[]? Intents;
-        private ApplicationPriority[]? Priorities;
-        private ApplicationType[]? ApplicationTypes;
-        private Parish[]? Parishes { get; set; }
+        private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
+        private IReadOnlyCollection<ApplicationIntent>? Intents = [];
+        private IReadOnlyCollection<ApplicationPriority>? Priorities = [];
+        private IReadOnlyCollection<ApplicationType>? ApplicationTypes = [];
+        private IReadOnlyCollection<Parish> Parishes { get; set; } = [];
 
         private string? PPOSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
@@ -34,12 +32,11 @@ namespace CSIDE.Web.Components.Pages.PPO
                 new BreadcrumbItem{ Text = localizer["PPO Abbreviation"], IsCurrentPage = true },
             ];
 
-            using var context = contextFactory.CreateDbContext();
-            Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
-            CaseStatuses = await context.PPOApplicationCaseStatuses.OrderBy(s => s.Name).ToArrayAsync();
-            Intents = await context.PPOApplicationIntents.OrderBy(i => i.Name).ToArrayAsync();
-            Priorities = await context.PPOApplicationPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
-            ApplicationTypes = await context.PPOApplicationTypes.OrderBy(t => t.Name).ToArrayAsync();
+            Parishes = await sharedDataService.GetParishes();
+            CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
+            Intents = await ppoService.GetPPOApplicationIntents();
+            Priorities = await ppoService.GetPPOApplicationPriorities();
+            ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
 
             SearchParams = new();
         }
@@ -54,8 +51,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                 {
                     if (int.TryParse(PPOIDSearch, CultureInfo.InvariantCulture, out int PPOIDSearchInt))
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        var PPOExists = await context.PPOApplication.AnyAsync(d => d.Id == PPOIDSearchInt);
+                        var PPOExists = await ppoService.GetPPOApplicationById(PPOIDSearchInt) is not null;
                         if (PPOExists)
                         {
                             navigationManager.NavigateTo($"PPO/Details/{PPOIDSearchInt}");

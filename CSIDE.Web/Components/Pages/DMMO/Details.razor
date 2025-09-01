@@ -1,5 +1,6 @@
 ﻿@page "/DMMO/Details/{Id:int}"
 @using CSIDE.Data.Models.DMMO
+@using CSIDE.Data.Services
 @using CSIDE.Web.Components.DMMO
 @using CSIDE.Web.Components.Mapping
 @using CSIDE.Web.Components.Layout
@@ -9,7 +10,7 @@
 @using CSIDE.Web.Services
 @using Humanizer
 @using Microsoft.Extensions.Options
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IDMMOService dmmoService
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
@@ -150,7 +151,7 @@ else
                         <ErrorBoundary>
                             <ChildContent>
                                 <DMMOOrdersList 
-                                    Orders="DMMOApplication.Orders.ToArray()"
+                                    Orders="DMMOApplication.Orders"
                                     IsEditable="UserCanEdit" 
                                     DMMOApplicationId="DMMOApplication.Id">
                                 </DMMOOrdersList>
@@ -323,8 +324,8 @@ else
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+
+            DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);
         }
         finally
         {
@@ -355,21 +356,14 @@ else
 
     private async Task AddContact(Contact NewContact)
     {
-
         if (NewContact is not null && DMMOApplication is not null)
         {
-            using var context = contextFactory.CreateDbContext();
-
-            context.Contacts.Add(NewContact);
-            await context.SaveChangesAsync();
-            context.DMMOContact.Add(new DMMOContact { ContactId = NewContact.Id, ApplicationId = DMMOApplication.Id });
-            await context.SaveChangesAsync();
+            await dmmoService.AddContactToDMMO(NewContact, DMMOApplication);
         }
     }
 
     private async Task RefreshContactsList(){
-        using var context = contextFactory.CreateDbContext();
-        DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+        DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);
         StateHasChanged();
     }
 }

@@ -7,7 +7,7 @@
 
     }
 
-    @if (Orders.Length != 0)
+    @if (Orders.Count != 0)
     {
         <div class="row">
             @foreach (DMMOOrder order in Orders.OrderBy(c => c.OrderId))

@@ -11,13 +11,13 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter, EditorRequired]
         public Application? DMMOApplication { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationCaseStatus[]? CaseStatuses { get; set; }
+        public ICollection<ApplicationCaseStatus> CaseStatuses { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationType[]? ApplicationTypes { get; set; }
+        public ICollection<ApplicationType> ApplicationTypes { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationClaimedStatus[]? ClaimedStatuses { get; set; }
+        public ICollection<ApplicationClaimedStatus> ClaimedStatuses { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationDirectionOfSecState[]? DirectionsOfSecState { get; set; }
+        public ICollection<ApplicationDirectionOfSecState> DirectionsOfSecState { get; set; }
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]

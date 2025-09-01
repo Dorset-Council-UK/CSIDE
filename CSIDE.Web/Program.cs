@@ -4,6 +4,7 @@ using CSIDE.Data.Interceptors;
 using CSIDE.Data.Services;
 using CSIDE.Shared.Options;
 using CSIDE.Shared.Services;
+using CSIDE.Web.Authorization;
 using CSIDE.Web.Components;
 using CSIDE.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -35,7 +36,7 @@ builder.Services.AddAutoMapper(typeof(ApplicationDbContext));
 
 builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
-builder.Services.AddScoped<IRightsOfWayHelperService, RightsOfWayHelperService>();
+builder.Services.AddScoped<IRightsOfWayService, RightsOfWayService>();
 builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -53,6 +54,11 @@ builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddSingleton<IMapLinkHelperService, MapLinkHelperService>();
 builder.Services.AddScoped<IMaintenanceJobsService, MaintenanceJobsService>();
+builder.Services.AddScoped<IDMMOService, DMMOService>();
+builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
+builder.Services.AddScoped<ILandownerDepositService, LandownerDepositService>();
+builder.Services.AddScoped<ISharedDataService, SharedDataService>();
+builder.Services.AddScoped<IPPOService, PPOService>();
 
 builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
 builder.Services.AddSingleton<IAuthorizationHandler, SurveyAuthorizationHandler>();

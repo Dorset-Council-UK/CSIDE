@@ -1,17 +1,16 @@
 ﻿using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Infrastructure
 {
-    public partial class InfrastructureItemEditForm(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class InfrastructureItemEditForm(IInfrastructureService infrastructureService)
     {
         [Parameter]
         public InfrastructureItem? InfrastructureItem { get; set; }
         [Parameter]
-        public InfrastructureType[]? InfrastructureTypes { get; set; }
+        public ICollection<InfrastructureType>? InfrastructureTypes { get; set; }
 
         [Parameter]
         public bool IsBusy { get; set; }
@@ -22,8 +21,8 @@ namespace CSIDE.Web.Components.Infrastructure
         [Parameter]
         public EventCallback OnCancel { get; set; }
 
-        private Data.Models.Surveys.Material[]? BridgeMaterials { get; set; }
-        private Data.Models.Surveys.Condition[]? BridgeConditions { get; set; }
+        private ICollection<Data.Models.Surveys.Material> BridgeMaterials { get; set; } = [];
+        private ICollection<Data.Models.Surveys.Condition> BridgeConditions { get; set; } = [];
         private bool ShowBeamTimbersSection { get; set; }
         private bool ShowDeckingBoardsSection { get; set; }
         private bool ShowHandrailTimbersSection { get; set; }
@@ -34,9 +33,8 @@ namespace CSIDE.Web.Components.Infrastructure
 
         protected override async Task OnParametersSetAsync()
         {
-            using var context = contextFactory.CreateDbContext();
-            BridgeMaterials = await context.Materials.ToArrayAsync();
-            BridgeConditions = await context.Conditions.ToArrayAsync();
+            BridgeMaterials = await infrastructureService.GetBridgeSurveyMaterialOptions();
+            BridgeConditions = await infrastructureService.GetBridgeSurveyConditionOptions();
             OnRadioChange();
         }
 
@@ -67,8 +65,8 @@ namespace CSIDE.Web.Components.Infrastructure
         {
             if (InfrastructureItem is not null)
             {
-                InfrastructureItem.InfrastructureType = InfrastructureTypes?.First(i => i.Id == InfrastructureItem.InfrastructureTypeId);
-                if (InfrastructureItem.InfrastructureType is not null && InfrastructureItem.InfrastructureType.IsBridge)
+                var infraType = InfrastructureTypes?.First(i => i.Id == InfrastructureItem.InfrastructureTypeId);
+                if (infraType is not null && infraType.IsBridge)
                 {
                     ShowBridgeDetailsEditingSection = true;
                     if (InfrastructureItem.BridgeDetails is not null && BridgeMaterials is not null)

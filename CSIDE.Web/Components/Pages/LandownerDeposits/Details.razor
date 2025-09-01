@@ -1,5 +1,6 @@
 ﻿@page "/landowner-deposits/Details/{ItemId:int}/{SecondaryId:int}"
 @using CSIDE.Data.Models.LandownerDeposits
+@using CSIDE.Data.Services
 @using CSIDE.Web.Components.LandownerDeposits
 @using CSIDE.Web.Components.Mapping
 @using CSIDE.Web.Components.Layout
@@ -9,7 +10,7 @@
 @using CSIDE.Web.Services
 @using Humanizer
 @using Microsoft.Extensions.Options
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject ILandownerDepositService landownerDepositService
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
@@ -313,7 +314,7 @@ else
     [Parameter]
     public int SecondaryId { get; set; }
     private LandownerDeposit? LandownerDeposit { get; set; }
-    private List<LandownerDeposit>? LinkedDeposits{ get; set; }
+    private ICollection<LandownerDeposit>? LinkedDeposits{ get; set; }
     private string CompositeKey { get; set; } = "";
     private bool IsBusy { get; set; }
 
@@ -343,11 +344,10 @@ else
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            LandownerDeposit = await context.LandownerDeposits.FindAsync(ItemId, SecondaryId);
+            LandownerDeposit = await landownerDepositService.GetLandownerDepositById(ItemId, SecondaryId);
             if (LandownerDeposit != null)
-        {
-                LinkedDeposits = await context.LandownerDeposits.Where(l => l.Id == LandownerDeposit.Id && l.SecondaryId != LandownerDeposit.SecondaryId).ToListAsync();
+            {
+                LinkedDeposits = await landownerDepositService.GetLinkedLandownerDepositsByPrimaryId(ItemId, SecondaryId);
             }
         }
         finally
@@ -382,19 +382,13 @@ else
 
         if (NewContact is not null && LandownerDeposit is not null)
         {
-            using var context = contextFactory.CreateDbContext();
-
-            context.Contacts.Add(NewContact);
-            await context.SaveChangesAsync();
-            context.LandownerDepositContacts.Add(new LandownerDepositContact { ContactId = NewContact.Id, LandownerDepositId = LandownerDeposit.Id, LandownerDepositSecondaryId = LandownerDeposit.SecondaryId });
-            await context.SaveChangesAsync();
+            await landownerDepositService.AddContactToLandownerDeposit(NewContact, LandownerDeposit);
         }
     }
 
     private async Task RefreshContactsList()
     {
-        using var context = contextFactory.CreateDbContext();
-        LandownerDeposit = await context.LandownerDeposits.FindAsync(ItemId, SecondaryId);
+        LandownerDeposit = await landownerDepositService.GetLandownerDepositById(ItemId, SecondaryId);
         StateHasChanged();
     }
 }

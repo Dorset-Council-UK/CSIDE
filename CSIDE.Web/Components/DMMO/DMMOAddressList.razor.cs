@@ -1,17 +1,15 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using CSIDE.Data.Validators.DMMO;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.DMMO;
 
-public partial class DMMOAddressList(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService addressSearchService, IJSRuntime JS, ILogger<DMMOAddressList> logger)
+public partial class DMMOAddressList(IPlacesSearchService addressSearchService, IDMMOService dmmoService, IJSRuntime JS, ILogger<DMMOAddressList> logger)
 {
     [Parameter]
     public required ICollection<DMMOAddress>? Addresses { get; set; }
@@ -41,14 +39,9 @@ public partial class DMMOAddressList(IDbContextFactory<ApplicationDbContext> con
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete DMMO Address Confirmation"].Value);
         if (ConfirmDelete)
         {
-            using var context = contextFactory.CreateDbContext();
-            var DMMOAddressToDelete = await context.DMMOAddresses.FindAsync([ApplicationId, UPRN]);
-            if (DMMOAddressToDelete is not null)
-            {
-                context.Remove(DMMOAddressToDelete);
-                await context.SaveChangesAsync();
-                await RefreshComponent();
-            }
+            await dmmoService.DeleteDMMOAddress(ApplicationId, UPRN);
+            await RefreshComponent();
+            
         }
         IsBusy = false;
     }
@@ -94,7 +87,7 @@ public partial class DMMOAddressList(IDbContextFactory<ApplicationDbContext> con
             //submit
             var DMMOAddressToAdd = new DMMOAddress() { ApplicationId = ApplicationId, UPRN = address.UPRN, Address = address.Address };
             //validate with fluent validation 
-            var validator = new DMMOAddressValidator(contextFactory, localizer);
+            var validator = new DMMOAddressValidator(localizer, dmmoService);
             var validationResult = await validator.ValidateAsync(DMMOAddressToAdd);
 
             if (!validationResult.IsValid)
@@ -102,9 +95,8 @@ public partial class DMMOAddressList(IDbContextFactory<ApplicationDbContext> con
                 ErrorMessage = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
                 return;
             }
-            using var context = contextFactory.CreateDbContext();
-            context.Add(DMMOAddressToAdd);
-            await context.SaveChangesAsync();
+
+            await dmmoService.AddDMMOAddress(DMMOAddressToAdd);
             await RefreshComponent();
         }
         catch (Exception ex)
@@ -127,9 +119,7 @@ public partial class DMMOAddressList(IDbContextFactory<ApplicationDbContext> con
             if (await DMMOAddressValidator!.ValidateAsync())
             {
                 //submit
-                using var context = contextFactory.CreateDbContext();
-                context.Add(NewDMMOAddress);
-                await context.SaveChangesAsync();
+                await dmmoService.AddDMMOAddress(NewDMMOAddress);
                 await AddAddressModal.HideAsync();
                 await RefreshComponent();
                 ManualAddressFormShown = false; //always hide it again once used to discourage use
@@ -148,8 +138,8 @@ public partial class DMMOAddressList(IDbContextFactory<ApplicationDbContext> con
 
     private async Task RefreshComponent()
     {
-        using var context = contextFactory.CreateDbContext();
-        Addresses = await context.DMMOAddresses.Where(a => a.ApplicationId == ApplicationId).ToListAsync();
+        
+        Addresses = await dmmoService.GetDMMOAddressesByApplicationId(ApplicationId); 
         ErrorMessage = null;
     }
 }

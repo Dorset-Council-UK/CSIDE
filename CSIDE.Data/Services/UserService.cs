@@ -1,6 +1,6 @@
 ﻿using Azure.Identity;
-using CSIDE.Data;
 using CSIDE.Data.Models.Authorization;
+using CSIDE.Data.Models.Maintenance;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,16 +11,16 @@ using Microsoft.Graph.Beta;
 
 namespace CSIDE.Data.Services
 {
-    public class UserService(IDbContextFactory<ApplicationDbContext> _contextFactory,
-                             IMemoryCache _memoryCache,
-                             IOptions<CSIDEOptions> _csideOptions,
-                             ILogger<UserService> _logger) : IUserService
+    public class UserService(IDbContextFactory<ApplicationDbContext> contextFactory,
+                             IMemoryCache memoryCache,
+                             IOptions<CSIDEOptions> csideOptions,
+                             ILogger<UserService> logger) : IUserService
     {
 
         public async Task<List<Microsoft.Graph.Beta.Models.User>> GetUsers()
         {
             string cachekey = "AllGraphUsers";
-            if (_memoryCache.TryGetValue(cachekey, out List<Microsoft.Graph.Beta.Models.User>? cachedUsers))
+            if (memoryCache.TryGetValue(cachekey, out List<Microsoft.Graph.Beta.Models.User>? cachedUsers))
             {
                 if (cachedUsers != null)
                 {
@@ -56,7 +56,7 @@ namespace CSIDE.Data.Services
             }
             if (allUsers.Count != 0)
             {
-                _memoryCache.Set(cachekey, allUsers, System.TimeSpan.FromMinutes(5));
+                memoryCache.Set(cachekey, allUsers, System.TimeSpan.FromMinutes(5));
             }
             return allUsers;
         }
@@ -100,7 +100,7 @@ namespace CSIDE.Data.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Error retrieving user ID {userId} as part of a collection",request.Value);
+                    logger.LogWarning(ex, "Error retrieving user ID {userId} as part of a collection",request.Value);
                 }
             }
 
@@ -109,7 +109,7 @@ namespace CSIDE.Data.Services
 
         private GraphServiceClient? GetGraphClient()
         {
-            AzureAdOptions AzureAdOptions = _csideOptions.Value.AzureAd;
+            AzureAdOptions AzureAdOptions = csideOptions.Value.AzureAd;
             if (!string.IsNullOrEmpty(AzureAdOptions.ClientId))
             {
                 var scopes = new[] { "https://graph.microsoft.com/.default" };
@@ -135,25 +135,25 @@ namespace CSIDE.Data.Services
 
         public async Task<List<string>> GetActiveUserIds()
         {
-            using var context = _contextFactory.CreateDbContext();
+            using var context = contextFactory.CreateDbContext();
             return await context.ApplicationUserRoles.Select(u => u.UserId).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<ApplicationRole>> GetApplicationRoles()
         {
-            using var context = _contextFactory.CreateDbContext();
+            using var context = contextFactory.CreateDbContext();
             return await context.ApplicationRoles.AsNoTracking().ToListAsync();
         }
 
         public async Task<List<ApplicationUserRole>> GetApplicationUserRoles(string userId)
         {
-            using var context = _contextFactory.CreateDbContext();
+            using var context = contextFactory.CreateDbContext();
             return await context.ApplicationUserRoles.Where(r => r.UserId == userId).AsNoTracking().ToListAsync();
         }
 
         public async Task<IList<Microsoft.Graph.Beta.Models.User>> GetUsersInRole(string roleName)
         {
-            using var context = _contextFactory.CreateDbContext();
+            using var context = contextFactory.CreateDbContext();
             var usersInRole = await context.ApplicationUserRoles
                 .Where(r => r.Role!.RoleName == roleName)
                 .Select(r => r.UserId)
@@ -162,6 +162,99 @@ namespace CSIDE.Data.Services
             var users = await GetUsers([.. usersInRole]);
 
             return users;
+        }
+
+        public async Task<IReadOnlyCollection<ApplicationUserRole>> GetUserRoles(string userId, bool avoidCache = false, CancellationToken ct = default)
+        {
+            using ApplicationDbContext? context = contextFactory.CreateDbContext();
+            string cacheKey = $"UserRole/{userId}";
+            if (!avoidCache)
+            {
+                if (memoryCache.TryGetValue(cacheKey, out List<ApplicationUserRole>? cacheValue))
+                {
+                    if (cacheValue is not null)
+                    {
+                        return cacheValue;
+                    }
+                }
+            }
+
+            IReadOnlyCollection<ApplicationUserRole> roles;
+            roles = await context.ApplicationUserRoles
+                .Where(u => u.UserId == userId)
+                .Include(a => a.Role)
+                .AsNoTrackingWithIdentityResolution()
+                .ToArrayAsync(ct);
+
+            memoryCache.Set(cacheKey, roles, new MemoryCacheEntryOptions
+            {
+                Priority = CacheItemPriority.Low,
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2),
+            });
+            return roles;
+        }
+
+        public async Task<IReadOnlyCollection<TeamUser>> GetUserTeams(string userId, CancellationToken ct = default)
+        {
+            using ApplicationDbContext? context = contextFactory.CreateDbContext();
+
+            string teamCacheKey = $"UserTeam/{userId}";
+            if (memoryCache.TryGetValue(teamCacheKey, out List<TeamUser>? cacheValue))
+            {
+                if (cacheValue is not null)
+                {
+                    return cacheValue;
+                }
+            }
+
+            var teams = await context.MaintenanceTeamUsers
+                .Where(u => u.UserId == userId)
+                .Include(t => t.Team)
+                .AsNoTrackingWithIdentityResolution()
+                .ToArrayAsync(cancellationToken: ct);
+
+            memoryCache.Set(teamCacheKey, teams, new MemoryCacheEntryOptions
+            {
+                Priority = CacheItemPriority.Low,
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2),
+            });
+
+            return teams;
+        }
+
+        public async Task<bool> UpdateUserRoles(string userId, ICollection<int> SelectedUserRoleIds, CancellationToken ct = default)
+        {
+            await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
+
+            var existingUserRoles = await GetApplicationUserRoles(userId);
+
+            // Determine the problem types to remove
+            var userRolesToRemove = existingUserRoles
+                .Where(r => !SelectedUserRoleIds.Contains(r.ApplicationRoleId))
+                .ToList();
+
+            // Remove the entities
+            context.ApplicationUserRoles.RemoveRange(userRolesToRemove);
+
+            // Determine the roles to add
+            var userRolesToAdd = SelectedUserRoleIds
+                .Where(selectedRoleId => !existingUserRoles.Exists(c => c.ApplicationRoleId == selectedRoleId))
+                .Select(selectedRoleId => new ApplicationUserRole { ApplicationRoleId = selectedRoleId, UserId = userId })
+                .ToList();
+
+            // Add the new problem types
+            context.ApplicationUserRoles.AddRange(userRolesToAdd);
+
+            // Mark entities as unchanged if they haven't actually changed
+            foreach (var existingUserRole in existingUserRoles)
+            {
+                if (SelectedUserRoleIds.Contains(existingUserRole.ApplicationRoleId))
+                {
+                    context.Entry(existingUserRole).State = EntityState.Unchanged;
+                }
+            }
+            await context.SaveChangesAsync(ct).ConfigureAwait(false);
+            return true;
         }
     }
 }

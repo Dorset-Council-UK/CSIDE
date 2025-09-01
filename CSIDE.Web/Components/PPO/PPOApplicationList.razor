@@ -2,7 +2,6 @@
 @using CSIDE.Data.Models.PPO
 @using NodaTime
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <a href="PPO#search-form">@localizer["Search Again Label"]</a>
@@ -67,7 +66,7 @@ Responsive="true">
 
 @code {
     [Parameter]
-    public required List<Application> PPOApplications { get; set; }
+    public required IReadOnlyCollection<Application> PPOApplications { get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 

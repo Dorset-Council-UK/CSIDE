@@ -1,13 +1,12 @@
 ﻿using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.Maintenance
 {
-    public partial class SingleComment(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<SingleComment> logger)
+    public partial class SingleComment(IMaintenanceJobsService maintenanceJobsService, IJSRuntime JS, ILogger<SingleComment> logger)
     {
         [Parameter]
         public required Comment Comment { get; set; }
@@ -30,17 +29,24 @@ namespace CSIDE.Web.Components.Maintenance
 
         private async Task DeleteComment(int CommentId)
         {
-            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Comment Confirmation"].Value);
-            if (ConfirmDelete)
+            IsBusy = true;
+            try
             {
-                using var context = contextFactory.CreateDbContext();
-                var commentToDelete = await context.MaintenanceComments.FindAsync([CommentId]);
-                if (commentToDelete is not null)
+                bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Comment Confirmation"].Value);
+                if (ConfirmDelete)
                 {
-                    context.Remove(commentToDelete);
-                    await context.SaveChangesAsync();
+                    await maintenanceJobsService.DeleteMaintenanceComment(CommentId);
                     await RefreshComponent();
                 }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Delete Error Message"];
+                logger.LogError(ex, "An error occurred deleting a comment");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
@@ -59,13 +65,7 @@ namespace CSIDE.Web.Components.Maintenance
                 {
                     if (comment is not null)
                     {
-                        
-                        using var context = contextFactory.CreateDbContext();
-                        var existingComment = await context.MaintenanceComments.FindAsync(Comment.Id) ?? throw new Exception($"Maintenance Comment being edited (ID: {Comment.Id}) was not found prior to updating");
-
-                        context.Entry(existingComment).CurrentValues.SetValues(Comment);
-
-                        await context.SaveChangesAsync();
+                        await maintenanceJobsService.UpdateMaintenanceComment(comment);
                         //refresh component by simply switching off editing mode. We don't need to refetch the data, its already there!
                         IsEditing = false;
                     }

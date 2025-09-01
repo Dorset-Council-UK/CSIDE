@@ -2,7 +2,6 @@
 @using CSIDE.Data.Models.LandownerDeposits
 @using NodaTime
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <a href="landowner-deposits#search-form">@localizer["Search Again Label"]</a>
@@ -70,7 +69,7 @@
 
 @code {
     [Parameter]
-    public required List<LandownerDeposit> LandownerDeposits { get; set; }
+    public required ICollection<LandownerDeposit> LandownerDeposits { get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 

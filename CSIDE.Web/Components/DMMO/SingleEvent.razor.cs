@@ -1,14 +1,13 @@
 ﻿using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using NodaTime;
 
 namespace CSIDE.Web.Components.DMMO
 {
-    public partial class SingleEvent(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<SingleEvent> logger)
+    public partial class SingleEvent(IDMMOService dmmoService, IJSRuntime JS, ILogger<SingleEvent> logger)
     {
         [Parameter]
         public required DMMOEvent Event { get; set; }
@@ -34,14 +33,8 @@ namespace CSIDE.Web.Components.DMMO
             bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Event Confirmation"].Value);
             if (ConfirmDelete)
             {
-                using var context = contextFactory.CreateDbContext();
-                var eventToDelete = await context.DMMOEvents.FindAsync([EventId]);
-                if (eventToDelete is not null)
-                {
-                    context.Remove(eventToDelete);
-                    await context.SaveChangesAsync();
-                    await RefreshComponent();
-                }
+                await dmmoService.DeleteDMMOEvent(EventId);
+                await RefreshComponent();
             }
         }
 
@@ -60,13 +53,7 @@ namespace CSIDE.Web.Components.DMMO
                 {
                     if (dmmoEvent is not null)
                     {
-                        
-                        using var context = contextFactory.CreateDbContext();
-                        var existingComment = await context.DMMOEvents.FindAsync(Event.Id) ?? throw new Exception($"DMMO Event being edited (ID: {Event.Id}) was not found prior to updating");
-
-                        context.Entry(existingComment).CurrentValues.SetValues(Event);
-
-                        await context.SaveChangesAsync();
+                        await dmmoService.UpdateDMMOEvent(Event.Id, dmmoEvent);
                         //refresh component by simply switching off editing mode. We don't need to refetch the data, its already there!
                         IsEditing = false;
                     }

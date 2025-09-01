@@ -1,10 +1,11 @@
 ﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Services
 @using CSIDE.Shared.Options
 @using NodaTime
 @using Humanizer
 @using System.Globalization
 
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IMaintenanceJobsService maintenanceJobsService
 @inject ILogger<RecentMaintenanceJobsCard> logger
 
 <Card>
@@ -52,11 +53,11 @@
 </Card>
 
 @code {
-    public ICollection<Job>? Jobs { get; set; }
+    public IReadOnlyCollection<Job> Jobs { get; set; } = [];
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
     private string? UserID { get; set; }
-    private TeamUser? MaintenanceTeam { get; set; }
+    private Team MaintenanceTeam { get; set; }
     private bool IsBusy { get; set; }
     private string? ErrorMessage { get; set; } = null;
 
@@ -67,7 +68,6 @@
         StateHasChanged();
         try
         {
-            using var context = contextFactory.CreateDbContext();
 
             if (AuthenticationStateTask != null)
             {
@@ -77,21 +77,12 @@
 
             if (UserID != null)
             {
-                MaintenanceTeam = await context.MaintenanceTeamUsers
-                    .AsNoTracking()
-                    .Where(t => t.UserId == UserID)
-                    .FirstOrDefaultAsync();
+                MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
             }
 
             if (MaintenanceTeam is not null)
             {
-                Jobs = await context.MaintenanceJobs
-                    .AsNoTracking()
-                    .Where(job => job.MaintenanceTeamId == MaintenanceTeam.TeamId)
-                    .Where(job => job.JobStatus!.IsComplete == false)
-                    .OrderByDescending(job => job.LogDate)
-                    .Take(5)
-                    .ToListAsync();
+                Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForTeam(MaintenanceTeam.Id, 5);
             }
             else
             {

@@ -1,13 +1,12 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.Shared
 {
-    public partial class ContactCard(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<ContactCard> logger)
+    public partial class ContactCard(ISharedDataService sharedDataService, IJSRuntime JS, ILogger<ContactCard> logger)
     {
         [Parameter]
         public required Contact Contact { get; set; }
@@ -20,14 +19,14 @@ namespace CSIDE.Web.Components.Shared
 
         private string? ErrorMessage { get; set; }
         private Modal EditContactModal = default!;
-        private ContactType[]? ContactTypes { get; set; }
-
+        private IReadOnlyCollection<ContactType> ContactTypes { get; set; } = [];
+        private Contact? WorkingContact { get; set; }
+        private bool ContactHasBeenEdited { get; set; } = false;
         private ContactEditForm? EditContactForm;
 
         protected override async Task OnParametersSetAsync()
         {
-            using var context = contextFactory.CreateDbContext();
-            ContactTypes = await context.ContactTypes.OrderBy(c => c.Id).ToArrayAsync();
+            ContactTypes = await sharedDataService.GetContactTypeOptions();
         }
 
         private async Task SubmitFormAsync()
@@ -43,24 +42,22 @@ namespace CSIDE.Web.Components.Shared
 
                 try
                 {
-                    if (Contact is not null)
+                    if (WorkingContact is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        //clear the 'ContactType' navigation property, otherwise ef core uses that which hasn't changed
-                        Contact.ContactType = null;
+                        // Update the service with working copy
+                        await sharedDataService.UpdateContact(WorkingContact);
 
-                        //get the existing job to enable the smarter change tracker.
-                        //Without this, all properties are identified as tracked, since
-                        //the DbContext is different from when the entity was queried
-                        var existingContact = await context.Contacts.FindAsync(Contact.Id) ?? throw new Exception($"Contact being edited (ID: {Contact.Id}) was not found prior to updating");
+                        // Only update the original Contact after successful save
+                        Contact.Name = WorkingContact.Name;
+                        Contact.Email = WorkingContact.Email;
+                        Contact.PrimaryContactNo = WorkingContact.PrimaryContactNo;
+                        Contact.SecondaryContactNo = WorkingContact.SecondaryContactNo;
+                        Contact.OrganisationName = WorkingContact.OrganisationName;
+                        Contact.ContactTypeId = WorkingContact.ContactTypeId;
+                        Contact.ContactType = WorkingContact.ContactType;
 
-                        context.Entry(existingContact).CurrentValues.SetValues(Contact);
-
-                        await context.SaveChangesAsync();
-
+                        ContactHasBeenEdited = true;
                         await HideEditContactModal();
-                        //refresh component
-                        await RefreshComponent();
                     }
                 }
                 catch (Exception ex)
@@ -77,29 +74,37 @@ namespace CSIDE.Web.Components.Shared
 
         private async Task ShowEditContactModal()
         {
+            // Create working copy for editing
+            WorkingContact = CloneContact(Contact);
             await EditContactModal.ShowAsync();
         }
         private async Task HideEditContactModal()
         {
+            //reset changes
             await EditContactModal.HideAsync();
         }
 
         private async Task DeleteContact(int ContactId)
         {
             IsBusy = true;
-            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Contact Confirmation"].Value);
-            if (ConfirmDelete)
+            try
             {
-                using var context = contextFactory.CreateDbContext();
-                var contactToDelete = await context.Contacts.FindAsync(ContactId);
-                if (contactToDelete is not null)
+                bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Contact Confirmation"].Value);
+                if (ConfirmDelete)
                 {
-                    context.Remove(contactToDelete);
-                    await context.SaveChangesAsync();
+                    await sharedDataService.DeleteContact(ContactId);
                     await RefreshComponent();
                 }
             }
-            IsBusy = false;
+            catch(Exception ex)
+            {
+                logger.LogError(ex, "An error occurred deleting a contact");
+                ErrorMessage = localizer["Delete Error Message"];
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task RefreshComponent()
@@ -108,6 +113,30 @@ namespace CSIDE.Web.Components.Shared
             {
                 await OnRefresh.InvokeAsync();
             }
+        }
+
+        private async Task OnModalHidingAsync()
+        {
+            // No need to reset anything - original Contact was never modified
+            WorkingContact = null;
+        }
+
+        private Contact CloneContact(Contact original)
+        {
+            return new Contact
+            {
+                Id = original.Id,
+                Name = original.Name,
+                Email = original.Email,
+                PrimaryContactNo = original.PrimaryContactNo,
+                SecondaryContactNo = original.SecondaryContactNo,
+                OrganisationName = original.OrganisationName,
+                ContactTypeId = original.ContactTypeId,
+                ContactType = original.ContactType,
+                JobContact = original.JobContact,
+                DMMOContact = original.DMMOContact,
+                LandownerDepositContact = original.LandownerDepositContact
+            };
         }
     }
 }

@@ -1,17 +1,15 @@
 using BlazorBootstrap;
 using CSIDE.Web.Components.DMMO;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Services;
 using CSIDE.Data.Validators.DMMO;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
 namespace CSIDE.Web.Components.Pages.DMMO;
 
-public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext> contextFactory,
-                                         IRightsOfWayHelperService rightsOfWayHelperService,
+public partial class LinkedRoutesFromMap(IDMMOService dmmoService,
+                                         IRightsOfWayService rightsOfWayHelperService,
                                          ILogger<LinkedRoutesFromMap> logger)
 {
     private List<BreadcrumbItem>? NavItems;
@@ -40,8 +38,7 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+            DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);
             if (DMMOApplication is null)
             {
                 throw new InvalidOperationException("DMMO Application not found");
@@ -74,7 +71,7 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
             {
                 SRID = 27700,
             };
-            var route = await rightsOfWayHelperService.GetNearestRouteAsync(selectionPoint, 10);
+            var route = await rightsOfWayHelperService.GetNearestRoute(selectionPoint, 10);
 
             if (route is not null)
             {
@@ -113,7 +110,7 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
             //submit
             var DMMOLinkedRouteToAdd = new DMMOLinkedRoute() { ApplicationId = Id, RouteId = RouteId };
             // validate with fluent validation 
-            var validator = new DMMOLinkedRouteValidator(contextFactory, localizer, rightsOfWayHelperService);
+            var validator = new DMMOLinkedRouteValidator(dmmoService, localizer, rightsOfWayHelperService);
             var validationResult = await validator.ValidateAsync(DMMOLinkedRouteToAdd);
 
             if (!validationResult.IsValid)
@@ -121,9 +118,7 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
                 ErrorMessage = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
                 return;
             }
-            using var context = contextFactory.CreateDbContext();
-            context.Add(DMMOLinkedRouteToAdd);
-            await context.SaveChangesAsync();
+            await dmmoService.AddLinkedRouteToDMMO(DMMOLinkedRouteToAdd);
             await RefreshComponent();
         }
         catch (Exception ex)
@@ -138,14 +133,8 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
         ErrorMessage = null;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            var DMMOLinkedRouteToDelete = await context.DMMOLinkedRoutes.FindAsync([ApplicationId, RouteId]);
-            if (DMMOLinkedRouteToDelete is not null)
-            {
-                context.Remove(DMMOLinkedRouteToDelete);
-                await context.SaveChangesAsync();
-                await RefreshComponent();
-            }
+            await dmmoService.DeleteDMMOLinkedRoute(ApplicationId, RouteId);
+            await RefreshComponent();
         }
         catch(Exception ex)
         {
@@ -161,8 +150,7 @@ public partial class LinkedRoutesFromMap(IDbContextFactory<ApplicationDbContext>
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+            DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);
             if (DMMOApplication is null)
             {
                 throw new InvalidOperationException("DMMO Application not found");

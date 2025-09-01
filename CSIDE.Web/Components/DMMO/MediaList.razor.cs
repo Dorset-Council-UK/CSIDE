@@ -1,27 +1,25 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.DMMO
 {
-    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<MediaList> logger, ToastService toastService) : IAsyncDisposable
+    public partial class MediaList(IDMMOService dmmoService, IJSRuntime JS, ILogger<MediaList> logger, ToastService toastService) : IAsyncDisposable
     {
         [Parameter]
         public Application? DMMOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
-        private DMMOMediaType[]? MediaTypes;
+        private ICollection<DMMOMediaType>? MediaTypes;
         private IJSObjectReference? _jsModule;
 
         protected override async Task OnInitializedAsync()
         {
-            using var context = contextFactory.CreateDbContext();
-            MediaTypes = [.. context.DMMOMediaType.AsNoTracking().OrderBy(p => p.Id)];
+            MediaTypes = await dmmoService.GetDMMOMediaTypes();
 
             await base.OnInitializedAsync();
         }
@@ -41,19 +39,7 @@ namespace CSIDE.Web.Components.DMMO
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(DMMOApplication);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        DMMOApplication.DMMOMedia.Add(new DMMOMedia
-                        {
-                            DMMOId = DMMOApplication.Id,
-                            Media = media,
-                            MediaTypeId = mediaType.Id,
-                            MediaType = mediaType,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await dmmoService.AddMediaToDMMO(DMMOApplication, mediaType, UploadedMedia);
                 }
                 catch (Exception ex)
                 {
@@ -69,8 +55,7 @@ namespace CSIDE.Web.Components.DMMO
         { 
             if (DMMOApplication is not null)
             {
-                using var context = contextFactory.CreateDbContext();
-                DMMOApplication = await context.DMMOApplication.FindAsync([DMMOApplication.Id]);
+                DMMOApplication = await dmmoService.GetDMMOApplicationById(DMMOApplication.Id);
                 StateHasChanged();
             }
         }

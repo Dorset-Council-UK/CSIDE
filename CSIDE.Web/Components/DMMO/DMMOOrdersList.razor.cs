@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Microsoft.EntityFrameworkCore;
-using CSIDE.Data;
 using BlazorBootstrap;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.DMMO
 {
-    public partial class DMMOOrdersList(IJSRuntime JS, IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class DMMOOrdersList(IJSRuntime JS, IDMMOService dmmoService)
     {
         [Parameter]
-        public DMMOOrder[]? Orders { get; set; }
+        public ICollection<DMMOOrder>? Orders { get; set; }
         [Parameter]
         public int DMMOApplicationId { get; set; }
         [Parameter]
@@ -27,14 +26,9 @@ namespace CSIDE.Web.Components.DMMO
             bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Order Confirmation"].Value);
             if (ConfirmDelete)
             {
-                using var context = contextFactory.CreateDbContext();
-                var orderToDelete = await context.DMMOOrders.FindAsync(OrderId, ApplicationId);
-                if (orderToDelete is not null)
-                {
-                    context.Remove(orderToDelete);
-                    await context.SaveChangesAsync();
-                    await RefreshComponent();
-                }
+                await dmmoService.DeleteDMMOOrder(ApplicationId, OrderId);
+                await RefreshComponent();
+                
             }
             IsBusy = false;
         }
@@ -47,8 +41,7 @@ namespace CSIDE.Web.Components.DMMO
 
         private async Task RefreshComponent()
         {
-            using var context = contextFactory.CreateDbContext();
-            Orders = await context.DMMOOrders.Where(o => o.ApplicationId == DMMOApplicationId).ToArrayAsync();
+            Orders = await dmmoService.GetDMMOOrdersByApplicationId(DMMOApplicationId);
             StateHasChanged();
         }
     }

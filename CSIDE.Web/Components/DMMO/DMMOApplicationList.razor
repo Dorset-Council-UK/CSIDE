@@ -2,7 +2,6 @@
 @using CSIDE.Data.Models.DMMO
 @using NodaTime
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <a href="DMMO#search-form">@localizer["Search Again Label"]</a>
@@ -67,7 +66,7 @@ Responsive="true">
 
 @code {
     [Parameter]
-    public required List<Application> DMMOApplications { get; set; }
+    public required ICollection<Application> DMMOApplications { get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 

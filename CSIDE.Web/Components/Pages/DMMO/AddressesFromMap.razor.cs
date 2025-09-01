@@ -1,14 +1,13 @@
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using CSIDE.Data.Validators.DMMO;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Pages.DMMO;
 
-public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> contextFactory,
+public partial class AddressesFromMap(IDMMOService dmmoService,
                                       ILogger<AddressesFromMap> logger,
                                       NavigationManager navigationManager)
 {
@@ -18,7 +17,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
     public int Id { get; set; }
 
     private Application? DMMOApplication { get; set; }
-    private List<SimpleAddress>? ExistingAddresses { get; set; }
+    private IReadOnlyCollection<SimpleAddress>? ExistingAddresses { get; set; }
 
     private string? ErrorMessage { get; set; }
     private bool IsBusy { get; set; }
@@ -35,8 +34,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+            DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);
             if (DMMOApplication is null)
             {
                 throw new InvalidOperationException("DMMO Application not found");
@@ -63,7 +61,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
             //submit
             var DMMOAddressToAdd = new DMMOAddress() { ApplicationId = Id, UPRN = address.UPRN, Address = address.Address };
             //validate with fluent validation 
-            var validator = new DMMOAddressValidator(contextFactory, localizer);
+            var validator = new DMMOAddressValidator(localizer, dmmoService);
             var validationResult = await validator.ValidateAsync(DMMOAddressToAdd);
 
             if (!validationResult.IsValid)
@@ -71,9 +69,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
                 ErrorMessage = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
                 return;
             }
-            using var context = contextFactory.CreateDbContext();
-            context.Add(DMMOAddressToAdd);
-            await context.SaveChangesAsync();
+            await dmmoService.AddDMMOAddress(DMMOAddressToAdd);
             await RefreshComponent();
         }
         catch (Exception ex)
@@ -94,17 +90,13 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         ErrorMessage = null;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-
-            //fetch existing addresses again just in case some have been added/removed between them being shown and being committed here
-            //for single addresses we just use FluentValidation, but for multiple addresses its probably quicker to just check again
-            ExistingAddresses = [.. context.DMMOAddresses.Where(d => d.ApplicationId == Id).Select(x => new SimpleAddress(x.UPRN, x.Address))];
-            foreach (var address in addresses.Where(a => ExistingAddresses is not null && !ExistingAddresses.Exists(e => e.UPRN == a.UPRN)))
+            var FullAddresses = await dmmoService.GetDMMOAddressesByApplicationId(Id);
+            ExistingAddresses = FullAddresses.Select(x => new SimpleAddress(x.UPRN, x.Address)).ToList();
+            foreach (var address in addresses.Where(a => ExistingAddresses is not null && !ExistingAddresses.Any(e => e.UPRN == a.UPRN)))
             {
                 var DMMOAddressToAdd = new DMMOAddress() { ApplicationId = Id, UPRN = address.UPRN, Address = address.Address };
-                context.Add(DMMOAddressToAdd);
+                await dmmoService.AddDMMOAddress(DMMOAddressToAdd);
             }
-            await context.SaveChangesAsync();
             if (finished)
             {
                 navigationManager.NavigateTo($"DMMO/Details/{Id}");
@@ -132,8 +124,7 @@ public partial class AddressesFromMap(IDbContextFactory<ApplicationDbContext> co
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            DMMOApplication = await context.DMMOApplication.FindAsync(Id);
+            DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);
             if (DMMOApplication is null)
             {
                 throw new InvalidOperationException("DMMO Application not found");

@@ -1,23 +1,22 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.DMMO
 {
-    public partial class Index(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Index(IDMMOService dmmoService, ISharedDataService sharedDataService, NavigationManager navigationManager)
     {
         private List<BreadcrumbItem>? NavItems;
         private DMMOSearch? SearchParams;
         private string? DMMOIDSearch;
-        private ApplicationClaimedStatus[]? ClaimedStatuses;
-        private ApplicationCaseStatus[]? CaseStatuses;
-        private ApplicationType[]? ApplicationTypes;
-        private Parish[]? Parishes { get; set; }
+        private ICollection<ApplicationClaimedStatus> ClaimedStatuses = [];
+        private ICollection<ApplicationCaseStatus> CaseStatuses = [];
+        private ICollection<ApplicationType> ApplicationTypes = [];
+        private IReadOnlyCollection<Parish>? Parishes { get; set; }
 
         private string? DMMOSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
@@ -32,11 +31,10 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], IsCurrentPage = true },
             ];
 
-            using var context = contextFactory.CreateDbContext();
-            Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
-            ClaimedStatuses = await context.DMMOApplicationClaimedStatuses.OrderBy(s => s.Name).ToArrayAsync();
-            CaseStatuses = await context.DMMOApplicationCaseStatuses.OrderBy(s => s.Name).ToArrayAsync();
-            ApplicationTypes = await context.DMMOApplicationTypes.OrderBy(t => t.Name).ToArrayAsync();
+            Parishes = await sharedDataService.GetParishes();
+            ClaimedStatuses = await dmmoService.GetClaimedStatusOptions();
+            CaseStatuses = await dmmoService.GetCaseStatusOptions();
+            ApplicationTypes = await dmmoService.GetApplicationTypeOptions();
 
             SearchParams = new();
         }
@@ -51,8 +49,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 {
                     if (int.TryParse(DMMOIDSearch, CultureInfo.InvariantCulture, out int DMMOIDSearchInt))
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        var dmmoExists = await context.DMMOApplication.AnyAsync(d => d.Id == DMMOIDSearchInt);
+                        var dmmoExists = await dmmoService.GetDMMOApplicationById(DMMOIDSearchInt) is not null;
                         if (dmmoExists)
                         {
                             navigationManager.NavigateTo($"DMMO/Details/{DMMOIDSearchInt}");

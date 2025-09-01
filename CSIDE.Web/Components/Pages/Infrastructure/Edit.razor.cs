@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Infrastructure;
 using CSIDE.Web.Components.Mapping;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Services;
 using FluentValidation;
@@ -12,13 +11,13 @@ using NetTopologySuite.IO;
 
 namespace CSIDE.Web.Components.Pages.Infrastructure
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayHelperService geometryValidationService)
+    public partial class Edit(IInfrastructureService infrastructureService, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayService rightsOfWayService)
     {
         [Parameter]
         public int InfrastructureId { get; set; }
 
         private InfrastructureItem? InfrastructureItem { get; set; }
-        private InfrastructureType[]? InfrastructureTypes { get; set; }
+        private ICollection<InfrastructureType> InfrastructureTypes { get; set; } = [];
        
         private InfrastructureItemEditForm? childInfrastructureItemEditForm;
 
@@ -42,13 +41,8 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                InfrastructureTypes = await context.InfrastructureTypes.AsNoTracking().OrderBy(n => n.Name).ToArrayAsync();
-                InfrastructureItem = await context.Infrastructure
-                    .IgnoreAutoIncludes()
-                    .Include(s => s.InfrastructureType)
-                    .Include(s => s.BridgeDetails)
-                    .FirstOrDefaultAsync(i => i.Id == InfrastructureId);
+                InfrastructureTypes = await infrastructureService.GetInfrastructureTypeOptions();
+                InfrastructureItem = await infrastructureService.GetInfrastructureItemById(InfrastructureId) ?? throw new Exception($"Infrastructure Item with ID {InfrastructureId} was not found");
             }
             finally
             {
@@ -71,43 +65,8 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 {
                     if (InfrastructureItem is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
 
-                        //get the existing job to enable the smarter change tracker.
-                        //Without this, all properties are identified as tracked, since
-                        //the DbContext is different from when the entity was queried
-                        var existingInfra = await context.Infrastructure.FindAsync(InfrastructureItem.Id) ?? throw new Exception($"Infrastructure Item being edited (ID: {InfrastructureItem.Id}) was not found prior to updating");
-
-                        // Store the original version for concurrency checking
-                        uint originalVersion = InfrastructureItem.Version;
-                        // Update values
-                        context.Entry(existingInfra).CurrentValues.SetValues(InfrastructureItem);
-                        // Restore original version to ensure concurrency check works
-                        context.Entry(existingInfra).Property(j => j.Version).OriginalValue = originalVersion;
-
-                        if (existingInfra.InfrastructureType is not null && existingInfra.InfrastructureType.IsBridge && InfrastructureItem.BridgeDetails is not null)
-                        {
-                            var existingBridgeDetails = await context.InfrastructureBridgeDetails.Where(i => i.InfrastructureId == InfrastructureItem.Id).FirstOrDefaultAsync();
-                            if(existingBridgeDetails is not null)
-                            {
-                                context.Entry(existingBridgeDetails).CurrentValues.SetValues(InfrastructureItem.BridgeDetails);
-                            }
-                            else
-                            {
-                                InfrastructureItem.BridgeDetails.InfrastructureId = InfrastructureItem.Id;
-                                context.Add(InfrastructureItem.BridgeDetails);
-                            }
-                        }
-                        if (existingInfra.InfrastructureType is not null && !existingInfra.InfrastructureType.IsBridge)
-                        {
-                            //delete the linked bridge details
-                            var existingBridgeDetails = await context.InfrastructureBridgeDetails.Where(i => i.InfrastructureId == InfrastructureItem.Id).FirstOrDefaultAsync();
-                            if (existingBridgeDetails is not null)
-                            {
-                                context.Remove(existingBridgeDetails);
-                            }
-                        }
-                        await context.SaveChangesAsync();
+                        await infrastructureService.UpdateInfrastructureItem(InfrastructureItem);
                         //redirect
                         NavigateBackToInfrastructureDetailsPage();
                     }
@@ -141,7 +100,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
             if (result.IsValid)
@@ -152,7 +111,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                     InfrastructureItem.Geom = featureCollection[0].Geometry.Centroid;
                     InfrastructureItem.Geom.SRID = 27700;
 
-                    var NearestRoute = await geometryValidationService.GetNearestRouteAsync(InfrastructureItem.Geom);
+                    var NearestRoute = await rightsOfWayService.GetNearestRoute(InfrastructureItem.Geom);
                     if (NearestRoute is not null)
                     {
                         InfrastructureItem.RouteId = NearestRoute.RouteCode;

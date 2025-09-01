@@ -11,13 +11,13 @@ namespace CSIDE.Web.Components.PPO
         [Parameter, EditorRequired]
         public Application? PPOApplication { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationCaseStatus[]? CaseStatuses { get; set; }
+        public IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationType[]? ApplicationTypes { get; set; }
+        public IReadOnlyCollection<ApplicationType>? ApplicationTypes { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationIntent[]? Intents { get; set; }
+        public IReadOnlyCollection<ApplicationIntent>? Intents { get; set; }
         [Parameter, EditorRequired]
-        public ApplicationPriority[]? Priorities { get; set; }
+        public IReadOnlyCollection<ApplicationPriority>? Priorities { get; set; }
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]

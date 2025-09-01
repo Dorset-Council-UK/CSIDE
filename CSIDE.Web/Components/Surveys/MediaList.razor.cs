@@ -1,13 +1,15 @@
-﻿using CSIDE.Data;
-using CSIDE.Data.Models.Shared;
+﻿using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.Surveys
 {
-    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<MediaList> logger) : IAsyncDisposable
+    public partial class MediaList(
+        IInfrastructureService infrastructureService,
+        IJSRuntime JS,
+        ILogger<MediaList> logger) : IAsyncDisposable
     {
         [Parameter]
         public Survey? Survey { get; set; }
@@ -49,17 +51,8 @@ namespace CSIDE.Web.Components.Surveys
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(Survey);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        Survey.SurveyMedia.Add(new SurveyMedia
-                        {
-                            SurveyId = Survey.Id,
-                            Media = media,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await infrastructureService.AddMediaToSurvey(Survey, UploadedMedia);
+                    
                     await RefreshComponent();
                 }
                 catch (Exception ex)
@@ -74,8 +67,7 @@ namespace CSIDE.Web.Components.Surveys
         {
             if (Survey is not null)
             {
-                using var context = contextFactory.CreateDbContext();
-                Survey = await context.BridgeSurveys.FindAsync([Survey.Id]);
+                Survey = await infrastructureService.GetBridgeSurveyById(Survey.Id);
                 StateHasChanged();
             }
         }

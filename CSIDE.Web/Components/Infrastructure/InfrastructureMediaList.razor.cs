@@ -1,13 +1,12 @@
-﻿using CSIDE.Data;
-using CSIDE.Data.Models.Infrastructure;
+﻿using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.Infrastructure
 {
-    public partial class InfrastructureMediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<InfrastructureMediaList> logger) : IAsyncDisposable
+    public partial class InfrastructureMediaList(IInfrastructureService infrastructureService, IJSRuntime JS, ILogger<InfrastructureMediaList> logger) : IAsyncDisposable
     {
         [Parameter]
         public InfrastructureItem? InfrastructureItem { get; set; }
@@ -50,17 +49,7 @@ namespace CSIDE.Web.Components.Infrastructure
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(InfrastructureItem);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        InfrastructureItem.InfrastructureMedia.Add(new InfrastructureMedia
-                        {
-                            InfrastructureItemId = InfrastructureItem.Id,
-                            Media = media,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await infrastructureService.AddMediaToInfrastructureItem(InfrastructureItem, UploadedMedia);
                 }
                 catch (Exception e)
                 {
@@ -74,8 +63,7 @@ namespace CSIDE.Web.Components.Infrastructure
         {
             if (InfrastructureItem is not null)
             {
-                using var context = contextFactory.CreateDbContext();
-                InfrastructureItem = await context.Infrastructure.FindAsync([InfrastructureItem.Id]);
+                InfrastructureItem = await infrastructureService.GetInfrastructureItemById(InfrastructureItem.Id);
                 StateHasChanged();
             }
         }

@@ -1,5 +1,4 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Services;
 using CSIDE.Web.Components.Maintenance;
@@ -13,10 +12,9 @@ using NetTopologySuite.IO;
 namespace CSIDE.Web.Components.Pages.Maintenance
 {
     public partial class Edit(
-        IDbContextFactory<ApplicationDbContext> contextFactory,
         NavigationManager navigationManager,
         ILogger<Edit> logger,
-        IRightsOfWayHelperService geometryValidationService,
+        IRightsOfWayService geometryValidationService,
         IMaintenanceJobsService maintenanceJobsService
     ) {
         [Parameter]
@@ -25,7 +23,7 @@ namespace CSIDE.Web.Components.Pages.Maintenance
         private Job? Job { get; set; }
         private JobStatus[]? JobStatuses { get; set; }
         private JobPriority[]? JobPriorities { get; set; }
-        private Team[]? MaintenanceTeams { get; set; }
+        private IReadOnlyCollection<Team> MaintenanceTeams { get; set; } = [];
         private ProblemType[]? ProblemTypes { get; set; }
 
         private JobEditForm? childJobEditForm;
@@ -51,11 +49,10 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                JobStatuses = await context.MaintenanceJobStatuses.AsNoTracking().OrderBy(s => s.SortOrder).ToArrayAsync();
-                JobPriorities = await context.MaintenanceJobPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
-                MaintenanceTeams = await context.MaintenanceTeams.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
+                JobStatuses = await maintenanceJobsService.GetMaintenanceJobStatuses();
+                JobPriorities = await maintenanceJobsService.GetMaintenanceJobPriorities();
+                MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
+                ProblemTypes = await maintenanceJobsService.GetMaintenanceProblemTypes();
                 Job = await maintenanceJobsService.GetMaintenanceJobById(JobId);
                 SelectedProblemTypes = [.. Job!.ProblemTypes.Select(j => j.ProblemTypeId)];
             }
@@ -117,7 +114,7 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, geometryValidationService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
             if (result.IsValid)
@@ -128,7 +125,7 @@ namespace CSIDE.Web.Components.Pages.Maintenance
                     Job.Geom = featureCollection[0].Geometry.Centroid;
                     Job.Geom.SRID = 27700;
 
-                    var NearestRoute = await geometryValidationService.GetNearestRouteAsync(Job.Geom);
+                    var NearestRoute = await geometryValidationService.GetNearestRoute(Job.Geom);
                     if (NearestRoute is not null)
                     {
                         Job.RouteId = NearestRoute.RouteCode;

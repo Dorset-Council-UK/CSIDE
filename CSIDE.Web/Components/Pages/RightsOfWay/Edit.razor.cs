@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Mapping;
 using CSIDE.Web.Components.RightsOfWay;
-using CSIDE.Data;
 using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Services;
 using FluentValidation;
@@ -13,16 +12,20 @@ using NetTopologySuite.IO;
 
 namespace CSIDE.Web.Components.Pages.RightsOfWay
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayHelperService geometryValidationService)
+    public partial class Edit(
+        IRightsOfWayService rightsOfWayService,
+        IMaintenanceJobsService maintenanceJobsService,
+        NavigationManager navigationManager,
+        ILogger<Edit> logger)
     {
         [Parameter]
         public required string RouteID { get; set; }
 
         private Data.Models.RightsOfWay.Route? Route { get; set; }
-        private LegalStatus[]? LegalStatuses { get; set; }
-        private RouteType[]? RouteTypes { get; set; }
-        private OperationalStatus[]? OperationalStatuses { get; set; }
-        private Data.Models.Maintenance.Team[]? MaintenanceTeams { get; set; }
+        private IReadOnlyCollection<LegalStatus> LegalStatuses { get; set; } = [];
+        private IReadOnlyCollection<RouteType> RouteTypes { get; set; } = [];
+        private IReadOnlyCollection<OperationalStatus> OperationalStatuses { get; set; } = [];
+        private IReadOnlyCollection<Data.Models.Maintenance.Team> MaintenanceTeams { get; set; } = [];
         
 
         private RoWEditForm? childRouteEditForm;
@@ -46,13 +49,12 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                LegalStatuses = await context.RouteLegalStatuses.AsNoTracking().OrderBy(s => s.Id).ToArrayAsync();
-                RouteTypes = await context.RouteTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                OperationalStatuses = await context.RouteOperationalStatuses.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
-                MaintenanceTeams = await context.MaintenanceTeams.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
+                LegalStatuses = await rightsOfWayService.GetLegalStatusOptions();
+                RouteTypes = await rightsOfWayService.GetRouteTypeOptions();
+                OperationalStatuses = await rightsOfWayService.GetOperationalStatusOptions();
+                MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
 
-                Route = await context.Routes.IgnoreAutoIncludes().FirstOrDefaultAsync(r => r.RouteCode == RouteID);
+                Route = await rightsOfWayService.GetRouteByCode(RouteID);
                 GeometryIsValid = true;
             }
             finally
@@ -76,20 +78,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 {
                     if (Route is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-
-                        //get the existing job to enable the smarter change tracker.
-                        //Without this, all properties are identified as tracked, since
-                        //the DbContext is different from when the entity was queried
-                        var existingRoute = await context.Routes.FindAsync(Route.RouteCode) ?? throw new Exception($"Route being edited (ID: {Route.RouteCode}) was not found prior to updating");
-                        // Store the original version for concurrency checking
-                        uint originalVersion = Route.Version;
-                        // Update values
-                        context.Entry(existingRoute).CurrentValues.SetValues(Route);
-                        // Restore original version to ensure concurrency check works
-                        context.Entry(existingRoute).Property(j => j.Version).OriginalValue = originalVersion;
-
-                        await context.SaveChangesAsync();
+                        await rightsOfWayService.UpdateRoute(Route);
                         //redirect
                         NavigateBackToRouteDetailsPage();
                     }
@@ -123,7 +112,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)
@@ -158,13 +147,17 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             {
                 throw new ArgumentException("Bounding box must have 4 values", paramName: nameof(bbox));
             }
-            using var context = contextFactory.CreateDbContext();
             //create a polygon from the bounding box
             var bboxPolygon = new Polygon(new LinearRing([new(bbox[0], bbox[1]), new(bbox[2], bbox[1]), new(bbox[2], bbox[3]), new(bbox[0], bbox[3]), new(bbox[0], bbox[1])]))
             {
                 SRID = 27700,
             };
-            var routes = await context.Routes.Where(g => g.RouteCode != Route!.RouteCode && g.Geom.Intersects(bboxPolygon)).Select(g => g.Geom).ToArrayAsync();
+            ICollection<Geometry> routes = await rightsOfWayService.GetRoutesIntersecting(bboxPolygon);
+            //exclude the current route being edited
+            if (Route is not null)
+            {
+                routes = routes.Where(r => !r.EqualsExact(Route.Geom)).ToArray();
+            }
             //convert routes to geojson
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)

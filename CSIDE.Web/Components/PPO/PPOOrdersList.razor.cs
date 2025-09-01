@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Microsoft.EntityFrameworkCore;
-using CSIDE.Data;
 using BlazorBootstrap;
 using CSIDE.Data.Models.PPO;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.PPO
 {
-    public partial class PPOOrdersList(IJSRuntime JS, IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class PPOOrdersList(IJSRuntime JS, IPPOService ppoService)
     {
         [Parameter]
-        public PPOOrder[]? Orders { get; set; }
+        public ICollection<PPOOrder>? Orders { get; set; }
         [Parameter]
         public int PPOApplicationId { get; set; }
         [Parameter]
@@ -27,14 +26,8 @@ namespace CSIDE.Web.Components.PPO
             bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Order Confirmation"].Value);
             if (ConfirmDelete)
             {
-                using var context = contextFactory.CreateDbContext();
-                var orderToDelete = await context.PPOOrders.FindAsync(OrderId, ApplicationId);
-                if (orderToDelete is not null)
-                {
-                    context.Remove(orderToDelete);
-                    await context.SaveChangesAsync();
-                    await RefreshComponent();
-                }
+                await ppoService.DeletePPOOrder(ApplicationId, OrderId);
+                await RefreshComponent();
             }
             IsBusy = false;
         }
@@ -47,8 +40,7 @@ namespace CSIDE.Web.Components.PPO
 
         private async Task RefreshComponent()
         {
-            using var context = contextFactory.CreateDbContext();
-            Orders = await context.PPOOrders.Where(o => o.ApplicationId == PPOApplicationId).ToArrayAsync();
+            Orders = await ppoService.GetPPOOrderByApplicationId(PPOApplicationId);
             StateHasChanged();
         }
     }

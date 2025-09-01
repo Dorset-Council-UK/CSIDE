@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Mapping;
 using CSIDE.Web.Components.PPO;
-using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Services;
 using FluentValidation;
@@ -13,16 +12,16 @@ using NetTopologySuite.IO;
 
 namespace CSIDE.Web.Components.Pages.PPO
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory,
+    public partial class Create(IPPOService ppoService,
                                 NavigationManager navigationManager,
                                 ILogger<Create> logger,
-                                IRightsOfWayHelperService rightsOfWayHelperService)
+                                IRightsOfWayService rightsOfWayHelperService)
     {
         private Application? PPOApplication { get; set; }
-        private ApplicationCaseStatus[]? CaseStatuses;
-        private ApplicationType[]? ApplicationTypes;
-        private ApplicationIntent[]? Intents;
-        private ApplicationPriority[]? Priorities;
+        private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
+        private IReadOnlyCollection<ApplicationType>? ApplicationTypes = [];
+        private IReadOnlyCollection<ApplicationIntent>? Intents = [];
+        private IReadOnlyCollection<ApplicationPriority>? Priorities = [];
         private List<int> SelectedIntents { get; set; } = [];
 
         private PPOEditForm? childPPOEditForm;
@@ -45,11 +44,10 @@ namespace CSIDE.Web.Components.Pages.PPO
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                CaseStatuses = await context.PPOApplicationCaseStatuses.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                ApplicationTypes = await context.PPOApplicationTypes.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
-                Intents = await context.PPOApplicationIntents.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                Priorities = await context.PPOApplicationPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
+                CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
+                ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
+                Intents = await ppoService.GetPPOApplicationIntents();
+                Priorities = await ppoService.GetPPOApplicationPriorities();
 
                 PPOApplication = new()
                 {
@@ -79,11 +77,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                 {
                     if (PPOApplication is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        context.Add(PPOApplication);
-                        await context.SaveChangesAsync();
-                        CreateApplicationIntents(SelectedIntents, PPOApplication.Id, context);
-                        await context.SaveChangesAsync();
+                        await ppoService.CreatePPO(PPOApplication, SelectedIntents);
                         //redirect
                         navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
                     }
@@ -104,15 +98,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                 }
             }
         }
-        private static void CreateApplicationIntents(List<int> selectedIntents, int PPOApplicationId, ApplicationDbContext context)
-        {
-            //add new problem types
-            foreach (int intent in selectedIntents)
-            {
-                context.PPOIntents.Add(new PPOIntent { IntentId = intent, ApplicationId = PPOApplicationId });
-            }
-            return;
-        }
+
         private void NavigateBackToPPOSearchPage()
         {
             navigationManager.NavigateTo($"PPO");
@@ -125,7 +111,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, rightsOfWayHelperService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayHelperService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)
@@ -160,13 +146,12 @@ namespace CSIDE.Web.Components.Pages.PPO
             {
                 throw new ArgumentException("Bounding box must have 4 values", paramName: nameof(bbox));
             }
-            using var context = contextFactory.CreateDbContext();
             //create a polygon from the bounding box
             var bboxPolygon = new Polygon(new LinearRing([new(bbox[0], bbox[1]), new(bbox[2], bbox[1]), new(bbox[2], bbox[3]), new(bbox[0], bbox[3]), new(bbox[0], bbox[1])]))
             {
                 SRID = 27700,
             };
-            var routes = await context.Routes.Where(g => g.Geom.Intersects(bboxPolygon)).Select(g => g.Geom).ToArrayAsync();
+            ICollection<Geometry> routes = await rightsOfWayHelperService.GetRoutesIntersecting(bboxPolygon);
             //convert routes to geojson
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
@@ -191,7 +176,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             {
                 SRID = 27700,
             };
-            var routes = await rightsOfWayHelperService.GetNearestRouteAsync(selectionPoint, 10);
+            var routes = await rightsOfWayHelperService.GetNearestRoute(selectionPoint, 10);
             //convert route to geojson
             var geoJsonWriter = new GeoJsonWriter();
             var routesGeoJson = geoJsonWriter.Write(routes?.Geom);

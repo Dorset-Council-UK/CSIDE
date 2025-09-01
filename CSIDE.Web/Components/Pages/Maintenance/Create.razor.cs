@@ -1,12 +1,10 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Maintenance;
 using CSIDE.Web.Components.Mapping;
-using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using System.Globalization;
@@ -15,10 +13,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 namespace CSIDE.Web.Components.Pages.Maintenance;
 
 public partial class Create(
-    IDbContextFactory<ApplicationDbContext> contextFactory,
     NavigationManager navigationManager,
     ILogger<Create> logger,
-    IRightsOfWayHelperService geometryValidationService,
+    IRightsOfWayService geometryValidationService,
     IMaintenanceJobsService maintenanceJobsService
 ) {
     [CascadingParameter]
@@ -50,10 +47,9 @@ public partial class Create(
             new() { Text = localizer["Maintenance Create Title"], IsCurrentPage = true },
         ];
 
-        await using var context = contextFactory.CreateDbContext();
-        JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
-        JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
-        ProblemTypes = await context.ProblemTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
+        JobStatuses = await maintenanceJobsService.GetMaintenanceJobStatuses();
+        JobPriorities = await maintenanceJobsService.GetMaintenanceJobPriorities();
+        ProblemTypes = await maintenanceJobsService.GetMaintenanceProblemTypes();
         Job = new()
         {
             JobStatusId = JobStatuses?.FirstOrDefault()?.Id,
@@ -110,7 +106,7 @@ public partial class Create(
         GeoJsonReader _geoJsonReader = new();
         FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-        CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+        CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, geometryValidationService);
 
         var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
         if (result.IsValid)
@@ -120,7 +116,7 @@ public partial class Create(
             {
                 Job.Geom = featureCollection[0].Geometry.Centroid;
                 Job.Geom.SRID = 27700;
-                var NearestRoute = await geometryValidationService.GetNearestRouteAsync(Job.Geom);
+                var NearestRoute = await geometryValidationService.GetNearestRoute(Job.Geom);
                 if (NearestRoute is not null)
                 {
                     Job.RouteId = NearestRoute.RouteCode;

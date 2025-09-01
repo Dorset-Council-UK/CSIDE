@@ -1,5 +1,6 @@
 ﻿@page "/Infrastructure/Details/{ItemId:int}"
 @using CSIDE.Data.Models.Infrastructure
+@using CSIDE.Data.Services
 @using CSIDE.Web.Components.Infrastructure
 @using CSIDE.Web.Components.Mapping
 @using CSIDE.Web.Components.Layout
@@ -7,10 +8,10 @@
 @using CSIDE.Shared.Options
 @using CSIDE.Web.Services
 @using Microsoft.Extensions.Options
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
+@inject IInfrastructureService infrastructureService
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
@@ -356,8 +357,7 @@ else
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            InfrastructureItem = await context.Infrastructure.FindAsync(ItemId);
+            InfrastructureItem = await infrastructureService.GetInfrastructureItemById(ItemId);
         }
         finally
         {
@@ -373,12 +373,6 @@ else
             {
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("Ranger");
             }
-        }
-
-        if (InfrastructureItem is not null)
-        {
-            //add to recent work store
-            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{InfrastructureItem.Id}", "Infrastructure", InfrastructureItem.InfrastructureType?.Name ?? "", $"Infrastructure/Details/{InfrastructureItem.Id}");
         }
     }
 

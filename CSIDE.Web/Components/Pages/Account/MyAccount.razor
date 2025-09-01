@@ -1,5 +1,6 @@
 ﻿@page "/Account/MyAccount"
-@inject IDbContextFactory<ApplicationDbContext> ContextFactory;
+@using CSIDE.Data.Services
+@inject IUserService userService
 
 <PageTitle>@localizer["My Account Label"]</PageTitle>
 
@@ -69,7 +70,7 @@
     private string? UserPrimaryEmailAddress { get; set; }
     private string? UserIdentityProvider{ get; set; }
     private IEnumerable<System.Security.Claims.Claim>? UserClaims{ get; set; }
-    private List<ApplicationRole>? ApplicationRoles { get; set; }
+    private IReadOnlyCollection<ApplicationRole> ApplicationRoles { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,13 +84,16 @@
             UserIdentityProvider = authState.GetUserIdentityProvider();
             UserClaims = authState.User.Claims;
 
-            using var context = ContextFactory.CreateDbContext();
-            var userRoles = await context.ApplicationUserRoles
-                .Where(u => u.UserId == UserID)
-                .Include(a => a.Role)
-                .AsNoTrackingWithIdentityResolution()
-                .ToListAsync();
-            ApplicationRoles = userRoles.Select(r => r.Role).ToList();
+            if(UserID is not null)
+            {
+                var userRoles = await userService.GetUserRoles(UserID, avoidCache: true);
+                if(userRoles is not null)
+                {
+                    ApplicationRoles = userRoles.Select(r => r.Role!).ToArray();
+
+                }
+            }
+
         }
     }
 

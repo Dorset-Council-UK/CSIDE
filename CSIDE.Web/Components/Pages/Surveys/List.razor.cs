@@ -1,14 +1,12 @@
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace CSIDE.Web.Components.Pages.Surveys
 {
-    public partial class List(IDbContextFactory<ApplicationDbContext> contextFactory,
+    public partial class List(IInfrastructureService infrastructureService,
                               ILogger<List> logger,
                               NavigationManager navigationManager)
     {
@@ -17,7 +15,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
         public bool IsBusy { get; set; }
         [CascadingParameter]
         private Task<AuthenticationState>? AuthenticationState { get; set; }
-        private List<BridgeSurvey> Surveys { get; set; } = [];
+        private ICollection<BridgeSurvey> Surveys { get; set; } = [];
         protected override async Task OnInitializedAsync()
         {
             IsBusy = true;
@@ -29,7 +27,6 @@ namespace CSIDE.Web.Components.Pages.Surveys
             ];
             try
             {
-                using var context = contextFactory.CreateDbContext();
                 if (AuthenticationState is not null)
                 {
                     var authState = await AuthenticationState;
@@ -40,7 +37,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
                         {
                             //load all surveys
                             //TODO - Update logic to understand users validation area
-                            Surveys = await context.BridgeSurveys.ToListAsync();
+                            Surveys = await infrastructureService.GetAllBridgeSurveys();
                         }
                         else
                         {
@@ -48,9 +45,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
                             var userId = authState.GetUserId();
                             if (userId is not null)
                             {
-                                Surveys = await context.BridgeSurveys
-                                    .Where(s => s.SurveyorId == userId)
-                                    .ToListAsync();
+                                Surveys = await infrastructureService.GetBridgeSurveysForUser(userId);
                             }
                             else
                             {

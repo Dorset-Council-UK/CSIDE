@@ -1,19 +1,19 @@
 ﻿using CSIDE.Data.Models.LandownerDeposits;
+using CSIDE.Data.Services;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
 namespace CSIDE.Data.Validators.LandownerDeposits
 {
     public class LandownerDepositAddressValidator : AbstractValidator<LandownerDepositAddress>
     {
-        readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        readonly ILandownerDepositService _landownerDepositService;
         readonly IStringLocalizer<CSIDE.Shared.Properties.Resources> _localizer;
 
-        public LandownerDepositAddressValidator(IDbContextFactory<ApplicationDbContext> contextFactory, IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer)
+        public LandownerDepositAddressValidator(ILandownerDepositService landownerDepositService, IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer)
         {
             _localizer = localizer;
-            _contextFactory = contextFactory;
+            _landownerDepositService = landownerDepositService;
             RuleFor(d => d.UPRN)
                 .NotEmpty().WithName(localizer["UPRN Label"])
                 .MustAsync((landownerDepositAddress, UPRN, ct) =>
@@ -23,9 +23,8 @@ namespace CSIDE.Data.Validators.LandownerDeposits
 
         private async Task<bool> UPRNNotAlreadyExists(long UPRN, int LandownerDepositId, int LandownerDepositSecondaryId, CancellationToken ct)
         {
-            using var context = _contextFactory.CreateDbContext();
-            var landownerDepositAddress = await context.LandownerDepositAddresses.FindAsync([LandownerDepositId, LandownerDepositSecondaryId, UPRN], cancellationToken: ct);
-            return (landownerDepositAddress is null);
+            var landownerDepositAddress = await _landownerDepositService.GetLandownerDepositAddressesByDepositId(LandownerDepositId, LandownerDepositSecondaryId, ct);
+            return !landownerDepositAddress.Any(a => a.UPRN == UPRN);
         }
     }
 }

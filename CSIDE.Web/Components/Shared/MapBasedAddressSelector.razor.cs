@@ -10,7 +10,7 @@ namespace CSIDE.Web.Components.Shared
         [Parameter]
         public required Geometry Geom { get; set; }
         [Parameter]
-        public List<SimpleAddress>? ExistingAddresses { get; set; }
+        public IReadOnlyCollection<SimpleAddress>? ExistingAddresses { get; set; }
         [Parameter]
         public EventCallback<SimpleAddress> OnSingleAddressSelected { get; set; }
         [Parameter]

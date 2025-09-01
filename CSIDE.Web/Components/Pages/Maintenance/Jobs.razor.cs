@@ -1,14 +1,11 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
-using NodaTime;
-using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.Maintenance
 {
-    public partial class Jobs(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<Jobs> logger)
+    public partial class Jobs(IMaintenanceJobsService maintenanceJobsService, ILogger<Jobs> logger)
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -35,7 +32,7 @@ namespace CSIDE.Web.Components.Pages.Maintenance
         [SupplyParameterFromQuery]
         private bool? IsComplete { get; set; }
 
-        private List<Job>? SearchResults;
+        private IReadOnlyCollection<Job>? SearchResults;
 
         private const int MaxResults = 1000;
         private bool IsBusy { get; set; }
@@ -50,72 +47,23 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             try
             {
                 IsBusy = true;
-                using var context = contextFactory.CreateDbContext();
 
-                var query = context.MaintenanceJobs.AsQueryable();
+                SearchResults = await maintenanceJobsService.GetMaintenanceJobsBySearchParameters(
+                    RouteId,
+                    ParishIds,
+                    ParishId,
+                    AssignedToTeamId,
+                    JobPriorityId,
+                    IsComplete,
+                    JobStatusId,
+                    LogDateFrom,
+                    LogDateTo,
+                    CompletedDateFrom,
+                    CompletedDateTo,
+                    MaxResults
+                    );
 
-                if (RouteId is not null)
-                {
-                    query = query.Where(j => j.RouteId == RouteId);
-                }
-                if (ParishIds is not null && ParishIds.Length != 0)
-                {
-                    var parsedParishIds = ParishIds
-                        .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
-                        .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
-                        .ToList();
-                    if (parsedParishIds.Count != 0)
-                    {
-                        query = query.Where(j => j.ParishId != null && parsedParishIds.Contains(j.ParishId.Value));
-                    }
-
-                }
-                else if (ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
-                {
-                    query = query.Where(j => j.ParishId == parsedParishId);
-                }
-                if (AssignedToTeamId is not null && int.TryParse(AssignedToTeamId, CultureInfo.InvariantCulture, out int parsedAssignedToTeamId))
-                {
-                    query = query.Where(j => j.MaintenanceTeamId == parsedAssignedToTeamId);
-                }
-                if (JobPriorityId is not null && int.TryParse(JobPriorityId, CultureInfo.InvariantCulture, out int parsedPriorityId))
-                {
-                    query = query.Where(j => j.JobPriorityId == parsedPriorityId);
-                }
-                if (IsComplete.HasValue)
-                {
-                    if (IsComplete.HasValue)
-                    {
-                        query = query.Where(j => j.JobStatus != null && j.JobStatus.IsComplete == IsComplete.Value);
-                    }
-                }
-                else
-                {
-                    if (JobStatusId is not null && int.TryParse(JobStatusId, CultureInfo.InvariantCulture, out int parsedStatusId))
-                    {
-                        query = query.Where(j => j.JobStatusId == parsedStatusId);
-                    }
-                }
                 
-                if (LogDateFrom is not null)
-                {
-                    query = query.Where(j => j.LogDate >= ConvertDateToInstant(LogDateFrom.Value));
-                }
-                if (LogDateTo is not null)
-                {
-                    query = query.Where(j => j.LogDate < ConvertDateToInstant(LogDateTo.Value).Plus(Duration.FromDays(1)));
-                }
-                if (CompletedDateFrom is not null)
-                {
-                    query = query.Where(j => j.CompletionDate >= NodaTime.LocalDate.FromDateOnly(CompletedDateFrom.Value));
-                }
-
-                if (CompletedDateTo is not null)
-                {
-                    query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
-                }
-
-                SearchResults = await query.OrderByDescending(j => j.LogDate).Take(MaxResults).ToListAsync();
             }catch(Exception ex)
             {
                 logger.LogError(ex, "An error occurred rendering the jobs list component");
@@ -126,12 +74,6 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             }
         }
 
-        private static Instant ConvertDateToInstant(DateOnly date)
-        {
-            var timezone = NodaTime.DateTimeZoneProviders.Tzdb.GetSystemDefault();
-            var localDate = NodaTime.LocalDate.FromDateOnly(date);
-            var zonedDate = localDate.AtStartOfDayInZone(timezone);
-            return zonedDate.ToInstant();
-        }
+
     }
 }

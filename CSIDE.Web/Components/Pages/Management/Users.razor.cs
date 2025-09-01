@@ -4,7 +4,6 @@ using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Beta.Models;
-using System.Diagnostics.CodeAnalysis;
 
 namespace CSIDE.Web.Components.Pages.Management
 {

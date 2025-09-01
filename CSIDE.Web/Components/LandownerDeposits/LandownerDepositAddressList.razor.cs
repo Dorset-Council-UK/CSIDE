@@ -1,17 +1,15 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using CSIDE.Data.Validators.LandownerDeposits;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.LandownerDeposits;
 
-public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService addressSearchService, IJSRuntime JS, ILogger<LandownerDepositAddressList> logger)
+public partial class LandownerDepositAddressList(ILandownerDepositService landownerDepositService, IPlacesSearchService addressSearchService, IJSRuntime JS, ILogger<LandownerDepositAddressList> logger)
 {
     [Parameter]
     public required ICollection<LandownerDepositAddress>? Addresses { get; set; }
@@ -43,14 +41,8 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Landowner Deposit Address Confirmation"].Value);
         if (ConfirmDelete)
         {
-            using var context = contextFactory.CreateDbContext();
-            var LandownerDepositAddressToDelete = await context.LandownerDepositAddresses.FindAsync([LandownerDepositId, LandownerDepositSecondaryId, UPRN]);
-            if (LandownerDepositAddressToDelete is not null)
-            {
-                context.Remove(LandownerDepositAddressToDelete);
-                await context.SaveChangesAsync();
-                await RefreshComponent();
-            }
+            await landownerDepositService.DeleteAddressFromLandownerDeposit(LandownerDepositId, LandownerDepositSecondaryId, UPRN);
+            await RefreshComponent();
         }
         IsBusy = false;
     }
@@ -103,7 +95,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
                 Address = address.Address,
             };
             //validate with fluent validation 
-            var validator = new LandownerDepositAddressValidator(contextFactory, localizer);
+            var validator = new LandownerDepositAddressValidator(landownerDepositService, localizer);
             var validationResult = await validator.ValidateAsync(LandownerDepositAddressToAdd);
 
             if (!validationResult.IsValid)
@@ -111,9 +103,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
                 ErrorMessage = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
                 return;
             }
-            using var context = contextFactory.CreateDbContext();
-            context.Add(LandownerDepositAddressToAdd);
-            await context.SaveChangesAsync();
+            await landownerDepositService.AddAddressToLandownerDeposit(LandownerDepositAddressToAdd);
             await RefreshComponent();
         }
         catch (Exception ex)
@@ -136,9 +126,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
             if (await LandownerDepositAddressValidator!.ValidateAsync())
             {
                 //submit
-                using var context = contextFactory.CreateDbContext();
-                context.Add(NewLandownerDepositAddress);
-                await context.SaveChangesAsync();
+                await landownerDepositService.AddAddressToLandownerDeposit(NewLandownerDepositAddress);
                 await AddAddressModal.HideAsync();
                 await RefreshComponent();
                 ManualAddressFormShown = false; //always hide it again once used to discourage use
@@ -157,8 +145,7 @@ public partial class LandownerDepositAddressList(IDbContextFactory<ApplicationDb
 
     private async Task RefreshComponent()
     {
-        using var context = contextFactory.CreateDbContext();
-        Addresses = await context.LandownerDepositAddresses.Where(a => a.LandownerDepositId == LandownerDepositId).ToListAsync();
+        Addresses = await landownerDepositService.GetLandownerDepositAddressesByDepositId(LandownerDepositId, LandownerDepositSecondaryId);
         ErrorMessage = null;
     }
 }

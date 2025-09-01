@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.DMMO;
 using CSIDE.Web.Components.Mapping;
-using CSIDE.Data;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Services;
 using FluentValidation;
@@ -13,16 +12,16 @@ using NetTopologySuite.IO;
 
 namespace CSIDE.Web.Components.Pages.DMMO
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory,
+    public partial class Create(IDMMOService dmmoService,
                                 NavigationManager navigationManager,
                                 ILogger<Create> logger,
-                                IRightsOfWayHelperService rightsOfWayHelperService)
+                                IRightsOfWayService rightsOfWayService)
     {
         private Application? DMMOApplication { get; set; }
-        private ApplicationClaimedStatus[]? ClaimedStatuses;
-        private ApplicationCaseStatus[]? CaseStatuses;
-        private ApplicationType[]? ApplicationTypes;
-        private ApplicationDirectionOfSecState[]? DirectionsOfSecState;
+        private ICollection<ApplicationClaimedStatus> ClaimedStatuses = [];
+        private ICollection<ApplicationCaseStatus> CaseStatuses = [];
+        private ICollection<ApplicationType> ApplicationTypes = [];
+        private ICollection<ApplicationDirectionOfSecState>? DirectionsOfSecState;
 
         private DMMOEditForm? childDMMOEditForm;
 
@@ -44,11 +43,10 @@ namespace CSIDE.Web.Components.Pages.DMMO
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                ClaimedStatuses = await context.DMMOApplicationClaimedStatuses.AsNoTracking().OrderBy(s => s.Id).ToArrayAsync();
-                CaseStatuses = await context.DMMOApplicationCaseStatuses.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                ApplicationTypes = await context.DMMOApplicationTypes.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
-                DirectionsOfSecState = await context.DMMOApplicationDirectionsOfSecState.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
+                ClaimedStatuses = await dmmoService.GetClaimedStatusOptions();
+                CaseStatuses = await dmmoService.GetCaseStatusOptions();
+                ApplicationTypes = await dmmoService.GetApplicationTypeOptions();
+                DirectionsOfSecState = await dmmoService.GetDirectionOfSecStateOptions();
                 DMMOApplication = new()
                 {
                     Geom = MultiLineString.Empty,
@@ -80,9 +78,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 {
                     if (DMMOApplication is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        context.Add(DMMOApplication);
-                        await context.SaveChangesAsync();
+                        await dmmoService.CreateDMMO(DMMOApplication);
                         //redirect
                         navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
                     }
@@ -116,7 +112,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, rightsOfWayHelperService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)
@@ -151,18 +147,19 @@ namespace CSIDE.Web.Components.Pages.DMMO
             {
                 throw new ArgumentException("Bounding box must have 4 values", paramName: nameof(bbox));
             }
-            using var context = contextFactory.CreateDbContext();
+
+            
             //create a polygon from the bounding box
             var bboxPolygon = new Polygon(new LinearRing([new(bbox[0], bbox[1]), new(bbox[2], bbox[1]), new(bbox[2], bbox[3]), new(bbox[0], bbox[3]), new(bbox[0], bbox[1])]))
             {
                 SRID = 27700,
             };
-            var routes = await context.Routes.Where(g => g.Geom.Intersects(bboxPolygon)).Select(g => g.Geom).ToArrayAsync();
+            ICollection<Geometry> routes = await rightsOfWayService.GetRoutesIntersecting(bboxPolygon);
             //convert routes to geojson
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
             {
-                var attributes = new AttributesTable();
+                var attributes = new AttributesTable(StringComparer.OrdinalIgnoreCase);
                 var feature = new Feature(route, attributes);
                 featureCollection.Add(feature);
             }
@@ -182,7 +179,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
             {
                 SRID = 27700,
             };
-            var routes = await rightsOfWayHelperService.GetNearestRouteAsync(selectionPoint, 10);
+            var routes = await rightsOfWayService.GetNearestRoute(selectionPoint, 10);
             //convert route to geojson
             var geoJsonWriter = new GeoJsonWriter();
             var routesGeoJson = geoJsonWriter.Write(routes?.Geom);

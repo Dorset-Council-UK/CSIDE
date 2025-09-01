@@ -11,7 +11,6 @@
 @using Humanizer
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Microsoft.Extensions.Options
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
@@ -287,15 +286,10 @@ else
     }
 
     private async Task AddContact(Contact NewContact){
-        
+
         if (NewContact is not null && Job is not null)
         {
-            using var context = contextFactory.CreateDbContext();
-
-            context.Contacts.Add(NewContact);
-            await context.SaveChangesAsync();
-            context.MaintenanceJobContact.Add(new JobContact { ContactId = NewContact.Id, JobId = Job.Id }); //UHRMMMM?
-            await context.SaveChangesAsync();
+            await maintenanceJobsService.AddContactToJob(Job, NewContact);
         } 
     }
     private async Task RefreshContactsList()

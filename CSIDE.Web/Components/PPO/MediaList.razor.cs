@@ -1,27 +1,25 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.PPO
 {
-    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<MediaList> logger, ToastService toastService) : IAsyncDisposable
+    public partial class MediaList(IPPOService ppoService, IJSRuntime JS, ILogger<MediaList> logger, ToastService toastService) : IAsyncDisposable
     {
         [Parameter]
         public Application? PPOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
-        private PPOMediaType[]? MediaTypes;
+        private IReadOnlyCollection<PPOMediaType> MediaTypes = [];
         private IJSObjectReference? _jsModule;
 
         protected override async Task OnInitializedAsync()
         {
-            using var context = contextFactory.CreateDbContext();
-            MediaTypes = [.. context.PPOMediaType.AsNoTracking().OrderBy(p => p.Id)];
+            MediaTypes = await ppoService.GetPPOMediaTypes();
 
             await base.OnInitializedAsync();
         }
@@ -41,19 +39,7 @@ namespace CSIDE.Web.Components.PPO
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(PPOApplication);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        PPOApplication.PPOMedia.Add(new PPOMedia
-                        {
-                            PPOId = PPOApplication.Id,
-                            Media = media,
-                            MediaTypeId = mediaType.Id,
-                            MediaType = mediaType,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await ppoService.AddMediaToPPO(PPOApplication, mediaType, UploadedMedia);
                 }
                 catch (Exception ex)
                 {
@@ -69,8 +55,7 @@ namespace CSIDE.Web.Components.PPO
         { 
             if (PPOApplication is not null)
             {
-                using var context = contextFactory.CreateDbContext();
-                PPOApplication = await context.PPOApplication.FindAsync([PPOApplication.Id]);
+                PPOApplication = await ppoService.GetPPOApplicationById(PPOApplication.Id);
                 StateHasChanged();
             }
         }

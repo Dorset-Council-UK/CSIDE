@@ -1,26 +1,24 @@
-﻿using CSIDE.Data;
-using CSIDE.Data.Models.LandownerDeposits;
+﻿using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.LandownerDeposits
 {
-    public partial class LandownerDepositMediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<LandownerDepositMediaList> logger) : IAsyncDisposable
+    public partial class LandownerDepositMediaList(ILandownerDepositService landownerDepositService, IJSRuntime JS, ILogger<LandownerDepositMediaList> logger) : IAsyncDisposable
     {
         [Parameter]
         public LandownerDeposit? LandownerDeposit { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
-        private LandownerDepositMediaType[]? MediaTypes;
+        private ICollection<LandownerDepositMediaType> MediaTypes = [];
         private IJSObjectReference? _jsModule;
 
         protected override async Task OnInitializedAsync()
         {
-            using var context = contextFactory.CreateDbContext();
-            MediaTypes = [.. context.LandownerDepositMediaTypes.AsNoTracking().OrderBy(p => p.Id)];
+            MediaTypes = await landownerDepositService.GetLandownerDepositMediaTypeOptions();
 
             await base.OnInitializedAsync();
         }
@@ -49,20 +47,7 @@ namespace CSIDE.Web.Components.LandownerDeposits
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(LandownerDeposit);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        LandownerDeposit.LandownerDepositMedia.Add(new LandownerDepositMedia
-                        {
-                            LandownerDepositId = LandownerDeposit.Id,
-                            LandownerDepositSecondaryId = LandownerDeposit.SecondaryId,
-                            Media = media,
-                            MediaTypeId = mediaType.Id,
-                            MediaType = mediaType,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await landownerDepositService.AddMediaToLandownerDeposit(LandownerDeposit, UploadedMedia, mediaType);
                 }
                 catch (Exception e)
                 {
@@ -75,8 +60,7 @@ namespace CSIDE.Web.Components.LandownerDeposits
         {
             if (LandownerDeposit is not null)
             {
-                using var context = contextFactory.CreateDbContext();
-                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id, LandownerDeposit.SecondaryId]);
+                LandownerDeposit = await landownerDepositService.GetLandownerDepositById(LandownerDeposit.Id, LandownerDeposit.SecondaryId);
                 StateHasChanged();
             }
         }

@@ -1,28 +1,25 @@
 using AutoMapper;
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
-using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
 using CSIDE.Data.Services;
 using CSIDE.Web.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ProjNet.CoordinateSystems;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
     public partial class Validate(
-        IDbContextFactory<ApplicationDbContext> contextFactory,
+        IInfrastructureService infrastructureService,
         NavigationManager navigationManager,
         ILogger<Validate> logger,
         IMapper mapper,
         ISettingsService settingsService,
-        IMaintenanceJobsService maintenanceJobsService
+        IMaintenanceJobsService maintenanceJobsService,
+        ISharedDataService sharedDataService
     ) {
         [Parameter]
         public int SurveyId { get; init; }
@@ -57,9 +54,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         protected override async Task OnParametersSetAsync()
         {
             //get survey
-            using var context = contextFactory.CreateDbContext();
-            Survey = await  context.BridgeSurveys
-                .FindAsync(SurveyId);
+            Survey = await infrastructureService.GetBridgeSurveyById(SurveyId);
             if (Survey is null)
             {
                 navigationManager.NavigateTo("/surveys/bridge/new");
@@ -82,7 +77,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             if (Survey is not null)
             {
                 //add to recent work store
-                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{Survey.Id}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -97,11 +92,6 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                //get the existing job to enable the smarter change tracker.
-                //Without this, all properties are identified as tracked, since
-                //the DbContext is different from when the entity was queried
-                var existingSurvey = await context.BridgeSurveys.IgnoreAutoIncludes().Where(s => s.Id == SurveyId).FirstAsync() ?? throw new Exception($"Survey being edited (ID: {SurveyId}) was not found prior to updating");
                 if (ApproveSurvey.HasValue && ApproveSurvey.Value)
                 {
                     Survey.Status = SurveyStatus.Verified;
@@ -111,25 +101,20 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                     Survey.Status = SurveyStatus.Rejected;
                 }
                 
-                context.Entry(existingSurvey).CurrentValues.SetValues(Survey);
+                await infrastructureService.UpdateBridgeSurvey(SurveyId, Survey);
 
-                var infra = await context.Infrastructure.FindAsync(Survey.InfrastructureItemId);
+                var infra = await infrastructureService.GetInfrastructureItemById(Survey.InfrastructureItemId);
                 Job? createdMaintJob = null;
                 if (infra is not null)
                 {
                     if (UpdateBridgeDetails)
                     {
-                        if (infra is null)
-                        {
-                            throw new Exception($"Infrastructure item (ID: {Survey.InfrastructureItemId}) was not found prior to updating");
-                        }
                         if (infra.BridgeDetails is null)
                         {
                             // Create a new InfrastructureBridgeDetails instance
                             var mapped = mapper.Map<InfrastructureBridgeDetails>(Survey);
                             infra.BridgeDetails = mapped;
                             infra.BridgeDetails.InfrastructureId = infra.Id;
-                            context.InfrastructureBridgeDetails.Add(infra.BridgeDetails);
                         }
                         else
                         {
@@ -142,41 +127,29 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                     //Update bridge details and location
                     if (UpdateBridgeLocation && SurveyHasUpdatedLocation)
                     {
-                        var sql = @"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({0}, {1}), 4326), 27700) AS ""Geom""";
 
                         // Execute the query and map the result to the GeometryResult class
-                        var transformedPoint = await context.Database
-                            .SqlQueryRaw<PointGeometryResult>(sql, Survey.UpdatedX!.Value, Survey.UpdatedY!.Value)
-                            .FirstOrDefaultAsync();
+                        var transformedPoint = await sharedDataService.TransformCoordinates(Survey.UpdatedX!.Value, Survey.UpdatedY!.Value, 4326,27700);
 
                         if (transformedPoint?.Geom != null)
                         {
                             infra.Geom = transformedPoint.Geom;
                         }
                     }
+
+                    await infrastructureService.UpdateInfrastructureItem(infra);
+
                     //Add media
                     if (AddMediaToBridge)
                     {
-                        foreach (var media in Survey.SurveyMedia)
-                        {
-                            if (media is null)
-                            {
-                                continue;
-                            }
-                            var infraMedia = new InfrastructureMedia
-                            {
-                                InfrastructureItemId = infra.Id,
-                                MediaId = media.MediaId,
-                            };
-                            context.InfrastructureMedia.Add(infraMedia);
-                        }
+                        await infrastructureService.AddMediaToInfrastructureItem(infra, [.. Survey.SurveyMedia.Select(m => m.Media)]);
                     }
 
                     //Create maint job
                     if (CreateMaintJob && !string.IsNullOrEmpty(Survey.RepairsRequired))
                     {
-                        var DefaultJobStatus = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).FirstAsync();
-                        var DefaultJobPriority = await context.MaintenanceJobPriorities.OrderBy(s => s.SortOrder).FirstAsync();
+                        var DefaultJobStatus = (await maintenanceJobsService.GetMaintenanceJobStatuses()).OrderBy(s => s.SortOrder).First();
+                        var DefaultJobPriority = (await maintenanceJobsService.GetMaintenanceJobPriorities()).OrderBy(s => s.SortOrder).First();
                         var maintJob = new Job
                         {
                             Geom = infra.Geom,
@@ -184,21 +157,16 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                             JobStatusId = DefaultJobStatus.Id,
                             JobPriorityId = DefaultJobPriority.Id,
                         };
-                        var jobInfra = new JobInfrastructure
-                        {
-                            InfrastructureId = infra.Id,
-                            Job = maintJob,
-                        };
                         if (AuthenticationState != null)
                         {
                             var authState = await AuthenticationState;
                             maintJob.LoggedById = authState.GetUserId();
                             maintJob.LoggedByName = authState.GetUserName();
                         }
+                        
                         createdMaintJob = await maintenanceJobsService.CreateMaintenanceJob(maintJob, []);
-                        context.MaintenanceJobInfrastructure.Add(jobInfra);
+                        await maintenanceJobsService.AddInfrastructureToJob(createdMaintJob, infra);
                     }
-                    await context.SaveChangesAsync();
                 }
                 if(createdMaintJob is not null)
                 {

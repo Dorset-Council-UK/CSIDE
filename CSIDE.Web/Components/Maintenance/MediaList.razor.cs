@@ -1,14 +1,12 @@
-﻿using CSIDE.Data;
-using CSIDE.Data.Models.Maintenance;
+﻿using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.Maintenance
 {
-    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<MediaList> logger, IMaintenanceJobsService maintenanceJobsService) : IAsyncDisposable
+    public partial class MediaList(IJSRuntime JS, ILogger<MediaList> logger, IMaintenanceJobsService maintenanceJobsService) : IAsyncDisposable
     {
         [Parameter]
         public Job? Job { get; set; }
@@ -51,17 +49,7 @@ namespace CSIDE.Web.Components.Maintenance
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(Job);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        Job.JobMedia.Add(new JobMedia
-                        {
-                            JobId = Job.Id,
-                            Media = media,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await maintenanceJobsService.AddMediaToJob(Job, UploadedMedia);
                 }
                 catch (Exception ex)
                 {

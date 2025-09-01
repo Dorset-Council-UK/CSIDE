@@ -1,23 +1,26 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Pages.RightsOfWay
 {
-    public partial class Index(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Index(
+        IRightsOfWayService rightsOfWayService,
+        IMaintenanceJobsService maintenanceJobsService,
+        ISharedDataService sharedDataService,
+        NavigationManager navigationManager)
     {
 
         private List<BreadcrumbItem>? NavItems;
         private Search? SearchParams;
         private string? RouteIDSearch;
-        private OperationalStatus[]? OperationalStatuses { get; set; }
-        private RouteType[]? RouteTypes { get; set; }
-        private Data.Models.Maintenance.Team[]? MaintenanceTeams { get; set; }
-        private Parish[]? Parishes { get; set; }
+        private IReadOnlyCollection<OperationalStatus> OperationalStatuses { get; set; } = [];
+        private IReadOnlyCollection<RouteType> RouteTypes { get; set; } = [];
+        private IReadOnlyCollection<Data.Models.Maintenance.Team> MaintenanceTeams { get; set; } = [];
+        private IReadOnlyCollection<Parish> Parishes { get; set; } = [];
         private string? RouteIDSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
 
@@ -32,11 +35,10 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 new() { Text = localizer["Rights of Way Title"], IsCurrentPage = true },
             ];
 
-            using var context = contextFactory.CreateDbContext();
-            OperationalStatuses = await context.RouteOperationalStatuses.ToArrayAsync();
-            RouteTypes = await context.RouteTypes.ToArrayAsync();
-            MaintenanceTeams = await context.MaintenanceTeams.ToArrayAsync();
-            Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
+            OperationalStatuses = await rightsOfWayService.GetOperationalStatusOptions();
+            RouteTypes = await rightsOfWayService.GetRouteTypeOptions();
+            MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
+            Parishes = await sharedDataService.GetParishes();
             SearchParams = new();
         }
 
@@ -48,8 +50,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 RouteIDSearchErrorMessage = null;
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    var routeExists = await context.Routes.AnyAsync(j => j.RouteCode == RouteIDSearch);
+                    var routeExists = await rightsOfWayService.RouteExists(RouteIDSearch);
                     if (routeExists)
                     {
                         navigationManager.NavigateTo($"rights-of-way/Details/{RouteIDSearch}");

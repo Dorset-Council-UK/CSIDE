@@ -1,6 +1,8 @@
-﻿@inject IDbContextFactory<ApplicationDbContext> _contextFactory
+﻿@using CSIDE.Data.Services
+@using CSIDE.Data.Models.Infrastructure
+@inject IInfrastructureService infrastructureService
 
-@if (infrastructureItems.Length == 0)
+@if (infrastructureItems.Count == 0)
 {
     <Alert Color="AlertColor.Info">@localizer["No Route Infra Message"]</Alert>
 }
@@ -31,13 +33,10 @@ else
     [Parameter]
     public required string RouteId { get; set; }
 
-    private CSIDE.Data.Models.Infrastructure.InfrastructureItem[] infrastructureItems { get; set; } = [];
+    private ICollection<InfrastructureItem> infrastructureItems { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = _contextFactory.CreateDbContext();
-        infrastructureItems = await context.Infrastructure
-            .Where(i => i.RouteId == RouteId)
-            .ToArrayAsync();
+        infrastructureItems = await infrastructureService.GetInfrastructureItemsByRouteId(RouteId);
     }
 }

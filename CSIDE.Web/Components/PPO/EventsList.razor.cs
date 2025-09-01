@@ -1,14 +1,13 @@
 ﻿using Blazored.FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
-using CSIDE.Data;
-using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.PPO;
 using NodaTime;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.PPO
 {
-    public partial class EventsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<EventsList> logger)
+    public partial class EventsList(IPPOService ppoService, ILogger<EventsList> logger)
     {
         [Parameter]
         public Application? PPOApplication { get; set; }
@@ -49,8 +48,6 @@ namespace CSIDE.Web.Components.PPO
                 {
                     if (NewEvent is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-
                         if (AuthenticationStateTask != null)
                         {
                             var authState = await AuthenticationStateTask;
@@ -58,8 +55,7 @@ namespace CSIDE.Web.Components.PPO
                             NewEvent.AuthorName = authState.GetUserName();
                         }
 
-                        context.PPOEvents.Add(NewEvent);
-                        await context.SaveChangesAsync();
+                        await ppoService.AddEventToPPO(NewEvent);
                         await RefreshComponent();
                     }
                 }
@@ -107,8 +103,7 @@ namespace CSIDE.Web.Components.PPO
                     EventText = string.Empty,
                     EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
-                using var context = contextFactory.CreateDbContext();
-                PPOApplication = await context.PPOApplication.FindAsync([PPOApplication.Id]);
+                PPOApplication = await ppoService.GetPPOApplicationById(PPOApplication.Id);
                 StateHasChanged();
             }
         }

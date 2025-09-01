@@ -52,13 +52,13 @@
 
 @if (Contact is not null && IsEditable)
 {
-    <Modal @ref="EditContactModal" Title="@localizer["Edit Contact Title"]">
+    <Modal @ref="EditContactModal" Title="@localizer["Edit Contact Title"]" OnHidden="OnModalHidingAsync">
 
         <BodyTemplate>
             @if(ErrorMessage is not null){
                 <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
             }
-            <ContactEditForm ContactToEdit="Contact"
+            <ContactEditForm ContactToEdit="WorkingContact"
                              ContactTypes="ContactTypes"
                              OnSubmit="SubmitFormAsync"
                              OnCancel="HideEditContactModal"

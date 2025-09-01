@@ -1,23 +1,22 @@
 ﻿using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Services;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
 namespace CSIDE.Data.Validators.DMMO
 {
     public class DMMOLinkedRouteValidator : AbstractValidator<DMMOLinkedRoute>
     {
-        readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        readonly IDMMOService _dmmoService;
         readonly IStringLocalizer<CSIDE.Shared.Properties.Resources> _localizer;
-        readonly IRightsOfWayHelperService _rightsOfWayHelper;
+        readonly IRightsOfWayService _rightsOfWayHelper;
 
-        public DMMOLinkedRouteValidator(IDbContextFactory<ApplicationDbContext> contextFactory,
+        public DMMOLinkedRouteValidator(IDMMOService dmmoService, 
             IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer,
-            IRightsOfWayHelperService rightsOfWayHelperService)
+            IRightsOfWayService rightsOfWayHelperService)
         {
+            _dmmoService = dmmoService;
             _localizer = localizer;
-            _contextFactory = contextFactory;
             _rightsOfWayHelper = rightsOfWayHelperService;
             RuleFor(d => d.RouteId)
                 .NotEmpty().WithName(_localizer["Route ID Label"])
@@ -33,21 +32,19 @@ namespace CSIDE.Data.Validators.DMMO
 
         private async Task<bool> RouteIDNotAlreadyLinked(string RouteId, int ApplicationId, CancellationToken ct)
         {
-            using var context = _contextFactory.CreateDbContext();
-            var DMMOLinkedRoute = await context.DMMOLinkedRoutes.FindAsync([ApplicationId, RouteId], cancellationToken: ct);
-            return DMMOLinkedRoute is null; 
+            var routes = await _dmmoService.GetDMMOLinkedRoutesByApplicationId(ApplicationId, ct);
+            return routes.Any(r => r.RouteId == RouteId) is false;
         }
 
         private async Task<bool> RouteIDExists(string RouteId, CancellationToken ct)
         {
-            return await _rightsOfWayHelper.RouteExistsAsync(RouteId);
+            return await _rightsOfWayHelper.RouteExists(RouteId, ct);
         }
 
         private async Task<bool> DMMOApplicationExists(int ApplicationId, CancellationToken ct)
         {
-            using var context = _contextFactory.CreateDbContext();
-            var DMMOApplication = await context.DMMOApplication.FindAsync([ApplicationId], cancellationToken: ct);
-            return DMMOApplication is not null;
+            var application = await _dmmoService.GetDMMOApplicationById(ApplicationId, ct);
+            return application is not null;
         }
 
     }

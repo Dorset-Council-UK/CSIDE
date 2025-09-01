@@ -1,13 +1,12 @@
-﻿using CSIDE.Data;
-using CSIDE.Data.Models.RightsOfWay;
+﻿using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 namespace CSIDE.Web.Components.RightsOfWay
 {
-    public partial class MediaList(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<MediaList> logger) : IAsyncDisposable
+    public partial class MediaList(IRightsOfWayService rightsOfWayService, IJSRuntime JS, ILogger<MediaList> logger) : IAsyncDisposable
     {
         [Parameter]
         public Data.Models.RightsOfWay.Route? Route { get; set; }
@@ -49,18 +48,7 @@ namespace CSIDE.Web.Components.RightsOfWay
             {
                 try
                 {
-                    using var context = contextFactory.CreateDbContext();
-                    context.Attach(Route);
-                    foreach (Media media in UploadedMedia)
-                    {
-                        Route.RouteMedia.Add(new RouteMedia
-                        {
-                            RouteId = Route.RouteCode,
-                            IsClosureNotificationDocument = IsClosureNotificationDocument,
-                            Media = media,
-                        });
-                    }
-                    await context.SaveChangesAsync();
+                    await rightsOfWayService.AddMediaToRoute(Route, UploadedMedia, IsClosureNotificationDocument);
                 }
                 catch (Exception ex)
                 {
@@ -82,8 +70,7 @@ namespace CSIDE.Web.Components.RightsOfWay
         {
             if (Route is not null)
             {
-                using var context = contextFactory.CreateDbContext();
-                Route = await context.Routes.FindAsync([Route.RouteCode]);
+                Route = await rightsOfWayService.GetRouteByCode(Route.RouteCode);
                 StateHasChanged();
             }
         }

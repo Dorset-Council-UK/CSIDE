@@ -1,6 +1,5 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.RightsOfWay
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <a href="rights-of-way#search-form">@localizer["Search Again Label"]</a>
@@ -60,7 +59,7 @@
 
 @code {
     [Parameter]
-    public required List<Route> Routes{ get; set; }
+    public required ICollection<Route> Routes{ get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 

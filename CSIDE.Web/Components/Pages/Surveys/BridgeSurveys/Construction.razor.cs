@@ -1,16 +1,15 @@
 using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using CSIDE.Web.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
     public partial class Construction(
-        IDbContextFactory<ApplicationDbContext> contextFactory,
+        IInfrastructureService infrastructureService,
         NavigationManager navigationManager,
         ILogger<Construction> logger,
         ISettingsService settingsService)
@@ -20,7 +19,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         [SupplyParameterFromQuery]
         public bool FromSummary { get; init; }
         private BridgeSurvey? Survey { get; set; }
-        private Material[]? Materials { get; set; }
+        private ICollection<Material> Materials { get; set; } = [];
 
         public string? ErrorMessage { get; set; }
         public bool IsBusy { get; set; }
@@ -46,8 +45,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         protected override async Task OnParametersSetAsync()
         {
             //get survey
-            using var context = contextFactory.CreateDbContext();
-            Survey = await context.BridgeSurveys.IgnoreAutoIncludes().Where(s => s.Id == SurveyId).FirstOrDefaultAsync();
+            Survey = await infrastructureService.GetBridgeSurveyById(SurveyId);
             if (Survey is null)
             {
                 navigationManager.NavigateTo("/surveys/bridge/new");
@@ -58,7 +56,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 navigationManager.NavigateTo($"surveys/bridge/{Survey.Id}/details");
                 return;
             }
-            Materials = await context.Materials.OrderBy(x => x.Name).ToArrayAsync();
+            Materials = await infrastructureService.GetBridgeSurveyMaterialOptions();
             OnRadioChange();
         }
 
@@ -67,7 +65,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             if (Survey is not null)
             {
                 //add to recent work store
-                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{Survey.Id}", "Survey", Survey.Status.Humanize(), $"surveys/bridge/{Survey.Id}/details");
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -81,15 +79,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                //get the existing job to enable the smarter change tracker.
-                //Without this, all properties are identified as tracked, since
-                //the DbContext is different from when the entity was queried
-                var existingSurvey = await context.BridgeSurveys.IgnoreAutoIncludes().Where(s => s.Id == SurveyId).FirstAsync() ?? throw new Exception($"Survey being edited (ID: {SurveyId}) was not found prior to updating");
-
-                context.Entry(existingSurvey).CurrentValues.SetValues(Survey);
-
-                await context.SaveChangesAsync();
+                await infrastructureService.UpdateBridgeSurvey(SurveyId, Survey);
                 if (FromSummary)
                 {
                     navigationManager.NavigateTo($"surveys/bridge/{Survey.Id}/summary");

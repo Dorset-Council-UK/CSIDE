@@ -1,6 +1,5 @@
 ﻿using CSIDE.Data.Services;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
@@ -9,13 +8,11 @@ namespace CSIDE.Data.Validators.Geometry
 {
     public class GeometryValidator : AbstractValidator<FeatureCollection>
     {
-        readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         readonly IStringLocalizer<CSIDE.Shared.Properties.Resources> _localizer;
-        readonly IRightsOfWayHelperService _geometryValidationService;
-        public GeometryValidator(IDbContextFactory<ApplicationDbContext> contextFactory, IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer, IRightsOfWayHelperService geometryValidationService)
+        readonly IRightsOfWayService _geometryValidationService;
+        public GeometryValidator(IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer, IRightsOfWayService geometryValidationService)
         {
             _localizer = localizer;
-            _contextFactory = contextFactory;
             _geometryValidationService = geometryValidationService;
 
             RuleSet("Single Point", () =>
@@ -101,7 +98,7 @@ namespace CSIDE.Data.Validators.Geometry
             var point = features[0].Geometry.Centroid;
             point.SRID = 27700;
             
-            var NearestRoute = await _geometryValidationService.GetNearestRouteAsync(point);
+            var NearestRoute = await _geometryValidationService.GetNearestRoute(point);
 
             return (NearestRoute is not null);
         }

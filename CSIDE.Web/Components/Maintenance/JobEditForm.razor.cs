@@ -13,7 +13,7 @@ public partial class JobEditForm()
     [Parameter]
     public JobPriority[]? JobPriorities { get; set; }
     [Parameter]
-    public Team[]? MaintenanceTeams { get; set; }
+    public IReadOnlyCollection<Team> MaintenanceTeams { get; set; } = [];
     [Parameter]
     public ProblemType[]? ProblemTypes { get; set; }
     [Parameter]

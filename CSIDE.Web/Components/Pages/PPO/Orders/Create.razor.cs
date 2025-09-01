@@ -1,15 +1,15 @@
 using BlazorBootstrap;
 using CSIDE.Web.Components.PPO;
-using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.Pages.PPO.Orders
 {
     public partial class Create(
-        IDbContextFactory<ApplicationDbContext> contextFactory, 
+        IPPOService ppoService,
         NavigationManager navigationManager,
         ILogger<Create> logger) {
         private List<BreadcrumbItem>? NavItems;
@@ -18,8 +18,8 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
 
         private Application? PPOApplication { get; set; }
         private PPOOrder? Order { get; set; }
-        private OrderDecisionOfSecState[]? DecisionOfSecStateOptions;
-        private OrderDeterminationProcess[]? DeterminationProcessOptions;
+        private IReadOnlyCollection<OrderDecisionOfSecState> DecisionOfSecStateOptions = [];
+        private IReadOnlyCollection<OrderDeterminationProcess> DeterminationProcessOptions = [];
         private OrderEditForm? childPPOOrderEditForm;
         private bool IsBusy { get; set; } = false;
         private string? ErrorMessage { get; set; } = null;  
@@ -33,18 +33,11 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                 new BreadcrumbItem{ Text = localizer["PPO Create Order Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}"], IsCurrentPage = true },
             ];
             IsBusy = true;
-            using var context = contextFactory.CreateDbContext();
-            PPOApplication = await context.PPOApplication.FindAsync(PPOApplicationId);
-            if(PPOApplication is not null)
+            PPOApplication = await ppoService.GetPPOApplicationById(PPOApplicationId);
+            if (PPOApplication is not null)
             {
-                DecisionOfSecStateOptions = await context.OrderDecisionsOfSecState
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
-                DeterminationProcessOptions = await context.OrderDeterminationProcesses
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
+                DecisionOfSecStateOptions = await ppoService.GetOrderDecisionOfSecStateOptions();
+                DeterminationProcessOptions = await ppoService.GetOrderDeterminationProcessOptions();
                 Order = new PPOOrder() { ApplicationId = PPOApplicationId };
             }
             IsBusy = false;
@@ -65,9 +58,7 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                 {
                     if (Order is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        context.Add(Order);
-                        await context.SaveChangesAsync();
+                        await ppoService.AddOrderToPPO(Order);
                         //redirect
                         navigationManager.NavigateTo($"PPO/Details/{Order.ApplicationId}");
                     }

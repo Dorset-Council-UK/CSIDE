@@ -1,26 +1,26 @@
 using BlazorBootstrap;
-using CSIDE.Data;
-using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using CSIDE.Shared.Options;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
-    public partial class New(IDbContextFactory<ApplicationDbContext> contextFactory,
-                             NavigationManager navigationManager,
-                             IOptions<MappingOptions> opts,
-                             IJSRuntime JS) : IAsyncDisposable
+    public partial class New(
+        IInfrastructureService infrastructureService,
+        ISharedDataService sharedDataService,
+        NavigationManager navigationManager,
+        IOptions<MappingOptions> opts,
+        IJSRuntime JS) : IAsyncDisposable
     {
 
         private List<BreadcrumbItem>? NavItems;
         private string? InfrastructureIDSearch;
         private string? InfrastructureIDSearchErrorMessage { get; set; }
-        private List<BridgeWithDistance>? NearbyBridges { get; set; }
+        private ICollection<BridgeWithDistance>? NearbyBridges { get; set; }
         public string? LocationFetchErrrorMessage { get; set; }
         public bool IsBusy { get; set; }
         public bool IsLocating { get; set; }
@@ -59,8 +59,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 {
                     if (int.TryParse(InfrastructureIDSearch, CultureInfo.InvariantCulture, out int InfrastructureIDSearchInt))
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        var infrastructureExists = await context.Infrastructure.AnyAsync(j => j.Id == InfrastructureIDSearchInt);
+                        var infrastructureExists = await infrastructureService.GetInfrastructureItemById(InfrastructureIDSearchInt) is not null;
                         if (infrastructureExists)
                         {
                             navigationManager.NavigateTo($"surveys/bridge/start/{InfrastructureIDSearchInt}");
@@ -109,33 +108,17 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 throw new ArgumentException("Response must be supplied as an array of 3 values", paramName: nameof(response));
             }
 
-            using var context = contextFactory.CreateDbContext();
 
-            var sql = @"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({0}, {1}), 4326), 27700) AS ""Geom""";
 
-            // Execute the query and map the result to the GeometryResult class
-            var transformedPoint = await context.Database
-                .SqlQueryRaw<PointGeometryResult>(sql, response[1], response[0])
-                .FirstOrDefaultAsync();
-
-            //NearbyBridges = await context.Infrastructure
-            //    .Where(i => i.Geom != null && EF.Functions.Transform(i.Geom,4326).IsWithinDistance(point,150))
-            //    .OrderBy(i => EF.Functions.Transform(i.Geom!, 4326).Distance(point))
-            //    .Select(i => new BridgeWithDistance(i, EF.Functions.Transform(i.Geom!, 4326).Distance(point)))
-            //    .Take(5)
-            //    .ToListAsync();
-
+            var transformedPoint = await sharedDataService.TransformCoordinates(response[0], response[1], 4326, 27700);
             if (transformedPoint is null)
             {
                 LocationFetchErrrorMessage = localizer["General Error Message"];
             }
             else
             {
-                NearbyBridges = await context.Infrastructure
-                .Where(i => i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, 250))
-                .OrderBy(i => i.Geom!.Distance(transformedPoint.Geom))
-                .Select(i => new BridgeWithDistance(i, i.Geom!.Distance(transformedPoint.Geom)))
-                .ToListAsync();
+
+                NearbyBridges = await infrastructureService.GetNearbyBridges(transformedPoint, 250);
             }
 
             StateHasChanged();
@@ -166,7 +149,5 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 GC.SuppressFinalize(this);
             }
         }
-
-        private record BridgeWithDistance(InfrastructureItem Bridge, double Distance);
     }
 }

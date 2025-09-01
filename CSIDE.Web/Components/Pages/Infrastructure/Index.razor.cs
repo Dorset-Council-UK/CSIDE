@@ -1,23 +1,26 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.Maintenance;
 using System.Globalization;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.Pages.Infrastructure
 {
-    public partial class Index(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager)
+    public partial class Index(
+        IInfrastructureService infrastructureService,
+        IMaintenanceJobsService maintenanceJobsService,
+        ISharedDataService sharedDataService,
+        NavigationManager navigationManager)
     {
         private List<BreadcrumbItem>? NavItems;
         private InfrastructureSearch? SearchParams;
         private string? InfrastructureIDSearch;
-        private InfrastructureType[]? InfrastructureTypes;
-        private Parish[]? Parishes { get; set; }
-        private Team[]? MaintenanceTeams { get; set; }
+        private ICollection<InfrastructureType> InfrastructureTypes = [];
+        private IReadOnlyCollection<Parish> Parishes { get; set; } = [];
+        private IReadOnlyCollection<Team> MaintenanceTeams { get; set; } = [];
 
         private string? InfrastructureIDSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
@@ -33,10 +36,9 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
             new() { Text = localizer["Home Title"], Href = "" },
             new() { Text = localizer["Infrastructure Title"], IsCurrentPage = true },
         ];
-            using var context = contextFactory.CreateDbContext();
-            Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
-            InfrastructureTypes = await context.InfrastructureTypes.OrderBy(t => t.Name).ToArrayAsync();
-            MaintenanceTeams = await context.MaintenanceTeams.OrderBy(p => p.Name).ToArrayAsync();
+            Parishes = await sharedDataService.GetParishes();
+            InfrastructureTypes = await infrastructureService.GetInfrastructureTypeOptions();
+            MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
             SearchParams = new();
         }
         private async Task OnInfrastructureIDSearchSubmit()
@@ -49,8 +51,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 {
                     if (int.TryParse(InfrastructureIDSearch, CultureInfo.InvariantCulture, out int InfrastructureIDSearchInt))
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        var infrastructureExists = await context.Infrastructure.AnyAsync(j => j.Id == InfrastructureIDSearchInt);
+                        var infrastructureExists = await infrastructureService.GetInfrastructureItemById(InfrastructureIDSearchInt) is not null;
                         if (infrastructureExists)
                         {
                             navigationManager.NavigateTo($"Infrastructure/Details/{InfrastructureIDSearchInt}");

@@ -2,7 +2,6 @@
 @using CSIDE.Data.Models.Maintenance
 @using NodaTime
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
 @inject NavigationManager navigationManager
 
 <a href="Maintenance#search-form">@localizer["Search Again Label"]</a>
@@ -68,7 +67,7 @@ Responsive="true">
 
 @code {
     [Parameter]
-    public required List<Job> Jobs { get; set; }
+    public required IReadOnlyCollection<Job> Jobs { get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 

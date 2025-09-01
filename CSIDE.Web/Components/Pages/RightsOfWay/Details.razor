@@ -1,5 +1,6 @@
 ﻿@page "/rights-of-way/Details/{*RouteID}"
 @using CSIDE.Data.Models.RightsOfWay
+@using CSIDE.Data.Services
 @using CSIDE.Web.Components.RightsOfWay
 @using CSIDE.Web.Components.Mapping
 @using CSIDE.Web.Components.Layout
@@ -7,7 +8,7 @@
 @using CSIDE.Shared.Options
 @using CSIDE.Web.Services
 @using Microsoft.Extensions.Options
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IRightsOfWayService rightsOfWayService
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
@@ -240,8 +241,7 @@ else
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            Route = await context.Routes.FindAsync(RouteId);
+            Route = await rightsOfWayService.GetRouteByCode(RouteId);
         }
         finally
         {

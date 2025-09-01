@@ -55,7 +55,7 @@
     [Parameter]
     public Contact? ContactToEdit {get;set; }
     [Parameter]
-    public ContactType[]? ContactTypes{get;set;}
+    public IReadOnlyCollection<ContactType> ContactTypes { get; set; } = [];
     [Parameter]
     public bool IsBusy { get; set; }
     [Parameter]

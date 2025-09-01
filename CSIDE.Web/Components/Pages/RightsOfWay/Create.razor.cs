@@ -1,6 +1,5 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Mapping;
-using CSIDE.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO;
@@ -9,18 +8,22 @@ using FluentValidation;
 using CSIDE.Web.Components.RightsOfWay;
 using NetTopologySuite.Geometries;
 using CSIDE.Data.Models.RightsOfWay;
-using System.Globalization;
 using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.Pages.RightsOfWay
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService geometryValidationService)
+    public partial class Create(
+        IRightsOfWayService rightsOfWayService,
+        IMaintenanceJobsService maintenanceJobsService,
+        ISharedDataService sharedDataService,
+        NavigationManager navigationManager,
+        ILogger<Create> logger)
     {
         private Data.Models.RightsOfWay.Route? Route { get; set; }
-        private LegalStatus[]? LegalStatuses { get; set; }
-        private RouteType[]? RouteTypes { get; set; }
-        private OperationalStatus[]? OperationalStatuses { get; set; }
-        private Data.Models.Maintenance.Team[]? MaintenanceTeams { get; set; }
+        private IReadOnlyCollection<LegalStatus> LegalStatuses { get; set; } = [];
+        private IReadOnlyCollection<RouteType> RouteTypes { get; set; } = [];
+        private IReadOnlyCollection<OperationalStatus> OperationalStatuses { get; set; } = [];
+        private IReadOnlyCollection<Data.Models.Maintenance.Team> MaintenanceTeams { get; set; } = [];
 
 
         private RoWEditForm? childRouteEditForm;
@@ -44,11 +47,10 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                LegalStatuses = await context.RouteLegalStatuses.AsNoTracking().OrderBy(s => s.Id).ToArrayAsync();
-                RouteTypes = await context.RouteTypes.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                OperationalStatuses = await context.RouteOperationalStatuses.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
-                MaintenanceTeams = await context.MaintenanceTeams.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
+                LegalStatuses = await rightsOfWayService.GetLegalStatusOptions();
+                RouteTypes = await rightsOfWayService.GetRouteTypeOptions();
+                OperationalStatuses = await rightsOfWayService.GetOperationalStatusOptions();
+                MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
                 Route = new()
                 {
                     Geom = MultiLineString.Empty,
@@ -80,9 +82,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 {
                     if (Route is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        context.Add(Route);
-                        await context.SaveChangesAsync();
+                        await rightsOfWayService.CreateRoute(Route);
                         //redirect
                         navigationManager.NavigateTo($"rights-of-way/Details/{Route.RouteCode}");
                     }
@@ -116,7 +116,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)
@@ -154,13 +154,11 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             {
                 throw new ArgumentException("Bounding box must have 4 values", paramName: nameof(bbox));
             }
-            using var context = contextFactory.CreateDbContext();
-            //create a polygon from the bounding box
             var bboxPolygon = new Polygon(new LinearRing([new(bbox[0], bbox[1]), new(bbox[2], bbox[1]), new(bbox[2], bbox[3]), new(bbox[0], bbox[3]), new(bbox[0], bbox[1])]))
             {
                 SRID = 27700,
             };
-            var routes = await context.Routes.Where(g => g.Geom.Intersects(bboxPolygon)).Select(g => g.Geom).ToArrayAsync();
+            ICollection<Geometry> routes = await rightsOfWayService.GetRoutesIntersecting(bboxPolygon);
             //convert routes to geojson
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
@@ -177,52 +175,43 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
 
         private async Task<string> GetNextAvailableRouteCode(Geometry geom)
         {
-            using var context = contextFactory.CreateDbContext();
             //get the parish that the geometry falls within
-            var parish = await context.Parishes.Where(p => p.Geom.Intersects(geom)).ToListAsync();
-            var code = "XXX";
-            if (parish.Count == 0)
+            var parishes = await sharedDataService.GetParishesIntersecting(geom);
+            var parishCode = "XXX";
+            string nextAvailableRouteCode = $"{parishCode}/XX";
+            if (parishes.Count == 0)
             {
                 //no parish found. Warn user
                 ParishValidationMessage = localizer["No Parish Found Error Message"];
-
-
             }
-            else if (parish.Count == 1)
+            else if (parishes.Count == 1)
             {
                 //single parish found
                 //get parish code
-                code = context.ParishCodes.Where(pc => pc.ParishId == parish[0].ParishId).Select(pc => pc.Code).FirstOrDefault();
+                parishCode = await sharedDataService.GetParishCodeByParishId(parishes.First().ParishId);
                 ParishValidationMessage = null;
 
             }
-            else if (parish.Count > 1)
+            else if (parishes.Count > 1)
             {
                 //multiple parishes found
-                var bestParish = await context.Parishes.Where(p => p.Geom.Intersects(geom)).OrderByDescending(p => p.Geom.Intersection(geom).Length).FirstOrDefaultAsync();
+                var bestParish = await sharedDataService.GetBestFitParish(geom);
                 if (bestParish is not null)
                 {
-                    code = context.ParishCodes.Where(pc => pc.ParishId == bestParish.ParishId).Select(pc => pc.Code).FirstOrDefault();
+                    parishCode = await sharedDataService.GetParishCodeByParishId(bestParish.ParishId);
                     ParishValidationMessage = localizer["Multiple Parish Codes Found Error Message", bestParish.Name];
                 }
             }
-            if (code is not null)
+            if (parishCode is not null)
             {
-                //get next available number
-                var routes = context.Routes.Where(r => r.RouteCode.StartsWith($"{code}/")).Select(r => r.RouteCode).ToArray();
-                //extract the highest number from the route code (e.g. 'W1/13' would return 13)
-                if(routes is null || routes.Length == 0)
-                {
-                    return $"{code}/1";
-                }
-                var highestNumber = routes
-                    .Select(r => int.Parse(r.Replace(code, "", StringComparison.OrdinalIgnoreCase)
-                    .Replace("/", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture))
-                    .Max();
-                return $"{code}/{highestNumber + 1}";
+                //get next available route code
+                nextAvailableRouteCode = await rightsOfWayService.GetNextAvailableRouteCodeForParish(parishCode) ?? "XXX/XX";
             }
-            ParishValidationMessage = localizer["No Parish Found Error Message"];
-            return "XXX/XX";
+            if(string.Equals(nextAvailableRouteCode, "XXX/XX", StringComparison.OrdinalIgnoreCase))
+            {
+                ParishValidationMessage = localizer["No Parish Found Error Message"];
+            }
+            return nextAvailableRouteCode;
         }
     }
 }

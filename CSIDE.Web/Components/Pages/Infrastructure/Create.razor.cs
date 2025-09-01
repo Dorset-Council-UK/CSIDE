@@ -1,10 +1,8 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Mapping;
 using CSIDE.Web.Components.Infrastructure;
-using CSIDE.Data;
 using CSIDE.Data.Models.Infrastructure;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using FluentValidation;
@@ -12,7 +10,7 @@ using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.Pages.Infrastructure
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService geometryValidationService)
+    public partial class Create(IInfrastructureService infrastructureService, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayService rightsOfWayService)
     {
         private List<BreadcrumbItem>? NavItems;
         private Modal routeValidationModal = default!;
@@ -21,7 +19,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
         private CreateMap? createMap;
 
         private InfrastructureItem? InfrastructureItem { get; set; }
-        private InfrastructureType[]? InfrastructureTypes { get; set; }
+        private ICollection<InfrastructureType> InfrastructureTypes { get; set; } = [];
 
         private bool IsBusy { get; set; }
         private string? ErrorMessage { get; set; }
@@ -37,8 +35,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 new() { Text = localizer["Infrastructure Create Title"], IsCurrentPage = true },
             ];
 
-            using var context = contextFactory.CreateDbContext();
-            InfrastructureTypes = await context.InfrastructureTypes.OrderBy(n => n.Name).ToArrayAsync();
+            InfrastructureTypes = await infrastructureService.GetInfrastructureTypeOptions();
             InfrastructureItem = new()
             {
                 InfrastructureTypeId = InfrastructureTypes.FirstOrDefault()?.Id,
@@ -61,11 +58,8 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 {
                     if (InfrastructureItem is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
 
-                        context.Infrastructure.Add(InfrastructureItem);
-                        await context.SaveChangesAsync();
-                       
+                        await infrastructureService.CreateInfrastructureItem(InfrastructureItem);
                         //redirect
                         navigationManager.NavigateTo($"Infrastructure/Details/{InfrastructureItem.Id}");
                     }
@@ -90,7 +84,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Single Point", "Point On Route"));
             if (result.IsValid)
@@ -100,7 +94,7 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 {
                     InfrastructureItem.Geom = featureCollection[0].Geometry.Centroid;
                     InfrastructureItem.Geom.SRID = 27700;
-                    var NearestRoute = await geometryValidationService.GetNearestRouteAsync(InfrastructureItem.Geom);
+                    var NearestRoute = await rightsOfWayService.GetNearestRoute(InfrastructureItem.Geom);
                     if (NearestRoute is not null)
                     {
                         InfrastructureItem.RouteId = NearestRoute.RouteCode;

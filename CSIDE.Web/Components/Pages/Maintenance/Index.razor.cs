@@ -1,24 +1,22 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.Maintenance
 {
-    public partial class Index(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, IMaintenanceJobsService maintenanceJobsService)
+    public partial class Index(NavigationManager navigationManager, IMaintenanceJobsService maintenanceJobsService, ISharedDataService sharedDataService)
     {
         private List<BreadcrumbItem>? NavItems;
         private Search? SearchParams;
         private string? JobIDSearch;
         private JobStatus[]? JobStatuses { get; set; }
         private JobPriority[]? JobPriorities { get; set; }
-        private Team[]? MaintenanceTeams { get; set; }
-        private Parish[]? Parishes { get; set; }
+        private IReadOnlyCollection<Team> MaintenanceTeams { get; set; } = [];
+        private IReadOnlyCollection<Parish>? Parishes { get; set; }
         private string? JobIDSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
 
@@ -32,11 +30,10 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             new() { Text = localizer["Home Title"], Href = "" },
             new() { Text = localizer["Maintenance Title"], IsCurrentPage = true },
         ];
-            using var context = contextFactory.CreateDbContext();
-            JobStatuses = await context.MaintenanceJobStatuses.OrderBy(s => s.SortOrder).ToArrayAsync();
-            JobPriorities = await context.MaintenanceJobPriorities.OrderBy(p => p.SortOrder).ToArrayAsync();
-            MaintenanceTeams = await context.MaintenanceTeams.OrderBy(p => p.Name).ToArrayAsync();
-            Parishes = await context.Parishes.OrderBy(p => p.Name).ToArrayAsync();
+            JobStatuses = await maintenanceJobsService.GetMaintenanceJobStatuses();
+            JobPriorities = await maintenanceJobsService.GetMaintenanceJobPriorities();
+            MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
+            Parishes = await sharedDataService.GetParishes();
             SearchParams = new();
         }
 

@@ -1,15 +1,14 @@
 using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using CSIDE.Web.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
     public partial class Complete(
-        IDbContextFactory<ApplicationDbContext> contextFactory,
+        IInfrastructureService infrastructureService,
         NavigationManager navigationManager,
         ISettingsService settingsService)
     {
@@ -36,9 +35,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         protected override async Task OnParametersSetAsync()
         {
             //get survey
-            using var context = contextFactory.CreateDbContext();
-            Survey = await context.BridgeSurveys
-                .FindAsync(SurveyId);
+            Survey = await infrastructureService.GetBridgeSurveyById(SurveyId);
 
             if (Survey is null)
             {
@@ -62,7 +59,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             if (Survey is not null)
             {
                 //add to recent work store
-                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}/{Survey.InfrastructureItemId}", "Survey", Survey.Status.Humanize() , $"surveys/bridge/{Survey.Id}/details");
+                await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{Survey.Id}", "Survey", Survey.Status.Humanize() , $"surveys/bridge/{Survey.Id}/details");
             }
             await base.OnAfterRenderAsync(firstRender);
         }

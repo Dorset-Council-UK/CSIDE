@@ -10,7 +10,7 @@ namespace CSIDE.Web.Components.LandownerDeposits
         [Parameter]
         public LandownerDeposit? LandownerDeposit { get; set; }
         [Parameter]
-        public LandownerDepositTypeName[]? LandownerDepositTypeNames {  get; set; }
+        public ICollection<LandownerDepositTypeName> LandownerDepositTypeNames { get; set; } = [];
 
         [Parameter]
         public bool IsBusy { get; set; }

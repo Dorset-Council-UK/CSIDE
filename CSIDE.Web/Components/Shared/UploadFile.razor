@@ -1,7 +1,6 @@
 ﻿@using CSIDE.Data.Services
 @using CSIDE.Data.Models.Shared
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
-@inject IBlobStorageService blobStorageService
+@inject ISharedDataService sharedDataService
 @inject ILogger<UploadFile> logger
 
 @if(UploadSuccessMessage is not null)
@@ -85,26 +84,24 @@
                 {
                     throw new ValidationException(localizer["File Too Large Upload Error", MaxFileSizeMB, file.Name]);
                 }
-                var trustedFileNameForFileStorage = $"{Guid.NewGuid().ToString()}{System.IO.Path.GetExtension(file.Name)}";
-                var originalFileName = file.Name;
-                var blobUrl = await blobStorageService.UploadFileToBlobAsync(trustedFileNameForFileStorage, file.ContentType, file.OpenReadStream(MaxFileSize));
 
-                if (blobUrl != null)
+                var fileRequest = new FileUploadRequest
                 {
-                    //add to media table
-                    using var context = contextFactory.CreateDbContext();
-                    var mediaItem = new Data.Models.Shared.Media
-                        {
-                            URL = blobUrl,
-                            Title = originalFileName
-                        };
-                    context.Media.Add(mediaItem);
-                    await context.SaveChangesAsync();
+                    FileName = file.Name,
+                    ContentType = file.ContentType,
+                    FileStream = file.OpenReadStream(MaxFileSize),
+                    FileSize = file.Size
+                };
+
+                var mediaItem = await sharedDataService.UploadMedia(fileRequest);
+
+                if (mediaItem != null)
+                {
                     UploadedMediaItems.Add(mediaItem);
                     successfullyUploadedFiles += 1;
-
                 }
-                else{
+                else
+                {
                     UploadErrorMessages.Add(localizer["Upload Failure Message", file.Name]);
                     logger.LogError("An error occurred uploading a media item. No blob URL was returned from the storage service");
                 }

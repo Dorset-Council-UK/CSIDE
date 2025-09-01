@@ -1,8 +1,7 @@
 ﻿@using CSIDE.Data.Models.Shared
 @using CSIDE.Data.Services
 @using System.Globalization
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
-@inject IBlobStorageService blobStorageService
+@inject ISharedDataService sharedDataService
 @inject IJSRuntime JS
 @inject ILogger<MediaItem> logger
 
@@ -102,23 +101,13 @@
         {
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                var mediaToDelete = await context.Media.FindAsync([Media.Id]);
-                if (mediaToDelete is not null)
-                {
+                await sharedDataService.DeleteMediaItem(Media.Id);
 
-                    context.Remove(mediaToDelete);
-                    await context.SaveChangesAsync();
-                    if (!await blobStorageService.DeleteFileFromBlobByURLAsync(mediaToDelete.URL))
-                    {
-                        //TODO - Log storage deletion failure for administators. Users need not know.
-                        logger.LogWarning("An error occurred deleting media item with URL {0} from blob storage", mediaToDelete.URL);
-                    }
-                    if (OnRefreshComponent.HasDelegate)
-                    {
-                        await OnRefreshComponent.InvokeAsync();
-                    }
+                if (OnRefreshComponent.HasDelegate)
+                {
+                    await OnRefreshComponent.InvokeAsync();
                 }
+                
             }
             catch(Exception ex)
             {

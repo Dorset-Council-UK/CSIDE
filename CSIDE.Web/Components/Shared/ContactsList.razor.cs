@@ -1,12 +1,11 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Web.Components.Shared
 {
-    public partial class ContactsList(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public partial class ContactsList(ISharedDataService sharedDataService)
     {
         [Parameter]
         public Contact[]? Contacts { get; set; }
@@ -20,7 +19,7 @@ namespace CSIDE.Web.Components.Shared
         private Modal AddContactModal = default!;
         private bool IsBusy { get; set; }
         private Contact? NewContact { get; set; }
-        private ContactType[]? ContactTypes { get; set; }
+        private IReadOnlyCollection<ContactType> ContactTypes { get; set; } = [];
         private string? ErrorMessage { get; set; }
 
         private ContactEditForm? NewContactForm;
@@ -28,8 +27,7 @@ namespace CSIDE.Web.Components.Shared
         protected override async Task OnParametersSetAsync()
         {
             NewContact = new();
-            using var context = contextFactory.CreateDbContext();
-            ContactTypes = await context.ContactTypes.OrderBy(c => c.Id).ToArrayAsync();
+            ContactTypes = await sharedDataService.GetContactTypeOptions();
         }
 
         private async Task SubmitFormAsync()

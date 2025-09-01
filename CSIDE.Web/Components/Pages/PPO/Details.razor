@@ -1,5 +1,6 @@
 ﻿@page "/PPO/Details/{Id:int}"
 @using CSIDE.Data.Models.PPO
+@using CSIDE.Data.Services
 @using CSIDE.Web.Components.PPO
 @using CSIDE.Web.Components.Mapping
 @using CSIDE.Web.Components.Layout
@@ -9,7 +10,7 @@
 @using CSIDE.Web.Services
 @using Humanizer
 @using Microsoft.Extensions.Options
-@inject IDbContextFactory<ApplicationDbContext> contextFactory
+@inject IPPOService ppoService
 @inject NavigationManager navigationManager
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
@@ -165,7 +166,7 @@ else
                         <ErrorBoundary>
                             <ChildContent>
                                 <PPOOrdersList 
-                                    Orders="PPOApplication.Orders.ToArray()"
+                                    Orders="PPOApplication.Orders"
                                     IsEditable="UserCanEdit" 
                                     PPOApplicationId="PPOApplication.Id">
                                 </PPOOrdersList>
@@ -311,8 +312,7 @@ else
         IsBusy = true;
         try
         {
-            using var context = contextFactory.CreateDbContext();
-            PPOApplication = await context.PPOApplication.FindAsync(Id);
+            PPOApplication = await ppoService.GetPPOApplicationById(Id);
         }
         finally
         {
@@ -328,12 +328,6 @@ else
             {
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
             }
-        }
-
-        if (PPOApplication is not null)
-        {
-            //add to recent work store
-            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.PPO}{PPOApplication.Id}", "PPO", PPOApplication.ApplicationDetails.Truncate(50), $"PPO/Details/{PPOApplication.Id}");
         }
     }
 
@@ -352,18 +346,13 @@ else
 
         if (NewContact is not null && PPOApplication is not null)
         {
-            using var context = contextFactory.CreateDbContext();
-
-            context.Contacts.Add(NewContact);
-            await context.SaveChangesAsync();
-            context.PPOContact.Add(new PPOContact { ContactId = NewContact.Id, ApplicationId = PPOApplication.Id });
-            await context.SaveChangesAsync();
+            await ppoService.AddContactToPPO(NewContact, PPOApplication);
         }
     }
 
-    private async Task RefreshContactsList(){
-        using var context = contextFactory.CreateDbContext();
-        PPOApplication = await context.PPOApplication.FindAsync(Id);
+    private async Task RefreshContactsList()
+    {
+        PPOApplication = await ppoService.GetPPOApplicationById(Id);
         StateHasChanged();
     }
 }

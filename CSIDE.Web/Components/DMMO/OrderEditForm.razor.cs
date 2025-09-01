@@ -11,9 +11,9 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter, EditorRequired]
         public DMMOOrder? Order { get; set; }
         [Parameter, EditorRequired]
-        public OrderDecisionOfSecState[]? OrderDecisionsOfSecState { get; set; }
+        public ICollection<OrderDecisionOfSecState> OrderDecisionsOfSecState { get; set; }
         [Parameter, EditorRequired]
-        public OrderDeterminationProcess[]? OrderDeterminationProcesses { get; set; }
+        public ICollection<OrderDeterminationProcess> OrderDeterminationProcesses { get; set; }
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]

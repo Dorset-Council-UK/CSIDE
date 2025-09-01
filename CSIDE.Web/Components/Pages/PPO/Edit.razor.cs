@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.Mapping;
 using CSIDE.Web.Components.PPO;
-using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Services;
 using FluentValidation;
@@ -13,15 +12,15 @@ using NetTopologySuite.IO;
 
 namespace CSIDE.Web.Components.Pages.PPO
 {
-    public partial class Edit(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayHelperService geometryValidationService)
+    public partial class Edit(IPPOService ppoService, NavigationManager navigationManager, ILogger<Edit> logger, IRightsOfWayService geometryValidationService)
     {
         [Parameter]
         public int PPOApplicationId { get; set; }
         private Application? PPOApplication { get; set; }
-        private ApplicationCaseStatus[]? CaseStatuses;
-        private ApplicationType[]? ApplicationTypes;
-        private ApplicationIntent[]? Intents;
-        private ApplicationPriority[]? Priorities;
+        private IReadOnlyCollection<ApplicationCaseStatus> CaseStatuses = [];
+        private IReadOnlyCollection<ApplicationType> ApplicationTypes = [];
+        private IReadOnlyCollection<ApplicationIntent> Intents = [];
+        private IReadOnlyCollection<ApplicationPriority> Priorities = [];
         private List<int> SelectedIntents { get; set; } = [];
 
 
@@ -46,19 +45,15 @@ namespace CSIDE.Web.Components.Pages.PPO
             IsBusy = true;
             try
             {
-                using var context = contextFactory.CreateDbContext();
-                CaseStatuses = await context.PPOApplicationCaseStatuses.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                ApplicationTypes = await context.PPOApplicationTypes.AsNoTracking().OrderBy(p => p.Id).ToArrayAsync();
-                Intents = await context.PPOApplicationIntents.AsNoTracking().OrderBy(p => p.Name).ToArrayAsync();
-                Priorities = await context.PPOApplicationPriorities.AsNoTracking().OrderBy(p => p.SortOrder).ToArrayAsync();
-                PPOApplication =
-                    await context.PPOApplication
-                    .IgnoreAutoIncludes()
-                    .Include(p => p.PPOParishes)
-                    .Include(p => p.PPOIntents)
-                    .FirstOrDefaultAsync(p => p.Id == PPOApplicationId);
-                SelectedIntents = [.. PPOApplication!.PPOIntents.Select(i => i.IntentId)];
-
+                CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
+                ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
+                Intents = await ppoService.GetPPOApplicationIntents();
+                Priorities = await ppoService.GetPPOApplicationPriorities();
+                PPOApplication = await ppoService.GetPPOApplicationById(PPOApplicationId);
+                if(PPOApplication is not null)
+                {
+                    SelectedIntents = PPOApplication.PPOIntents.Select(i => i.IntentId).ToList();
+                }
                 GeometryIsValid = true;
             }
             finally
@@ -82,25 +77,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                 {
                     if (PPOApplication is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-
-                        //get the existing job to enable the smarter change tracker
-                        var existingApp = await context.PPOApplication.FindAsync(PPOApplication.Id) ?? 
-                            throw new Exception($"PPO Application being edited (ID: {PPOApplication.Id}) was not found prior to updating");
-
-                        // Save the original version for concurrency checking
-                        uint originalVersion = PPOApplication.Version;
-
-                        // Update values while preserving change tracking for auditing
-                        context.Entry(existingApp).CurrentValues.SetValues(PPOApplication);
-
-                        // Explicitly tell EF Core to use originalVersion as the concurrency token
-                        // This is the critical line that makes concurrency checking work
-                        context.Entry(existingApp).Property(j => j.Version).OriginalValue = originalVersion;
-
-
-                        await UpdateApplicationIntents(SelectedIntents, context);
-                        await context.SaveChangesAsync();
+                        await ppoService.UpdatePPO(PPOApplication, SelectedIntents);
                         //redirect
                         navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
                     }
@@ -134,7 +111,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, geometryValidationService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, geometryValidationService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Line String"));
             if (result.IsValid)
@@ -169,13 +146,12 @@ namespace CSIDE.Web.Components.Pages.PPO
             {
                 throw new ArgumentException("Bounding box must have 4 values", paramName: nameof(bbox));
             }
-            using var context = contextFactory.CreateDbContext();
             //create a polygon from the bounding box
             var bboxPolygon = new Polygon(new LinearRing([new(bbox[0], bbox[1]), new(bbox[2], bbox[1]), new(bbox[2], bbox[3]), new(bbox[0], bbox[3]), new(bbox[0], bbox[1])]))
             {
                 SRID = 27700,
             };
-            var routes = await context.Routes.Where(g => g.Geom.Intersects(bboxPolygon)).Select(g => g.Geom).ToArrayAsync();
+            var routes = await geometryValidationService.GetRoutesIntersecting(bboxPolygon);
             //convert routes to geojson
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
@@ -196,56 +172,15 @@ namespace CSIDE.Web.Components.Pages.PPO
             {
                 throw new ArgumentException("Coordinates must be an array of 2 values", paramName: nameof(coordinates));
             }
-            using var context = contextFactory.CreateDbContext();
             var selectionPoint = new Point(coordinates[0], coordinates[1])
             {
                 SRID = 27700,
             };
-            var routes = await context.Routes
-                .Where(g => g.Geom.IsWithinDistance(selectionPoint, 10))
-                .OrderBy(g => g.Geom.Distance(selectionPoint))
-                .Select(g => g.Geom)
-                .Take(1).SingleOrDefaultAsync();
+            var routes = await geometryValidationService.GetNearestRoute(selectionPoint, 10);
             //convert route to geojson
             var geoJsonWriter = new GeoJsonWriter();
             var routesGeoJson = geoJsonWriter.Write(routes);
             return routesGeoJson;
-        }
-
-        private async Task UpdateApplicationIntents(List<int> selectedIntents, ApplicationDbContext context)
-        {
-            if (PPOApplication is null) return;
-
-            // Retrieve the existing problem types for the job
-            var existingIntents = await context.PPOIntents
-                .Where(c => c.ApplicationId == PPOApplication.Id)
-                .ToListAsync();
-
-            // Determine the problem types to remove
-            var intentsToRemove = existingIntents
-                .Where(c => !selectedIntents.Contains(c.IntentId))
-                .ToList();
-
-            // Remove the entities
-            context.PPOIntents.RemoveRange(intentsToRemove);
-
-            // Determine the problem types to add
-            var intentsToAdd = selectedIntents
-                .Where(intentId => !existingIntents.Exists(c => c.IntentId == intentId))
-                .Select(intentId => new PPOIntent { IntentId = intentId, ApplicationId = PPOApplication.Id })
-                .ToList();
-
-            // Add the new problem types
-            context.PPOIntents.AddRange(intentsToAdd);
-
-            // Mark entities as unchanged if they haven't actually changed
-            foreach (var existingIntent in existingIntents)
-            {
-                if (selectedIntents.Contains(existingIntent.IntentId))
-                {
-                    context.Entry(existingIntent).State = EntityState.Unchanged;
-                }
-            }
         }
     }
 }

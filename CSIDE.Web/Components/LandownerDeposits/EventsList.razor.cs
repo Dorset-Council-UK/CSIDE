@@ -1,14 +1,13 @@
 ﻿using Blazored.FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
-using CSIDE.Data;
-using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.LandownerDeposits;
 using NodaTime;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.LandownerDeposits
 {
-    public partial class EventsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<EventsList> logger)
+    public partial class EventsList(ILandownerDepositService landownerDepositService, ILogger<EventsList> logger)
     {
         [Parameter]
         public LandownerDeposit? LandownerDeposit { get; set; }
@@ -50,8 +49,6 @@ namespace CSIDE.Web.Components.LandownerDeposits
                 {
                     if (NewEvent is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-
                         if (AuthenticationStateTask != null)
                         {
                             var authState = await AuthenticationStateTask;
@@ -59,8 +56,7 @@ namespace CSIDE.Web.Components.LandownerDeposits
                             NewEvent.AuthorName = authState.GetUserName();
                         }
 
-                        context.LandownerDepositEvents.Add(NewEvent);
-                        await context.SaveChangesAsync();
+                        await landownerDepositService.AddEventToLandownerDeposit(NewEvent);
                         await RefreshComponent();
                     }
                 }
@@ -109,8 +105,7 @@ namespace CSIDE.Web.Components.LandownerDeposits
                     EventText = string.Empty,
                     EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
-                using var context = contextFactory.CreateDbContext();
-                LandownerDeposit = await context.LandownerDeposits.FindAsync([LandownerDeposit.Id, LandownerDeposit.SecondaryId]);
+                LandownerDeposit = await landownerDepositService.GetLandownerDepositById(LandownerDeposit.Id, LandownerDeposit.SecondaryId);
                 StateHasChanged();
             }
         }

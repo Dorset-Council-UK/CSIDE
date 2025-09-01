@@ -1,14 +1,13 @@
 ﻿using Blazored.FluentValidation;
-using CSIDE.Data;
 using CSIDE.Data.Models.LandownerDeposits;
+using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using NodaTime;
 
 namespace CSIDE.Web.Components.LandownerDeposits
 {
-    public partial class SingleEvent(IDbContextFactory<ApplicationDbContext> contextFactory, IJSRuntime JS, ILogger<SingleEvent> logger)
+    public partial class SingleEvent(ILandownerDepositService landownerDepositService, IJSRuntime JS, ILogger<SingleEvent> logger)
     {
         [Parameter]
         public required LandownerDepositEvent Event { get; set; }
@@ -34,14 +33,8 @@ namespace CSIDE.Web.Components.LandownerDeposits
             bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Event Confirmation"].Value);
             if (ConfirmDelete)
             {
-                using var context = contextFactory.CreateDbContext();
-                var eventToDelete = await context.LandownerDepositEvents.FindAsync([EventId]);
-                if (eventToDelete is not null)
-                {
-                    context.Remove(eventToDelete);
-                    await context.SaveChangesAsync();
-                    await RefreshComponent();
-                }
+                await landownerDepositService.DeleteLandownerDepositEvent(EventId);
+                await RefreshComponent();
             }
         }
 
@@ -60,13 +53,7 @@ namespace CSIDE.Web.Components.LandownerDeposits
                 {
                     if (ldEvent is not null)
                     {
-                        
-                        using var context = contextFactory.CreateDbContext();
-                        var existingEvent = await context.LandownerDepositEvents.FindAsync(Event.Id) ?? throw new Exception($"Landowner Deposit Event being edited (ID: {Event.Id}) was not found prior to updating");
-
-                        context.Entry(existingEvent).CurrentValues.SetValues(Event);
-
-                        await context.SaveChangesAsync();
+                        await landownerDepositService.UpdateLandownerDepositEvent(Event.Id, ldEvent);
                         //refresh component by simply switching off editing mode. We don't need to refetch the data, its already there!
                         IsEditing = false;
                     }

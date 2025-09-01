@@ -15,8 +15,10 @@ public class SettingsService(ProtectedLocalStorage ProtectedLocalStore, ILogger<
             {
                 return data.Value;
             }
-        }catch(Exception ex)
+        } catch (InvalidOperationException ex)
         {
+            //ignore
+        }catch(Exception ex) { 
             logger.LogWarning(ex, "Recent Work localStorage item could not be fetched. Deleting storage item in case of corrupt data");
             await ProtectedLocalStore.DeleteAsync(RecentWorkKey).ConfigureAwait(false);
         }
@@ -24,23 +26,36 @@ public class SettingsService(ProtectedLocalStorage ProtectedLocalStore, ILogger<
     }
     public async Task AddRecentWork(string entityId, string entityType, string entityDescription, string url)
     {
-        IList<RecentWork> recentWork = await GetRecentWork().ConfigureAwait(false);
-
-        // Remove any existing item with the same entityId and entityType
-        var existingItem = recentWork.FirstOrDefault(w =>
-            string.Equals(w.EntityId, entityId, StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(w.EntityType, entityType, StringComparison.OrdinalIgnoreCase));
-        if (existingItem != null)
+        try
         {
-            recentWork.Remove(existingItem);
-        }
+            IList<RecentWork> recentWork = await GetRecentWork().ConfigureAwait(false);
 
-        recentWork.Add(new RecentWork(entityId, entityType, entityDescription, url, DateTime.UtcNow));
-        if (recentWork.Count > 5)
+            // Remove any existing item with the same entityId and entityType
+            var existingItem = recentWork.FirstOrDefault(w =>
+                string.Equals(w.EntityId, entityId, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(w.EntityType, entityType, StringComparison.OrdinalIgnoreCase));
+            if (existingItem != null)
+            {
+                recentWork.Remove(existingItem);
+            }
+
+            recentWork.Add(new RecentWork(entityId, entityType, entityDescription, url, DateTime.UtcNow));
+            if (recentWork.Count > 5)
+            {
+                recentWork = [.. recentWork.TakeLast(5)];
+            }
+
+            await ProtectedLocalStore.SetAsync(RecentWorkKey, recentWork).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException)
         {
-            recentWork = [.. recentWork.TakeLast(5)];
+            // This occurs during prerendering when browser storage is not available
+            // Silently ignore during prerendering - the operation will succeed on subsequent calls
+            logger.LogDebug("Cannot add recent work during prerendering - browser storage not available");
         }
-
-        await ProtectedLocalStore.SetAsync(RecentWorkKey, recentWork).ConfigureAwait(false);
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to add recent work item");
+        }
     }
 }

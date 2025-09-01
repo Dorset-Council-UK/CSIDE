@@ -1,14 +1,13 @@
 ﻿using Blazored.FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
-using CSIDE.Data;
-using Microsoft.EntityFrameworkCore;
 using CSIDE.Data.Models.DMMO;
 using NodaTime;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.DMMO
 {
-    public partial class EventsList(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<EventsList> logger)
+    public partial class EventsList(IDMMOService dmmoService, ILogger<EventsList> logger)
     {
         [Parameter]
         public Application? DMMOApplication { get; set; }
@@ -49,7 +48,6 @@ namespace CSIDE.Web.Components.DMMO
                 {
                     if (NewEvent is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
 
                         if (AuthenticationStateTask != null)
                         {
@@ -57,9 +55,7 @@ namespace CSIDE.Web.Components.DMMO
                             NewEvent.AuthorId = authState.GetUserId();
                             NewEvent.AuthorName = authState.GetUserName();
                         }
-
-                        context.DMMOEvents.Add(NewEvent);
-                        await context.SaveChangesAsync();
+                        await dmmoService.AddEventToDMMO(NewEvent);
                         await RefreshComponent();
                     }
                 }
@@ -107,8 +103,7 @@ namespace CSIDE.Web.Components.DMMO
                     EventText = string.Empty,
                     EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };
-                using var context = contextFactory.CreateDbContext();
-                DMMOApplication = await context.DMMOApplication.FindAsync([DMMOApplication.Id]);
+                DMMOApplication = await dmmoService.GetDMMOApplicationById(DMMOApplication.Id);
                 StateHasChanged();
             }
         }

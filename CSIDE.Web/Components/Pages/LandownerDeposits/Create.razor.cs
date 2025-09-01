@@ -1,12 +1,10 @@
 ﻿using BlazorBootstrap;
 using CSIDE.Web.Components.LandownerDeposits;
 using CSIDE.Web.Components.Mapping;
-using CSIDE.Data;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using NetTopologySuite.Geometries;
@@ -14,7 +12,7 @@ using NetTopologySuite.Geometries;
 
 namespace CSIDE.Web.Components.Pages.LandownerDeposits
 {
-    public partial class Create(IDbContextFactory<ApplicationDbContext> contextFactory, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayHelperService rightsOfWayHelperService)
+    public partial class Create(ILandownerDepositService landownerDepositService, NavigationManager navigationManager, ILogger<Create> logger, IRightsOfWayService rightsOfWayHelperService)
     {
         [Parameter]
         public int? ExistingDepositId { get; set; }
@@ -29,7 +27,7 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
         private List<BreadcrumbItem>? NavItems;
 
         private LandownerDeposit? LandownerDeposit { get; set; }
-        private LandownerDepositTypeName[]? LandownerDepositTypeNames { get; set; }
+        private ICollection<LandownerDepositTypeName> LandownerDepositTypeNames { get; set; } = [];
 
         private bool IsBusy { get; set; }
         private string? ErrorMessage { get; set; }
@@ -47,11 +45,7 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
             new() { Text = localizer["Landowner Deposit Create Title"], IsCurrentPage = true },
         ];
 
-            using var context = contextFactory.CreateDbContext();
-            LandownerDepositTypeNames = await context.LandownerDepositTypeNames
-                .AsNoTracking()
-                .OrderBy(p => p.Name)
-                .ToArrayAsync();
+            LandownerDepositTypeNames = await landownerDepositService.GetLandownerDepositTypeNameOptions();
             LandownerDeposit = new()
             {
                 Geom = MultiPolygon.Empty,
@@ -59,10 +53,8 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
             if(ExistingDepositId != null && ExistingDepositSecondaryId != null)
             {
                 //get the existing deposit
-                var existingDeposit = await context.LandownerDeposits
-                    .IgnoreAutoIncludes()
-                    .FirstOrDefaultAsync(l => l.Id == ExistingDepositId && l.SecondaryId == ExistingDepositSecondaryId);
-                if(existingDeposit is not null)
+                var existingDeposit = await landownerDepositService.GetLandownerDepositById(ExistingDepositId.Value, ExistingDepositSecondaryId.Value);
+                if (existingDeposit is not null)
                 {
                     LandownerDeposit.Id = existingDeposit.Id;
                     LandownerDeposit.Geom = existingDeposit.Geom;
@@ -86,17 +78,8 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
                 {
                     if (LandownerDeposit is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
+                        await landownerDepositService.CreateLandownerDeposit(LandownerDeposit, SelectedLandownerDepositTypes);
 
-                        var maxSecondaryId = await context.LandownerDeposits
-                            .Where(ld => ld.Id == LandownerDeposit.Id)
-                            .MaxAsync(ld => (int?)ld.SecondaryId) ?? 0;
-                        LandownerDeposit.SecondaryId = maxSecondaryId + 1;
-                        context.LandownerDeposits.Add(LandownerDeposit);
-
-                        await context.SaveChangesAsync();
-                        CreateLandownerDepositTypes(SelectedLandownerDepositTypes, LandownerDeposit.Id, LandownerDeposit.SecondaryId, context);
-                        await context.SaveChangesAsync();
                         //redirect
                         navigationManager.NavigateTo($"landowner-deposits/Details/{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}");
                     }
@@ -113,22 +96,12 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
             }
         }
 
-        private static void CreateLandownerDepositTypes(List<int> selectedLandownerDepositTypes, int LandownerDepositId, int LandownerDepositSecondaryId, ApplicationDbContext context)
-        {
-            //add new landowner deposit types
-            foreach (int landownerDepositType in selectedLandownerDepositTypes)
-            {
-                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = LandownerDepositId, LandownerDepositSecondaryId = LandownerDepositSecondaryId });
-            }
-            return;
-        }
-
         private async Task ValidateGeometry(string features)
         {
             GeoJsonReader _geoJsonReader = new();
             FeatureCollection featureCollection = _geoJsonReader.Read<FeatureCollection>(features);
 
-            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(contextFactory, localizer, rightsOfWayHelperService);
+            CSIDE.Data.Validators.Geometry.GeometryValidator validator = new(localizer, rightsOfWayHelperService);
 
             var result = await validator.ValidateAsync(featureCollection, options => options.IncludeRuleSets("Polygon"));
             if (result.IsValid)

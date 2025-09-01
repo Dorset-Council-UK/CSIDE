@@ -1,15 +1,15 @@
 using BlazorBootstrap;
 using CSIDE.Web.Components.PPO;
-using CSIDE.Data;
 using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using CSIDE.Data.Services;
 
 namespace CSIDE.Web.Components.Pages.PPO.Orders
 {
     public partial class Edit(
-        IDbContextFactory<ApplicationDbContext> contextFactory, 
+        IPPOService ppoService, 
         NavigationManager navigationManager,
         ILogger<Edit> logger) {
         private List<BreadcrumbItem>? NavItems;
@@ -19,11 +19,12 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
         public int OrderId { get; init; }
 
         private PPOOrder? Order { get; set; }
-        private OrderDecisionOfSecState[]? DecisionOfSecStateOptions;
-        private OrderDeterminationProcess[]? DeterminationProcessOptions;
+        private IReadOnlyCollection<OrderDecisionOfSecState> DecisionOfSecStateOptions = [];
+        private IReadOnlyCollection<OrderDeterminationProcess> DeterminationProcessOptions = [];
         private OrderEditForm? childPPOOrderEditForm;
         private bool IsBusy { get; set; } = false;
         private string? ErrorMessage { get; set; } = null;  
+        
         protected override async Task OnParametersSetAsync()
         {
             NavItems =
@@ -34,21 +35,11 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                 new BreadcrumbItem{ Text = localizer["Edit Order Title", $"{IDPrefixOptions.Value.PPO}{PPOApplicationId}", OrderId], IsCurrentPage = true },
             ];
             IsBusy = true;
-            using var context = contextFactory.CreateDbContext();
-            Order = await context.PPOOrders
-                .AsNoTracking()
-                .Include(p => p.DecisionOfSecState)
-                .FirstOrDefaultAsync(p => p.OrderId == OrderId && p.ApplicationId == PPOApplicationId);
+            Order = await ppoService.GetPPOOrderById(OrderId, PPOApplicationId);
             if (Order is not null)
             {
-                DecisionOfSecStateOptions = await context.OrderDecisionsOfSecState
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
-                DeterminationProcessOptions = await context.OrderDeterminationProcesses
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name)
-                    .ToArrayAsync();
+                DecisionOfSecStateOptions = await ppoService.GetOrderDecisionOfSecStateOptions();
+                DeterminationProcessOptions = await ppoService.GetOrderDeterminationProcessOptions();
             }
             IsBusy = false;
         }
@@ -68,14 +59,7 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                 {
                     if (Order is not null)
                     {
-                        using var context = contextFactory.CreateDbContext();
-                        //get the existing order to enable the smarter change tracker.
-                        //Without this, all properties are identified as tracked, since
-                        //the DbContext is different from when the entity was queried
-                        var existingOrder = await context.PPOOrders.FindAsync(Order.OrderId, Order.ApplicationId) ?? throw new Exception($"PPO Order being edited (ID: {Order.ApplicationId}/{Order.OrderId}) was not found prior to updating");
-
-                        context.Entry(existingOrder).CurrentValues.SetValues(Order);
-                        await context.SaveChangesAsync();
+                        await ppoService.UpdatePPOOrder(OrderId, Order);
                         //redirect
                         navigationManager.NavigateTo($"PPO/Details/{Order.ApplicationId}");
                     }

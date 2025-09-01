@@ -9,13 +9,13 @@ namespace CSIDE.Web.Components.RightsOfWay
         [Parameter]
         public Data.Models.RightsOfWay.Route? Route { get; set; }
         [Parameter]
-        public LegalStatus[]? LegalStatuses { get; set; }
+        public IReadOnlyCollection<LegalStatus> LegalStatuses { get; set; } = [];
         [Parameter]
-        public OperationalStatus[]? OperationalStatuses { get; set; }
+        public IReadOnlyCollection<OperationalStatus> OperationalStatuses { get; set; } = [];
         [Parameter]
-        public Data.Models.Maintenance.Team[]? MaintenanceTeams { get; set; }
+        public IReadOnlyCollection<Data.Models.Maintenance.Team> MaintenanceTeams { get; set; } = [];
         [Parameter]
-        public RouteType[]? RouteTypes { get; set; }
+        public IReadOnlyCollection<RouteType> RouteTypes { get; set; } = [];
         [Parameter]
         public bool IsBusy { get; set; }
         [Parameter]
