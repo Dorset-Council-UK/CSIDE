@@ -20,48 +20,6 @@ Create a schema within your database called cside. To avoid complex permissions,
 #### Let EF create the schema for you
 In order for EF to be able to create the schema, your user will need permission on the database to create schemas.
 
-### User secrets and connection strings
-Once you’ve set up your database, add a user secret to your local copy of the application. In Visual Studio this is done by right-clicking on the web project and selecting “Manage user secrets”.
-
-In user secrets add the below line of code and fill in your database name, username and password:
-
-`{
-"ConnectionStrings:CSIDE": "Host=localhost;Database=YourDatabaseName;Username=YourUserName;Password=YourPassword;SearchPath=cside,public"
-}`
-
-You should now be able to test your connection and run migrations using Entity Framework commands.
-
-You can choose to use appSettings or Environment Variables to store your secrets if you prefer. Azure KeyVault is also available with a few configuration settings, and is recommended for production scenarios. appSettings is NOT recommended for storing secret information such as connection strings.
-
-### Setting up authentication
-Currently this app only supports Microsoft Azure AD B2C authentication. Refer to the official documentation to set this up in your Azure instance.
-
-Once you've got a service set up, you'll need to add a number of settings to your user secrets to enable it.
-
-```
-"AzureAd": {
-  "Instance": "https://<your-instance-name>.b2clogin.com",
-  "Domain": "<your-b2c-domain>",
-  "ClientId": "<your-client-id>",
-  "TenantId": "<your-tenant-id>",
-  "ClientSecret": "<your-client-secret>",
-  "SignedOutCallbackPath": "<your-signout-callback-path>",
-  "SignUpSignInPolicyId": "<your-sign-in-policy-id>"
-}
-```
-
-### Setting up Blob Storage
-For media upload, you need an Azure Blob Storage account. Refer to the official documentation to set this up in your Azure instance.
-
-Once you've got a blob storage service set up, you'll need to add the connection string and container name to your user secrets.
-
-```
-"AzureBlobStorage": {
-  "ConnectionString": "<your-connection-string>",
-  "ContainerName":  "<your-container-name>"
-},
-```
-
 ### Adding the unmanaged Parish table
 The 'Parishes' entity is NOT managed by Entity Framework, but is required in foreign key relationships. By convention, the table should:
 - Be named 'Parishes'
@@ -94,6 +52,52 @@ CREATE INDEX IF NOT EXISTS "Parishes_geom_1732881166632"
 Additional columns can be included if this makes importing/referencing your data simpler, but they will not be used by CSIDE.
 
 You will then need to import your Parish data from your data source.
+
+### User secrets and connection strings
+Once you’ve set up your database, add a user secret to your local copy of the application. In Visual Studio this is done by right-clicking on the web project and selecting “Manage user secrets”.
+
+In user secrets add the below line of code and fill in your database name, username and password:
+
+`{
+"ConnectionStrings:CSIDE": "Host=localhost;Database=YourDatabaseName;Username=YourUserName;Password=YourPassword;SearchPath=cside,public"
+}`
+
+You should now be able to test your connection and run migrations using Entity Framework commands.
+
+You can choose to use appSettings or Environment Variables to store your secrets if you prefer. Azure KeyVault is also available with a few configuration settings, and is recommended for production scenarios. appSettings is NOT recommended for storing secret information such as connection strings.
+
+### Setting up authentication
+Currently this app only supports Microsoft Azure AD B2C authentication. Refer to the official documentation to set this up in your Azure instance.
+
+Once you've got a service set up, you'll need to add a number of settings to your user secrets to enable it.
+
+```
+"CSIDE": {
+	"AzureAd": {
+	  "Instance": "https://<your-instance-name>.b2clogin.com",
+	  "Domain": "<your-b2c-domain>",
+	  "ClientId": "<your-client-id>",
+	  "TenantId": "<your-tenant-id>",
+	  "ClientSecret": "<your-client-secret>",
+	  "SignedOutCallbackPath": "<your-signout-callback-path>",
+	  "SignUpSignInPolicyId": "<your-sign-in-policy-id>"
+	}
+}
+```
+
+### Setting up Blob Storage
+For media upload, you need an Azure Blob Storage account. Refer to the official documentation to set this up in your Azure instance.
+
+Once you've got a blob storage service set up, you'll need to add the connection string and container name to your user secrets.
+
+```
+"CSIDE": {
+	"AzureBlobStorage": {
+	  "ConnectionString": "<your-connection-string>",
+	  "ContainerName":  "<your-container-name>"
+	},
+}
+```
 
 ### Setting up the mapping
 To use the mapping, you should have
