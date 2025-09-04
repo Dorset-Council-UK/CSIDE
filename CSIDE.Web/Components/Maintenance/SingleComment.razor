@@ -7,7 +7,7 @@
             @localizer["Comment Author Title", (string.IsNullOrEmpty(Comment.AuthorName) ? "" : Comment.AuthorName), Comment.CreatedAt.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)]
         </span>
         <span class="text-@(Comment.IsPublic ? "success" : "danger")">
-            <span class="bi bi-eye@(Comment.IsPublic ? "-slash" : "")"></span> @(Comment.IsPublic ? localizer["Public Label"] : localizer["Not Public Label"])
+            <span class="bi bi-eye@(Comment.IsPublic ? "" : "-slash")"></span> @(Comment.IsPublic ? localizer["Public Label"] : localizer["Not Public Label"])
         </span>
 
     </div>
