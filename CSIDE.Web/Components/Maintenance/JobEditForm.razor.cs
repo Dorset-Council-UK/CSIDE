@@ -88,11 +88,21 @@ public partial class JobEditForm()
         {
             CompleteDateShown = false;
             DuplicateOfShown = false;
+            // Clear fields if status is not found
+            Job.CompletionDate = null;
+            Job.DuplicateJobId = null;
             return;
         }
 
         CompleteDateShown = jobStatus.IsComplete;
         DuplicateOfShown = jobStatus.IsDuplicate;
+
+        // If status is NOT duplicate, clear the fields
+        if (!jobStatus.IsDuplicate)
+        {
+            Job.CompletionDate = null;
+            Job.DuplicateJobId = null;
+        }
     }
 
     private async Task HandleCancel()
