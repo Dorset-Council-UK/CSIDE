@@ -1,25 +1,13 @@
 ﻿using CSIDE.Shared.Services;
-using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Services;
 
-public class CurrentUserService(AuthenticationStateProvider authenticationStateProvider) : ICurrentUserService
+internal class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {
-    public async Task<string?> GetUserIdAsync()
-    {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
-        return authState.GetUserId();
-    }
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
-    public async Task<string?> GetUserNameAsync()
-    {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
-        return authState.GetUserName();
-    }
+    public string UserId => httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "Unknown";
 
-    public async Task<bool> IsAuthenticatedAsync()
-    {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
-        return authState.IsAuthenticated();
-    }
+    public string UserName => httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown";
 }

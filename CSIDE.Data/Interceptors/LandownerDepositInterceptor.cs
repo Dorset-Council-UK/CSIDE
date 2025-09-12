@@ -1,58 +1,65 @@
 ﻿using CSIDE.Data.Models.LandownerDeposits;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace CSIDE.Data.Interceptors
+namespace CSIDE.Data.Interceptors;
+
+internal class LandownerDepositInterceptor : ISaveChangesInterceptor
 {
-    public class LandownerDepositInterceptor(IDbContextFactory<ApplicationDbContext> contextFactory) : SaveChangesInterceptor, ILandownerDepositInterceptor
+    public InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+        => throw new InvalidOperationException("Save changes asynchronously for landowner deposits.");
+
+    public async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        public override InterceptionResult<int> SavingChanges(
-        DbContextEventData eventData, InterceptionResult<int> result)
+        await UpdateLandownerDeposit(eventData, cancellationToken);
+        return await ValueTask.FromResult(result);
+    }
+
+    private static async Task UpdateLandownerDeposit(DbContextEventData eventData, CancellationToken cancellationToken)
+    {
+        if (eventData.Context is not ApplicationDbContext context) return;
+
+        foreach (var entry in context.ChangeTracker.Entries<LandownerDeposit>())
         {
-            var context = eventData.Context;
-            if (context == null) return result;
-
-            ApplyAutomaticChanges(context).Wait();
-            return result;
-        }
-
-        public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
-            DbContextEventData eventData, InterceptionResult<int> result,
-            CancellationToken cancellationToken = default)
-        {
-            var context = eventData.Context;
-            if (context == null) return result;
-
-            await ApplyAutomaticChanges(context);
-            return await base.SavingChangesAsync(eventData, result, cancellationToken);
-        }
-
-        private async Task ApplyAutomaticChanges(DbContext context)
-        {
-            foreach (var entry in context.ChangeTracker.Entries())
+            if (entry.State is EntityState.Added or EntityState.Modified)
             {
-                if (IsCorrectEntityType(entry) && (entry.State is EntityState.Added or EntityState.Modified))
-                {
-                    await UpdateLandownerDepositParishIds((LandownerDeposit)entry.Entity);
-                }
+                await AddLandownerDepositParishes(context, entry.Entity, cancellationToken);
             }
         }
+    }
 
-        private async Task UpdateLandownerDepositParishIds(LandownerDeposit landownerDeposit)
+    private static async Task AddLandownerDepositParishes(ApplicationDbContext context, LandownerDeposit landownerDeposit, CancellationToken cancellationToken)
+    {
+        // Get intersecting parish IDs
+        var newParishIds = await context.Parishes
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(p => p.Geom.Intersects(landownerDeposit.Geom))
+            .Select(p => p.ParishId)
+            .ToHashSetAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var existingParishIds = landownerDeposit.LandownerDepositParishes
+            .Select(dp => dp.ParishId)
+            .ToHashSet();
+
+        // Remove Parishes that are no longer intersecting
+        var parishesToRemove = landownerDeposit.LandownerDepositParishes
+            .Where(dp => !newParishIds.Contains(dp.ParishId))
+            .ToList();
+        foreach (var parishToRemove in parishesToRemove)
         {
-            using var context = contextFactory.CreateDbContext();
-            var parishes = await context.Parishes.Where(p => p.Geom.Intersects(landownerDeposit.Geom)).ToArrayAsync();
-            landownerDeposit.LandownerDepositParishes.Clear();
-            foreach (var parish in parishes)
-            {
-                landownerDeposit.LandownerDepositParishes.Add(new LandownerDepositParish { ParishId = parish.ParishId, LandownerDepositId = landownerDeposit.Id });
-            }
+            landownerDeposit.LandownerDepositParishes.Remove(parishToRemove);
         }
 
-        private static bool IsCorrectEntityType(EntityEntry entry)
+        // Add new Parishes that are missing
+        var parishIdsToAdd = newParishIds.Except(existingParishIds);
+        foreach (var parishId in parishIdsToAdd)
         {
-            return entry.Entity is LandownerDeposit;
+            landownerDeposit.LandownerDepositParishes.Add(new LandownerDepositParish {
+                ParishId = parishId,
+                LandownerDepositId = landownerDeposit.Id
+            });
         }
     }
 }

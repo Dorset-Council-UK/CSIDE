@@ -3931,6 +3931,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a priority.
+        /// </summary>
+        public static string Priority_Must_Be_Selected {
+            get {
+                return ResourceManager.GetString("Priority_Must_Be_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Private comments.
         /// </summary>
         public static string Private_Comments_Label {

@@ -135,7 +135,8 @@ namespace CSIDE.Web.Components.Shared
                 ContactType = original.ContactType,
                 JobContact = original.JobContact,
                 DMMOContact = original.DMMOContact,
-                LandownerDepositContact = original.LandownerDepositContact
+                LandownerDepositContact = original.LandownerDepositContact,
+                PPOContact = original.PPOContact
             };
         }
     }

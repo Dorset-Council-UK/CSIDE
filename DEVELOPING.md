@@ -132,9 +132,9 @@ Once you’ve followed the steps above, you’re ready to run the application.
 	- From now on, when opening the project in Visual Studio, `watch` will automatically run
 - Run the Entity Framework migrations
     - Using Visual Studio
-        - `Update-Database`
+        - `Update-Database -Project "CSIDE.Data" -StartupProject "CSIDE.Web"`
     - Using .Net CLI
-        - `dotnet ef database update`
+        - `dotnet ef database update --project "CSIDE.Data" --startup-project "CSIDE.Web"`
 - Build and Run!
 
 This will give you a minimal starting application, but there are a couple more steps to take before it will be usable.

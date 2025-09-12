@@ -102,4 +102,5 @@ public interface IMaintenanceJobsService
     Task<JobStatus[]> GetMaintenanceJobStatuses(CancellationToken ct = default);
     Task<JobPriority[]> GetMaintenanceJobPriorities(CancellationToken ct = default);
     Task<IReadOnlyCollection<Team>> GetMaintenanceTeams(CancellationToken ct = default);
+    Task<bool> MaintenanceJobExists(int id, CancellationToken ct = default);
 }

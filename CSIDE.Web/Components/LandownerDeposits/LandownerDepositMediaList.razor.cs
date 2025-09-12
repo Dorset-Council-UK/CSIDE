@@ -34,11 +34,17 @@ namespace CSIDE.Web.Components.LandownerDeposits
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            if (_jsModule is not null)
+            try
             {
-                await _jsModule.DisposeAsync();
+                if (_jsModule is not null)
+                {
+                    await _jsModule.DisposeAsync();
+                }
+                GC.SuppressFinalize(this);
+            }catch (Exception)
+            {
+                //ignore
             }
-            GC.SuppressFinalize(this);
         }
 
         private async Task AddMediaToLandownerDeposit(List<Media> UploadedMedia, LandownerDepositMediaType mediaType)

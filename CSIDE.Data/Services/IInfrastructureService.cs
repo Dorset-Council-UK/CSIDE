@@ -34,5 +34,6 @@ namespace CSIDE.Data.Services
         Task<BridgeSurvey> UpdateBridgeSurvey(int SurveyId, BridgeSurvey survey, CancellationToken ct = default);
         Task<InfrastructureItem> AddMediaToInfrastructureItem(InfrastructureItem infraItem, List<Media> UploadedMedia, CancellationToken ct = default);
         Task<Survey> AddMediaToSurvey(Survey survey, List<Media> UploadedMedia, CancellationToken ct = default);
+        Task<bool> InfrastructureItemExists(int id, CancellationToken ct = default);
     }
 }

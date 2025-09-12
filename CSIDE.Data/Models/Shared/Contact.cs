@@ -1,6 +1,7 @@
 ﻿using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.PPO;
 
 namespace CSIDE.Data.Models.Shared
 {
@@ -18,5 +19,6 @@ namespace CSIDE.Data.Models.Shared
         public ICollection<JobContact>? JobContact { get; set; }
         public ICollection<DMMOContact>? DMMOContact { get; set; }
         public ICollection<LandownerDepositContact>? LandownerDepositContact { get; set; }
+        public ICollection<PPOContact>? PPOContact { get; set; }
     }
 }

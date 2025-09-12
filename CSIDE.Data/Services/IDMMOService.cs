@@ -45,5 +45,6 @@ namespace CSIDE.Data.Services
         Task<bool> DeleteDMMOOrder(int ApplicationId, int OrderId, CancellationToken ct = default);
         Task<bool> DeleteDMMOEvent(int EventId, CancellationToken ct = default);
         Task<bool> AddressExistsOnDMMO(int ApplicationId, long UPRN, CancellationToken ct = default);
+        Task<bool> ApplicationExists(int applicationId, CancellationToken ct = default);
     }
 }

@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Beta;
 
-
 namespace CSIDE.Data.Services
 {
     public class UserService(IDbContextFactory<ApplicationDbContext> contextFactory,
@@ -16,7 +15,6 @@ namespace CSIDE.Data.Services
                              IOptions<CSIDEOptions> csideOptions,
                              ILogger<UserService> logger) : IUserService
     {
-
         public async Task<List<Microsoft.Graph.Beta.Models.User>> GetUsers()
         {
             string cachekey = "AllGraphUsers";
@@ -100,7 +98,7 @@ namespace CSIDE.Data.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning(ex, "Error retrieving user ID {userId} as part of a collection",request.Value);
+                    logger.LogWarning(ex, "Error retrieving user ID {userId} as part of a collection", request.Value);
                 }
             }
 
@@ -135,30 +133,30 @@ namespace CSIDE.Data.Services
 
         public async Task<List<string>> GetActiveUserIds()
         {
-            using var context = contextFactory.CreateDbContext();
+            await using var context = await contextFactory.CreateDbContextAsync();
             return await context.ApplicationUserRoles.Select(u => u.UserId).AsNoTracking().ToListAsync();
         }
 
         public async Task<List<ApplicationRole>> GetApplicationRoles()
         {
-            using var context = contextFactory.CreateDbContext();
+            await using var context = await contextFactory.CreateDbContextAsync();
             return await context.ApplicationRoles.AsNoTracking().ToListAsync();
         }
 
         public async Task<List<ApplicationUserRole>> GetApplicationUserRoles(string userId)
         {
-            using var context = contextFactory.CreateDbContext();
+            await using var context = await contextFactory.CreateDbContextAsync();
             return await context.ApplicationUserRoles.Where(r => r.UserId == userId).AsNoTracking().ToListAsync();
         }
 
         public async Task<IList<Microsoft.Graph.Beta.Models.User>> GetUsersInRole(string roleName)
         {
-            using var context = contextFactory.CreateDbContext();
+            await using var context = await contextFactory.CreateDbContextAsync();
             var usersInRole = await context.ApplicationUserRoles
                 .Where(r => r.Role!.RoleName == roleName)
                 .Select(r => r.UserId)
                 .ToListAsync();
-            
+
             var users = await GetUsers([.. usersInRole]);
 
             return users;
@@ -166,7 +164,6 @@ namespace CSIDE.Data.Services
 
         public async Task<IReadOnlyCollection<ApplicationUserRole>> GetUserRoles(string userId, bool avoidCache = false, CancellationToken ct = default)
         {
-            using ApplicationDbContext? context = contextFactory.CreateDbContext();
             string cacheKey = $"UserRole/{userId}";
             if (!avoidCache)
             {
@@ -179,8 +176,8 @@ namespace CSIDE.Data.Services
                 }
             }
 
-            IReadOnlyCollection<ApplicationUserRole> roles;
-            roles = await context.ApplicationUserRoles
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+            IReadOnlyCollection<ApplicationUserRole> roles = await context.ApplicationUserRoles
                 .Where(u => u.UserId == userId)
                 .Include(a => a.Role)
                 .AsNoTrackingWithIdentityResolution()
@@ -196,8 +193,6 @@ namespace CSIDE.Data.Services
 
         public async Task<IReadOnlyCollection<TeamUser>> GetUserTeams(string userId, CancellationToken ct = default)
         {
-            using ApplicationDbContext? context = contextFactory.CreateDbContext();
-
             string teamCacheKey = $"UserTeam/{userId}";
             if (memoryCache.TryGetValue(teamCacheKey, out List<TeamUser>? cacheValue))
             {
@@ -207,6 +202,7 @@ namespace CSIDE.Data.Services
                 }
             }
 
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
             var teams = await context.MaintenanceTeamUsers
                 .Where(u => u.UserId == userId)
                 .Include(t => t.Team)
@@ -224,14 +220,14 @@ namespace CSIDE.Data.Services
 
         public async Task<bool> UpdateUserRoles(string userId, ICollection<int> SelectedUserRoleIds, CancellationToken ct = default)
         {
-            await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
-
             var existingUserRoles = await GetApplicationUserRoles(userId);
 
             // Determine the problem types to remove
             var userRolesToRemove = existingUserRoles
                 .Where(r => !SelectedUserRoleIds.Contains(r.ApplicationRoleId))
                 .ToList();
+
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
 
             // Remove the entities
             context.ApplicationUserRoles.RemoveRange(userRolesToRemove);

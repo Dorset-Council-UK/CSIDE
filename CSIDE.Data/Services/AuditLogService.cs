@@ -7,7 +7,7 @@ namespace CSIDE.Data.Services
     {
         public async Task<AuditLogGridResult> GetLogsAsync(int pageNumber, int pageSize, string[]? sectionNames, string? entityId, string? userId, CancellationToken ct)
         {
-            await using var context = contextFactory.CreateDbContext();
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
             var logs = context.AuditLogs.AsQueryable();
 
             if (sectionNames != null && sectionNames.Length != 0)

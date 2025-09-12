@@ -1,27 +1,19 @@
-﻿using CSIDE.Data.Models.Authorization;
-using CSIDE.Data.Models.Maintenance;
-using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.DMMO;
-using CSIDE.Data.Models.LandownerDeposits;
-using CSIDE.Data.Models.Shared;
-using Microsoft.EntityFrameworkCore;
-using CSIDE.Data.Models.RightsOfWay;
-using CSIDE.Data.Interceptors;
+﻿using CSIDE.Data.Interceptors;
 using CSIDE.Data.Models.Audit;
-using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Models.Authorization;
+using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.LandownerDeposits;
+using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.PPO;
+using CSIDE.Data.Models.RightsOfWay;
+using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Models.Surveys;
+using Microsoft.EntityFrameworkCore;
 
 namespace CSIDE.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
-                                      IAuditInterceptor auditInterceptor,
-                                      IRightsOfWayInterceptor rightsOfWayInterceptor,
-                                      IMaintenanceInterceptor maintenanceInterceptor,
-                                      IInfrastructureInterceptor infrastructureInterceptor,
-                                      ILandownerDepositInterceptor landownerDepositInterceptor,
-                                      IDMMOInterceptor dmmoInterceptor,
-                                      IPPOInterceptor ppoInterceptor,
-                                      ISurveyInterceptor surveyInterceptor) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
@@ -102,19 +94,20 @@ namespace CSIDE.Data
         public DbSet<DMMOMediaType> DMMOMediaType { get; set; }
         public DbSet<PPOMediaType> PPOMediaType { get; set; }
 
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            // Interceptors
             optionsBuilder.AddInterceptors(
-            [
-                rightsOfWayInterceptor,
-                maintenanceInterceptor,
-                infrastructureInterceptor,
-                dmmoInterceptor,
-                ppoInterceptor,
-                landownerDepositInterceptor,
-                surveyInterceptor,
-                auditInterceptor,
-            ]);
+                new BridgeSurveyInterceptor(),
+                new DMMOInterceptor(),
+                new InfrastructureItemInterceptor(),
+                new LandownerDepositInterceptor(),
+                new MaintenanceJobInterceptor(),
+                new PPOInterceptor(),
+                new RightsOfWayInterceptor(),
+                new AuditInterceptor()
+            );
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

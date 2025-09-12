@@ -29,7 +29,7 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 return;
             }
             //get the user who will be notified
-            using var context = contextFactory.CreateDbContext();
+            await using var context = await contextFactory.CreateDbContextAsync();
             var team = await context.MaintenanceTeams.Where(c => c.Geom.Contains(survey.Infrastructure.Geom)).Include(t => t.TeamUsers).FirstOrDefaultAsync();
             if (team is null)
             {

@@ -2,7 +2,7 @@
 
 public interface ICurrentUserService
 {
-    Task<string?> GetUserIdAsync();
-    Task<string?> GetUserNameAsync();
-    Task<bool> IsAuthenticatedAsync();
+    bool IsAuthenticated { get; }
+    string UserId { get; }
+    string UserName { get; }
 }

@@ -36,7 +36,7 @@ namespace CSIDE.Data.Services
         Task<PPOContact> AddContactToPPO(Contact newContact, Application ppoApplication, CancellationToken ct = default);
 
         Task<Application> UpdatePPO(Application PPOApplication, List<int> SelectedIntents, CancellationToken ct = default);
-        Task UpdateApplicationIntents(List<int> SelectedIntents, Application PPOApplication, ApplicationDbContext context);
+        Task UpdateApplicationIntents(List<int> SelectedIntents, Application PPOApplication);
         Task<PPOEvent> UpdatePPOEvent(int Id, PPOEvent ppoEvent, CancellationToken ct = default);
         Task<PPOOrder> UpdatePPOOrder(int OrderId, PPOOrder ppoOrder, CancellationToken ct = default);
 

@@ -33,7 +33,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         var query = context.DMMOApplication.AsQueryable();
 
         if (ParishIds is not null && ParishIds.Length != 0)
@@ -135,8 +134,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<ICollection<ApplicationClaimedStatus>> GetClaimedStatusOptions(CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOApplicationClaimedStatuses
             .AsNoTracking()
             .OrderBy(s => s.Id)
@@ -145,8 +144,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<ICollection<ApplicationCaseStatus>> GetCaseStatusOptions(CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOApplicationCaseStatuses
             .AsNoTracking()
             .OrderBy(p => p.Name)
@@ -155,8 +154,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<ICollection<ApplicationType>> GetApplicationTypeOptions(CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOApplicationTypes
             .AsNoTracking()
             .OrderBy(p => p.Id)
@@ -165,8 +164,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<ICollection<ApplicationDirectionOfSecState>> GetDirectionOfSecStateOptions(CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOApplicationDirectionsOfSecState
             .AsNoTracking()
             .OrderBy(p => p.Id)
@@ -183,8 +182,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     }
     public async Task<ICollection<DMMOMediaType>> GetDMMOMediaTypes(CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOMediaType
             .OrderBy(mt => mt.Name)
             .ToListAsync(ct)
@@ -193,8 +192,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<ICollection<OrderDecisionOfSecState>> GetOrderDecisionOfSecStateOptions(CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.OrderDecisionsOfSecState
                 .AsNoTracking()
                 .OrderBy(p => p.Name)
@@ -203,8 +202,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<ICollection<OrderDeterminationProcess>> GetOrderDeterminationProcessOptions(CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
         //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.OrderDeterminationProcesses
                 .AsNoTracking()
                 .OrderBy(p => p.Name)
@@ -250,7 +249,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     }
     public async Task<Application> AddMediaToDMMO(Application DMMOApplication, DMMOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(DMMOApplication);
         foreach (Media media in UploadedMedia)
         {
@@ -293,7 +292,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     public async Task<DMMOEvent> UpdateDMMOEvent(int id, DMMOEvent dmmoEvent, CancellationToken ct = default)
     {
-        
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existingEvent = await context.DMMOEvents.FindAsync([id], cancellationToken: ct) ?? throw new Exception($"DMMO Event being edited (ID: {id}) was not found prior to updating");
         context.Entry(existingEvent).CurrentValues.SetValues(dmmoEvent);
@@ -313,7 +311,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     public async Task<bool> DeleteDMMOAddress(int ApplicationId, long UPRN, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         var DMMOAddressToDelete = await context.DMMOAddresses.FindAsync([ApplicationId, UPRN], ct);
         if (DMMOAddressToDelete is not null)
         {
@@ -364,6 +361,14 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOAddresses
             .AnyAsync(d => d.ApplicationId == ApplicationId && d.UPRN == UPRN, cancellationToken: ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<bool> ApplicationExists(int applicationId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOApplication
+            .AnyAsync(a => a.Id == applicationId, cancellationToken: ct)
             .ConfigureAwait(false);
     }
 }

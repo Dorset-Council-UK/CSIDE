@@ -7,10 +7,18 @@ namespace CSIDE.Data.Validators.LandownerDeposits
 {
     public class LandownerDepositValidator : AbstractValidator<LandownerDeposit>
     {
-        readonly IStringLocalizer<CSIDE.Shared.Properties.Resources> _localizer;
+        private readonly IStringLocalizer<CSIDE.Shared.Properties.Resources> _localizer;
+
         public LandownerDepositValidator(IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer)
         {
             _localizer = localizer;
+
+            // This is validated within the GeometryValidator rulesets, but the NotEmpty check helps catch when no geometry is provided at all.
+            RuleFor(app => app.Geom)
+                .NotEmpty()
+                .WithMessage(localizer["Invalid Geometry Validation Message"])
+                .WithErrorCode("INVALID_GEOM");
+
             RuleFor(ld => ld.Location)
                 .NotEmpty()
                 .MaximumLength(4000)

@@ -1,89 +1,83 @@
 ﻿using CSIDE.Data.Models.PPO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace CSIDE.Data.Interceptors
+namespace CSIDE.Data.Interceptors;
+
+internal class PPOInterceptor : ISaveChangesInterceptor
 {
-    public class PPOInterceptor(IDbContextFactory<ApplicationDbContext> contextFactory) : SaveChangesInterceptor, IPPOInterceptor
+    public InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+        => throw new InvalidOperationException("Save changes asynchronously for PPO entities.");
+
+    public async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        public override InterceptionResult<int> SavingChanges(
-        DbContextEventData eventData, InterceptionResult<int> result)
+        await UpdatePpo(eventData, cancellationToken);
+        return await ValueTask.FromResult(result);
+    }
+
+    private static async Task UpdatePpo(DbContextEventData eventData, CancellationToken cancellationToken)
+    {
+        if (eventData.Context is not ApplicationDbContext context) return;
+
+        foreach (var entry in context.ChangeTracker.Entries())
         {
-            var context = eventData.Context;
-            if (context == null) return result;
-
-            ApplyAutomaticChanges(context).Wait();
-            return result;
-        }
-
-        public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
-            DbContextEventData eventData, InterceptionResult<int> result,
-            CancellationToken cancellationToken = default)
-        {
-            var context = eventData.Context;
-            if (context == null) return result;
-
-            await ApplyAutomaticChanges(context);
-            return await base.SavingChangesAsync(eventData, result, cancellationToken);
-        }
-
-        private async Task ApplyAutomaticChanges(DbContext context)
-        {
-            foreach (var entry in context.ChangeTracker.Entries())
+            if (entry.State is EntityState.Added or EntityState.Modified)
             {
-                if (IsCorrectEntityType(entry) && (entry.State is EntityState.Added or EntityState.Modified))
+                if (entry.Entity is Application ppoApplication)
                 {
-                    if (entry.Entity is Models.PPO.Application application)
-                    {
-                        await UpdatePPOParishIds(application);
-                    }else if(entry.Entity is PPOOrder order && entry.State is EntityState.Added)
-                    {
-                        await CreateOrderId(order);
-                    }
-                    
+                    await UpdatePPOParishIds(context, ppoApplication, cancellationToken);
+                }
+
+                if (entry.Entity is PPOOrder ppoOrder && entry.State is EntityState.Added)
+                {
+                    ppoOrder.OrderId = await NextOrderId(context, ppoOrder.ApplicationId, cancellationToken);
                 }
             }
         }
+    }
 
-        private async Task UpdatePPOParishIds(Models.PPO.Application ppoApplication)
+    private static async Task UpdatePPOParishIds(ApplicationDbContext context, Application ppoApplication, CancellationToken cancellationToken)
+    {
+        // Get intersecting parishes
+        var newParishIds = await context.Parishes
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(p => p.Geom.Intersects(ppoApplication.Geom))
+            .Select(p => p.ParishId)
+            .ToHashSetAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var existingParishIds = ppoApplication.PPOParishes
+            .Select(dp => dp.ParishId)
+            .ToHashSet();
+
+        // Remove PPOParishes that are no longer intersecting
+        var parishesToRemove = ppoApplication.PPOParishes
+            .Where(dp => !newParishIds.Contains(dp.ParishId))
+            .ToList();
+        foreach (var parishToRemove in parishesToRemove)
         {
-            using var context = contextFactory.CreateDbContext();
-            var parishes = await context.Parishes.Where(p => p.Geom.Intersects(ppoApplication.Geom)).ToArrayAsync();
-            var existingParishIds = ppoApplication.PPOParishes.Select(pp => pp.ParishId).ToList();
-            var newParishIds = parishes.Select(p => p.ParishId).ToList();
-
-            // Remove PPOParishes that are not in the new list
-            var parishesToRemove = ppoApplication.PPOParishes.Where(pp => !newParishIds.Contains(pp.ParishId)).ToList();
-            foreach (var parishToRemove in parishesToRemove)
-            {
-                ppoApplication.PPOParishes.Remove(parishToRemove);
-            }
-
-            // Add new PPOParishes that are not in the existing list
-            var parishesToAdd = parishes.Where(p => !existingParishIds.Contains(p.ParishId)).ToList();
-            foreach (var parishToAdd in parishesToAdd)
-            {
-                ppoApplication.PPOParishes.Add(new PPOParish { ParishId = parishToAdd.ParishId, ApplicationId = ppoApplication.Id });
-            }
+            ppoApplication.PPOParishes.Remove(parishToRemove);
         }
 
-        private async Task CreateOrderId(PPOOrder order)
+        // Add new PPOParishes that are missing
+        var parishIdsToAdd = newParishIds.Except(existingParishIds);
+        foreach (var parishId in parishIdsToAdd)
         {
-            using var context = contextFactory.CreateDbContext();
-            var highestOrderNumber = await context.PPOOrders.Where(d => d.ApplicationId == order.ApplicationId)
-                .OrderByDescending(d => d.OrderId)
-                .Take(1)
-                .Select(d => d.OrderId)
-                .FirstOrDefaultAsync();
-            order.OrderId = highestOrderNumber + 1;
+            ppoApplication.PPOParishes.Add(new PPOParish { ParishId = parishId, ApplicationId = ppoApplication.Id });
         }
+    }
 
-        private static bool IsCorrectEntityType(EntityEntry entry)
-        {
-            return entry.Entity is Models.PPO.Application or
-                                   PPOOrder or
-                                   PPOIntent;
-        }
+    private static async Task<int> NextOrderId(ApplicationDbContext context, int applicationId, CancellationToken cancellationToken)
+    {
+        var highestOrderNumber = await context.PPOOrders
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(o => o.ApplicationId == applicationId)
+            .Select(o => (int?)o.OrderId)
+            .MaxAsync(cancellationToken)
+            .ConfigureAwait(false) ?? 0;
+
+        return highestOrderNumber + 1;
     }
 }

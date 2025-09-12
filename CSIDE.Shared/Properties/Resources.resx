@@ -1731,4 +1731,7 @@
   <data name="My Work Card Error Message" xml:space="preserve">
     <value>An error occurred fetching this data. Refresh the page to try again.</value>
   </data>
+  <data name="Priority_Must_Be_Selected" xml:space="preserve">
+    <value>Select a priority</value>
+  </data>
 </root>

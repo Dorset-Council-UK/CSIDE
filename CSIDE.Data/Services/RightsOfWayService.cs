@@ -11,7 +11,6 @@ namespace CSIDE.Data.Services;
 /// </summary>
 public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextFactory) : IRightsOfWayService
 {
-
     public async Task<Route?> GetRouteByCode(string routeCode, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -52,7 +51,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
                 .ToArrayAsync(cancellationToken: ct)
                 .ConfigureAwait(false);
     }
-     public async Task<ICollection<Statement>> GetStatementsByRouteId(string routeId, CancellationToken ct = default)
+    public async Task<ICollection<Statement>> GetStatementsByRouteId(string routeId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Statements
@@ -73,7 +72,6 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         var query = context.Routes.AsQueryable();
 
         if (RouteId is not null)
@@ -117,8 +115,8 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
     public async Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
         //TODO: cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.RouteLegalStatuses
             .AsNoTracking()
             .OrderBy(ls => ls.Id)
@@ -128,8 +126,8 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
     public async Task<IReadOnlyCollection<RouteType>> GetRouteTypeOptions(CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
         //TODO: cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.RouteTypes
             .AsNoTracking()
             .OrderBy(r => r.Name)
@@ -139,8 +137,8 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
     public async Task<IReadOnlyCollection<OperationalStatus>> GetOperationalStatusOptions(CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
         //TODO: cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.RouteOperationalStatuses
             .AsNoTracking()
             .OrderBy(r => r.Id)
@@ -150,8 +148,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
     public async Task<string?> GetNextAvailableRouteCodeForParish(string parishCode, CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = await contextFactory.CreateDbContextAsync(ct);
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var routes = await context.Routes
             .Where(r => r.RouteCode.StartsWith($"{parishCode}/"))
             .Select(r => r.RouteCode)
@@ -194,7 +191,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     }
     public async Task<Route> AddMediaToRoute(Route route, List<Media> UploadedMedia, bool IsClosureNotificationDocument, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(route);
         foreach (Media media in UploadedMedia)
         {
@@ -212,12 +209,12 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
     public async Task<Route> UpdateRoute(Route route, CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         //get the existing job to enable the smarter change tracker.
         //Without this, all properties are identified as tracked, since
         //the DbContext is different from when the entity was queried
-        var existingRoute = await context.Routes.FindAsync(route.RouteCode) ?? throw new Exception($"Route being edited (ID: {route.RouteCode}) was not found prior to updating");
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingRoute = await context.Routes.FindAsync([route.RouteCode], ct)
+            ?? throw new Exception($"Route being edited (ID: {route.RouteCode}) was not found prior to updating");
         // Store the original version for concurrency checking
         uint originalVersion = route.Version;
         // Update values

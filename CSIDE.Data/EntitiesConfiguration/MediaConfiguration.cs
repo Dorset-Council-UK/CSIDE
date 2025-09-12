@@ -20,6 +20,7 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Navigation(x => x.RouteMedia).AutoInclude();
             builder.Navigation(x => x.LandownerDepositMedia).AutoInclude();
             builder.Navigation(x => x.InfrastructureMedia).AutoInclude();
+            builder.Navigation(x => x.PPOMedia).AutoInclude();
         }
     }
 }

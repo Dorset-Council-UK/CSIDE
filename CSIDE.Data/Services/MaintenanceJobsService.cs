@@ -11,7 +11,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 {
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobs
             .AsNoTracking()
             .ToListAsync(ct)
@@ -20,15 +20,15 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Job?> GetMaintenanceJobById(int id, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobs
             .FirstOrDefaultAsync(j => j.Id == id, ct)
             .ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobsBySearchParameters(
-        string? RouteId, 
-        string[]? ParishIds, 
+        string? RouteId,
+        string[]? ParishIds,
         string? ParishId,
         string? AssignedToTeamId,
         string? JobPriorityId,
@@ -40,7 +40,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         DateOnly? CompletedDateTo,
         int MaxResults = 1000)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync();
         var query = context.MaintenanceJobs.AsQueryable();
 
         if (RouteId is not null)
@@ -106,8 +106,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Team?> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var teamUser = await context.MaintenanceTeamUsers
             .AsNoTracking()
             .Include(tu => tu.Team)
@@ -119,8 +118,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForTeam(int teamId, int maxResults = 5, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobs
             .AsNoTracking()
             .Where(j => j.MaintenanceTeamId == teamId)
@@ -133,7 +131,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Job> CreateMaintenanceJob(Job job, IList<int> selectedProblemTypes, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobs.Add(job);
 
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -145,8 +143,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<ICollection<JobInfrastructure>> GetLinkedInfrastructureForJob(int jobId, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobInfrastructure
             .AsNoTracking()
             .Where(ji => ji.JobId == jobId)
@@ -156,8 +153,8 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Job?> UpdateMaintenanceJob(int id, Job job, IList<int> selectedProblemTypes, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
-        var existingJob = await context.MaintenanceJobs.FindAsync(new object?[] { id }, cancellationToken: ct)
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingJob = await context.MaintenanceJobs.FindAsync([id], ct)
                            ?? throw new Exception($"Maintenance job being edited (ID: {id}) was not found prior to updating");
 
         // Save the original version for concurrency checking
@@ -178,7 +175,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<bool> DeleteMaintenanceJob(int id, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existing = await context.MaintenanceJobs
             .FindAsync([id], ct)
             .ConfigureAwait(false);
@@ -196,7 +193,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Comment> CreateMaintenanceComment(Comment comment, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceComments.Add(comment);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return comment;
@@ -204,7 +201,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Job> AddMediaToJob(Job Job, List<Media> UploadedMedia, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(Job);
         foreach (Media media in UploadedMedia)
         {
@@ -222,14 +219,14 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     //TODO - There is some duplication between the two functions below
     public async Task<JobInfrastructure> AddInfrastructureToJob(JobInfrastructure jobInfrastructure, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobInfrastructure.Add(jobInfrastructure);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return jobInfrastructure;
     }
     public async Task<Job> AddInfrastructureToJob(Job job, InfrastructureItem infrastructureItem, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(job);
         var InfraJobToAdd = new JobInfrastructure() { InfrastructureId = infrastructureItem.Id, JobId = job.Id };
         job.JobInfrastructure.Add(InfraJobToAdd);
@@ -237,11 +234,10 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return job;
     }
-    
+
     public async Task<bool> RemoveInfrastructureFromJob(int jobId, int infrastructureId, CancellationToken ct = default)
     {
-
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existing = await context.MaintenanceJobInfrastructure
             .FirstOrDefaultAsync(ji => ji.JobId == jobId && ji.InfrastructureId == infrastructureId, ct)
             .ConfigureAwait(false) ?? throw new Exception($"Job-Infrastructure link being deleted (Job ID: {jobId}, Infrastructure ID: {infrastructureId}) was not found prior to deleting");
@@ -252,7 +248,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<bool> DeleteMaintenanceComment(int id, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existing = await context.MaintenanceComments
             .FindAsync([id], ct)
             .ConfigureAwait(false) ?? throw new Exception($"Maintenance comment being deleted (ID: {id}) was not found prior to deleting");
@@ -263,9 +259,9 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Comment> UpdateMaintenanceComment(Comment comment, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
-        var existingComment = await context.MaintenanceComments.FindAsync(new object?[] { comment.Id }, cancellationToken: ct)
-                              ?? throw new Exception($"Maintenance comment being edited (ID: {comment.Id}) was not found prior to updating");
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingComment = await context.MaintenanceComments.FindAsync([comment.Id], ct)
+            ?? throw new Exception($"Maintenance comment being edited (ID: {comment.Id}) was not found prior to updating");
         context.Entry(existingComment).CurrentValues.SetValues(comment);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return existingComment;
@@ -274,7 +270,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<JobContact> AddContactToJob(Job job, Contact contact, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Contacts.Add(contact);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         JobContact jobContact = new() { ContactId = contact.Id, JobId = job.Id };
@@ -286,7 +282,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     public async Task<ProblemType[]> GetMaintenanceProblemTypes(CancellationToken ct = default)
     {
         //TODO - Cache
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.ProblemTypes
             .AsNoTracking()
             .OrderBy(pt => pt.Name)
@@ -297,7 +293,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     public async Task<JobStatus[]> GetMaintenanceJobStatuses(CancellationToken ct = default)
     {
         //TODO - Cache
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobStatuses
             .AsNoTracking()
             .OrderBy(s => s.SortOrder)
@@ -308,7 +304,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     public async Task<JobPriority[]> GetMaintenanceJobPriorities(CancellationToken ct = default)
     {
         //TODO - Cache
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobPriorities
             .AsNoTracking()
             .OrderBy(s => s.SortOrder)
@@ -319,7 +315,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     public async Task<IReadOnlyCollection<Team>> GetMaintenanceTeams(CancellationToken ct = default)
     {
         //TODO - Cache
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceTeams
             .AsNoTracking()
             .OrderBy(p => p.Name)
@@ -327,7 +323,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .ConfigureAwait(false);
     }
 
-    private async Task UpdateMaintenanceProblemTypes(IList<int> selectedProblemTypes, Job job, ApplicationDbContext context)
+    private static async Task UpdateMaintenanceProblemTypes(IList<int> selectedProblemTypes, Job job, ApplicationDbContext context)
     {
         if (job is null) return;
 
@@ -369,5 +365,13 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var localDate = LocalDate.FromDateOnly(date);
         var zonedDate = localDate.AtStartOfDayInZone(timezone);
         return zonedDate.ToInstant();
+    }
+
+    public async Task<bool> MaintenanceJobExists(int id, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.MaintenanceJobs
+            .AnyAsync(j => j.Id == id, cancellationToken: ct)
+            .ConfigureAwait(false);
     }
 }

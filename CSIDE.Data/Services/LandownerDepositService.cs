@@ -10,7 +10,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
 {
     public async Task<LandownerDeposit?> GetLandownerDepositById(int Id, int SecondaryId, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.LandownerDeposits.FindAsync([Id, SecondaryId], ct);
     }
 
@@ -31,7 +31,6 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         var query = context.LandownerDeposits.AsQueryable();
 
         if (ParishIds is not null && ParishIds.Length != 0)
@@ -104,10 +103,13 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
     public async Task<LandownerDeposit> CreateLandownerDeposit(LandownerDeposit landownerDeposit, List<int> SelectedLandownerDepositTypes, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         var maxSecondaryId = await context.LandownerDeposits
-                        .Where(ld => ld.Id == landownerDeposit.Id)
-                        .MaxAsync(ld => (int?)ld.SecondaryId, cancellationToken: ct) ?? 0;
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(ld => ld.Id == landownerDeposit.Id)
+            .Select(ld => (int?)ld.SecondaryId)
+            .MaxAsync(cancellationToken: ct)
+            .ConfigureAwait(false) ?? 0;
         landownerDeposit.SecondaryId = maxSecondaryId + 1;
         context.LandownerDeposits.Add(landownerDeposit);
 
@@ -125,7 +127,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         return landownerDepositEvent;
     }
 
-     public async Task<LandownerDepositAddress> AddAddressToLandownerDeposit(LandownerDepositAddress landownerDepositAddress, CancellationToken ct = default)
+    public async Task<LandownerDepositAddress> AddAddressToLandownerDeposit(LandownerDepositAddress landownerDepositAddress, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Add(landownerDepositAddress);
@@ -136,7 +138,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
 
     public async Task<LandownerDeposit> AddMediaToLandownerDeposit(LandownerDeposit landownerDeposit, List<Media> UploadedMedia, LandownerDepositMediaType mediaType, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(landownerDeposit);
         foreach (Media media in UploadedMedia)
         {
@@ -191,12 +193,12 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
 
     public async Task<LandownerDeposit> UpdateLandownerDeposit(LandownerDeposit landownerDeposit, List<int> SelectedLandownerDepositTypes, CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
-
         //get the existing job to enable the smarter change tracker.
         //Without this, all properties are identified as tracked, since
         //the DbContext is different from when the entity was queried
-        var existingDeposit = await context.LandownerDeposits.FindAsync(new object?[] { landownerDeposit.Id, landownerDeposit.SecondaryId }, cancellationToken: ct) ?? throw new Exception($"Landowner Deposit being edited (ID: {landownerDeposit.Id}/{landownerDeposit.SecondaryId}) was not found prior to updating");
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingDeposit = await context.LandownerDeposits.FindAsync([landownerDeposit.Id, landownerDeposit.SecondaryId], ct)
+            ?? throw new Exception($"Landowner Deposit being edited (ID: {landownerDeposit.Id}/{landownerDeposit.SecondaryId}) was not found prior to updating");
 
         // Store the original version for concurrency checking
         uint originalVersion = landownerDeposit.Version;

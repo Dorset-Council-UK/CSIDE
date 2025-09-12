@@ -13,7 +13,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 {
     public async Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Infrastructure.FindAsync([id], ct).ConfigureAwait(false);
     }
     public async Task<ICollection<InfrastructureItem>> GetInfrastructureItemBySearchParameters(
@@ -27,8 +27,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         int MaxResults = 1000,
         CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.Infrastructure.AsQueryable();
 
         if (RouteId is not null)
@@ -76,7 +75,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Infrastructure
             .Where(i => i.RouteId == routeId)
             .ToArrayAsync(ct)
@@ -85,8 +84,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<BridgeSurvey?> GetBridgeSurveyById(int SurveyId, CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
             .FirstOrDefaultAsync(s => s.Id == SurveyId,cancellationToken: ct)
             .ConfigureAwait(false);
@@ -94,7 +92,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<ICollection<BridgeSurvey>> GetAllBridgeSurveys(CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
             .ToArrayAsync(ct)
             .ConfigureAwait(false);
@@ -102,7 +100,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<ICollection<BridgeSurvey>> GetBridgeSurveysForUser(string userId, CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
             .Where(s => s.SurveyorId == userId)
             .ToArrayAsync(ct)
@@ -111,7 +109,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<ICollection<BridgeSurvey>> GetValidatedBridgeSurveysByInfrastructureItemId(int infrastructureItemId, CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
             .Where(s => s.InfrastructureItemId == infrastructureItemId && s.Status == SurveyStatus.Verified)
             .ToArrayAsync(ct)
@@ -120,8 +118,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     
     public async Task<IReadOnlyCollection<InfrastructureItem>> GetNearbyInfrastructure(Geometry geometry, int distance, CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Infrastructure
                     .Where(i => i.Geom!.IsWithinDistance(geometry, distance))
                     .OrderBy(i => i.Geom!.Distance(geometry))
@@ -130,8 +127,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     
     public async Task<ICollection<BridgeWithDistance>> GetNearbyBridges(PointGeometryResult transformedPoint, int distance, CancellationToken ct = default)
     {
-        await using ApplicationDbContext? context = contextFactory.CreateDbContext();
-
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Infrastructure
                 .Where(i => i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
                 .OrderBy(i => i.Geom!.Distance(transformedPoint.Geom))
@@ -141,25 +137,25 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     }
     public async Task<ICollection<InfrastructureType>> GetInfrastructureTypeOptions(CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.InfrastructureTypes.OrderBy(n => n.Name)
             .ToArrayAsync(ct)
             .ConfigureAwait(false);
     }
     public async Task<ICollection<Material>> GetBridgeSurveyMaterialOptions(CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Materials.ToArrayAsync(ct).ConfigureAwait(false);
     }
     public async Task<ICollection<Condition>> GetBridgeSurveyConditionOptions(CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Conditions.ToArrayAsync(ct).ConfigureAwait(false);
     }
 
     public async Task<InfrastructureItem> CreateInfrastructureItem(InfrastructureItem infraItem, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Infrastructure.Add(infraItem);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return infraItem;
@@ -167,11 +163,11 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<BridgeSurvey> CreateBridgeSurveyForInfrastructureItem(int infrastructureItemId, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
         var newSurvey = new Data.Models.Surveys.BridgeSurvey
         {
             InfrastructureItemId = infrastructureItemId,
         };
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.BridgeSurveys.Add(newSurvey);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return newSurvey;
@@ -180,13 +176,13 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<InfrastructureItem> UpdateInfrastructureItem(InfrastructureItem infraItem, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
-
-
         //get the existing job to enable the smarter change tracker.
         //Without this, all properties are identified as tracked, since
         //the DbContext is different from when the entity was queried
-        var existingInfra = await context.Infrastructure.FindAsync([infraItem.Id], cancellationToken: ct).ConfigureAwait(false)
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingInfra = await context.Infrastructure
+            .FindAsync([infraItem.Id], cancellationToken: ct)
+            .ConfigureAwait(false)
             ?? throw new Exception($"Infrastructure Item being edited (ID: {infraItem.Id}) was not found prior to updating");
 
         // Store the original version for concurrency checking
@@ -227,12 +223,15 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<BridgeSurvey> UpdateBridgeSurvey(int SurveyId, BridgeSurvey survey, CancellationToken ct = default)
     {
-        await using var context = contextFactory.CreateDbContext();
-
         //get the existing job to enable the smarter change tracker.
         //Without this, all properties are identified as tracked, since
         //the DbContext is different from when the entity was queried
-        var existingSurvey = await context.BridgeSurveys.IgnoreAutoIncludes().Where(s => s.Id == SurveyId).FirstAsync(cancellationToken: ct) ?? throw new Exception($"Survey being edited (ID: {SurveyId}) was not found prior to updating");
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingSurvey = await context.BridgeSurveys
+            .IgnoreAutoIncludes()
+            .Where(s => s.Id == SurveyId)
+            .FirstAsync(cancellationToken: ct)
+            ?? throw new Exception($"Survey being edited (ID: {SurveyId}) was not found prior to updating");
         context.Entry(existingSurvey).CurrentValues.SetValues(survey);
 
         await context.SaveChangesAsync(ct).ConfigureAwait(continueOnCapturedContext: false);
@@ -240,7 +239,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     }
     public async Task<InfrastructureItem> AddMediaToInfrastructureItem(InfrastructureItem infraItem, List<Media> UploadedMedia, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(infraItem);
         foreach (Media media in UploadedMedia)
         {
@@ -257,7 +256,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
     public async Task<Survey> AddMediaToSurvey(Survey survey, List<Media> UploadedMedia, CancellationToken ct = default)
     {
-        using var context = contextFactory.CreateDbContext();
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(survey);
         foreach (Media media in UploadedMedia)
         {
@@ -270,5 +269,13 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return survey;
 
+    }
+
+    public async Task<bool> InfrastructureItemExists(int id, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.Infrastructure
+            .AnyAsync(o => o.Id == id, ct)
+            .ConfigureAwait(false);
     }
 }

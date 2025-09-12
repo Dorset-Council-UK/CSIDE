@@ -1,110 +1,109 @@
 ﻿using CSIDE.Data.Models.RightsOfWay;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using NetTopologySuite.Geometries;
 
-namespace CSIDE.Data.Interceptors
+namespace CSIDE.Data.Interceptors;
+
+internal class RightsOfWayInterceptor : ISaveChangesInterceptor
 {
-    public class RightsOfWayInterceptor(IDbContextFactory<ApplicationDbContext> contextFactory) : SaveChangesInterceptor, IRightsOfWayInterceptor
+    public InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+        => throw new InvalidOperationException("Save changes asynchronously for rights of way entities.");
+
+    public async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        public override InterceptionResult<int> SavingChanges(
-        DbContextEventData eventData, InterceptionResult<int> result)
+        await UpdateRightsOfWay(eventData, cancellationToken);
+        return await ValueTask.FromResult(result);
+    }
+
+    private static async Task UpdateRightsOfWay(DbContextEventData eventData, CancellationToken cancellationToken)
+    {
+        if (eventData.Context is not ApplicationDbContext context) return;
+
+        foreach (var entry in context.ChangeTracker.Entries())
         {
-            var context = eventData.Context;
-            if (context == null) return result;
-
-            ApplyAutomaticChanges(context).Wait();
-            return result;
-        }
-
-        public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
-            DbContextEventData eventData, InterceptionResult<int> result,
-            CancellationToken cancellationToken = default)
-        {
-            var context = eventData.Context;
-            if (context == null) return result;
-
-            await ApplyAutomaticChanges(context);
-            return await base.SavingChangesAsync(eventData, result, cancellationToken);
-        }
-
-        private async Task ApplyAutomaticChanges(DbContext context)
-        {
-            foreach (var entry in context.ChangeTracker.Entries())
+            if (entry.State is EntityState.Added or EntityState.Modified)
             {
-                if (IsCorrectEntityType(entry) && (entry.State is EntityState.Added or EntityState.Modified))
+                if (entry.Entity is Route route)
                 {
-                    if (entry.Entity is Models.RightsOfWay.Route route)
-                    {
-                        await UpdateRouteParishIds(route);
-                        await SetMaintenanceTeamForRoute(route);
-                        await FixClosureData(route);
-                    }
-                    if(entry.Entity is Statement statement)
-                    {
-                        await UpdateVersionOfStatement(statement);
-                    }
+                    route.ParishId = await GetParishIdForGeom(context, route.Geom, cancellationToken);
+                    route.MaintenanceTeamId = await GetTeamIdForRouteForGeom(context, route.Geom, cancellationToken);
+                    await FixClosureData(context, route, cancellationToken);
+                }
+                else if (entry.Entity is Statement statement)
+                {
+                    statement.Version = await NextVersionNumber(context, statement.RouteId, cancellationToken);
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Updates the Parish ID of a new or updated job based on a spatial contains query
-        /// </summary>
-        /// <returns></returns>
-        private async Task UpdateRouteParishIds(Models.RightsOfWay.Route route)
+    /// <summary>
+    /// Gets the Parish ID of a new or updated job based on a spatial contains query
+    /// </summary>
+    private static async Task<int?> GetParishIdForGeom(ApplicationDbContext context, MultiLineString geom, CancellationToken cancellationToken)
+    {
+        return await context.Parishes
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(p => p.Geom.Intersects(geom))
+            .OrderByDescending(p => p.Geom.Intersection(geom).Length)
+            .Select(p => p.ParishId)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the Maintenance Team ID of a newly created job based on a spatial contains query
+    /// </summary>
+    private static async Task<int?> GetTeamIdForRouteForGeom(ApplicationDbContext context, MultiLineString geom, CancellationToken cancellationToken)
+    {
+        return await context.MaintenanceTeams
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(t => t.Geom.Contains(geom))
+            .Select(t => t.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Makes changes to the closure data of a Right of Way based on operational status
+    /// </summary>
+    private static async Task FixClosureData(ApplicationDbContext context, Route route, CancellationToken cancellationToken)
+    {
+        var operationalStatus = await context.RouteOperationalStatuses
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(os => os.Id == route.OperationalStatusId)
+            .Select(os => new { os.Id, os.IsClosed })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (operationalStatus == null) return;
+
+        if (!operationalStatus.IsClosed)
         {
-            using var context = contextFactory.CreateDbContext();
-            var bestParish = await context.Parishes.Where(p => p.Geom.Intersects(route.Geom)).OrderByDescending(p => p.Geom.Intersection(route.Geom).Length).FirstOrDefaultAsync();
-            route.ParishId = bestParish?.ParishId;
+            route.ClosureStartDate = null;
+            route.ClosureEndDate = null;
+            route.ClosureIsIndefinite = false;
         }
-
-        /// <summary>
-        /// Sets the Maintenance Team ID of a newly created job based on a spatial contains query
-        /// </summary>
-        /// <returns></returns>
-        private async Task SetMaintenanceTeamForRoute(Models.RightsOfWay.Route route)
+        if (operationalStatus.IsClosed && route.ClosureIsIndefinite)
         {
-            using var context = contextFactory.CreateDbContext();
-            var team = await context.MaintenanceTeams.Where(t => t.Geom.Contains(route.Geom)).FirstOrDefaultAsync();
-            route.MaintenanceTeamId = team?.Id;
+            route.ClosureEndDate = null;
         }
+    }
 
-        /// <summary>
-        /// Makes changes to the closure data of a Right of Way based on operational status
-        /// </summary>
-        /// <returns></returns>
-        private async Task FixClosureData(Models.RightsOfWay.Route route)
-        {
-            using var context = contextFactory.CreateDbContext();
+    private static async Task<int> NextVersionNumber(ApplicationDbContext context, string routeId, CancellationToken cancellationToken)
+    {
+        var highestVersionNumber = await context.Statements
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(s => s.RouteId == routeId)
+            .Select(s => (int?)s.Version)
+            .MaxAsync(cancellationToken)
+            .ConfigureAwait(false) ?? 0;
 
-            var operationalStatus = await context.RouteOperationalStatuses.FindAsync(route.OperationalStatusId);
-            if (operationalStatus is not null && !operationalStatus.IsClosed)
-            {
-                route.ClosureStartDate = null;
-                route.ClosureEndDate = null;
-                route.ClosureIsIndefinite = false;
-            }
-            if (operationalStatus is not null && operationalStatus.IsClosed && route.ClosureIsIndefinite)
-            {
-                route.ClosureEndDate = null;
-            }
-        }
-
-        private async Task UpdateVersionOfStatement(Statement statement)
-        {
-            using var context = contextFactory.CreateDbContext();
-
-            var highestVersionNumber = await context.Statements
-                .Where(s => s.RouteId == statement.RouteId)
-                .Select(s => (int?)s.Version)
-                .MaxAsync() ?? 0;
-            statement.Version = highestVersionNumber + 1;
-        }
-
-        private static bool IsCorrectEntityType(EntityEntry entry)
-        {
-            return entry.Entity is Models.RightsOfWay.Route or Statement;
-        }
+        return highestVersionNumber + 1;
     }
 }

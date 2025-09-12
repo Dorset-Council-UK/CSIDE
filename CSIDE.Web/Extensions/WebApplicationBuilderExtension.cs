@@ -12,7 +12,9 @@ using Microsoft.Identity.Web.UI;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.AspNetCore.Builder;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 internal static class WebApplicationBuilderExtension
 {
@@ -159,7 +161,13 @@ internal static class WebApplicationBuilderExtension
         // Add microsoft identity web app authentication
         builder.Services
             .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApp(azureAdSection);
+            .AddMicrosoftIdentityWebApp(options =>
+            {
+                azureAdSection.Bind(options);
+                options.ErrorPath = "/Error";
+                options.SignedOutRedirectUri = "/account/signedout";
+                options.AccessDeniedPath = "/account/accessdenied";
+            });
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 
@@ -198,8 +206,7 @@ internal static class WebApplicationBuilderExtension
                 x.MapEnum<SurveyStatus>("survey_status");
             });
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
-
-        }, lifetime: ServiceLifetime.Transient);
+        });
 
         return builder;
     }

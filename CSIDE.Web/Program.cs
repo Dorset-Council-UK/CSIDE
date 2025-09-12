@@ -1,6 +1,5 @@
 using CSIDE.Authorization;
 using CSIDE.Data;
-using CSIDE.Data.Interceptors;
 using CSIDE.Data.Services;
 using CSIDE.Shared.Options;
 using CSIDE.Shared.Services;
@@ -34,32 +33,27 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddGovNotify(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(ApplicationDbContext));
 
-builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
-builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
-builder.Services.AddScoped<IRightsOfWayService, RightsOfWayService>();
-builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
+// Services from data project
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IGovNotifyEmailSender, GovNotifyEmailSender>();
-
-builder.Services.AddScoped<IAuditInterceptor, AuditInterceptor>();
-builder.Services.AddScoped<IRightsOfWayInterceptor, RightsOfWayInterceptor>();
-builder.Services.AddScoped<IMaintenanceInterceptor, MaintenanceInterceptor>();
-builder.Services.AddScoped<IInfrastructureInterceptor, InfrastructureInterceptor>();
-builder.Services.AddScoped<ILandownerDepositInterceptor, LandownerDepositInterceptor>();
-builder.Services.AddScoped<IDMMOInterceptor, DMMOInterceptor>();
-builder.Services.AddScoped<IPPOInterceptor, PPOInterceptor>();
-builder.Services.AddScoped<ISurveyInterceptor, SurveyInterceptor>();
-builder.Services.AddScoped<ISettingsService, SettingsService>();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddSingleton<IMapLinkHelperService, MapLinkHelperService>();
-builder.Services.AddScoped<IMaintenanceJobsService, MaintenanceJobsService>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddScoped<IDMMOService, DMMOService>();
+builder.Services.AddScoped<IGovNotifyEmailSender, GovNotifyEmailSender>();
 builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
 builder.Services.AddScoped<ILandownerDepositService, LandownerDepositService>();
-builder.Services.AddScoped<ISharedDataService, SharedDataService>();
+builder.Services.AddScoped<IMaintenanceJobsService, MaintenanceJobsService>();
+builder.Services.AddSingleton<IMapLinkHelperService, MapLinkHelperService>();
+builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 builder.Services.AddScoped<IPPOService, PPOService>();
+builder.Services.AddScoped<IRightsOfWayService, RightsOfWayService>();
+builder.Services.AddScoped<ISharedDataService, SharedDataService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
+// Current user service to allow the audit interceptor to use user details
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
+
+builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
 builder.Services.AddSingleton<IAuthorizationHandler, SurveyAuthorizationHandler>();
 
