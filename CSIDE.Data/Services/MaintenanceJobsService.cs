@@ -45,7 +45,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
         if (RouteId is not null)
         {
-            query = query.Where(j => j.RouteId == RouteId);
+            query = query.Where(j => j.RouteId == RouteId.ToUpper());
         }
         if (ParishIds is not null && ParishIds.Length != 0)
         {

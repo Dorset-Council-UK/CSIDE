@@ -47,7 +47,8 @@ function geolocationSuccess(pos: GeolocationPosition, component: any) {
     console.info('Accuracy less than 2 metres, this is good enough so we\'ll take that result');
     navigator.geolocation.clearWatch(watchID);
     window.clearTimeout(locationTimeout);
-
+    const returnValue = [bestLat ? bestLat : 0, bestLon ? bestLon : 0, bestAccuracy ? bestAccuracy : 0];
+    component.invokeMethodAsync('OnLocationSuccess', returnValue);
   }
 
 }

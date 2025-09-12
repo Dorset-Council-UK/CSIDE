@@ -3517,6 +3517,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No bridges could be found within {0}m of your location.
+        /// </summary>
+        public static string No_Nearby_Bridges_Message {
+            get {
+                return ResourceManager.GetString("No Nearby Bridges Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No orders could be found.
         /// </summary>
         public static string No_Orders_Message {

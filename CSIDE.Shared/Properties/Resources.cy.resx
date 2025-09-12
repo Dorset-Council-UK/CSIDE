@@ -1745,4 +1745,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Priority_Must_Be_Selected" xml:space="preserve">
     <value>Dewiswch flaenoriaeth</value>
   </data>
+  <data name="No Nearby Bridges Message" xml:space="preserve">
+    <value>Ni ellid dod o hyd i unrhyw bontydd o fewn {0}m i'ch lleoliad</value>
+  </data>
 </root>

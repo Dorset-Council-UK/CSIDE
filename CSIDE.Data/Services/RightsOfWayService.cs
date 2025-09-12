@@ -15,7 +15,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Routes
-            .FirstOrDefaultAsync(r => r.RouteCode == routeCode, cancellationToken: ct)
+            .FirstOrDefaultAsync(r => r.RouteCode == routeCode.ToUpper(), cancellationToken: ct)
             .ConfigureAwait(false);
     }
 
@@ -76,7 +76,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
         if (RouteId is not null)
         {
-            query = query.Where(j => j.RouteCode == RouteId);
+            query = query.Where(j => j.RouteCode == RouteId.ToUpper());
         }
         if (Name is not null)
         {
@@ -171,7 +171,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Routes
-            .AnyAsync(r => r.RouteCode == RouteCode, cancellationToken: ct)
+            .AnyAsync(r => r.RouteCode == RouteCode.ToUpper(), cancellationToken: ct)
             .ConfigureAwait(false);
     }
 

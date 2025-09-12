@@ -108,17 +108,18 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 throw new ArgumentException("Response must be supplied as an array of 3 values", paramName: nameof(response));
             }
 
-
-
-            var transformedPoint = await sharedDataService.TransformCoordinates(response[0], response[1], 4326, 27700);
+            var transformedPoint = await sharedDataService.TransformCoordinates(response[1], response[0], 4326, 27700);
             if (transformedPoint is null)
             {
                 LocationFetchErrrorMessage = localizer["General Error Message"];
             }
             else
             {
-
-                NearbyBridges = await infrastructureService.GetNearbyBridges(transformedPoint, 250);
+                NearbyBridges = await infrastructureService.GetNearbyBridges(transformedPoint, 150);
+                if(NearbyBridges.Count == 0)
+                {
+                    LocationFetchErrrorMessage = localizer["No Nearby Bridges Message", 150];
+                }
             }
 
             StateHasChanged();

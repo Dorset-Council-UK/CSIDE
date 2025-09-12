@@ -32,7 +32,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
         if (RouteId is not null)
         {
-            query = query.Where(i => i.RouteId == RouteId);
+            query = query.Where(i => i.RouteId == RouteId.ToUpper());
         }
         if (ParishIds is not null && ParishIds.Length != 0)
         {

@@ -1734,4 +1734,7 @@
   <data name="Priority_Must_Be_Selected" xml:space="preserve">
     <value>Select a priority</value>
   </data>
+  <data name="No Nearby Bridges Message" xml:space="preserve">
+    <value>No bridges could be found within {0}m of your location</value>
+  </data>
 </root>
