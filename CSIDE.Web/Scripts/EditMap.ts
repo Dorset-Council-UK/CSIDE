@@ -137,13 +137,13 @@ export function initMap(geomType: string, geometry: string, mapConfigJSON: strin
     });
   }
 
-  initEditing(geomType, component);
-
   initGeometry(geometry);
+
+  initEditing(geomType, component);
 }
 
 function initEditing(geomType: string, component: any) {
-  editSource = new VectorSource();
+  
   switch (geomType) {
     case "Point":
       //create point editing tools
@@ -210,6 +210,12 @@ function initEditing(geomType: string, component: any) {
         source: editSource
       });
       map.addControl(edit);
+
+      // Set line drawing tool active if there are no features, otherwise set select as the default tool
+      const lineFeatures = editSource.getFeatures();
+      lineFeatures && lineFeatures.length > 0
+        ? edit.getInteraction('Select').setActive(true)
+        : edit.getInteraction('DrawLine').setActive(true);
 
       const sourceSnap = new Snap({
         source: editSource,
@@ -283,6 +289,12 @@ function initEditing(geomType: string, component: any) {
       });
       map.addControl(edit);
 
+      // Set polygon drawing tool active if there are no features, otherwise set select as the default tool
+      const polygonFeatures = editSource.getFeatures();
+      polygonFeatures && polygonFeatures.length > 0
+        ? edit.getInteraction('Select').setActive(true)
+        : edit.getInteraction('DrawPolygon').setActive(true);
+
       edit.getInteraction('ModifySelect').on('modifyend' as any, (e) => {
         //convert to GeoJSON
         const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
@@ -337,6 +349,7 @@ function initEditing(geomType: string, component: any) {
 }
 
 function initGeometry(geometry:string) {
+  editSource = new VectorSource();
   if (geometry) {
     const features = new GeoJSON().readFeatures(geometry);
     if (features) {
