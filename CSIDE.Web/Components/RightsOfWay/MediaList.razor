@@ -4,11 +4,9 @@
 
 @if(Route is not null)
 {
-    
     @if (Route.RouteMedia is not null && Route.RouteMedia.Count != 0)
     {
-        
-        var images = from m in Route.RouteMedia where m.Media.Format == MediaType.Image select m;
+        var images = from m in Route.RouteMedia where m.Media.Format == MediaType.Image && m.IsClosureNotificationDocument == false select m;
         var videos = from m in Route.RouteMedia where m.Media.Format == MediaType.Video select m;
         var routeClosureDocs = from m in Route.RouteMedia where m.IsClosureNotificationDocument == true select m;
         var docs = 
@@ -28,18 +26,30 @@
                     @if(routeClosureDocs.Count() == 0){
                         <Alert Color="AlertColor.Info">@localizer["No Route Closure Documents Message"]</Alert>
                     }else{
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <tbody>
-                                    @foreach (RouteMedia routeMediaItem in routeClosureDocs.OrderByDescending(i => i.Media.UploadDate))
-                                    {
-                                        <MediaItem Media="@routeMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        
+                        if (routeClosureDocs.Any(i => i.Media.Format == MediaType.Image))
+                        {
+                            <div id="media-gallery">
+                                @foreach (RouteMedia routeMediaItem in routeClosureDocs.Where(i => i.Media.Format == MediaType.Image).OrderByDescending(i => i.Media.UploadDate))
+                                {
+                                    <MediaItem Media="@routeMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                                }
+                            </div>
+                        }
+                        if (routeClosureDocs.Any(i => i.Media.Format != MediaType.Image))
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        @foreach (RouteMedia routeMediaItem in routeClosureDocs.Where(i => i.Media.Format != MediaType.Image).OrderByDescending(i => i.Media.UploadDate))
+                                        {
+                                            <MediaItem Media="@routeMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }   
                     }
-
                 </div>
             </div>
             <hr/>
@@ -145,4 +155,3 @@ role="dialog">
     role="button"></a>
     <ol class="indicator"></ol>
 </div>
-
