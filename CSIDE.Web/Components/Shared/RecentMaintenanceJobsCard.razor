@@ -10,7 +10,7 @@
 
 <Card>
     <CardBody>
-        <CardTitle Class="mb-4">@localizer["Recent Maintenance Jobs Card Title"]</CardTitle>
+        <CardTitle Class="mb-4">@MaintenanceCardTitle</CardTitle>
         <CardText>
             @if (IsBusy)
             {
@@ -57,12 +57,15 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
     private string? UserID { get; set; }
-    private Team MaintenanceTeam { get; set; }
+    private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
     private bool IsBusy { get; set; }
     private string? ErrorMessage { get; set; } = null;
+    private string? MaintenanceCardTitle { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        MaintenanceCardTitle = localizer["Recent Maintenance Jobs Card Title"];
+
         IsBusy = true;
         ErrorMessage = null;
         StateHasChanged();
@@ -80,13 +83,15 @@
                 MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
             }
 
-            if (MaintenanceTeam is not null)
+            if (MaintenanceTeam.Count >= 1)
             {
-                Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForTeam(MaintenanceTeam.Id, 5);
+                var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
+                Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForTeam(teamIds, 5);
             }
             else
             {
-                ErrorMessage = localizer["Maintenance Jobs Card No Team Error Message"];
+                Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForAllTeams(5);
+                MaintenanceCardTitle = localizer["Recent Maintenance Jobs Card Title for All Teams"];
             }
         }
         catch (Exception ex)

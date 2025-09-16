@@ -104,24 +104,35 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return await query.OrderByDescending(j => j.LogDate).Take(MaxResults).ToListAsync();
     }
 
-    public async Task<Team?> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var teamUser = await context.MaintenanceTeamUsers
+        return await context.MaintenanceTeamUsers
             .AsNoTracking()
-            .Include(tu => tu.Team)
-            .FirstOrDefaultAsync(tu => tu.UserId == userId, ct)
+            .Where(tu => tu.UserId == userId)
+            .Select(tu => tu.Team)
+            .ToListAsync(ct)
             .ConfigureAwait(false);
-
-        return teamUser?.Team;
     }
 
-    public async Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForTeam(int teamId, int maxResults = 5, CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForTeam(List<int> teamId, int maxResults = 5, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobs
             .AsNoTracking()
-            .Where(j => j.MaintenanceTeamId == teamId)
+            .Where(j => j.MaintenanceTeamId != null && teamId.Contains(j.MaintenanceTeamId.Value))
+            .Where(job => job.JobStatus!.IsComplete == false)
+            .OrderByDescending(j => j.LogDate)
+            .Take(maxResults)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForAllTeams(int maxResults = 5, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.MaintenanceJobs
+            .AsNoTracking()
             .Where(job => job.JobStatus!.IsComplete == false)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)

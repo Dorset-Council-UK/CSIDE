@@ -1719,9 +1719,6 @@
   <data name="No Linked Deposits Found Message" xml:space="preserve">
     <value>No Landowner Deposits linked to this deposit</value>
   </data>
-  <data name="Maintenance Jobs Card No Team Error Message" xml:space="preserve">
-    <value>You aren't in a maintenance team, so no results could be displayed</value>
-  </data>
   <data name="My Work Card Title" xml:space="preserve">
     <value>Recently viewed</value>
   </data>
@@ -1736,5 +1733,8 @@
   </data>
   <data name="No Nearby Bridges Message" xml:space="preserve">
     <value>No bridges could be found within {0}m of your location</value>
+  </data>
+  <data name="Recent Maintenance Jobs Card Title for All Teams" xml:space="preserve">
+    <value>Recent maintenance jobs</value>
   </data>
 </root>

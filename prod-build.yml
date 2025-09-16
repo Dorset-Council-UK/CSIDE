@@ -29,10 +29,10 @@ jobs:
             workingDir: "CSIDE.Web"
   - template: deploy/iis.yml@templates
     parameters:
-      environment: "staging"
+      environment: "cside-staging"
       websiteName: "gi-staging"
       virtualApplication: "cside"
       variableGroups:
         - "cside-staging-properties"
-      projectName: "CSIDE.Web" # Since the project is in the root folder, the project outputs to a folder called s
+      projectName: "CSIDE.Web"
       dependsOn: build

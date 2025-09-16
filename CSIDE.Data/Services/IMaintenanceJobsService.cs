@@ -32,12 +32,17 @@ public interface IMaintenanceJobsService
     /// <summary>
     /// Gets the maintenance team for a specific user.
     /// </summary>
-    Task<Team?> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default);
+    Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default);
 
     /// <summary>
     /// Gets the most recent {maxResults} incomplete jobs for a specific team.
     /// </summary>
-    Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForTeam(int teamId, int maxResults = 5, CancellationToken ct = default);
+    Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForTeam(List<int> teamId, int maxResults = 5, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets the most recent {maxResults} incomplete jobs for all teams.
+    /// </summary>
+    Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForAllTeams(int maxResults = 5, CancellationToken ct = default);
 
     /// <summary>
     /// Gets all infrastructure items linked to a specific job.

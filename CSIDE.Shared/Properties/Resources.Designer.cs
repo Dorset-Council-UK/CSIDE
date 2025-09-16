@@ -3139,15 +3139,6 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You aren&apos;t in a maintenance team, so no results could be displayed.
-        /// </summary>
-        public static string Maintenance_Jobs_Card_No_Team_Error_Message {
-            get {
-                return ResourceManager.GetString("Maintenance Jobs Card No Team Error Message", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Maintenance team.
         /// </summary>
         public static string Maintenance_Team_Label {
@@ -4053,6 +4044,15 @@ namespace CSIDE.Shared.Properties {
         public static string Recent_Maintenance_Jobs_Card_Title {
             get {
                 return ResourceManager.GetString("Recent Maintenance Jobs Card Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recent maintenance jobs.
+        /// </summary>
+        public static string Recent_Maintenance_Jobs_Card_Title_for_All_Teams {
+            get {
+                return ResourceManager.GetString("Recent Maintenance Jobs Card Title for All Teams", resourceCulture);
             }
         }
         

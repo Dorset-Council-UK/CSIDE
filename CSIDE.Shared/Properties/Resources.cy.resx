@@ -1730,9 +1730,6 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="No Linked Deposits Found Message" xml:space="preserve">
     <value>Dim Blaendaliadau Tirfeddianwyr yn gysylltiedig â'r blaendal hwn</value>
   </data>
-  <data name="Maintenance Jobs Card No Team Error Message" xml:space="preserve">
-    <value>Nid ydych chi mewn tîm cynnal a chadw, felly ni ellid arddangos unrhyw ganlyniadau</value>
-  </data>
   <data name="My Work Card Title" xml:space="preserve">
     <value>Wedi'i weld yn ddiweddar</value>
   </data>
@@ -1747,5 +1744,8 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   </data>
   <data name="No Nearby Bridges Message" xml:space="preserve">
     <value>Ni ellid dod o hyd i unrhyw bontydd o fewn {0}m i'ch lleoliad</value>
+  </data>
+  <data name="Recent Maintenance Jobs Card Title for All Teams" xml:space="preserve">
+    <value>Swyddi cynnal a chadw diweddar</value>
   </data>
 </root>
