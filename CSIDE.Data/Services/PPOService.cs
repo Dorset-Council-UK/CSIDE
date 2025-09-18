@@ -8,13 +8,13 @@ namespace CSIDE.Data.Services
 {
     public class PPOService(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService placesSearchService) : IPPOService
     {
-        public async Task<Application?> GetPPOApplicationById(int id, CancellationToken ct = default)
+        public async Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             return await context.PPOApplication.FindAsync([id], ct);
         }
 
-        public async Task<IReadOnlyCollection<Application>?> GetPPOApplicationsBySearchParameters(
+        public async Task<IReadOnlyCollection<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationTypeId,
@@ -101,7 +101,7 @@ namespace CSIDE.Data.Services
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             return await context.PPOOrders
-                .Where(o => o.ApplicationId == applicationId)
+                .Where(o => o.PPOApplicationId == applicationId)
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
         }
@@ -112,7 +112,7 @@ namespace CSIDE.Data.Services
             return await context.PPOOrders
                 .AsNoTracking()
                 .Include(o => o.DecisionOfSecState)
-                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ApplicationId == applicationId, ct);
+                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.PPOApplicationId == applicationId, ct);
         }
 
         public async Task<IReadOnlyCollection<ApplicationCaseStatus>> GetPPOCaseStatusOptions(CancellationToken ct = default)
@@ -185,7 +185,7 @@ namespace CSIDE.Data.Services
                 .ToArrayAsync(ct);
         }
 
-        public async Task<Application> CreatePPO(Application PPOApplication, List<int> SelectedIntents, CancellationToken ct = default)
+        public async Task<PPOApplication> CreatePPO(PPOApplication PPOApplication, List<int> SelectedIntents, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             context.Add(PPOApplication);
@@ -200,11 +200,11 @@ namespace CSIDE.Data.Services
             //add new problem types
             foreach (int intent in selectedIntents)
             {
-                context.PPOIntents.Add(new PPOIntent { IntentId = intent, ApplicationId = PPOApplicationId });
+                context.PPOIntents.Add(new PPOIntent { IntentId = intent, PPOApplicationId = PPOApplicationId });
             }
         }
 
-        public async Task<Application> AddMediaToPPO(Application PPOApplication, PPOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
+        public async Task<PPOApplication> AddMediaToPPO(PPOApplication PPOApplication, PPOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             context.Attach(PPOApplication);
@@ -237,18 +237,18 @@ namespace CSIDE.Data.Services
             return ppoOrder;
         }
 
-        public async Task<PPOContact> AddContactToPPO(Contact newContact, Application ppoApplication, CancellationToken ct = default)
+        public async Task<PPOContact> AddContactToPPO(Contact newContact, PPOApplication ppoApplication, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             context.Contacts.Add(newContact);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
-            var ppoContact = new PPOContact { ContactId = newContact.Id, ApplicationId = ppoApplication.Id };
+            var ppoContact = new PPOContact { ContactId = newContact.Id, PPOApplicationId = ppoApplication.Id };
             context.PPOContact.Add(ppoContact);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
             return ppoContact;
         }
 
-        public async Task<Application> UpdatePPO(Application PPOApplication, List<int> SelectedIntents, CancellationToken ct = default)
+        public async Task<PPOApplication> UpdatePPO(PPOApplication PPOApplication, List<int> SelectedIntents, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
 
@@ -266,19 +266,18 @@ namespace CSIDE.Data.Services
             // This is the critical line that makes concurrency checking work
             context.Entry(existingApp).Property(j => j.Version).OriginalValue = originalVersion;
 
-            await UpdateApplicationIntents(SelectedIntents, PPOApplication);
+            await UpdateApplicationIntents(SelectedIntents, PPOApplication, context);
             await context.SaveChangesAsync(ct);
             return PPOApplication;
         }
 
-        public async Task UpdateApplicationIntents(List<int> SelectedIntents, Application PPOApplication)
+        public async Task UpdateApplicationIntents(List<int> SelectedIntents, PPOApplication PPOApplication, ApplicationDbContext context)
         {
             if (PPOApplication is null) return;
 
             // Retrieve the existing problem types for the job
-            await using var context = await contextFactory.CreateDbContextAsync();
             var existingIntents = await context.PPOIntents
-                .Where(c => c.ApplicationId == PPOApplication.Id)
+                .Where(c => c.PPOApplicationId == PPOApplication.Id)
                 .ToListAsync();
 
             // Determine the problem types to remove
@@ -292,7 +291,7 @@ namespace CSIDE.Data.Services
             // Determine the problem types to add
             var intentsToAdd = SelectedIntents
                 .Where(intentId => !existingIntents.Exists(c => c.IntentId == intentId))
-                .Select(intentId => new PPOIntent { IntentId = intentId, ApplicationId = PPOApplication.Id })
+                .Select(intentId => new PPOIntent { IntentId = intentId, PPOApplicationId = PPOApplication.Id })
                 .ToList();
 
             // Add the new problem types
@@ -320,7 +319,7 @@ namespace CSIDE.Data.Services
         public async Task<PPOOrder> UpdatePPOOrder(int OrderId, PPOOrder ppoOrder, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            var existingOrder = await context.PPOOrders.FindAsync([OrderId, ppoOrder.ApplicationId], ct) ?? throw new Exception($"PPO Order being edited (ID: {OrderId}) was not found prior to updating");
+            var existingOrder = await context.PPOOrders.FindAsync([OrderId, ppoOrder.PPOApplicationId], ct) ?? throw new Exception($"PPO Order being edited (ID: {OrderId}) was not found prior to updating");
             context.Entry(existingOrder).CurrentValues.SetValues(ppoOrder);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
             return ppoOrder;

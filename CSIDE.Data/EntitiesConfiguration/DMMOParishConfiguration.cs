@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<DMMOParish> builder)
         {
-            builder.HasKey(x => new { x.ApplicationId, x.ParishId });
+            builder.HasKey(x => new { x.DMMOApplicationId, x.ParishId });
 
             builder.Navigation(x => x.Parish)
                 .AutoInclude();

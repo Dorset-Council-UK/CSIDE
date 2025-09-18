@@ -8,7 +8,7 @@ namespace CSIDE.Data.Services;
 
 public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService placesSearchService) : IDMMOService
 {
-    public async Task<Application?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default)
+    public async Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOApplication
@@ -18,7 +18,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<Application>?> GetDMMOApplicationsBySearchParameters(
+    public async Task<ICollection<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? ApplicationTypeId,
@@ -112,14 +112,14 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.DMMOOrders
             .AsNoTracking()
             .Include(p => p.DecisionOfSecState)
-            .FirstOrDefaultAsync(p => p.OrderId == OrderId && p.ApplicationId == ApplicationId, cancellationToken: ct);
+            .FirstOrDefaultAsync(p => p.OrderId == OrderId && p.DMMOApplicationId == ApplicationId, cancellationToken: ct);
     }
 
     public async Task<ICollection<DMMOLinkedRoute>> GetDMMOLinkedRoutesByApplicationId(int ApplicationId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOLinkedRoutes
-            .Where(l => l.ApplicationId == ApplicationId)
+            .Where(l => l.DMMOApplicationId == ApplicationId)
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
@@ -127,7 +127,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOAddresses
-            .Where(a => a.ApplicationId == ApplicationId)
+            .Where(a => a.DMMOApplicationId == ApplicationId)
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
@@ -176,7 +176,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOOrders
-            .Where(o => o.ApplicationId == ApplicationId)
+            .Where(o => o.DMMOApplicationId == ApplicationId)
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
@@ -210,7 +210,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
                 .ToArrayAsync(cancellationToken: ct);
     }
 
-    public async Task<Application> CreateDMMO(Application dmmoApplication, CancellationToken ct = default)
+    public async Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Add(dmmoApplication);
@@ -247,7 +247,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await context.SaveChangesAsync(ct);
         return dmmoOrder;
     }
-    public async Task<Application> AddMediaToDMMO(Application DMMOApplication, DMMOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
+    public async Task<DMMOApplication> AddMediaToDMMO(DMMOApplication DMMOApplication, DMMOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Attach(DMMOApplication);
@@ -264,18 +264,18 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return DMMOApplication;
     }
 
-    public async Task<DMMOContact> AddContactToDMMO(Contact newContact, Application dmmoApplication, CancellationToken ct = default)
+    public async Task<DMMOContact> AddContactToDMMO(Contact newContact, DMMOApplication dmmoApplication, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Contacts.Add(newContact);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
-        var dmmoContact = new DMMOContact { ContactId = newContact.Id, ApplicationId = dmmoApplication.Id };
+        var dmmoContact = new DMMOContact { ContactId = newContact.Id, DMMOApplicationId = dmmoApplication.Id };
         context.DMMOContact.Add(dmmoContact);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoContact;
     }
 
-    public async Task<Application> UpdateDMMO(Application dmmoApplication, CancellationToken ct = default)
+    public async Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existingApplication = await context.DMMOApplication.FindAsync([dmmoApplication.Id], cancellationToken: ct) ?? throw new Exception($"DMMO Application being edited (ID: {dmmoApplication.Id}) was not found prior to updating");
@@ -302,7 +302,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     public async Task<DMMOOrder> UpdateDMMOOrder(int OrderId, DMMOOrder dmmoOrder, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var existingOrder = await context.DMMOOrders.FindAsync([OrderId, dmmoOrder.ApplicationId], cancellationToken: ct) ?? throw new Exception($"DMMO Order being edited (ID: {OrderId}) was not found prior to updating");
+        var existingOrder = await context.DMMOOrders.FindAsync([OrderId, dmmoOrder.DMMOApplicationId], cancellationToken: ct) ?? throw new Exception($"DMMO Order being edited (ID: {OrderId}) was not found prior to updating");
         context.Entry(existingOrder).CurrentValues.SetValues(dmmoOrder);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoOrder;
@@ -360,7 +360,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOAddresses
-            .AnyAsync(d => d.ApplicationId == ApplicationId && d.UPRN == UPRN, cancellationToken: ct)
+            .AnyAsync(d => d.DMMOApplicationId == ApplicationId && d.UPRN == UPRN, cancellationToken: ct)
             .ConfigureAwait(false);
     }
 

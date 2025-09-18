@@ -23,20 +23,20 @@ internal class PPOInterceptor : ISaveChangesInterceptor
         {
             if (entry.State is EntityState.Added or EntityState.Modified)
             {
-                if (entry.Entity is Application ppoApplication)
+                if (entry.Entity is PPOApplication ppoApplication)
                 {
                     await UpdatePPOParishIds(context, ppoApplication, cancellationToken);
                 }
 
                 if (entry.Entity is PPOOrder ppoOrder && entry.State is EntityState.Added)
                 {
-                    ppoOrder.OrderId = await NextOrderId(context, ppoOrder.ApplicationId, cancellationToken);
+                    ppoOrder.OrderId = await NextOrderId(context, ppoOrder.PPOApplicationId, cancellationToken);
                 }
             }
         }
     }
 
-    private static async Task UpdatePPOParishIds(ApplicationDbContext context, Application ppoApplication, CancellationToken cancellationToken)
+    private static async Task UpdatePPOParishIds(ApplicationDbContext context, PPOApplication ppoApplication, CancellationToken cancellationToken)
     {
         // Get intersecting parishes
         var newParishIds = await context.Parishes
@@ -64,7 +64,7 @@ internal class PPOInterceptor : ISaveChangesInterceptor
         var parishIdsToAdd = newParishIds.Except(existingParishIds);
         foreach (var parishId in parishIdsToAdd)
         {
-            ppoApplication.PPOParishes.Add(new PPOParish { ParishId = parishId, ApplicationId = ppoApplication.Id });
+            ppoApplication.PPOParishes.Add(new PPOParish { ParishId = parishId, PPOApplicationId = ppoApplication.Id });
         }
     }
 
@@ -73,7 +73,7 @@ internal class PPOInterceptor : ISaveChangesInterceptor
         var highestOrderNumber = await context.PPOOrders
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Where(o => o.ApplicationId == applicationId)
+            .Where(o => o.PPOApplicationId == applicationId)
             .Select(o => (int?)o.OrderId)
             .MaxAsync(cancellationToken)
             .ConfigureAwait(false) ?? 0;

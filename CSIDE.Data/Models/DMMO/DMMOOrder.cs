@@ -6,7 +6,7 @@ namespace CSIDE.Data.Models.DMMO
     public class DMMOOrder
     {
         public int OrderId { get; set; }
-        public required int ApplicationId { get; set; }
+        public required int DMMOApplicationId { get; set; }
 
         public LocalDate? ObjectionsEndDate { get; set; }
         public bool? ObjectionsReceived { get; set; }

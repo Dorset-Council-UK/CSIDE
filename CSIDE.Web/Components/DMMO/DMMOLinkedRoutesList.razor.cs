@@ -31,7 +31,7 @@ public partial class DMMOLinkedRoutesList(IDMMOService dmmoService,
     private async Task OpenAddLinkedRoutesModal()
     {
         ErrorMessage = null;
-        NewDMMOLinkedRoute = new() { ApplicationId = ApplicationId, RouteId="" };
+        NewDMMOLinkedRoute = new() { DMMOApplicationId = ApplicationId, RouteId="" };
         await GetNearbyRoutes();
         await AddLinkedRouteModal.ShowAsync();
     }
@@ -56,7 +56,7 @@ public partial class DMMOLinkedRoutesList(IDMMOService dmmoService,
         try
         {
             //submit
-            var DMMOLinkedRouteToAdd = new DMMOLinkedRoute() { ApplicationId = ApplicationId, RouteId = RouteId };
+            var DMMOLinkedRouteToAdd = new DMMOLinkedRoute() { DMMOApplicationId = ApplicationId, RouteId = RouteId };
             // validate with fluent validation 
             var validator = new DMMOLinkedRouteValidator(dmmoService, localizer, rightsOfWayHelperService);
             var validationResult = await validator.ValidateAsync(DMMOLinkedRouteToAdd);

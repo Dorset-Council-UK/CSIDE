@@ -10,7 +10,7 @@ namespace CSIDE.Web.Components.DMMO
     public partial class MediaList(IDMMOService dmmoService, IJSRuntime JS, ILogger<MediaList> logger, ToastService toastService) : IAsyncDisposable
     {
         [Parameter]
-        public Application? DMMOApplication { get; set; }
+        public DMMOApplication? DMMOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 

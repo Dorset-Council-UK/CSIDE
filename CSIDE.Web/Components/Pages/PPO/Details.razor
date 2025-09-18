@@ -282,7 +282,7 @@ else
 
     [Parameter]
     public int Id { get; set; }
-    private Application? PPOApplication { get; set; }
+    private PPOApplication? PPOApplication { get; set; }
 
     private bool IsBusy { get; set; }
 
@@ -292,7 +292,7 @@ else
     private bool UserCanEdit { get; set; } = false;
 
     private string[] AuditLogSectionNames => new string[] { 
-        nameof(Data.Models.PPO.Application),
+        nameof(Data.Models.PPO.PPOApplication),
         nameof(Data.Models.PPO.PPOContact),
         nameof(Data.Models.PPO.PPOMedia),
         nameof(Data.Models.PPO.PPOOrder),

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
-    internal sealed class DMMOApplicationConfiguration : IEntityTypeConfiguration<Application>
+    internal sealed class DMMOApplicationConfiguration : IEntityTypeConfiguration<DMMOApplication>
     {
-        public void Configure(EntityTypeBuilder<Application> builder)
+        public void Configure(EntityTypeBuilder<DMMOApplication> builder)
         {
 
             builder.Property(x => x.ApplicationDetails).IsRequired();

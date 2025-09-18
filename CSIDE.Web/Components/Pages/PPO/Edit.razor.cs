@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.Pages.PPO
     {
         [Parameter]
         public int PPOApplicationId { get; set; }
-        private Application? PPOApplication { get; set; }
+        private PPOApplication? PPOApplication { get; set; }
         private IReadOnlyCollection<ApplicationCaseStatus> CaseStatuses = [];
         private IReadOnlyCollection<ApplicationType> ApplicationTypes = [];
         private IReadOnlyCollection<ApplicationIntent> Intents = [];

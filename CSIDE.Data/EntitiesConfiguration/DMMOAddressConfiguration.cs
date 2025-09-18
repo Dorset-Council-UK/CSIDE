@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<DMMOAddress> builder)
         {
-            builder.HasKey(x => new { x.ApplicationId, x.UPRN });
+            builder.HasKey(x => new { x.DMMOApplicationId, x.UPRN });
         }
     }
 }

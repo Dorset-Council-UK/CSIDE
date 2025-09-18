@@ -10,7 +10,7 @@ namespace CSIDE.Web.Components.PPO
     public partial class EventsList(IPPOService ppoService, ILogger<EventsList> logger)
     {
         [Parameter]
-        public Application? PPOApplication { get; set; }
+        public PPOApplication? PPOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
@@ -26,7 +26,7 @@ namespace CSIDE.Web.Components.PPO
         {
             NewEvent = new PPOEvent()
             {
-                ApplicationId = PPOApplication!.Id,
+                PPOApplicationId = PPOApplication!.Id,
                 EventText = string.Empty,
                 EventDate = LocalDate.FromDateTime(DateTime.Now),
             };
@@ -99,7 +99,7 @@ namespace CSIDE.Web.Components.PPO
             {
                 NewEvent = new()
                 {
-                    ApplicationId = PPOApplication.Id,
+                    PPOApplicationId = PPOApplication.Id,
                     EventText = string.Empty,
                     EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };

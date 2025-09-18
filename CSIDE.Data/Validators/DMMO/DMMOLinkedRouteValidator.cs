@@ -23,12 +23,12 @@ namespace CSIDE.Data.Validators.DMMO
             RuleFor(d => d.RouteId)
                 .NotEmpty()
                 .WithName(_localizer["Route ID Label"])
-                .MustAsync((dmmoLinkedRoute, RouteId, ct) => RouteIDNotAlreadyLinked(RouteId, dmmoLinkedRoute.ApplicationId, ct))
+                .MustAsync((dmmoLinkedRoute, RouteId, ct) => RouteIDNotAlreadyLinked(RouteId, dmmoLinkedRoute.DMMOApplicationId, ct))
                 .WithMessage(_localizer["Linked Route Already Exists Validation Message"])
                 .MustAsync(RouteIDExists)
                 .WithMessage(r => _localizer["Route Does Not Exist Validation Message", r.RouteId]);
                 
-            RuleFor(d => d.ApplicationId)
+            RuleFor(d => d.DMMOApplicationId)
                 .NotEmpty()
                 .WithName(_localizer["Application ID Label"])
                 .MustAsync(DMMOApplicationExists)

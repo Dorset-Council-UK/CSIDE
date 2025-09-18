@@ -61,12 +61,12 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                     {
                         await ppoService.UpdatePPOOrder(OrderId, Order);
                         //redirect
-                        navigationManager.NavigateTo($"PPO/Details/{Order.ApplicationId}");
+                        navigationManager.NavigateTo($"PPO/Details/{Order.PPOApplicationId}");
                     }
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", $"{IDPrefixOptions.Value.PPO}{Order.ApplicationId}"]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", $"{IDPrefixOptions.Value.PPO}{Order.PPOApplicationId}"]];
                     logger.LogError(ex, "An concurrency conflict occurred when editing an Order for a PPO");
                 }
                 catch (Exception ex)

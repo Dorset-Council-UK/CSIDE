@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<PPOIntent> builder)
         {
-            builder.HasKey(x => new { x.ApplicationId, x.IntentId });
+            builder.HasKey(x => new { x.PPOApplicationId, x.IntentId });
 
             builder.Navigation(x => x.Intent)
                 .AutoInclude();

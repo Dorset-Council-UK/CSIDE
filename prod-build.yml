@@ -32,6 +32,7 @@ jobs:
       environment: "cside-staging"
       websiteName: "gi-staging"
       virtualApplication: "cside"
+      jobName: "Deploy_To_Staging"
       variableGroups:
         - "cside-staging-properties"
       projectName: "CSIDE.Web"

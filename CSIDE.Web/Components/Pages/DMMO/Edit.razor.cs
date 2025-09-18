@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
     {
         [Parameter]
         public int DMMOApplicationId { get; set; }
-        private Application? DMMOApplication { get; set; }
+        private DMMOApplication? DMMOApplication { get; set; }
         private ICollection<ApplicationClaimedStatus> ClaimedStatuses = [];
         private ICollection<ApplicationCaseStatus> CaseStatuses = [];
         private ICollection<ApplicationType> ApplicationTypes = [];

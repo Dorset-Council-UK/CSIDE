@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
         [Parameter]
         public int PPOApplicationId { get; init; }
 
-        private Application? PPOApplication { get; set; }
+        private PPOApplication? PPOApplication { get; set; }
         private PPOOrder? Order { get; set; }
         private IReadOnlyCollection<OrderDecisionOfSecState> DecisionOfSecStateOptions = [];
         private IReadOnlyCollection<OrderDeterminationProcess> DeterminationProcessOptions = [];
@@ -38,7 +38,7 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
             {
                 DecisionOfSecStateOptions = await ppoService.GetOrderDecisionOfSecStateOptions();
                 DeterminationProcessOptions = await ppoService.GetOrderDeterminationProcessOptions();
-                Order = new PPOOrder() { ApplicationId = PPOApplicationId };
+                Order = new PPOOrder() { PPOApplicationId = PPOApplicationId };
             }
             IsBusy = false;
         }
@@ -60,12 +60,12 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                     {
                         await ppoService.AddOrderToPPO(Order);
                         //redirect
-                        navigationManager.NavigateTo($"PPO/Details/{Order.ApplicationId}");
+                        navigationManager.NavigateTo($"PPO/Details/{Order.PPOApplicationId}");
                     }
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", $"{IDPrefixOptions.Value.PPO}{Order.ApplicationId}"]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["PPO Order Details Title", $"{IDPrefixOptions.Value.PPO}{Order.PPOApplicationId}"]];
                     logger.LogError(ex, "An concurrency conflict occurred when creating an Order for a PPO");
                 }
                 catch (Exception ex)

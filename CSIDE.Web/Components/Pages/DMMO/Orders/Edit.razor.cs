@@ -60,12 +60,12 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
                     {
                         await dmmoService.UpdateDMMOOrder(OrderId, Order);
                         //redirect
-                        navigationManager.NavigateTo($"DMMO/Details/{Order.ApplicationId}");
+                        navigationManager.NavigateTo($"DMMO/Details/{Order.DMMOApplicationId}");
                     }
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["DMMO Order Details Title", Order.ApplicationId]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["DMMO Order Details Title", Order.DMMOApplicationId]];
                     logger.LogError(ex, "An concurrency conflict occurred when editing an Order for a DMMO");
                 }
                 catch (Exception ex)

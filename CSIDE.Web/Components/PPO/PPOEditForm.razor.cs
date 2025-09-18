@@ -9,7 +9,7 @@ namespace CSIDE.Web.Components.PPO
     public partial class PPOEditForm(IUserService userService)
     {
         [Parameter, EditorRequired]
-        public Application? PPOApplication { get; set; }
+        public PPOApplication? PPOApplication { get; set; }
         [Parameter, EditorRequired]
         public IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses { get; set; }
         [Parameter, EditorRequired]

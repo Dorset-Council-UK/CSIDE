@@ -10,7 +10,7 @@
     <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
 }
 
-<Grid TItem="Application"
+<Grid TItem="PPOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
 DataProvider="PPOApplicationDataProvider"
 AllowFiltering="true"
@@ -24,16 +24,16 @@ AutoHidePaging="true"
 Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
             <a href="PPO/Details/@context.Id">@IDPrefixOptions.Value.PPO@context.Id</a>
         </GridColumn>
-        <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Application Type Label"]" PropertyName="ApplicationType" SortKeySelector="item => item.ApplicationType != null ? item.ApplicationType.Name : string.Empty">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Application Type Label"]" PropertyName="ApplicationType" SortKeySelector="item => item.ApplicationType != null ? item.ApplicationType.Name : string.Empty">
             @context.ApplicationType?.Name
         </GridColumn>
-        <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Received Date Label"]" PropertyName="ReceivedDate" SortKeySelector="item => item.ReceivedDate">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Received Date Label"]" PropertyName="ReceivedDate" SortKeySelector="item => item.ReceivedDate">
             @(context.ReceivedDate.HasValue ? context.ReceivedDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
         </GridColumn>
-        <GridColumn TItem="Application" Class="comment-field" Sortable="false" HeaderText="@localizer["Application Details Label"]" PropertyName="ApplicationDetails" SortKeySelector="item => item.ApplicationDetails">
+        <GridColumn TItem="PPOApplication" Class="comment-field" Sortable="false" HeaderText="@localizer["Application Details Label"]" PropertyName="ApplicationDetails" SortKeySelector="item => item.ApplicationDetails">
             @if(context.ApplicationDetails.Length > 200){
                 @context.ApplicationDetails.Substring(0, 200)
 
@@ -43,15 +43,15 @@ Responsive="true">
             }
 
         </GridColumn>
-        <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="JobPriority" SortKeySelector="@(item => item.PPOParishes != null ? string.Join(", ", item.PPOParishes.Select(p => p.Parish.Name)) : string.Empty)">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="JobPriority" SortKeySelector="@(item => item.PPOParishes != null ? string.Join(", ", item.PPOParishes.Select(p => p.Parish.Name)) : string.Empty)">
             @string.Join(", ", context.PPOParishes.Select(p => p.Parish.Name))
         </GridColumn>
-        <GridColumn TItem="Application" Filterable="false" HeaderText="@localizer["Case Status Label"]" PropertyName="CaseStatus" SortKeySelector="item => item.CaseStatus != null ? item.CaseStatus.Name : string.Empty">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Case Status Label"]" PropertyName="CaseStatus" SortKeySelector="item => item.CaseStatus != null ? item.CaseStatus.Name : string.Empty">
             @context.CaseStatus?.Name
         </GridColumn>
     </GridColumns>
     <GridTemplates>
-        <GridEmptyDataTemplate TItem="Application">
+        <GridEmptyDataTemplate TItem="PPOApplication">
             <div class="text-center text-muted">
                 <span class="bi bi-inbox fs-2"></span>
                 <div>
@@ -66,15 +66,15 @@ Responsive="true">
 
 @code {
     [Parameter]
-    public required IReadOnlyCollection<Application> PPOApplications { get; set; }
+    public required IReadOnlyCollection<PPOApplication> PPOApplications { get; set; }
     [Parameter]
     public int MaxResults { get; set; }
 
-    private async Task<GridDataProviderResult<Application>> PPOApplicationDataProvider(GridDataProviderRequest<Application> request)
+    private async Task<GridDataProviderResult<PPOApplication>> PPOApplicationDataProvider(GridDataProviderRequest<PPOApplication> request)
     {
         var result = await Task.FromResult(request.ApplyTo(PPOApplications));
         return result;
     }
 
-    private void OnRowClick(GridRowEventArgs<Application> args) => navigationManager.NavigateTo($"PPO/Details/{args.Item.Id}");
+    private void OnRowClick(GridRowEventArgs<PPOApplication> args) => navigationManager.NavigateTo($"PPO/Details/{args.Item.Id}");
 }

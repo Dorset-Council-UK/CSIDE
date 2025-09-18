@@ -17,7 +17,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
                                 ILogger<Create> logger,
                                 IRightsOfWayService rightsOfWayService)
     {
-        private Application? DMMOApplication { get; set; }
+        private DMMOApplication? DMMOApplication { get; set; }
         private ICollection<ApplicationClaimedStatus> ClaimedStatuses = [];
         private ICollection<ApplicationCaseStatus> CaseStatuses = [];
         private ICollection<ApplicationType> ApplicationTypes = [];

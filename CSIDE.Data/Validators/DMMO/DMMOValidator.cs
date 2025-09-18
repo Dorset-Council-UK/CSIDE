@@ -5,7 +5,7 @@ using NodaTime;
 
 namespace CSIDE.Data.Validators.DMMO
 {
-    public class DMMOValidator : AbstractValidator<Application>
+    public class DMMOValidator : AbstractValidator<DMMOApplication>
     {
         private readonly IStringLocalizer<CSIDE.Shared.Properties.Resources> _localizer;
 

@@ -29,7 +29,7 @@ public partial class DMMOAddressList(IPlacesSearchService addressSearchService, 
     private async Task OpenAddAddressModal()
     {
         ErrorMessage = null;
-        NewDMMOAddress = new() { ApplicationId = ApplicationId };
+        NewDMMOAddress = new() { DMMOApplicationId = ApplicationId };
         await AddAddressModal.ShowAsync();
     }
 
@@ -85,7 +85,7 @@ public partial class DMMOAddressList(IPlacesSearchService addressSearchService, 
         try
         {
             //submit
-            var DMMOAddressToAdd = new DMMOAddress() { ApplicationId = ApplicationId, UPRN = address.UPRN, Address = address.Address };
+            var DMMOAddressToAdd = new DMMOAddress() { DMMOApplicationId = ApplicationId, UPRN = address.UPRN, Address = address.Address };
             //validate with fluent validation 
             var validator = new DMMOAddressValidator(localizer, dmmoService);
             var validationResult = await validator.ValidateAsync(DMMOAddressToAdd);

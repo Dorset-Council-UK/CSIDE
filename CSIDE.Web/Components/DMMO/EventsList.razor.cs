@@ -10,7 +10,7 @@ namespace CSIDE.Web.Components.DMMO
     public partial class EventsList(IDMMOService dmmoService, ILogger<EventsList> logger)
     {
         [Parameter]
-        public Application? DMMOApplication { get; set; }
+        public DMMOApplication? DMMOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 
@@ -26,7 +26,7 @@ namespace CSIDE.Web.Components.DMMO
         {
             NewEvent = new DMMOEvent()
             {
-                ApplicationId = DMMOApplication!.Id,
+                DMMOApplicationId = DMMOApplication!.Id,
                 EventText = string.Empty,
                 EventDate = LocalDate.FromDateTime(DateTime.Now),
             };
@@ -99,7 +99,7 @@ namespace CSIDE.Web.Components.DMMO
             {
                 NewEvent = new()
                 {
-                    ApplicationId = DMMOApplication.Id,
+                    DMMOApplicationId = DMMOApplication.Id,
                     EventText = string.Empty,
                     EventDate = LocalDate.FromDateTime(DateTime.Now),
                 };

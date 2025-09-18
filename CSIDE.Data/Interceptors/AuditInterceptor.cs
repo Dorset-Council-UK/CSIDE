@@ -210,14 +210,14 @@ internal class AuditInterceptor : ISaveChangesInterceptor
         if (entry.Entity is DMMOEvent dmmoEvent)
         {
             secondaryId = primaryId;
-            primaryId = dmmoEvent.ApplicationId.ToString(CultureInfo.InvariantCulture);
+            primaryId = dmmoEvent.DMMOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
 
         // DMMO Order, make the ApplicationId the primary entity ID and the OrderId the secondary entity ID
         if (entry.Entity is DMMOOrder order)
         {
             secondaryId = primaryId;
-            primaryId = order.ApplicationId.ToString(CultureInfo.InvariantCulture);
+            primaryId = order.DMMOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
 
         // Infrastructure bridge details, make the InfraId the primary entity ID and the BridgeDetailsId the secondary entity ID
@@ -258,13 +258,13 @@ internal class AuditInterceptor : ISaveChangesInterceptor
         if (entry.Entity is PPOOrder ppoOrder)
         {
             secondaryId = primaryId;
-            primaryId = ppoOrder.ApplicationId.ToString(CultureInfo.InvariantCulture);
+            primaryId = ppoOrder.PPOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
         // PPO Events, make the ApplicationId the primary entity ID and the PPOEventId the secondary entity ID
         if (entry.Entity is PPOEvent ppoEvent)
         {
             secondaryId = primaryId;
-            primaryId = ppoEvent.ApplicationId.ToString(CultureInfo.InvariantCulture);
+            primaryId = ppoEvent.PPOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
 
         return (primaryId, secondaryId);

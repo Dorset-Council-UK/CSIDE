@@ -6,7 +6,7 @@ using NodaTime;
 
 namespace CSIDE.Data.Validators.PPO
 {
-    public class PPOValidator : AbstractValidator<Application>
+    public class PPOValidator : AbstractValidator<PPOApplication>
     {
         private readonly IStringLocalizer<Resources> _localizer;
 

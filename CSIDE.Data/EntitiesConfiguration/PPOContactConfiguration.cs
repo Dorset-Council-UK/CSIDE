@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<PPOContact> builder)
         {
-            builder.HasKey(x => new { x.ApplicationId, x.ContactId });
+            builder.HasKey(x => new { x.PPOApplicationId, x.ContactId });
 
             builder.Navigation(x => x.Contact)
                 .AutoInclude();

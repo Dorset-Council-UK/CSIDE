@@ -29,7 +29,7 @@ namespace CSIDE.Web.Components.Pages.PPO
         [SupplyParameterFromQuery]
         private DateOnly? ReceivedDateTo { get; set; }
 
-        private IReadOnlyCollection<Application>? SearchResults;
+        private IReadOnlyCollection<PPOApplication>? SearchResults;
 
         private const int MaxResults = 1000;
         private bool IsBusy { get; set; }

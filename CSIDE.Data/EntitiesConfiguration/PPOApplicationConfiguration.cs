@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
-    internal sealed class PPOApplicationConfiguration : IEntityTypeConfiguration<Application>
+    internal sealed class PPOApplicationConfiguration : IEntityTypeConfiguration<PPOApplication>
     {
-        public void Configure(EntityTypeBuilder<Application> builder)
+        public void Configure(EntityTypeBuilder<PPOApplication> builder)
         {
 
             builder.Property(x => x.ApplicationDetails).IsRequired();

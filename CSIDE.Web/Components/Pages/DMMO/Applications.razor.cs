@@ -31,7 +31,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
         [SupplyParameterFromQuery]
         private DateOnly? ReceivedDateTo { get; set; }
 
-        private ICollection<Application>? SearchResults;
+        private ICollection<DMMOApplication>? SearchResults;
 
         private const int MaxResults = 1000;
         private bool IsBusy { get; set; }

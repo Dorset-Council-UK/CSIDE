@@ -3,7 +3,7 @@ using NodaTime;
 
 namespace CSIDE.Data.Models.DMMO
 {
-    public class Application
+    public class DMMOApplication
     {
         public int Id { get; set; }
 

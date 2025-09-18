@@ -19,7 +19,7 @@ public partial class LinkedRoutesFromMap(IDMMOService dmmoService,
 
     private DMMOLinkedRoutesList? linkedRoutesComponent;
 
-    private Application? DMMOApplication { get; set; }
+    private DMMOApplication? DMMOApplication { get; set; }
     private DMMOLinkedRoute[]? ExistingLinkedRoutes { get; set; }
 
     private string? ErrorMessage { get; set; }
@@ -108,7 +108,7 @@ public partial class LinkedRoutesFromMap(IDMMOService dmmoService,
         try
         {
             //submit
-            var DMMOLinkedRouteToAdd = new DMMOLinkedRoute() { ApplicationId = Id, RouteId = RouteId };
+            var DMMOLinkedRouteToAdd = new DMMOLinkedRoute() { DMMOApplicationId = Id, RouteId = RouteId };
             // validate with fluent validation 
             var validator = new DMMOLinkedRouteValidator(dmmoService, localizer, rightsOfWayHelperService);
             var validationResult = await validator.ValidateAsync(DMMOLinkedRouteToAdd);

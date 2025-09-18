@@ -16,7 +16,7 @@ public partial class AddressesFromMap(IDMMOService dmmoService,
     [Parameter]
     public int Id { get; set; }
 
-    private Application? DMMOApplication { get; set; }
+    private DMMOApplication? DMMOApplication { get; set; }
     private IReadOnlyCollection<SimpleAddress>? ExistingAddresses { get; set; }
 
     private string? ErrorMessage { get; set; }
@@ -59,7 +59,7 @@ public partial class AddressesFromMap(IDMMOService dmmoService,
         try
         {
             //submit
-            var DMMOAddressToAdd = new DMMOAddress() { ApplicationId = Id, UPRN = address.UPRN, Address = address.Address };
+            var DMMOAddressToAdd = new DMMOAddress() { DMMOApplicationId = Id, UPRN = address.UPRN, Address = address.Address };
             //validate with fluent validation 
             var validator = new DMMOAddressValidator(localizer, dmmoService);
             var validationResult = await validator.ValidateAsync(DMMOAddressToAdd);
@@ -94,7 +94,7 @@ public partial class AddressesFromMap(IDMMOService dmmoService,
             ExistingAddresses = FullAddresses.Select(x => new SimpleAddress(x.UPRN, x.Address)).ToList();
             foreach (var address in addresses.Where(a => ExistingAddresses is not null && !ExistingAddresses.Any(e => e.UPRN == a.UPRN)))
             {
-                var DMMOAddressToAdd = new DMMOAddress() { ApplicationId = Id, UPRN = address.UPRN, Address = address.Address };
+                var DMMOAddressToAdd = new DMMOAddress() { DMMOApplicationId = Id, UPRN = address.UPRN, Address = address.Address };
                 await dmmoService.AddDMMOAddress(DMMOAddressToAdd);
             }
             if (finished)

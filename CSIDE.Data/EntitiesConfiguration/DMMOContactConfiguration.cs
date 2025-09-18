@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<DMMOContact> builder)
         {
-            builder.HasKey(x => new { x.ApplicationId, x.ContactId });
+            builder.HasKey(x => new { x.DMMOApplicationId, x.ContactId });
 
             builder.Navigation(x => x.Contact)
                 .AutoInclude();

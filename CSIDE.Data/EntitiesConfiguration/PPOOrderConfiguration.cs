@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<PPOOrder> builder)
         {
-            builder.HasKey(x => new { x.OrderId, x.ApplicationId });
+            builder.HasKey(x => new { x.OrderId, x.PPOApplicationId });
             builder
                 .Navigation(x => x.DeterminationProcess)
                 .AutoInclude();

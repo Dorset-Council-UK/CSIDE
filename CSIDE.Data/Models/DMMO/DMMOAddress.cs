@@ -2,10 +2,10 @@
 {
     public class DMMOAddress
     {
-        public int ApplicationId { get; set; }
+        public int DMMOApplicationId { get; set; }
         public long UPRN { get; set; }
         public string? Address { get; set; }
-        public Application DMMOApplication { get; set; } = null!;
+        public DMMOApplication DMMOApplication { get; set; } = null!;
         
     }
 }

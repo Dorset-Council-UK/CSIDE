@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<DMMOLinkedRoute> builder)
         {
-            builder.HasKey(x => new { x.ApplicationId, x.RouteId });
+            builder.HasKey(x => new { x.DMMOApplicationId, x.RouteId });
 
             builder.Navigation(x => x.Route)
                 .AutoInclude();

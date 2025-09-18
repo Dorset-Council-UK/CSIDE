@@ -15,7 +15,7 @@
                 <div class="col-lg-6 my-2">
                     <div class="card bg-light h-100" id="order-@order.OrderId">
                         <div class="card-header">
-                            <strong>@(order.ApplicationId)/@(order.OrderId)</strong>
+                            <strong>@(order.PPOApplicationId)/@(order.OrderId)</strong>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled">
@@ -37,7 +37,7 @@
                             <button class="btn btn-sm btn-outline-primary me-2" type="button" disabled="@(IsBusy)" @onclick="() => ViewOrder(order.OrderId)">@localizer["View Details Label"]</button>
                             @if (IsEditable)
                             {
-                                <a href="ppo/edit/@order.ApplicationId/order/@order.OrderId" class="btn btn-sm btn-outline-primary me-2">@localizer["Edit Label"]</a>
+                                <a href="ppo/edit/@order.PPOApplicationId/order/@order.OrderId" class="btn btn-sm btn-outline-primary me-2">@localizer["Edit Label"]</a>
                                 <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsBusy)" @onclick="() => DeleteOrder(PPOApplicationId, order.OrderId)">@localizer["Delete Label"]</button>
                             }
                         </div>
@@ -56,7 +56,7 @@
                         <tbody>
                             <tr>
                                 <th>@localizer["Order ID Label"]</th>
-                                <td>@(IDPrefixOptions.Value.PPO)@(SelectedOrder.ApplicationId)/@(SelectedOrder.OrderId)</td>
+                                <td>@(IDPrefixOptions.Value.PPO)@(SelectedOrder.PPOApplicationId)/@(SelectedOrder.OrderId)</td>
                             </tr>
                             <tr>
                                 <th>@localizer["Order Date Sealed Label"]</th>

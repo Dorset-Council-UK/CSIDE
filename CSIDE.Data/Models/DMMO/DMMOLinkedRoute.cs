@@ -2,9 +2,9 @@
 {
     public class DMMOLinkedRoute
     {
-        public int ApplicationId { get; set; }
+        public int DMMOApplicationId { get; set; }
         public required string RouteId { get; set; }
-        public Application DMMOApplication { get; set; } = null!;
+        public DMMOApplication DMMOApplication { get; set; } = null!;
         public RightsOfWay.Route Route { get; set; } = null!;
     }
 }

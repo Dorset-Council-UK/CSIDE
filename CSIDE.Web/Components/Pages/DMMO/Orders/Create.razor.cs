@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
         [Parameter]
         public int DMMOApplicationId { get; init; }
 
-        private Application? DMMOApplication { get; set; }
+        private DMMOApplication? DMMOApplication { get; set; }
         private DMMOOrder? Order { get; set; }
         private ICollection<OrderDecisionOfSecState>? DecisionOfSecStateOptions;
         private ICollection<OrderDeterminationProcess>? DeterminationProcessOptions;
@@ -38,7 +38,7 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
             {
                 DecisionOfSecStateOptions = await dmmoService.GetOrderDecisionOfSecStateOptions();
                 DeterminationProcessOptions = await dmmoService.GetOrderDeterminationProcessOptions();
-                Order = new DMMOOrder() { ApplicationId = DMMOApplicationId };
+                Order = new DMMOOrder() { DMMOApplicationId = DMMOApplicationId };
             }
             IsBusy = false;
         }
@@ -60,12 +60,12 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
                     {
                         await dmmoService.AddOrderToDMMO(Order);
                         //redirect
-                        navigationManager.NavigateTo($"DMMO/Details/{Order.ApplicationId}");
+                        navigationManager.NavigateTo($"DMMO/Details/{Order.DMMOApplicationId}");
                     }
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorMessage = localizer["Concurrency Error Message", localizer["DMMO Order Details Title", Order.ApplicationId]];
+                    ErrorMessage = localizer["Concurrency Error Message", localizer["DMMO Order Details Title", Order.DMMOApplicationId]];
                     logger.LogError(ex, "An concurrency conflict occurred when creating an Order for a DMMO");
                 }
                 catch (Exception ex)

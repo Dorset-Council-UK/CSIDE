@@ -9,7 +9,7 @@ namespace CSIDE.Web.Components.DMMO
     public partial class DMMOEditForm(IUserService userService)
     {
         [Parameter, EditorRequired]
-        public Application? DMMOApplication { get; set; }
+        public DMMOApplication? DMMOApplication { get; set; }
         [Parameter, EditorRequired]
         public ICollection<ApplicationCaseStatus> CaseStatuses { get; set; }
         [Parameter, EditorRequired]

@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<DMMOOrder> builder)
         {
-            builder.HasKey(x => new { x.OrderId, x.ApplicationId });
+            builder.HasKey(x => new { x.OrderId, x.DMMOApplicationId });
             builder
                 .Navigation(x => x.DeterminationProcess)
                 .AutoInclude();

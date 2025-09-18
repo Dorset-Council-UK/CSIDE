@@ -17,9 +17,9 @@ namespace CSIDE.Data.Validators.DMMO
             RuleFor(d => d.UPRN)
                 .NotEmpty()
                 .WithName(_localizer["UPRN Label"])
-                .MustAsync((dmmoAddress, UPRN, ct) => UPRNNotAlreadyExists(UPRN, dmmoAddress.ApplicationId, ct))
+                .MustAsync((dmmoAddress, UPRN, ct) => UPRNNotAlreadyExists(UPRN, dmmoAddress.DMMOApplicationId, ct))
                 .WithMessage(_localizer["UPRN Already Exists Validation Message"]);
-            RuleFor(d => d.ApplicationId)
+            RuleFor(d => d.DMMOApplicationId)
                 .NotEmpty()
                 .WithName(_localizer["Application ID Label"])
                 .MustAsync(DMMOApplicationExists)

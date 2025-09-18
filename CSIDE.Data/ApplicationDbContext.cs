@@ -37,7 +37,7 @@ namespace CSIDE.Data
         public DbSet<LegalStatus> RouteLegalStatuses { get; set; }
         public DbSet<RouteMedia> RouteMedia { get; set; }
 
-        public DbSet<Models.DMMO.Application> DMMOApplication { get; set; }
+        public DbSet<Models.DMMO.DMMOApplication> DMMOApplication { get; set; }
         public DbSet<Models.DMMO.ApplicationCaseStatus> DMMOApplicationCaseStatuses { get; set; }
         public DbSet<Models.DMMO.ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
         public DbSet<Models.DMMO.ApplicationType> DMMOApplicationTypes { get; set; }
@@ -50,7 +50,7 @@ namespace CSIDE.Data
         public DbSet<DMMOOrder> DMMOOrders { get; set; }
         public DbSet<Models.DMMO.DMMOEvent> DMMOEvents { get; set; }
 
-        public DbSet<Models.PPO.Application> PPOApplication { get; set; }
+        public DbSet<PPOApplication> PPOApplication { get; set; }
         public DbSet<Models.PPO.ApplicationCaseStatus> PPOApplicationCaseStatuses { get; set; }
         public DbSet<Models.PPO.ApplicationType> PPOApplicationTypes { get; set; }
         public DbSet<ApplicationIntent> PPOApplicationIntents { get; set; }

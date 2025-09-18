@@ -28,7 +28,7 @@
                     @if (IsEditable)
                     {
                         <td>
-                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteLinkedRoute(route.ApplicationId, route.RouteId)">@localizer["Delete Label"]</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteLinkedRoute(route.DMMOApplicationId, route.RouteId)">@localizer["Delete Label"]</button>
                         </td>
                     }
                 </tr>

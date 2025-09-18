@@ -17,7 +17,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                                 ILogger<Create> logger,
                                 IRightsOfWayService rightsOfWayHelperService)
     {
-        private Application? PPOApplication { get; set; }
+        private PPOApplication? PPOApplication { get; set; }
         private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
         private IReadOnlyCollection<ApplicationType>? ApplicationTypes = [];
         private IReadOnlyCollection<ApplicationIntent>? Intents = [];

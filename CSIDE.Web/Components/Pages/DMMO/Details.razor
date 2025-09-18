@@ -293,7 +293,7 @@ else
 
     [Parameter]
     public int Id { get; set; }
-    private Application? DMMOApplication { get; set; }
+    private DMMOApplication? DMMOApplication { get; set; }
 
     private bool IsBusy { get; set; }
 
@@ -303,7 +303,7 @@ else
     private bool UserCanEdit { get; set; } = false;
 
     private string[] AuditLogSectionNames => new string[] { 
-        nameof(Data.Models.DMMO.Application),
+        nameof(Data.Models.DMMO.DMMOApplication),
         nameof(Data.Models.DMMO.DMMOAddress),
         nameof(Data.Models.DMMO.DMMOContact),
         nameof(Data.Models.DMMO.DMMOLinkedRoute),

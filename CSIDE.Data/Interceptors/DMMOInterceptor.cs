@@ -24,19 +24,19 @@ internal class DMMOInterceptor : ISaveChangesInterceptor
         {
             if (entry.State is EntityState.Added or EntityState.Modified)
             {
-                if (entry.Entity is Application dmmoApplication)
+                if (entry.Entity is DMMOApplication dmmoApplication)
                 {
                     await UpdateDMMOParishIds(context, dmmoApplication, cancellationToken);
                 }
                 else if (entry.Entity is DMMOOrder dmmoOrder && entry.State is EntityState.Added)
                 {
-                    dmmoOrder.OrderId = await NextOrderId(context, dmmoOrder.ApplicationId, cancellationToken);
+                    dmmoOrder.OrderId = await NextOrderId(context, dmmoOrder.DMMOApplicationId, cancellationToken);
                 }
             }
         }
     }
 
-    private static async Task UpdateDMMOParishIds(ApplicationDbContext context, Application dmmoApplication, CancellationToken cancellationToken)
+    private static async Task UpdateDMMOParishIds(ApplicationDbContext context, DMMOApplication dmmoApplication, CancellationToken cancellationToken)
     {
         // Get intersecting parishes
         var newParishIds = await context.Parishes
@@ -63,7 +63,7 @@ internal class DMMOInterceptor : ISaveChangesInterceptor
         var parishIdsToAdd = newParishIds.Except(existingParishIds);
         foreach (var parishId in parishIdsToAdd)
         {
-            dmmoApplication.DMMOParishes.Add(new DMMOParish { ParishId = parishId, ApplicationId = dmmoApplication.Id });
+            dmmoApplication.DMMOParishes.Add(new DMMOParish { ParishId = parishId, DMMOApplicationId = dmmoApplication.Id });
         }
     }
 
@@ -72,7 +72,7 @@ internal class DMMOInterceptor : ISaveChangesInterceptor
         var highestOrderNumber = await context.DMMOOrders
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Where(d => d.ApplicationId == applicationId)
+            .Where(d => d.DMMOApplicationId == applicationId)
             .Select(d => (int?)d.OrderId)
             .MaxAsync(cancellationToken)
             .ConfigureAwait(false) ?? 0;

@@ -6,7 +6,7 @@ namespace CSIDE.Data.Models.PPO
     public class PPOOrder
     {
         public int OrderId { get; set; }
-        public required int ApplicationId { get; set; }
+        public required int PPOApplicationId { get; set; }
 
         public LocalDate? ObjectionsEndDate { get; set; }
         public bool? ObjectionsReceived { get; set; }

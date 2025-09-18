@@ -10,7 +10,7 @@ namespace CSIDE.Web.Components.PPO
     public partial class MediaList(IPPOService ppoService, IJSRuntime JS, ILogger<MediaList> logger, ToastService toastService) : IAsyncDisposable
     {
         [Parameter]
-        public Application? PPOApplication { get; set; }
+        public PPOApplication? PPOApplication { get; set; }
         [Parameter]
         public bool IsEditable { get; set; }
 

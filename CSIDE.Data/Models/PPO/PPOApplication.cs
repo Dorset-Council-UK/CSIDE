@@ -3,7 +3,7 @@ using NodaTime;
 
 namespace CSIDE.Data.Models.PPO
 {
-    public class Application
+    public class PPOApplication
     {
         public int Id { get; set; }
 
