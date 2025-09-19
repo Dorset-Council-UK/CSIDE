@@ -97,8 +97,8 @@ public partial class JobEditForm()
         CompleteDateShown = jobStatus.IsComplete;
         DuplicateOfShown = jobStatus.IsDuplicate;
 
-        // If status is NOT duplicate, clear the fields
-        if (!jobStatus.IsDuplicate)
+        // If status is not duplicate and not complete, clear the fields
+        if (!jobStatus.IsDuplicate && !jobStatus.IsComplete)
         {
             Job.CompletionDate = null;
             Job.DuplicateJobId = null;
