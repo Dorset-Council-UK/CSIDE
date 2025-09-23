@@ -1,12 +1,18 @@
-﻿using CSIDE.Data.Models.LandownerDeposits;
+﻿using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using System.Globalization;
+using CSIDE.Data.Extensions;
 
 namespace CSIDE.Data.Services;
 
-public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService placesSearchService) : ILandownerDepositService
+public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> contextFactory,
+                                     IPlacesSearchService placesSearchService,
+                                     IOptions<CSIDEOptions> csideOptions) : ILandownerDepositService
 {
     public async Task<LandownerDeposit?> GetLandownerDepositById(int Id, int SecondaryId, CancellationToken ct = default)
     {
@@ -20,6 +26,17 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         return await context.LandownerDeposits
             .Where(ld => ld.Id == landownerDepositId && (excludeSecondaryId == null || ld.SecondaryId != excludeSecondaryId))
             .ToArrayAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<ICollection<LandownerDeposit>> GetAllLandownerDeposits(CancellationToken ct)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsSplitQuery()
+            .ToListAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -258,4 +275,45 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         return;
     }
 
+    #region Public Data Accessors
+
+    public async Task<ICollection<LandownerDepositSimplePublicViewModel>> GetAllPublicLandownerDeposits(CancellationToken ct)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        var fullApplications = await context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(ld => ld.LandownerDepositTypes).ThenInclude(t => t.LandownerDepositTypeName)
+            .Include(ld => ld.LandownerDepositParishes).ThenInclude(p => p.Parish)
+            .AsSplitQuery()
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return [.. fullApplications.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit))];
+    }
+
+    public async Task<LandownerDepositPublicViewModel?> GetPublicLandownerDepositById(int id, int secondaryId, CancellationToken ct = default)
+    {
+        var application = await GetLandownerDepositById(id, secondaryId, ct).ConfigureAwait(false);
+        if (application is null)
+        {
+            return null;
+        }
+        return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit);
+    }
+
+    public async Task<ICollection<LandownerDepositSimplePublicViewModel>?> GetPublicLandownerDepositsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? Location,
+        int MaxResults = 1000,
+        CancellationToken ct = default)
+    {
+        var allDeposits = await GetLandownerDepositsBySearchParameters(ParishIds, ParishId, Location, MaxResults, ct).ConfigureAwait(false);
+
+        return allDeposits?.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit)).ToList();
+    }
+
+    #endregion
 }

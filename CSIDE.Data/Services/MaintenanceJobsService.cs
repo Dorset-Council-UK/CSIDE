@@ -1,13 +1,16 @@
-﻿using CSIDE.Data.Models.Infrastructure;
+﻿using CSIDE.Data.Extensions;
+using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NodaTime;
 using System.Globalization;
 
 namespace CSIDE.Data.Services;
 
-public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> contextFactory) : IMaintenanceJobsService
+public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> contextFactory, IOptions<CSIDEOptions> csideOptions) : IMaintenanceJobsService
 {
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default)
     {
@@ -38,7 +41,8 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        int MaxResults = 1000)
+        int MaxResults = 1000,
+        CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync();
         var query = context.MaintenanceJobs.AsQueryable();
@@ -385,4 +389,38 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .AnyAsync(j => j.Id == id, cancellationToken: ct)
             .ConfigureAwait(false);
     }
+
+    #region Public Data Accessors
+
+    public async Task<JobPublicViewModel?> GetPublicMaintenanceJobById(int id, CancellationToken ct = default)
+    {
+        var job = await GetMaintenanceJobById(id, ct).ConfigureAwait(false);
+        if (job is null)
+        {
+            return null;
+        }
+        return job.ToPublicViewModel(csideOptions.Value.IDPrefixes.Maintenance);
+    }
+
+    public async Task<IReadOnlyCollection<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo,
+        int MaxResults = 1000,
+        CancellationToken ct = default)
+    {
+        var jobs = await GetMaintenanceJobsBySearchParameters(RouteId,ParishIds,ParishId,AssignedToTeamId,JobPriorityId,IsComplete,JobStatusId,LogDateFrom,LogDateTo,CompletedDateFrom,CompletedDateTo, 1000, ct).ConfigureAwait(false);
+
+        return jobs?.Select(j => j.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.Maintenance)).ToList();
+    }
+
+    #endregion
 }

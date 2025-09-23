@@ -1,17 +1,33 @@
 ﻿using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using System.Globalization;
+using CSIDE.Data.Extensions;
 
 namespace CSIDE.Data.Services
 {
-    public class PPOService(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService placesSearchService) : IPPOService
+    public class PPOService(IDbContextFactory<ApplicationDbContext> contextFactory,
+                            IPlacesSearchService placesSearchService,
+                            IOptions<CSIDEOptions> csideOptions) : IPPOService
     {
         public async Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             return await context.PPOApplication.FindAsync([id], ct);
+        }
+
+        public async Task<ICollection<PPOApplication>> GetAllPPOApplications(CancellationToken ct)
+        {
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+            return await context.PPOApplication
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
+                .AsSplitQuery()
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyCollection<PPOApplication>?> GetPPOApplicationsBySearchParameters(
@@ -349,5 +365,56 @@ namespace CSIDE.Data.Services
             return true;
         }
 
+        #region Public Data Accessors
+
+        public async Task<ICollection<PPOApplicationSimplePublicViewModel>> GetAllPublicPPOApplications(CancellationToken ct)
+        {
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+            var publicApplications = await context.PPOApplication
+                .Where(d => d.IsPublic == true)
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
+                .Include(d => d.CaseStatus)
+                .Include(d => d.Priority)
+                .Include(d => d.ApplicationType)
+                .Include(a => a.PPOParishes).ThenInclude(p => p.Parish)
+                .AsSplitQuery()
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            return [.. publicApplications.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO))];
+        }
+
+        // Update your methods:
+        public async Task<PPOApplicationPublicViewModel?> GetPublicPPOApplicationById(int id, CancellationToken ct = default)
+        {
+            var application = await GetPPOApplicationById(id, ct).ConfigureAwait(false);
+            if (application is null || application.IsPublic == false)
+            {
+                return null;
+            }
+            return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.PPO);
+        }
+
+        public async Task<ICollection<PPOApplicationSimplePublicViewModel>?> GetPublicPPOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationTypeId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationIntentId,
+            string? ApplicationPriorityId,
+            string? Location,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            int MaxResults = 1000,
+            CancellationToken ct = default)
+        {
+            var allApplications = await GetPPOApplicationsBySearchParameters(ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationIntentId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, MaxResults, ct).ConfigureAwait(false);
+            var publicApplications = allApplications?.Where(a => a.IsPublic == true);
+
+            return publicApplications?.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO)).ToList();
+        }
+        #endregion
     }
 }

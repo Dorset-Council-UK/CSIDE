@@ -1,12 +1,17 @@
 ﻿using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using System.Globalization;
+using CSIDE.Data.Extensions;
 
 namespace CSIDE.Data.Services;
 
-public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory, IPlacesSearchService placesSearchService) : IDMMOService
+public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
+                         IPlacesSearchService placesSearchService,
+                         IOptions<CSIDEOptions> csideOptions) : IDMMOService
 {
     public async Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default)
     {
@@ -15,6 +20,17 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .Include(a => a.DMMOParishes)
             .Include(a => a.DMMOAddresses)
             .FirstOrDefaultAsync(a => a.Id == ApplicationId, cancellationToken: ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<ICollection<DMMOApplication>> GetAllDMMOApplications(CancellationToken ct)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOApplication
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsSplitQuery()
+            .ToListAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -371,4 +387,58 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .AnyAsync(a => a.Id == applicationId, cancellationToken: ct)
             .ConfigureAwait(false);
     }
+
+    #region Public Data Accessors
+
+    public async Task<ICollection<DMMOApplicationSimplePublicViewModel>> GetAllPublicDMMOApplications(CancellationToken ct)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        var publicApplications = await context.DMMOApplication
+            .Where(d => d.IsPublic == true)
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(d => d.CaseStatus)
+            .Include(d => d.ClaimedStatus)
+            .Include(d => d.DirectionOfSecState)
+            .Include(d => d.ApplicationType)
+            .Include(a => a.DMMOParishes).ThenInclude(p => p.Parish)
+            .AsSplitQuery()
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return [.. publicApplications.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO))];
+    }
+
+    public async Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default)
+    {
+        var application = await GetDMMOApplicationById(id, ct).ConfigureAwait(false);
+        if (application is null || application.IsPublic == false)
+        {
+            return null;
+        }
+        return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.DMMO);
+    }
+
+    public async Task<ICollection<DMMOApplicationSimplePublicViewModel>?> GetPublicDMMOApplicationsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? ApplicationTypeId,
+        string? ApplicationCaseStatusId,
+        string? ApplicationClaimedStatusId,
+        string? Location,
+        DateOnly? ApplicationDateFrom,
+        DateOnly? ApplicationDateTo,
+        DateOnly? ReceivedDateFrom,
+        DateOnly? ReceivedDateTo,
+        int MaxResults = 1000,
+        CancellationToken ct = default)
+    {
+        var allApplications = await GetDMMOApplicationsBySearchParameters(ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationClaimedStatusId, Location, ApplicationDateFrom, ApplicationDateTo, ReceivedDateFrom, ReceivedDateTo, MaxResults, ct).ConfigureAwait(false);
+        var publicApplications = allApplications?.Where(a => a.IsPublic == true);
+
+        return publicApplications?.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO)).ToList();
+    }
+
+    #endregion
 }

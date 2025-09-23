@@ -6,6 +6,7 @@ namespace CSIDE.Data.Services
     public interface ILandownerDepositService
     {
         Task<LandownerDeposit?> GetLandownerDepositById(int Id, int SecondaryId, CancellationToken ct = default);
+        Task<ICollection<LandownerDeposit>> GetAllLandownerDeposits(CancellationToken ct);
         Task<ICollection<LandownerDeposit>> GetLandownerDepositsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
@@ -25,5 +26,13 @@ namespace CSIDE.Data.Services
         Task<LandownerDepositEvent> UpdateLandownerDepositEvent(int eventId, LandownerDepositEvent landownerDepositEvent, CancellationToken ct = default);
         Task<bool> DeleteAddressFromLandownerDeposit(int landownerDepositId, int landownerDepositSecondaryId, long UPRN, CancellationToken ct = default);
         Task<bool> DeleteLandownerDepositEvent(int EventId, CancellationToken ct = default);
+        Task<ICollection<LandownerDepositSimplePublicViewModel>> GetAllPublicLandownerDeposits(CancellationToken ct);
+        Task<ICollection<LandownerDepositSimplePublicViewModel>?> GetPublicLandownerDepositsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? Location,
+        int MaxResults = 1000,
+        CancellationToken ct = default);
+        Task<LandownerDepositPublicViewModel?> GetPublicLandownerDepositById(int id, int secondaryId, CancellationToken ct = default);
     }
 }

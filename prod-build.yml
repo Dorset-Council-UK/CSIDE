@@ -37,3 +37,13 @@ jobs:
         - "cside-staging-properties"
       projectName: "CSIDE.Web"
       dependsOn: build
+  - template: deploy/iis.yml@templates
+    parameters:
+      environment: "cside-staging"
+      websiteName: "gi-staging"
+      virtualApplication: "cside-api"
+      jobName: "Deploy_To_Staging_API"
+      variableGroups:
+        - "cside-api-staging-properties"
+      projectName: "CSIDE.API"
+      dependsOn: build

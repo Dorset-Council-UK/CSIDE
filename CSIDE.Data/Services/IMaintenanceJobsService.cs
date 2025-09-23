@@ -23,7 +23,9 @@ public interface IMaintenanceJobsService
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        int MaxResults = 1000);
+        int MaxResults = 1000,
+        CancellationToken ct = default);
+
     /// <summary>
     /// Gets a maintenance job by its ID from the database.
     /// </summary>
@@ -108,4 +110,19 @@ public interface IMaintenanceJobsService
     Task<JobPriority[]> GetMaintenanceJobPriorities(CancellationToken ct = default);
     Task<IReadOnlyCollection<Team>> GetMaintenanceTeams(CancellationToken ct = default);
     Task<bool> MaintenanceJobExists(int id, CancellationToken ct = default);
+    Task<JobPublicViewModel?> GetPublicMaintenanceJobById(int id, CancellationToken ct = default);
+    Task<IReadOnlyCollection<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo,
+        int MaxResults = 1000,
+        CancellationToken ct = default);
 }

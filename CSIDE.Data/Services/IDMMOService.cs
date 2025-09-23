@@ -6,6 +6,7 @@ namespace CSIDE.Data.Services
     public interface IDMMOService
     {
         Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default);
+        Task<ICollection<DMMOApplication>> GetAllDMMOApplications(CancellationToken ct = default);
         Task<ICollection<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
             string[]? parishIds,
             string? parishId,
@@ -46,5 +47,21 @@ namespace CSIDE.Data.Services
         Task<bool> DeleteDMMOEvent(int EventId, CancellationToken ct = default);
         Task<bool> AddressExistsOnDMMO(int ApplicationId, long UPRN, CancellationToken ct = default);
         Task<bool> ApplicationExists(int applicationId, CancellationToken ct = default);
+
+        Task<ICollection<DMMOApplicationSimplePublicViewModel>> GetAllPublicDMMOApplications(CancellationToken ct = default);
+        Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default);
+        Task<ICollection<DMMOApplicationSimplePublicViewModel>?> GetPublicDMMOApplicationsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? ApplicationTypeId,
+        string? ApplicationCaseStatusId,
+        string? ApplicationClaimedStatusId,
+        string? Location,
+        DateOnly? ApplicationDateFrom,
+        DateOnly? ApplicationDateTo,
+        DateOnly? ReceivedDateFrom,
+        DateOnly? ReceivedDateTo,
+        int MaxResults = 1000,
+        CancellationToken ct = default);
     }
 }

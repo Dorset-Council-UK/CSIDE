@@ -6,6 +6,7 @@ namespace CSIDE.Data.Services
     public interface IPPOService
     {
         Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default);
+        Task<ICollection<PPOApplication>> GetAllPPOApplications(CancellationToken ct);
         Task<IReadOnlyCollection<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
@@ -42,5 +43,21 @@ namespace CSIDE.Data.Services
 
         Task<bool> DeletePPOOrder(int ApplicationId, int OrderId, CancellationToken ct = default);
         Task<bool> DeletePPOEvent(int EventId, CancellationToken ct = default);
+
+        Task<PPOApplicationPublicViewModel?> GetPublicPPOApplicationById(int id, CancellationToken ct = default);
+        Task<ICollection<PPOApplicationSimplePublicViewModel>> GetAllPublicPPOApplications(CancellationToken ct);
+        Task<ICollection<PPOApplicationSimplePublicViewModel>?> GetPublicPPOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationTypeId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationIntentId,
+            string? ApplicationPriorityId,
+            string? Location,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            int MaxResults = 1000,
+            CancellationToken ct = default);
+
     }
 }
