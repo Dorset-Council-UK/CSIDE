@@ -1,6 +1,8 @@
 ﻿using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.ComponentModel;
 
 namespace CSIDE.API.Endpoints.Maintenance
 {
@@ -12,7 +14,7 @@ namespace CSIDE.API.Endpoints.Maintenance
             return job is null ? TypedResults.NotFound() : TypedResults.Ok(job);
         }
 
-        internal static async Task<Results<Ok<IReadOnlyCollection<JobSimplePublicViewModel>>, NotFound>> GetMaintenanceJobsBySearchParameters(
+        internal static async Task<Results<Ok<PagedResult<JobSimplePublicViewModel>>, NotFound>> GetMaintenanceJobsBySearchParameters(
             IMaintenanceJobsService service,
             string? RouteId,
             string[]? ParishIds,
@@ -25,10 +27,25 @@ namespace CSIDE.API.Endpoints.Maintenance
             DateOnly? LogDateTo,
             DateOnly? CompletedDateFrom,
             DateOnly? CompletedDateTo,
-            int MaxResults = 1000,
+            int pageNumber = 1,
+            int pageSize = IMaintenanceJobsService.DefaultPageSize,
             CancellationToken ct = default)
         {
-            var jobs = await service.GetPublicMaintenanceJobsBySearchParameters(RouteId, ParishIds, ParishId, AssignedToTeamId, JobPriorityId, IsComplete, JobStatusId, LogDateFrom, LogDateTo, CompletedDateFrom, CompletedDateTo, MaxResults, ct)
+            pageSize = pageSize > IMaintenanceJobsService.DefaultPageSize ? IMaintenanceJobsService.DefaultPageSize : pageSize;
+            var jobs = await service.GetPublicMaintenanceJobsBySearchParameters(RouteId,
+                                                                                ParishIds,
+                                                                                ParishId,
+                                                                                AssignedToTeamId,
+                                                                                JobPriorityId,
+                                                                                IsComplete,
+                                                                                JobStatusId,
+                                                                                LogDateFrom,
+                                                                                LogDateTo,
+                                                                                CompletedDateFrom,
+                                                                                CompletedDateTo,
+                                                                                PageNumber: pageNumber,
+                                                                                PageSize: pageSize,
+                                                                                ct: ct)
                 .ConfigureAwait(false);
             return jobs is null ? TypedResults.NotFound() : TypedResults.Ok(jobs);
         }

@@ -1,17 +1,20 @@
 ﻿using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
+using System.ComponentModel;
 
 namespace CSIDE.Data.Services;
 
 public interface IMaintenanceJobsService
 {
+    const int DefaultPageSize = 100;
+
     /// <summary>
     /// Gets all maintenance jobs from the database.
     /// </summary>
     Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default);
 
-    Task<IReadOnlyCollection<Job>> GetMaintenanceJobsBySearchParameters(
+    Task<PagedResult<Job>> GetMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,
@@ -23,7 +26,10 @@ public interface IMaintenanceJobsService
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        int MaxResults = 1000,
+        string? OrderBy,
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = DefaultPageSize,
         CancellationToken ct = default);
 
     /// <summary>
@@ -111,7 +117,7 @@ public interface IMaintenanceJobsService
     Task<IReadOnlyCollection<Team>> GetMaintenanceTeams(CancellationToken ct = default);
     Task<bool> MaintenanceJobExists(int id, CancellationToken ct = default);
     Task<JobPublicViewModel?> GetPublicMaintenanceJobById(int id, CancellationToken ct = default);
-    Task<IReadOnlyCollection<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
+    Task<PagedResult<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,
@@ -123,6 +129,9 @@ public interface IMaintenanceJobsService
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        int MaxResults = 1000,
+        string? OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = DefaultPageSize,
         CancellationToken ct = default);
 }

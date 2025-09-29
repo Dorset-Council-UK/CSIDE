@@ -4840,6 +4840,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View all.
+        /// </summary>
+        public static string View_All_Label {
+            get {
+                return ResourceManager.GetString("View All Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View all recent incomplete jobs.
         /// </summary>
         public static string View_All_Recent_Jobs_Label {

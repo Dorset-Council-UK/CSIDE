@@ -1,10 +1,9 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace CSIDE.Web.Components.Pages.RightsOfWay
 {
-    public partial class List(IRightsOfWayService rightsOfWayService, ILogger<List> logger)
+    public partial class List()
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -23,12 +22,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
         [SupplyParameterFromQuery]
         private string? RouteTypeId { get; set; }
 
-        private ICollection<Data.Models.RightsOfWay.Route>? SearchResults;
-
-        private const int MaxResults = 1000;
-        private bool IsBusy { get; set; }
-
-        protected override async Task OnParametersSetAsync()
+        protected override void OnInitialized()
         {
             NavItems =
             [
@@ -36,27 +30,6 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 new BreadcrumbItem{ Text = localizer["Rights of Way Title"], Href="rights-of-way" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true },
             ];
-            try {
-                IsBusy = true;
-
-                SearchResults = await rightsOfWayService.GetRoutesBySearchParameters(
-                    RouteId,
-                    Name,
-                    ParishIds,
-                    ParishId,
-                    MaintenanceTeamId,
-                    OperationalStatusId,
-                    RouteTypeId,
-                    MaxResults);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occurred rendering the jobs list component");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
         }
     }
 }

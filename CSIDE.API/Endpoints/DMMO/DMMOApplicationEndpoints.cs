@@ -1,14 +1,17 @@
 ﻿using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.ComponentModel;
 
 namespace CSIDE.API.Endpoints.DMMO;
 
 internal static class DMMOApplicationEndpoints
 {
-    internal static async Task<Results<Ok<ICollection<DMMOApplicationSimplePublicViewModel>>, BadRequest>> GetAllPublicDMMOApplications(IDMMOService service, CancellationToken ct)
+    internal static async Task<Results<Ok<PagedResult<DMMOApplicationSimplePublicViewModel>>, BadRequest>> GetAllPublicDMMOApplications(IDMMOService service, int pageNumber = 1, int pageSize = IDMMOService.DefaultPageSize, CancellationToken ct = default)
     {
-        var applications = await service.GetAllPublicDMMOApplications(ct).ConfigureAwait(false);
+        pageSize = pageSize > IDMMOService.DefaultPageSize ? ILandownerDepositService.DefaultPageSize : pageSize;
+        var applications = await service.GetAllPublicDMMOApplications(pageNumber, pageSize, ct).ConfigureAwait(false);
         return TypedResults.Ok(applications);
     }
 
@@ -18,7 +21,7 @@ internal static class DMMOApplicationEndpoints
         return application is null ? TypedResults.NotFound() : TypedResults.Ok(application);
     }
 
-    internal static async Task<Results<Ok<ICollection<DMMOApplicationSimplePublicViewModel>>, NotFound>> GetDMMOApplicationsBySearchParameters(
+    internal static async Task<Results<Ok<PagedResult<DMMOApplicationSimplePublicViewModel>>, NotFound>> GetDMMOApplicationsBySearchParameters(
             IDMMOService service, 
             string[]? parishIds,
             string? parishId,
@@ -30,10 +33,24 @@ internal static class DMMOApplicationEndpoints
             DateOnly? applicationDateTo,
             DateOnly? receivedDateFrom,
             DateOnly? receivedDateTo,
-            int MaxResults = 1000,
+            int pageNumber = 1,
+            int pageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default)
     {
-        var applications = await service.GetPublicDMMOApplicationsBySearchParameters(parishIds, parishId, applicationTypeId, applicationCaseStatusId, applicationClaimedStatusId, location, applicationDateFrom, applicationDateTo, receivedDateFrom, receivedDateTo, MaxResults, ct)
+        pageSize = pageSize > IDMMOService.DefaultPageSize ? ILandownerDepositService.DefaultPageSize : pageSize;
+        var applications = await service.GetPublicDMMOApplicationsBySearchParameters(parishIds,
+                                                                                     parishId,
+                                                                                     applicationTypeId,
+                                                                                     applicationCaseStatusId,
+                                                                                     applicationClaimedStatusId,
+                                                                                     location,
+                                                                                     applicationDateFrom,
+                                                                                     applicationDateTo,
+                                                                                     receivedDateFrom,
+                                                                                     receivedDateTo,
+                                                                                     PageNumber: pageNumber,
+                                                                                     PageSize: pageSize,
+                                                                                     ct: ct)
             .ConfigureAwait(false);
         return applications is null ? TypedResults.NotFound() : TypedResults.Ok(applications);
     }

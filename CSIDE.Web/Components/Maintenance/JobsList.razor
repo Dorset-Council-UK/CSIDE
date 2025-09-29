@@ -1,19 +1,18 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Services
 @using NodaTime
 @using System.Globalization
+@using System.ComponentModel
 @inject NavigationManager navigationManager
+@inject IMaintenanceJobsService maintenanceJobsService
 
 <a href="Maintenance#search-form">@localizer["Search Again Label"]</a>
-
-@if(Jobs?.Count == MaxResults){
-    <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
-}
 
 <Grid TItem="Job"
 Class="table table-hover table-bordered table-striped mt-2"
 DataProvider="JobsDataProvider"
-AllowFiltering="true"
+AllowFiltering="false"
 AllowPaging="true"
 PageSize="20"
 AllowSorting="true"
@@ -24,19 +23,19 @@ AutoHidePaging="true"
 Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
             <a href="Maintenance/Details/@context.Id">@IDPrefixOptions.Value.Maintenance@context.Id</a>
         </GridColumn>
-        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteId" SortKeySelector="item => item.RouteId">
+        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteId" SortKeySelector="item => item.RouteId" SortString="RouteId">
             @context.RouteId
         </GridColumn>
-        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Log Date Label"]" PropertyName="LogDate" SortKeySelector="item => item.LogDate">
+        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Log Date Label"]" PropertyName="LogDate" SortKeySelector="item => item.LogDate" SortString="LogDate">
             @(context.LogDate.HasValue ? context.LogDate.Value.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture) : "Unknown")
         </GridColumn>
-        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty">
+        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty" SortString="Parish">
             @context.Parish?.Name
         </GridColumn>
-        <GridColumn TItem="Job" Class="comment-field" Sortable="false" HeaderText="@localizer["Problem Description Label"]" PropertyName="ProblemDescription" SortKeySelector="item => item.ProblemDescription">
+        <GridColumn TItem="Job" Filterable="false" Class="comment-field" Sortable="false" HeaderText="@localizer["Problem Description Label"]" PropertyName="ProblemDescription" SortKeySelector="item => item.ProblemDescription">
             @if(context.ProblemDescription?.Length > 200){
                 @context.ProblemDescription?.Substring(0, 200)<text>&hellip;</text>
             }else{
@@ -44,10 +43,10 @@ Responsive="true">
             }
 
         </GridColumn>
-        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job Priority Label"]" PropertyName="JobPriority" SortKeySelector="item => item.JobPriority != null ? item.JobPriority.Description : string.Empty">
+        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job Priority Label"]" PropertyName="JobPriority" SortKeySelector="item => item.JobPriority != null ? item.JobPriority.SortOrder : string.Empty" SortString="JobPriority">
             @context.JobPriority?.Description
         </GridColumn>
-        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job Status Label"]" PropertyName="JobStatus" SortKeySelector="item => item.JobStatus != null ? item.JobStatus.Description : string.Empty">
+        <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job Status Label"]" PropertyName="JobStatus" SortKeySelector="item => item.JobStatus != null ? item.JobStatus.Description : string.Empty" SortString="JobStatus">
             @context.JobStatus?.Description
         </GridColumn>
     </GridColumns>
@@ -67,14 +66,60 @@ Responsive="true">
 
 @code {
     [Parameter]
-    public required IReadOnlyCollection<Job> Jobs { get; set; }
+    public string? RouteId { get; set; }
     [Parameter]
-    public int MaxResults { get; set; }
+    public string[]? ParishIds { get; set; }
+    [Parameter]
+    public string? ParishId { get; set; }
+    [Parameter]
+    public string? AssignedToTeamId { get; set; }
+    [Parameter]
+    public string? JobPriorityId { get; set; }
+    [Parameter]
+    public string? JobStatusId { get; set; }
+    [Parameter]
+    public DateOnly? LogDateFrom { get; set; }
+    [Parameter]
+    public DateOnly? LogDateTo { get; set; }
+    [Parameter]
+    public DateOnly? CompletedDateFrom { get; set; }
+    [Parameter]
+    public DateOnly? CompletedDateTo { get; set; }
+    [Parameter]
+    public bool? IsComplete { get; set; }
 
-    private async Task<GridDataProviderResult<Job>> JobsDataProvider(GridDataProviderRequest<Job> request)
+    public async Task<GridDataProviderResult<Job>> JobsDataProvider(GridDataProviderRequest<Job> request)
     {
-        var result = await Task.FromResult(request.ApplyTo(Jobs));
-        return result;
+        //handle sorting
+        string sortString = "";
+        ListSortDirection sortDirection = ListSortDirection.Ascending;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection == SortDirection.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+        }
+
+        var result = await maintenanceJobsService.GetMaintenanceJobsBySearchParameters(
+            RouteId,
+            ParishIds,
+            ParishId,
+            AssignedToTeamId,
+            JobPriorityId,
+            IsComplete,
+            JobStatusId,
+            LogDateFrom,
+            LogDateTo,
+            CompletedDateFrom,
+            CompletedDateTo,
+            sortString,
+            sortDirection,
+            request.PageNumber,
+            request.PageSize,
+            request.CancellationToken
+            );
+
+        return await Task.FromResult(new GridDataProviderResult<Job> { Data = result.Results, TotalCount = result.TotalResults });
     }
 
     private void OnRowClick(GridRowEventArgs<Job> args) => navigationManager.NavigateTo($"Maintenance/Details/{args.Item.Id}");

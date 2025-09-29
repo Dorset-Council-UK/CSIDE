@@ -1,11 +1,9 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data.Models.Maintenance;
-using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace CSIDE.Web.Components.Pages.Maintenance
 {
-    public partial class Jobs(IMaintenanceJobsService maintenanceJobsService, ILogger<Jobs> logger)
+    public partial class Jobs()
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -32,11 +30,7 @@ namespace CSIDE.Web.Components.Pages.Maintenance
         [SupplyParameterFromQuery]
         private bool? IsComplete { get; set; }
 
-        private IReadOnlyCollection<Job>? SearchResults;
-
-        private const int MaxResults = 1000;
-        private bool IsBusy { get; set; }
-        protected override async Task OnParametersSetAsync()
+        protected override void OnInitialized()
         {
             NavItems =
             [
@@ -44,34 +38,6 @@ namespace CSIDE.Web.Components.Pages.Maintenance
                 new BreadcrumbItem{ Text = localizer["Maintenance Title"], Href="Maintenance" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true },
             ];
-            try
-            {
-                IsBusy = true;
-
-                SearchResults = await maintenanceJobsService.GetMaintenanceJobsBySearchParameters(
-                    RouteId,
-                    ParishIds,
-                    ParishId,
-                    AssignedToTeamId,
-                    JobPriorityId,
-                    IsComplete,
-                    JobStatusId,
-                    LogDateFrom,
-                    LogDateTo,
-                    CompletedDateFrom,
-                    CompletedDateTo,
-                    MaxResults
-                    );
-
-                
-            }catch(Exception ex)
-            {
-                logger.LogError(ex, "An error occurred rendering the jobs list component");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
         }
 
 

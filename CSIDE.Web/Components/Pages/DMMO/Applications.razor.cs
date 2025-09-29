@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace CSIDE.Web.Components.Pages.DMMO
 {
-    public partial class Applications(IDMMOService dmmoService, ILogger<Applications> logger)
+    public partial class Applications()
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -30,12 +30,10 @@ namespace CSIDE.Web.Components.Pages.DMMO
         private DateOnly? ReceivedDateFrom { get; set; }
         [SupplyParameterFromQuery]
         private DateOnly? ReceivedDateTo { get; set; }
+        [SupplyParameterFromQuery]
+        private bool? IsPublic { get; set; }
 
-        private ICollection<DMMOApplication>? SearchResults;
-
-        private const int MaxResults = 1000;
-        private bool IsBusy { get; set; }
-        protected override async Task OnParametersSetAsync()
+        protected override void OnInitialized()
         {
             NavItems =
             [
@@ -44,29 +42,6 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true },
             ];
 
-            try
-            {
-                IsBusy = true;
-                SearchResults = await dmmoService.GetDMMOApplicationsBySearchParameters(
-                    ParishIds,
-                    ParishId,
-                    ApplicationTypeId,
-                    ApplicationCaseStatusId,
-                    ApplicationClaimedStatusId,
-                    Location,
-                    ApplicationDateFrom,
-                    ApplicationDateTo,
-                    ReceivedDateFrom,
-                    ReceivedDateTo);
-
-            }catch(Exception ex)
-            {
-                logger.LogError(ex, "An error occurred rendering the applications list component");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
         }
     }
 }

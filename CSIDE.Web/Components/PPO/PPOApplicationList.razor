@@ -1,19 +1,18 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.PPO
+@using CSIDE.Data.Services
 @using NodaTime
 @using System.Globalization
+@using System.ComponentModel
 @inject NavigationManager navigationManager
+@inject IPPOService ppoService
 
 <a href="PPO#search-form">@localizer["Search Again Label"]</a>
-
-@if(PPOApplications?.Count == MaxResults){
-    <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
-}
 
 <Grid TItem="PPOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
 DataProvider="PPOApplicationDataProvider"
-AllowFiltering="true"
+AllowFiltering="false"
 AllowPaging="true"
 PageSize="20"
 AllowSorting="true"
@@ -24,16 +23,16 @@ AutoHidePaging="true"
 Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
             <a href="PPO/Details/@context.Id">@IDPrefixOptions.Value.PPO@context.Id</a>
         </GridColumn>
-        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Application Type Label"]" PropertyName="ApplicationType" SortKeySelector="item => item.ApplicationType != null ? item.ApplicationType.Name : string.Empty">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Application Type Label"]" PropertyName="ApplicationType" SortKeySelector="item => item.ApplicationType != null ? item.ApplicationType.Name : string.Empty" SortString="ApplicationType">
             @context.ApplicationType?.Name
         </GridColumn>
-        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Received Date Label"]" PropertyName="ReceivedDate" SortKeySelector="item => item.ReceivedDate">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Received Date Label"]" PropertyName="ReceivedDate" SortKeySelector="item => item.ReceivedDate" SortString="ReceivedDate">
             @(context.ReceivedDate.HasValue ? context.ReceivedDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
         </GridColumn>
-        <GridColumn TItem="PPOApplication" Class="comment-field" Sortable="false" HeaderText="@localizer["Application Details Label"]" PropertyName="ApplicationDetails" SortKeySelector="item => item.ApplicationDetails">
+        <GridColumn TItem="PPOApplication" Class="comment-field" Filterable="false" Sortable="false" HeaderText="@localizer["Application Details Label"]" PropertyName="ApplicationDetails" SortKeySelector="item => item.ApplicationDetails">
             @if(context.ApplicationDetails.Length > 200){
                 @context.ApplicationDetails.Substring(0, 200)
 
@@ -43,10 +42,10 @@ Responsive="true">
             }
 
         </GridColumn>
-        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="JobPriority" SortKeySelector="@(item => item.PPOParishes != null ? string.Join(", ", item.PPOParishes.Select(p => p.Parish.Name)) : string.Empty)">
+        <GridColumn TItem="PPOApplication" Sortable="false" Filterable="false" HeaderText="@localizer["Parish Label"]" PropertyName="JobPriority" SortKeySelector="@(item => item.PPOParishes != null ? string.Join(", ", item.PPOParishes.Select(p => p.Parish.Name)) : string.Empty)">
             @string.Join(", ", context.PPOParishes.Select(p => p.Parish.Name))
         </GridColumn>
-        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Case Status Label"]" PropertyName="CaseStatus" SortKeySelector="item => item.CaseStatus != null ? item.CaseStatus.Name : string.Empty">
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Case Status Label"]" PropertyName="CaseStatus" SortKeySelector="item => item.CaseStatus != null ? item.CaseStatus.Name : string.Empty" SortString="CaseStatus">
             @context.CaseStatus?.Name
         </GridColumn>
     </GridColumns>
@@ -66,14 +65,55 @@ Responsive="true">
 
 @code {
     [Parameter]
-    public required IReadOnlyCollection<PPOApplication> PPOApplications { get; set; }
+    public string[]? ParishIds { get; set; }
     [Parameter]
-    public int MaxResults { get; set; }
+    public string? ParishId { get; set; }
+    [Parameter]
+    public string? Location { get; set; }
+    [Parameter]
+    public string? ApplicationCaseStatusId { get; set; }
+    [Parameter]
+    public string? ApplicationTypeId { get; set; }
+    [Parameter]
+    public string? ApplicationIntentId { get; set; }
+    [Parameter]
+    public string? ApplicationPriorityId { get; set; }
+    [Parameter]
+    public DateOnly? ReceivedDateFrom { get; set; }
+    [Parameter]
+    public DateOnly? ReceivedDateTo { get; set; }
+    [Parameter]
+    public bool? IsPublic{ get; set; }
 
-    private async Task<GridDataProviderResult<PPOApplication>> PPOApplicationDataProvider(GridDataProviderRequest<PPOApplication> request)
+    public async Task<GridDataProviderResult<PPOApplication>> PPOApplicationDataProvider(GridDataProviderRequest<PPOApplication> request)
     {
-        var result = await Task.FromResult(request.ApplyTo(PPOApplications));
-        return result;
+        //handle sorting
+        string sortString = "";
+        ListSortDirection sortDirection = ListSortDirection.Ascending;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection == SortDirection.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+        }
+
+        var result = await ppoService.GetPPOApplicationsBySearchParameters(
+                ParishIds,
+                ParishId,
+                ApplicationTypeId,
+                ApplicationCaseStatusId,
+                ApplicationIntentId,
+                ApplicationPriorityId,
+                Location,
+                ReceivedDateFrom,
+                ReceivedDateTo,
+                IsPublic,
+                sortString,
+                sortDirection,
+                request.PageNumber,
+                request.PageSize, request.CancellationToken);
+
+        return await Task.FromResult(new GridDataProviderResult<PPOApplication> { Data = result.Results, TotalCount = result.TotalResults });
     }
 
     private void OnRowClick(GridRowEventArgs<PPOApplication> args) => navigationManager.NavigateTo($"PPO/Details/{args.Item.Id}");

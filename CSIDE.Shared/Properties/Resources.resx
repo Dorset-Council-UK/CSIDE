@@ -1737,4 +1737,7 @@
   <data name="Recent Maintenance Jobs Card Title for All Teams" xml:space="preserve">
     <value>Recent maintenance jobs</value>
   </data>
+  <data name="View All Label" xml:space="preserve">
+    <value>View all</value>
+  </data>
 </root>

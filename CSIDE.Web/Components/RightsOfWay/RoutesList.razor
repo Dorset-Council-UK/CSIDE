@@ -1,13 +1,11 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.RightsOfWay
+@using System.ComponentModel
+@using CSIDE.Data.Services
 @inject NavigationManager navigationManager
+@inject IRightsOfWayService rightsOfWayService
 
 <a href="rights-of-way#search-form">@localizer["Search Again Label"]</a>
-
-@if (Routes?.Count == MaxResults)
-{
-    <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
-}
 
 <Grid TItem="Route"
         Class="table table-hover table-bordered table-striped mt-2"
@@ -23,22 +21,22 @@
         Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="Route" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteCode" SortKeySelector="item => item.RouteCode">
+        <GridColumn TItem="Route" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteCode" SortKeySelector="item => item.RouteCode" SortString="RouteId">
             <a href="rights-of-way/Details/@context.RouteCode">@context.RouteCode</a>
         </GridColumn>
-        <GridColumn TItem="Route" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty">
+        <GridColumn TItem="Route" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty" SortString="Parish">
             @context.Parish?.Name
         </GridColumn>
-        <GridColumn TItem="Route" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="MaintenanceTeam" SortKeySelector="item => item.MaintenanceTeam != null ? item.MaintenanceTeam.Name : string.Empty">
+        <GridColumn TItem="Route" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="MaintenanceTeam" SortKeySelector="item => item.MaintenanceTeam != null ? item.MaintenanceTeam.Name : string.Empty" SortString="MaintenanceTeam">
             @context.MaintenanceTeam?.Name
         </GridColumn>
-        <GridColumn TItem="Route" HeaderText="@localizer["Name Label"]" PropertyName="Name" SortKeySelector="item => item.Name">
+        <GridColumn TItem="Route" HeaderText="@localizer["Name Label"]" PropertyName="Name" SortKeySelector="item => item.Name" SortString="Name">
             @context.Name
         </GridColumn>
-        <GridColumn TItem="Route" HeaderText="@localizer["Operational Status Label"]" PropertyName="OperationalStatus" SortKeySelector="item => item.OperationalStatus != null ? item.OperationalStatus.Name : string.Empty">
+        <GridColumn TItem="Route" HeaderText="@localizer["Operational Status Label"]" PropertyName="OperationalStatus" SortKeySelector="item => item.OperationalStatus != null ? item.OperationalStatus.Name : string.Empty" SortString="OperationalStatus">
             @context.OperationalStatus?.Name
         </GridColumn>
-        <GridColumn TItem="Route" HeaderText="@localizer["Path Type Label"]" PropertyName="RouteType" SortKeySelector="item => item.RouteType != null ? item.RouteType.Name : string.Empty">
+        <GridColumn TItem="Route" HeaderText="@localizer["Path Type Label"]" PropertyName="RouteType" SortKeySelector="item => item.RouteType != null ? item.RouteType.Name : string.Empty" SortString="RouteType">
             @context.RouteType?.Name
         </GridColumn>
 
@@ -59,14 +57,47 @@
 
 @code {
     [Parameter]
-    public required ICollection<Route> Routes{ get; set; }
+    public string? RouteId { get; set; }
     [Parameter]
-    public int MaxResults { get; set; }
+    public string[]? ParishIds { get; set; }
+    [Parameter]
+    public string? ParishId { get; set; }
+    [Parameter]
+    public string? Name { get; set; }
+    [Parameter]
+    public string? MaintenanceTeamId { get; set; }
+    [Parameter]
+    public string? OperationalStatusId { get; set; }
+    [Parameter]
+    public string? RouteTypeId { get; set; }
 
-    private async Task<GridDataProviderResult<Route>> RoutesDataProvider(GridDataProviderRequest<Route> request)
+    public async Task<GridDataProviderResult<Route>> RoutesDataProvider(GridDataProviderRequest<Route> request)
     {
-        var result = await Task.FromResult(request.ApplyTo(Routes));
-        return result;
+        //handle sorting
+        string sortString = "";
+        ListSortDirection sortDirection = ListSortDirection.Ascending;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection == SortDirection.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+        }
+
+        var result = await rightsOfWayService.GetRoutesBySearchParameters(
+            RouteId,
+            Name,
+            ParishIds,
+            ParishId,
+            MaintenanceTeamId,
+            OperationalStatusId,
+            RouteTypeId,
+            sortString,
+            sortDirection,
+            request.PageNumber,
+            request.PageSize,
+            request.CancellationToken);
+
+        return await Task.FromResult(new GridDataProviderResult<Route> { Data = result.Results, TotalCount = result.TotalResults });
     }
 
     private void OnRowClick(GridRowEventArgs<Route> args) => navigationManager.NavigateTo($"rights-of-way/Details/{args.Item.RouteCode}");

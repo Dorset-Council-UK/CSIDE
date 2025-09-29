@@ -1,14 +1,16 @@
 ﻿using CSIDE.Data.Models.PPO;
+using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.ComponentModel;
 
 namespace CSIDE.API.Endpoints.PPO;
 
 internal static class PPOApplicationEndpoints
 {
-    internal static async Task<Results<Ok<ICollection<PPOApplicationSimplePublicViewModel>>, BadRequest>> GetAllPPOApplications(IPPOService service, CancellationToken ct)
+    internal static async Task<Results<Ok<PagedResult<PPOApplicationSimplePublicViewModel>>, BadRequest>> GetAllPPOApplications(IPPOService service, int pageNumber = 1, int pageSize = IPPOService.DefaultPublicPageSize, CancellationToken ct = default)
     {
-        var applications = await service.GetAllPublicPPOApplications(ct).ConfigureAwait(false);
+        var applications = await service.GetAllPublicPPOApplications(pageNumber, pageSize, ct).ConfigureAwait(false);
         return TypedResults.Ok(applications);
     }
 
@@ -18,7 +20,7 @@ internal static class PPOApplicationEndpoints
         return application is null ? TypedResults.NotFound() : TypedResults.Ok(application);
     }
 
-    internal static async Task<Results<Ok<ICollection<PPOApplicationSimplePublicViewModel>>, NotFound>> GetPPOApplicationsBySearchParameters(
+    internal static async Task<Results<Ok<PagedResult<PPOApplicationSimplePublicViewModel>>, NotFound>> GetPPOApplicationsBySearchParameters(
             IPPOService service,
             string[]? ParishIds,
             string? ParishId,
@@ -29,10 +31,22 @@ internal static class PPOApplicationEndpoints
             string? Location,
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
-            int MaxResults = 1000,
+            int pageNumber = 1,
+            int pageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default)
     {
-        var applications = await service.GetPublicPPOApplicationsBySearchParameters(ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationIntentId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, MaxResults, ct)
+        var applications = await service.GetPublicPPOApplicationsBySearchParameters(ParishIds,
+                                                                                    ParishId,
+                                                                                    ApplicationTypeId,
+                                                                                    ApplicationCaseStatusId,
+                                                                                    ApplicationIntentId,
+                                                                                    ApplicationPriorityId,
+                                                                                    Location,
+                                                                                    ReceivedDateFrom,
+                                                                                    ReceivedDateTo,
+                                                                                    PageNumber: pageNumber,
+                                                                                    PageSize: pageSize,
+                                                                                    ct: ct)
             .ConfigureAwait(false);
         return applications is null ? TypedResults.NotFound() : TypedResults.Ok(applications);
     }

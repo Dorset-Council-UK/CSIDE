@@ -1,11 +1,14 @@
-﻿using CSIDE.Data.Models.DMMO;
+﻿using CSIDE.Data.Extensions;
+using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
+using NodaTime;
+using System.ComponentModel;
 using System.Globalization;
-using CSIDE.Data.Extensions;
+using System.Linq.Expressions;
 
 namespace CSIDE.Data.Services;
 
@@ -13,6 +16,14 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
                          IPlacesSearchService placesSearchService,
                          IOptions<CSIDEOptions> csideOptions) : IDMMOService
 {
+    // Dictionary to map sort strings to property expressions for better performance
+    private static readonly Dictionary<string, Expression<Func<DMMOApplication, object>>> SortExpressions = new()
+    {
+        { "Id", x => x.Id },
+        { "ApplicationDate", x => x.ApplicationDate ?? LocalDate.MinIsoValue },
+        { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
+        { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
+    };
     public async Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -23,18 +34,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<DMMOApplication>> GetAllDMMOApplications(CancellationToken ct)
-    {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
-        return await context.DMMOApplication
-            .AsNoTracking()
-            .IgnoreAutoIncludes()
-            .AsSplitQuery()
-            .ToListAsync(ct)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<ICollection<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
+    public async Task<PagedResult<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? ApplicationTypeId,
@@ -45,9 +45,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         DateOnly? ApplicationDateTo,
         DateOnly? ReceivedDateFrom,
         DateOnly? ReceivedDateTo,
-        int MaxResults = 1000,
+        bool? IsPublic,
+        string? OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IDMMOService.DefaultPageSize,
         CancellationToken ct = default)
     {
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.DMMOApplication.AsQueryable();
 
@@ -118,8 +124,43 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         {
             query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
         }
+        if (IsPublic.HasValue)
+        {
+            query = query.Where(j => j.IsPublic == IsPublic);
+        }
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
 
-        return await query.OrderByDescending(d => d.Id).Take(MaxResults).ToArrayAsync(ct);
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<DMMOApplication>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+
+    }
+
+    private static IQueryable<DMMOApplication> ApplyOrdering(IQueryable<DMMOApplication> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
+        }
+
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
     }
 
     public async Task<DMMOOrder?> GetDMMOOrderById(int OrderId, int ApplicationId, CancellationToken ct = default)
@@ -390,10 +431,18 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
     #region Public Data Accessors
 
-    public async Task<ICollection<DMMOApplicationSimplePublicViewModel>> GetAllPublicDMMOApplications(CancellationToken ct)
+    public async Task<PagedResult<DMMOApplicationSimplePublicViewModel>> GetAllPublicDMMOApplications(int PageNumber = 1, int pageSize = IDMMOService.DefaultPageSize, CancellationToken ct = default)
     {
+        var take = pageSize < 1 ? IDMMOService.DefaultPageSize : pageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
+        var totalCount = await context.DMMOApplication
+            .Where(d => d.IsPublic == true)
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .CountAsync(ct)
+            .ConfigureAwait(false);
         var publicApplications = await context.DMMOApplication
             .Where(d => d.IsPublic == true)
             .AsNoTracking()
@@ -403,11 +452,22 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .Include(d => d.DirectionOfSecState)
             .Include(d => d.ApplicationType)
             .Include(a => a.DMMOParishes).ThenInclude(p => p.Parish)
+            .OrderBy(p => p.Id)
+            .Skip(skip)
+            .Take(take)
             .AsSplitQuery()
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        return [.. publicApplications.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO))];
+        ICollection<DMMOApplicationSimplePublicViewModel> results = [.. publicApplications.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO))];
+
+        return new PagedResult<DMMOApplicationSimplePublicViewModel>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
     }
 
     public async Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default)
@@ -420,7 +480,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.DMMO);
     }
 
-    public async Task<ICollection<DMMOApplicationSimplePublicViewModel>?> GetPublicDMMOApplicationsBySearchParameters(
+    public async Task<PagedResult<DMMOApplicationSimplePublicViewModel>> GetPublicDMMOApplicationsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? ApplicationTypeId,
@@ -431,13 +491,38 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         DateOnly? ApplicationDateTo,
         DateOnly? ReceivedDateFrom,
         DateOnly? ReceivedDateTo,
-        int MaxResults = 1000,
+        string? OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IDMMOService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var allApplications = await GetDMMOApplicationsBySearchParameters(ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationClaimedStatusId, Location, ApplicationDateFrom, ApplicationDateTo, ReceivedDateFrom, ReceivedDateTo, MaxResults, ct).ConfigureAwait(false);
-        var publicApplications = allApplications?.Where(a => a.IsPublic == true);
 
-        return publicApplications?.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO)).ToList();
+        var applications = await GetDMMOApplicationsBySearchParameters(ParishIds,
+                                                                          ParishId,
+                                                                          ApplicationTypeId,
+                                                                          ApplicationCaseStatusId,
+                                                                          ApplicationClaimedStatusId,
+                                                                          Location,
+                                                                          ApplicationDateFrom,
+                                                                          ApplicationDateTo,
+                                                                          ReceivedDateFrom,
+                                                                          ReceivedDateTo,
+                                                                          IsPublic:true,
+                                                                          OrderBy,
+                                                                          OrderDirection,
+                                                                          PageNumber,
+                                                                          PageSize,
+                                                                          ct).ConfigureAwait(false);
+
+        List<DMMOApplicationSimplePublicViewModel> results = [.. applications.Results.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO))];
+        return new PagedResult<DMMOApplicationSimplePublicViewModel>
+        {
+            Results = results,
+            TotalResults = applications.TotalResults,
+            PageSize = applications.PageSize,
+            PageNumber = applications.PageNumber
+        };
     }
 
     #endregion

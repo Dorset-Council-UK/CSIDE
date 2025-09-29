@@ -1,16 +1,18 @@
 ﻿using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using NetTopologySuite.Geometries;
+using System.ComponentModel;
 
 namespace CSIDE.Data.Services
 {
     public interface IRightsOfWayService
     {
+        const int DefaultPageSize = 100;
         Task<Route?> GetRouteByCode(string routeCode, CancellationToken ct = default);
         Task<Route?> GetNearestRoute(Point location, int maxDistance = 20,CancellationToken ct = default);
         Task<ICollection<Route>> GetNearestRoutes(Geometry geometry, int maxDistance = 50, int maxRoutes = 50, CancellationToken ct = default);
         Task<ICollection<Geometry>> GetRoutesIntersecting(Polygon bboxPolygon, CancellationToken ct = default);
-        Task<ICollection<Route>> GetRoutesBySearchParameters(
+        Task<PagedResult<Route>> GetRoutesBySearchParameters(
             string? RouteId,
             string? Name,
             string[]? ParishIds,
@@ -18,7 +20,10 @@ namespace CSIDE.Data.Services
             string? MaintenanceTeamId,
             string? OperationalStatusId,
             string? RouteTypeId,
-            int MaxResults = 1000,
+            string? OrderBy = "RouteId",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = DefaultPageSize,
             CancellationToken ct = default);
         Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<RouteType>> GetRouteTypeOptions(CancellationToken ct = default);

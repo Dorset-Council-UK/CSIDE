@@ -1,11 +1,14 @@
-﻿using CSIDE.Data.Models.PPO;
+﻿using CSIDE.Data.Extensions;
+using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
+using NodaTime;
+using System.ComponentModel;
 using System.Globalization;
-using CSIDE.Data.Extensions;
+using System.Linq.Expressions;
 
 namespace CSIDE.Data.Services
 {
@@ -13,6 +16,14 @@ namespace CSIDE.Data.Services
                             IPlacesSearchService placesSearchService,
                             IOptions<CSIDEOptions> csideOptions) : IPPOService
     {
+        // Dictionary to map sort strings to property expressions for better performance
+        private static readonly Dictionary<string, Expression<Func<PPOApplication, object>>> SortExpressions = new()
+        {
+            { "Id", x => x.Id },
+            { "ApplicationType", x => x.ApplicationType.Name ?? string.Empty },
+            { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
+            { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
+        };
         public async Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -30,7 +41,7 @@ namespace CSIDE.Data.Services
                 .ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyCollection<PPOApplication>?> GetPPOApplicationsBySearchParameters(
+        public async Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationTypeId,
@@ -40,9 +51,15 @@ namespace CSIDE.Data.Services
             string? Location,
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
-            int MaxResults = 1000,
+            bool? IsPublic,
+            string? OrderBy = "Id",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default)
         {
+            var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+            var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             var query = context.PPOApplication.AsQueryable();
 
@@ -78,6 +95,10 @@ namespace CSIDE.Data.Services
             {
                 query = query.Where(d => d.PriorityId == parsedApplicationPriorityId);
             }
+            if (IsPublic is not null)
+            {
+                query = query.Where(d => d.IsPublic == IsPublic);
+            }
             if (Location is not null)
             {
                 var place = await placesSearchService.GetPlaceByName(Location);
@@ -110,7 +131,38 @@ namespace CSIDE.Data.Services
                 query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
             }
 
-            return await query.OrderByDescending(d => d.Id).Take(MaxResults).ToListAsync(ct);
+            // Get total count before applying skip/take
+            var totalCount = await query.CountAsync(cancellationToken: ct);
+
+            query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+            var results = await query
+                              .Skip(skip)
+                              .Take(take)
+                              .ToListAsync(cancellationToken: ct);
+
+            return new PagedResult<PPOApplication>
+            {
+                TotalResults = totalCount,
+                PageNumber = PageNumber,
+                PageSize = take,
+                Results = results
+            };
+        }
+
+        private static IQueryable<PPOApplication> ApplyOrdering(IQueryable<PPOApplication> query, string orderBy, ListSortDirection orderDirection)
+        {
+            // Default fallback ordering
+            if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+            {
+                return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
+            }
+
+            var sortExpression = SortExpressions[orderBy];
+
+            return orderDirection == ListSortDirection.Descending
+                ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+                : query.OrderBy(sortExpression).ThenBy(l => l.Id);
         }
 
         public async Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default)
@@ -367,10 +419,18 @@ namespace CSIDE.Data.Services
 
         #region Public Data Accessors
 
-        public async Task<ICollection<PPOApplicationSimplePublicViewModel>> GetAllPublicPPOApplications(CancellationToken ct)
+        public async Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetAllPublicPPOApplications(int pageNumber = 1, int pageSize = IPPOService.DefaultPublicPageSize, CancellationToken ct = default)
         {
+            var take = pageSize < 1 ? IPPOService.DefaultPublicPageSize : pageSize;
+            var skip = pageNumber < 1 ? 0 : (pageNumber - 1) * take;
             await using var context = await contextFactory.CreateDbContextAsync(ct);
 
+            var totalCount = await context.PPOApplication
+           .Where(d => d.IsPublic == true)
+           .AsNoTracking()
+           .IgnoreAutoIncludes()
+           .CountAsync(ct)
+           .ConfigureAwait(false);
             var publicApplications = await context.PPOApplication
                 .Where(d => d.IsPublic == true)
                 .AsNoTracking()
@@ -379,11 +439,21 @@ namespace CSIDE.Data.Services
                 .Include(d => d.Priority)
                 .Include(d => d.ApplicationType)
                 .Include(a => a.PPOParishes).ThenInclude(p => p.Parish)
+                .OrderBy(p => p.Id)
+                .Skip(skip)
+                .Take(take)
                 .AsSplitQuery()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            return [.. publicApplications.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO))];
+            ICollection<PPOApplicationSimplePublicViewModel> results = [.. publicApplications.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO))];
+            return new PagedResult<PPOApplicationSimplePublicViewModel>
+            {
+                TotalResults = totalCount,
+                PageNumber = pageNumber,
+                PageSize = take,
+                Results = results
+            };
         }
 
         // Update your methods:
@@ -397,7 +467,7 @@ namespace CSIDE.Data.Services
             return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.PPO);
         }
 
-        public async Task<ICollection<PPOApplicationSimplePublicViewModel>?> GetPublicPPOApplicationsBySearchParameters(
+        public async Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationTypeId,
@@ -407,13 +477,36 @@ namespace CSIDE.Data.Services
             string? Location,
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
-            int MaxResults = 1000,
+            string? OrderBy = "Id",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default)
         {
-            var allApplications = await GetPPOApplicationsBySearchParameters(ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationIntentId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, MaxResults, ct).ConfigureAwait(false);
-            var publicApplications = allApplications?.Where(a => a.IsPublic == true);
 
-            return publicApplications?.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO)).ToList();
+            var applications = await GetPPOApplicationsBySearchParameters(ParishIds,
+                                                                          ParishId,
+                                                                          ApplicationTypeId,
+                                                                          ApplicationCaseStatusId,
+                                                                          ApplicationIntentId,
+                                                                          ApplicationPriorityId,
+                                                                          Location,
+                                                                          ReceivedDateFrom,
+                                                                          ReceivedDateTo,
+                                                                          IsPublic: true,
+                                                                          PageNumber: PageNumber,
+                                                                          PageSize: PageSize,
+                                                                          ct: ct).ConfigureAwait(false);
+
+            ICollection<PPOApplicationSimplePublicViewModel> results = [.. applications.Results.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO))];
+
+            return new PagedResult<PPOApplicationSimplePublicViewModel>
+            {
+                Results = results,
+                TotalResults = applications.TotalResults,
+                PageSize = applications.PageSize,
+                PageNumber = applications.PageNumber
+            };
         }
         #endregion
     }

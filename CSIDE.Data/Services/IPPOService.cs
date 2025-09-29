@@ -1,5 +1,6 @@
 ﻿using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
+using System.ComponentModel;
 
 namespace CSIDE.Data.Services
 {
@@ -7,7 +8,7 @@ namespace CSIDE.Data.Services
     {
         Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default);
         Task<ICollection<PPOApplication>> GetAllPPOApplications(CancellationToken ct);
-        Task<IReadOnlyCollection<PPOApplication>?> GetPPOApplicationsBySearchParameters(
+        Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationTypeId,
@@ -17,7 +18,11 @@ namespace CSIDE.Data.Services
             string? Location,
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
-            int MaxResults = 1000,
+            bool? IsPublic,
+            string? OrderBy = "Id",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default);
         Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default);
         Task<PPOOrder?> GetPPOOrderById(int orderId, int applicationId, CancellationToken ct = default);
@@ -44,9 +49,10 @@ namespace CSIDE.Data.Services
         Task<bool> DeletePPOOrder(int ApplicationId, int OrderId, CancellationToken ct = default);
         Task<bool> DeletePPOEvent(int EventId, CancellationToken ct = default);
 
+        const int DefaultPublicPageSize = 100;
         Task<PPOApplicationPublicViewModel?> GetPublicPPOApplicationById(int id, CancellationToken ct = default);
-        Task<ICollection<PPOApplicationSimplePublicViewModel>> GetAllPublicPPOApplications(CancellationToken ct);
-        Task<ICollection<PPOApplicationSimplePublicViewModel>?> GetPublicPPOApplicationsBySearchParameters(
+        Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetAllPublicPPOApplications(int pageNumber = 1, int pageSize = DefaultPublicPageSize, CancellationToken ct = default);
+        Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationTypeId,
@@ -56,7 +62,10 @@ namespace CSIDE.Data.Services
             string? Location,
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
-            int MaxResults = 1000,
+            string? OrderBy = "Id",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default);
 
     }

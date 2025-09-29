@@ -2,7 +2,9 @@
 using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace CSIDE.Data.Services;
 
@@ -11,6 +13,18 @@ namespace CSIDE.Data.Services;
 /// </summary>
 public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextFactory) : IRightsOfWayService
 {
+    // Dictionary to map sort strings to property expressions for better performance
+    private static readonly Dictionary<string, Expression<Func<Route, object>>> SortExpressions = new()
+        {
+            { "RouteId", x => x.RouteCode },
+            { "Parish", x => x.Parish.Name ?? string.Empty },
+            { "MaintenanceTeam", x => x.MaintenanceTeam.Name ?? string.Empty },
+            { "Name", x => x.Name ?? string.Empty },
+            { "OperationalStatus", x => x.OperationalStatus.Name ?? string.Empty },
+            { "RouteType", x => x.RouteType.Name ?? string.Empty },
+
+
+        };
     public async Task<Route?> GetRouteByCode(string routeCode, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -60,7 +74,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
                 .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<Route>> GetRoutesBySearchParameters(
+    public async Task<PagedResult<Route>> GetRoutesBySearchParameters(
         string? RouteId,
         string? Name,
         string[]? ParishIds,
@@ -68,9 +82,14 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         string? MaintenanceTeamId,
         string? OperationalStatusId,
         string? RouteTypeId,
-        int MaxResults = 1000,
+        string? OrderBy = "RouteId",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IRightsOfWayService.DefaultPageSize,
         CancellationToken ct = default)
     {
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.Routes.AsQueryable();
 
@@ -109,10 +128,38 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         {
             query = query.Where(j => j.RouteTypeId == parsedRouteTypeId);
         }
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
 
-        return await query.OrderByDescending(r => r.RouteCode).Take(MaxResults).ToArrayAsync(cancellationToken: ct);
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<Route>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
     }
+    private static IQueryable<Route> ApplyOrdering(IQueryable<Route> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.RouteCode);
+        }
 
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.RouteCode)
+            : query.OrderBy(sortExpression).ThenBy(l => l.RouteCode);
+    }
     public async Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default)
     {
         //TODO: cache this

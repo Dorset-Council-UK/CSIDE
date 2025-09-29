@@ -9,14 +9,10 @@
 
 <h1>@localizer["Search Results Title"]</h1>
 
-@if (IsBusy)
-{
-    <p class="fs-4">
-        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
-    </p>
-}
-
-@if (SearchResults is not null)
-{
-    <RoutesList Routes="@SearchResults" MaxResults="@MaxResults"></RoutesList>
-}
+<RoutesList RouteId= "@RouteId"
+            Name= "@Name"
+            ParishIds= "@ParishIds"
+            ParishId= "@ParishId"
+            MaintenanceTeamId= "@MaintenanceTeamId"
+            OperationalStatusId= "@OperationalStatusId"
+            RouteTypeId="@RouteTypeId"></RoutesList>

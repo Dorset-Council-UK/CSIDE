@@ -9,13 +9,13 @@
 
 <h1>@localizer["Search Results Title"]</h1>
 
-@if(IsBusy){
-    <p class="fs-4">
-        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
-    </p>
-}
-
-@if(SearchResults is not null)
-{
-    <PPOApplicationList PPOApplications="@SearchResults" MaxResults="@MaxResults"></PPOApplicationList>    
-}
+<PPOApplicationList ParishIds= "@ParishIds"
+                    ParishId= "@ParishId"
+                    ApplicationTypeId= "@ApplicationTypeId"
+                    ApplicationCaseStatusId= "@ApplicationCaseStatusId"
+                    ApplicationIntentId= "@ApplicationIntentId"
+                    ApplicationPriorityId= "@ApplicationPriorityId"
+                    Location= "@Location"
+                    ReceivedDateFrom= "@ReceivedDateFrom"
+                    ReceivedDateTo= "@ReceivedDateTo"
+                    IsPublic= "@IsPublic"></PPOApplicationList>

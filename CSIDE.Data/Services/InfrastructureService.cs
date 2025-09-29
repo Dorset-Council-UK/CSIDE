@@ -4,19 +4,28 @@ using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NodaTime;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace CSIDE.Data.Services;
 
-
 public class InfrastructureService(IDbContextFactory<ApplicationDbContext> contextFactory) : IInfrastructureService
 {
+    // Dictionary to map sort strings to property expressions for better performance
+    private static readonly Dictionary<string, Expression<Func<InfrastructureItem, object>>> SortExpressions = new()
+    {
+        { "Id", x => x.Id },
+        { "Parish", x => x.Parish.Name ?? string.Empty },
+        { "RouteId", x => x.RouteId ?? string.Empty },
+        { "InfrastructureType", x => x.InfrastructureType.Name ?? string.Empty },
+    };
     public async Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Infrastructure.FindAsync([id], ct).ConfigureAwait(false);
     }
-    public async Task<ICollection<InfrastructureItem>> GetInfrastructureItemBySearchParameters(
+    public async Task<PagedResult<InfrastructureItem>> GetInfrastructureItemBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,
@@ -24,9 +33,14 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         string? InfrastructureTypeId,
         DateOnly? InstallationDateFrom,
         DateOnly? InstallationDateTo,
-        int MaxResults = 1000,
+        string OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IInfrastructureService.DefaultPageSize,
         CancellationToken ct = default)
     {
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.Infrastructure.AsQueryable();
 
@@ -66,13 +80,39 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
             query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo.Value).PlusDays(1));
         }
 
-        return await query.OrderByDescending(i => i.InstallationDate)
-            .Take(MaxResults)
-            .ToListAsync(ct)
-            .ConfigureAwait(false);
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<InfrastructureItem>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
 
     }
+    private static IQueryable<InfrastructureItem> ApplyOrdering(IQueryable<InfrastructureItem> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.Id);
+        }
 
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
     public async Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);

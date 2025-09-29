@@ -1,12 +1,15 @@
-﻿using CSIDE.Data.Models.DMMO;
+﻿using CSIDE.Data.Extensions;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
+using NodaTime;
+using System.ComponentModel;
 using System.Globalization;
-using CSIDE.Data.Extensions;
+using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CSIDE.Data.Services;
 
@@ -14,6 +17,14 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
                                      IPlacesSearchService placesSearchService,
                                      IOptions<CSIDEOptions> csideOptions) : ILandownerDepositService
 {
+    // Dictionary to map sort strings to property expressions for better performance
+    private static readonly Dictionary<string, Expression<Func<LandownerDeposit, object>>> SortExpressions = new()
+    {
+        { "Id", x => x.Id },
+        { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
+        { "Location", x => x.Location ?? string.Empty },
+    };
+
     public async Task<LandownerDeposit?> GetLandownerDepositById(int Id, int SecondaryId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -29,24 +40,18 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<LandownerDeposit>> GetAllLandownerDeposits(CancellationToken ct)
-    {
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
-        return await context.LandownerDeposits
-            .AsNoTracking()
-            .IgnoreAutoIncludes()
-            .AsSplitQuery()
-            .ToListAsync(ct)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<ICollection<LandownerDeposit>> GetLandownerDepositsBySearchParameters(
+    public async Task<PagedResult<LandownerDeposit>> GetLandownerDepositsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? Location,
-        int MaxResults = 1000,
+        string OrderBy = "ReceivedDate",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = ILandownerDepositService.DefaultPageSize,
         CancellationToken ct = default)
     {
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.LandownerDeposits.AsQueryable();
 
@@ -60,12 +65,12 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             {
                 query = query.Where(l => l.LandownerDepositParishes.Any(p => parsedParishIds.Contains(p.ParishId)));
             }
-
         }
         else if (ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
         {
             query = query.Where(d => d.LandownerDepositParishes.Any(p => p.ParishId == parsedParishId));
         }
+
         if (Location is not null)
         {
             var place = await placesSearchService.GetPlaceByName(Location);
@@ -89,8 +94,38 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             }
         }
 
-        return await query.OrderByDescending(l => l.ReceivedDate).Take(MaxResults).ToListAsync(cancellationToken: ct);
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
 
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<LandownerDeposit>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+    }
+
+    private static IQueryable<LandownerDeposit> ApplyOrdering(IQueryable<LandownerDeposit> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
+        }
+
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
     }
 
     public async Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int landownerDepositSecondaryId, CancellationToken ct = default)
@@ -277,20 +312,39 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
 
     #region Public Data Accessors
 
-    public async Task<ICollection<LandownerDepositSimplePublicViewModel>> GetAllPublicLandownerDeposits(CancellationToken ct)
+    public async Task<PagedResult<LandownerDepositSimplePublicViewModel>> GetAllPublicLandownerDeposits(int PageNumber = 1, int PageSize = ILandownerDepositService.DefaultPageSize, CancellationToken ct = default)
     {
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
+        var totalCount = await context.LandownerDeposits
+           .AsNoTracking()
+           .IgnoreAutoIncludes()
+           .CountAsync(ct)
+           .ConfigureAwait(false);
         var fullApplications = await context.LandownerDeposits
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Include(ld => ld.LandownerDepositTypes).ThenInclude(t => t.LandownerDepositTypeName)
             .Include(ld => ld.LandownerDepositParishes).ThenInclude(p => p.Parish)
+            .OrderBy(p => p.Id)
+            .ThenBy(p => p.SecondaryId)
+            .Skip(skip)
+            .Take(take)
             .AsSplitQuery()
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        return [.. fullApplications.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit))];
+        ICollection<LandownerDepositSimplePublicViewModel> results = [.. fullApplications.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit))];
+
+        return new PagedResult<LandownerDepositSimplePublicViewModel>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
     }
 
     public async Task<LandownerDepositPublicViewModel?> GetPublicLandownerDepositById(int id, int secondaryId, CancellationToken ct = default)
@@ -303,16 +357,27 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit);
     }
 
-    public async Task<ICollection<LandownerDepositSimplePublicViewModel>?> GetPublicLandownerDepositsBySearchParameters(
+    public async Task<PagedResult<LandownerDepositSimplePublicViewModel>> GetPublicLandownerDepositsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? Location,
-        int MaxResults = 1000,
+        string OrderBy = "ReceivedDate",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = ILandownerDepositService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var allDeposits = await GetLandownerDepositsBySearchParameters(ParishIds, ParishId, Location, MaxResults, ct).ConfigureAwait(false);
+        var allDeposits = await GetLandownerDepositsBySearchParameters(ParishIds, ParishId, Location, OrderBy, OrderDirection, PageNumber, PageSize, ct).ConfigureAwait(false);
+        var totalCount = allDeposits.TotalResults;
+        List<LandownerDepositSimplePublicViewModel> results = [.. allDeposits.Results.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit))];
 
-        return allDeposits?.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit)).ToList();
+        return new PagedResult<LandownerDepositSimplePublicViewModel>
+        {
+            Results = results,
+            TotalResults = allDeposits.TotalResults,
+            PageSize = allDeposits.PageSize,
+            PageNumber = allDeposits.PageNumber
+        };
     }
 
     #endregion

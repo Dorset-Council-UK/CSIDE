@@ -1,11 +1,9 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data.Models.LandownerDeposits;
-using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace CSIDE.Web.Components.Pages.LandownerDeposits
 {
-    public partial class Items(ILandownerDepositService landownerDepositService, ILogger<Items> logger, IPlacesSearchService placesSearchService)
+    public partial class Items()
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -16,11 +14,8 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
         [SupplyParameterFromQuery]
         private string? Location { get; set; }
 
-        private ICollection<LandownerDeposit>? SearchResults;
 
-        private const int MaxResults = 1000;
-        private bool IsBusy { get; set; }
-        protected override async Task OnParametersSetAsync()
+        protected override void OnInitialized()
         {
             NavItems =
             [
@@ -28,24 +23,6 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
                 new BreadcrumbItem{ Text = localizer["Landowner Deposit Title"], Href="landowner-deposits" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true },
             ];
-            try
-            {
-                IsBusy = true;
-
-                SearchResults = await landownerDepositService.GetLandownerDepositsBySearchParameters(
-                    ParishIds,
-                    ParishId,
-                    Location,
-                    MaxResults);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occurred rendering the landowner deposits list component");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
         }
     }
 }

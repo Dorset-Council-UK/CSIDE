@@ -1,13 +1,11 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.Infrastructure
+@using CSIDE.Data.Services
+@using System.ComponentModel
 @inject NavigationManager navigationManager
+@inject IInfrastructureService infrastructureService
 
 <a href="Infrastructure#search-form">@localizer["Search Again Label"]</a>
-
-@if (InfrastructureItems?.Count == MaxResults)
-{
-    <Alert Color="AlertColor.Warning">@localizer["Search Results Limit Text", MaxResults]</Alert>
-}
 
 <Grid TItem="InfrastructureItem"
         Class="table table-hover table-bordered table-striped mt-2"
@@ -23,16 +21,16 @@
         Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
             <a href="Infrastructure/Details/@context.Id">@IDPrefixOptions.Value.Infrastructure@context.Id</a>
         </GridColumn>
-        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty">
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty" SortString="Parish">
             @context.Parish?.Name
         </GridColumn>
-        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteId" SortKeySelector="item => item.RouteId">
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteId" SortKeySelector="item => item.RouteId" SortString="RouteId">
             @context.RouteId
         </GridColumn>
-        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure Type Label"]" PropertyName="InfrastructureType" SortKeySelector="item => item.InfrastructureType != null ? item.InfrastructureType.Name : string.Empty">
+        <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure Type Label"]" PropertyName="InfrastructureType" SortKeySelector="item => item.InfrastructureType != null ? item.InfrastructureType.Name : string.Empty" SortString="InfrastructureType">
             @context.InfrastructureType?.Name
         </GridColumn>
 
@@ -54,15 +52,51 @@
 
 @code {
     [Parameter]
-    public required ICollection<InfrastructureItem> InfrastructureItems { get; set; }
+    public string? RouteId { get; set; }
     [Parameter]
-    public int MaxResults { get; set; }
+    public string[]? ParishIds { get; set; }
+    [Parameter]
+    public string? ParishId { get; set; }
+    [Parameter]
+    public string? MaintenanceTeamId { get; set; }
+    [Parameter]
+    public string? LoggedById { get; set; }
+    [Parameter]
+    public string? InfrastructureTypeId { get; set; }
+    [Parameter]
+    public DateOnly? InstallationDateFrom { get; set; }
+    [Parameter]
+    public DateOnly? InstallationDateTo { get; set; }
 
-    private async Task<GridDataProviderResult<InfrastructureItem>> InfrastructureItemsDataProvider(GridDataProviderRequest<InfrastructureItem> request)
+
+    public async Task<GridDataProviderResult<InfrastructureItem>> InfrastructureItemsDataProvider(GridDataProviderRequest<InfrastructureItem> request)
     {
-        var result = await Task.FromResult(request.ApplyTo(InfrastructureItems));
-        return result;
+        //handle sorting
+        string sortString = "";
+        ListSortDirection sortDirection = ListSortDirection.Ascending;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection == SortDirection.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+        }
+
+        var result = await infrastructureService.GetInfrastructureItemBySearchParameters(
+                RouteId,
+                ParishIds,
+                ParishId,
+                MaintenanceTeamId,
+                InfrastructureTypeId,
+                InstallationDateFrom,
+                InstallationDateTo,
+                sortString,
+                sortDirection,
+                request.PageNumber,
+                request.PageSize, request.CancellationToken);
+
+        return await Task.FromResult(new GridDataProviderResult<InfrastructureItem> { Data = result.Results, TotalCount = result.TotalResults });
     }
+
 
     private void OnRowClick(GridRowEventArgs<InfrastructureItem> args) => navigationManager.NavigateTo($"Infrastructure/Details/{args.Item.Id}");
 }

@@ -1,11 +1,9 @@
 ﻿using BlazorBootstrap;
-using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace CSIDE.Web.Components.Pages.Infrastructure
 {
-    public partial class Items(IInfrastructureService infrastructureService, ILogger<Items> logger)
+    public partial class Items()
     {
         private List<BreadcrumbItem>? NavItems;
 
@@ -26,11 +24,8 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
         [SupplyParameterFromQuery]
         private DateOnly? InstallationDateTo { get; set; }
 
-        private ICollection<InfrastructureItem>? SearchResults;
-
-        private const int MaxResults = 1000;
         private bool IsBusy { get; set; }
-        protected override async Task OnParametersSetAsync()
+        protected override void OnInitialized()
         {
             NavItems =
             [
@@ -38,27 +33,6 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 new BreadcrumbItem{ Text = localizer["Infrastructure Title"], Href="Infrastructure" },
                 new BreadcrumbItem{ Text = localizer["Search Results Title"], IsCurrentPage = true },
             ];
-            try
-            {
-                IsBusy = true;
-                SearchResults = await infrastructureService.GetInfrastructureItemBySearchParameters(
-                    RouteId,
-                    ParishIds,
-                    ParishId,
-                    MaintenanceTeamId,
-                    InfrastructureTypeId,
-                    InstallationDateFrom,
-                    InstallationDateTo,
-                    MaxResults);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occurred rendering the jobs list component");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
         }
     }
 }

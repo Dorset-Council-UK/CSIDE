@@ -1748,4 +1748,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Recent Maintenance Jobs Card Title for All Teams" xml:space="preserve">
     <value>Swyddi cynnal a chadw diweddar</value>
   </data>
+  <data name="View All Label" xml:space="preserve">
+    <value>Gweld y cyfan</value>
+  </data>
 </root>

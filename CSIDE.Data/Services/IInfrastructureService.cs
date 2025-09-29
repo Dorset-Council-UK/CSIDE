@@ -2,14 +2,17 @@
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
 using NetTopologySuite.Geometries;
+using System.ComponentModel;
 
 namespace CSIDE.Data.Services
 {
     public interface IInfrastructureService
     {
+        const int DefaultPageSize = 100;
+
         Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default);
         Task<ICollection<BridgeSurvey>> GetValidatedBridgeSurveysByInfrastructureItemId(int infrastructureItemId, CancellationToken ct = default);
-        Task<ICollection<InfrastructureItem>> GetInfrastructureItemBySearchParameters(
+        Task<PagedResult<InfrastructureItem>> GetInfrastructureItemBySearchParameters(
             string? RouteId,
             string[]? ParishIds,
             string? ParishId,
@@ -17,7 +20,10 @@ namespace CSIDE.Data.Services
             string? InfrastructureTypeId,
             DateOnly? InstallationDateFrom,
             DateOnly? InstallationDateTo,
-            int MaxResults = 1000,
+            string OrderBy = "Id",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = DefaultPageSize,
             CancellationToken ct = default);
         Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default);
         Task<BridgeSurvey?> GetBridgeSurveyById(int SurveyId, CancellationToken ct = default);

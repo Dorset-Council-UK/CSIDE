@@ -9,14 +9,4 @@
 
 <h1>@localizer["Search Results Title"]</h1>
 
-@if (IsBusy)
-{
-    <p class="fs-4">
-        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
-    </p>
-}
-
-@if(SearchResults is not null)
-{
-    <LandownerDepositList LandownerDeposits="@SearchResults" MaxResults="@MaxResults"></LandownerDepositList>    
-}
+<LandownerDepositList Location="@Location" ParishId="@ParishId" ParishIds="@ParishIds"></LandownerDepositList>

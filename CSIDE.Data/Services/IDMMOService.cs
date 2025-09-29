@@ -1,13 +1,14 @@
 ﻿using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
+using System.ComponentModel;
 
 namespace CSIDE.Data.Services
 {
     public interface IDMMOService
     {
+        const int DefaultPageSize = 100;
         Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default);
-        Task<ICollection<DMMOApplication>> GetAllDMMOApplications(CancellationToken ct = default);
-        Task<ICollection<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
+        Task<PagedResult<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
             string[]? parishIds,
             string? parishId,
             string? applicationTypeId,
@@ -18,7 +19,11 @@ namespace CSIDE.Data.Services
             DateOnly? applicationDateTo,
             DateOnly? receivedDateFrom,
             DateOnly? receivedDateTo,
-            int MaxResults = 1000,
+            bool? IsPublic,
+            string? OrderBy = "Id",
+            ListSortDirection OrderDirection = ListSortDirection.Descending,
+            int PageNumber = 1,
+            int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default);
         Task<DMMOOrder?> GetDMMOOrderById(int OrderId, int ApplicationId, CancellationToken ct = default);
         Task<ICollection<DMMOAddress>> GetDMMOAddressesByApplicationId(int ApplicationId, CancellationToken ct = default);
@@ -48,9 +53,9 @@ namespace CSIDE.Data.Services
         Task<bool> AddressExistsOnDMMO(int ApplicationId, long UPRN, CancellationToken ct = default);
         Task<bool> ApplicationExists(int applicationId, CancellationToken ct = default);
 
-        Task<ICollection<DMMOApplicationSimplePublicViewModel>> GetAllPublicDMMOApplications(CancellationToken ct = default);
+        Task<PagedResult<DMMOApplicationSimplePublicViewModel>> GetAllPublicDMMOApplications(int PageNumber = 1, int PageSize = DefaultPageSize, CancellationToken ct = default);
         Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default);
-        Task<ICollection<DMMOApplicationSimplePublicViewModel>?> GetPublicDMMOApplicationsBySearchParameters(
+        Task<PagedResult<DMMOApplicationSimplePublicViewModel>> GetPublicDMMOApplicationsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? ApplicationTypeId,
@@ -61,7 +66,10 @@ namespace CSIDE.Data.Services
         DateOnly? ApplicationDateTo,
         DateOnly? ReceivedDateFrom,
         DateOnly? ReceivedDateTo,
-        int MaxResults = 1000,
+        string? OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IDMMOService.DefaultPageSize,
         CancellationToken ct = default);
     }
 }

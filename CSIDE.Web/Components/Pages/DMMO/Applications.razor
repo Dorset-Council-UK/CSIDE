@@ -9,13 +9,15 @@
 
 <h1>@localizer["Search Results Title"]</h1>
 
-@if(IsBusy){
-    <p class="fs-4">
-        <div class="spinner-border" role="status"></div> @localizer["Loading Text"]
-    </p>
-}
+<DMMOApplicationList ParishIds = "@ParishIds"
+                     ParishId = "@ParishId"
+                     ApplicationTypeId = "@ApplicationTypeId"
+                     ApplicationCaseStatusId = "@ApplicationCaseStatusId"
+                     ApplicationClaimedStatusId = "@ApplicationClaimedStatusId"
+                     Location = "@Location" 
+                     ApplicationDateFrom = "@ApplicationDateFrom"
+                     ApplicationDateTo = "@ApplicationDateTo"
+                     ReceivedDateFrom = "@ReceivedDateFrom"
+                     ReceivedDateTo = "@ReceivedDateTo"
+                     IsPublic="@IsPublic"></DMMOApplicationList>
 
-@if(SearchResults is not null)
-{
-    <DMMOApplicationList DMMOApplications="SearchResults" MaxResults="@MaxResults"></DMMOApplicationList>    
-}

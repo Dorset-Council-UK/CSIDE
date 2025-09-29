@@ -1,17 +1,31 @@
 ﻿using CSIDE.Data.Extensions;
 using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace CSIDE.Data.Services;
 
 public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> contextFactory, IOptions<CSIDEOptions> csideOptions) : IMaintenanceJobsService
 {
+    // Dictionary to map sort strings to property expressions for better performance
+    private static readonly Dictionary<string, Expression<Func<Job, object>>> SortExpressions = new()
+    {
+        { "Id", x => x.Id },
+        { "RouteId", x => x.RouteId },
+        { "LogDate", x => x.LogDate ?? Instant.MinValue },
+        { "Parish", x => x.Parish.Name ?? string.Empty },
+        { "JobPriority", x => x.JobPriority.SortOrder },
+        { "JobStatus", x=> x.JobStatus.Description }
+    };
+
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -29,7 +43,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobsBySearchParameters(
+    public async Task<PagedResult<Job>> GetMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,
@@ -41,10 +55,15 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        int MaxResults = 1000,
+        string? OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IMaintenanceJobsService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
+        var take = PageSize < 1 ? IMaintenanceJobsService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.MaintenanceJobs.AsQueryable();
 
         if (RouteId is not null)
@@ -105,7 +124,38 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
         }
 
-        return await query.OrderByDescending(j => j.LogDate).Take(MaxResults).ToListAsync();
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<Job>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+    }
+
+    private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
+        }
+
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
     }
 
     public async Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
@@ -402,7 +452,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return job.ToPublicViewModel(csideOptions.Value.IDPrefixes.Maintenance);
     }
 
-    public async Task<IReadOnlyCollection<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
+    public async Task<PagedResult<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,
@@ -414,12 +464,39 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        int MaxResults = 1000,
+        string OrderBy = "Id",
+        ListSortDirection OrderDirection = ListSortDirection.Descending,
+        int PageNumber = 1,
+        int PageSize = IMaintenanceJobsService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var jobs = await GetMaintenanceJobsBySearchParameters(RouteId,ParishIds,ParishId,AssignedToTeamId,JobPriorityId,IsComplete,JobStatusId,LogDateFrom,LogDateTo,CompletedDateFrom,CompletedDateTo, 1000, ct).ConfigureAwait(false);
+        var jobs = await GetMaintenanceJobsBySearchParameters(RouteId,
+                                                              ParishIds,
+                                                              ParishId,
+                                                              AssignedToTeamId,
+                                                              JobPriorityId,
+                                                              IsComplete,
+                                                              JobStatusId,
+                                                              LogDateFrom,
+                                                              LogDateTo,
+                                                              CompletedDateFrom,
+                                                              CompletedDateTo,
+                                                              OrderBy,
+                                                              OrderDirection,
+                                                              PageNumber,
+                                                              PageSize,
+                                                              ct).ConfigureAwait(false);
 
-        return jobs?.Select(j => j.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.Maintenance)).ToList();
+        List<JobSimplePublicViewModel> results = [.. jobs.Results.Select(j => j.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.Maintenance))];
+
+        return new PagedResult<JobSimplePublicViewModel>
+        {
+            Results = results,
+            TotalResults = jobs.TotalResults,
+            PageSize = jobs.PageSize,
+            PageNumber = jobs.PageNumber
+        };
+
     }
 
     #endregion
