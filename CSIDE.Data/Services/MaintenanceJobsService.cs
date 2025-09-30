@@ -3,9 +3,16 @@ using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Data.Validators.DMMO;
+using CSIDE.Data.Validators.Maintenance;
 using CSIDE.Shared.Options;
+using CSIDE.Shared.Properties;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NetTopologySuite.Geometries;
 using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
@@ -13,7 +20,13 @@ using System.Linq.Expressions;
 
 namespace CSIDE.Data.Services;
 
-public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> contextFactory, IOptions<CSIDEOptions> csideOptions) : IMaintenanceJobsService
+public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> contextFactory,
+                                    IOptions<CSIDEOptions> csideOptions,
+                                    IRightsOfWayService rightsOfWayService,
+                                    ISharedDataService sharedDataService,
+                                    IGovNotifyEmailSender emailSender,
+                                    IStringLocalizer<Resources> localizer,
+                                    ILogger<MaintenanceJobsService> logger) : IMaintenanceJobsService
 {
     // Dictionary to map sort strings to property expressions for better performance
     private static readonly Dictionary<string, Expression<Func<Job, object>>> SortExpressions = new()
@@ -499,5 +512,198 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     }
 
+    public async Task<JobPublicViewModel?> CreateMaintenanceJobFromPublic(JobPublicCreateModel model, CancellationToken ct = default)
+    {
+        try
+        {
+            // 1. Initialize and validate job
+            var job = await InitializeJobFromModel(model, ct);
+
+            var validator = new JobValidator(contextFactory, localizer, this, rightsOfWayService);
+            var validationResult = await validator.ValidateAsync(job, ct);
+            if (!validationResult.IsValid)
+            {
+                logger.LogWarning("Validation failed for public maintenance job creation: {ValidationErrors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                throw new ValidationException("Validation failed for maintenance job creation", validationResult.Errors);
+            }
+
+            // 2. Create the job
+            var createdJob = await CreateMaintenanceJob(job, [], ct).ConfigureAwait(false);
+
+            // 3. Handle contacts
+            await ProcessContactDetails(createdJob, model, ct);
+
+            // 4. Return result
+            return createdJob.ToPublicViewModel(csideOptions.Value.IDPrefixes.Maintenance);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception occurred while creating public maintenance job");
+            throw;
+        }
+    }
+
+    private async Task<Job> InitializeJobFromModel(JobPublicCreateModel model, CancellationToken ct)
+    {
+        var reportedPoint = new Point(model.Easting, model.Northing) { SRID = 27700 };
+        var nearestRoute = await rightsOfWayService.GetNearestRoute(reportedPoint, 50, ct);
+        var jobStatuses = await GetMaintenanceJobStatuses(ct);
+        var jobPriorities = await GetMaintenanceJobPriorities(ct);
+
+        return new Job
+        {
+            RouteId = nearestRoute?.RouteCode,
+            ProblemDescription = model.ProblemDescription,
+            LoggedByName = "Public",
+            JobStatusId = jobStatuses?.FirstOrDefault()?.Id,
+            JobPriorityId = jobPriorities?.FirstOrDefault()?.Id,
+            Geom = reportedPoint
+        };
+    }
+
+    private async Task ProcessContactDetails(Job createdJob, JobPublicCreateModel model, CancellationToken ct)
+    {
+        if (HasReporterContact(model))
+        {
+            await ProcessReporterContact(createdJob, model, ct);
+        }
+
+        if (HasLandownerContact(model))
+        {
+            await ProcessLandownerContact(createdJob, model, ct);
+        }
+    }
+
+    private static bool HasReporterContact(JobPublicCreateModel model) =>
+        !string.IsNullOrEmpty(model.ContactName) ||
+        !string.IsNullOrEmpty(model.ContactEmail) ||
+        !string.IsNullOrEmpty(model.ContactPrimaryNo) ||
+        !string.IsNullOrEmpty(model.ContactSecondaryNo) ||
+        !string.IsNullOrEmpty(model.ContactOrganisationName);
+
+    private static bool HasLandownerContact(JobPublicCreateModel model) =>
+        !string.IsNullOrEmpty(model.LandownerName) ||
+        !string.IsNullOrEmpty(model.LandownerEmail) ||
+        !string.IsNullOrEmpty(model.LandownerPrimaryNo) ||
+        !string.IsNullOrEmpty(model.LandownerSecondaryNo) ||
+        !string.IsNullOrEmpty(model.LandownerOrganisationName);
+
+    private async Task ProcessReporterContact(Job createdJob, JobPublicCreateModel model, CancellationToken ct)
+    {
+        var contactTypeId = await GetContactTypeId("Reporter", ct);
+        if (contactTypeId is null)
+        {
+            logger.LogWarning("Reporter Contact Type could not be found in Contact Types table. Reporter details not recorded for {maintJobId}", createdJob.Id);
+            return;
+        }
+
+        var reporter = CreateContact(model.ContactName, model.ContactEmail,
+            model.ContactPrimaryNo, model.ContactSecondaryNo,
+            model.ContactOrganisationName, contactTypeId);
+
+        await AddContactToJob(createdJob, reporter, ct).ConfigureAwait(false);
+
+        if (!string.IsNullOrEmpty(model.ContactEmail))
+        {
+            await HandleReporterEmailNotifications(model, createdJob, ct);
+        }
+    }
+
+    private async Task ProcessLandownerContact(Job createdJob, JobPublicCreateModel model, CancellationToken ct)
+    {
+        var contactTypeId = await GetContactTypeId("Landowner", ct);
+        if (contactTypeId is null)
+        {
+            logger.LogWarning("Landowner Contact Type could not be found in Contact Types table. Landowner details not recorded for {maintJobId}", createdJob.Id);
+            return;
+        }
+
+        var landowner = CreateContact(model.LandownerName, model.LandownerEmail,
+            model.LandownerPrimaryNo, model.LandownerSecondaryNo,
+            model.LandownerOrganisationName, contactTypeId);
+
+        await AddContactToJob(createdJob, landowner, ct).ConfigureAwait(false);
+    }
+
+    private async Task<int?> GetContactTypeId(string contactTypeName, CancellationToken ct)
+    {
+        var contactTypes = await sharedDataService.GetContactTypeOptions(ct);
+        return contactTypes.FirstOrDefault(ct => ct.Name.Equals(contactTypeName, StringComparison.OrdinalIgnoreCase))?.Id;
+    }
+
+    private static Contact CreateContact(string? name, string? email, string? primaryNo,
+        string? secondaryNo, string? orgName, int? contactTypeId)
+    {
+        return new Contact
+        {
+            Name = name,
+            Email = email,
+            PrimaryContactNo = primaryNo,
+            SecondaryContactNo = secondaryNo,
+            OrganisationName = orgName,
+            ContactTypeId = contactTypeId
+        };
+    }
+
+    private async Task HandleReporterEmailNotifications(JobPublicCreateModel model, Job createdJob, CancellationToken ct)
+    {
+        try
+        {
+            // Send notification email
+            var emailSent = await emailSender.SendMaintenanceJobLoggedNotificationEmail(
+                model.ContactEmail!, createdJob.Id, model.ReceiveUpdates);
+
+            if (!emailSent)
+            {
+                logger.LogWarning("Failed to send maintenance job logged notification email to {email} for maintenance job {maintJobId}",
+                    model.ContactEmail, createdJob.Id);
+            }
+
+            // Handle subscription signup
+            if (model.ReceiveUpdates)
+            {
+                var signUpSuccess = await SignUpUserToMaintenanceJobUpdates(
+                    createdJob.Id, model.ContactEmail!, false, ct).ConfigureAwait(false);
+
+                if (!signUpSuccess)
+                {
+                    logger.LogWarning("Failed to sign up {email} to updates for maintenance job {maintJobId}",
+                        model.ContactEmail, createdJob.Id);
+                }
+            }
+        }catch(Exception ex)
+        {
+            logger.LogError(ex, "An error occurred processing the email notificatons for a new job");
+        }
+    }
+
+    public async Task<bool> SignUpUserToMaintenanceJobUpdates(int jobId, string email, bool withNotification = false, CancellationToken ct = default)
+    {
+        //TODO implement
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        try
+        {
+            var sub = new JobSubscriber
+            {
+                JobId = jobId,
+                EmailAddress = email
+            };
+            context.MaintenanceJobSubscribers.Add(sub);
+            await context.SaveChangesAsync(ct).ConfigureAwait(false);
+            if (withNotification)
+            {
+                //send confirmation email
+                await emailSender.SendMaintenanceJobSignUpConfirmationEmail(email, jobId, sub.UnsubscribeToken);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "There was an error signing {email} up to maintenance job {jobId} update emails", email, jobId);
+            return false;
+        }
+    }
     #endregion
 }

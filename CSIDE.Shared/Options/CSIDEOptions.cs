@@ -12,6 +12,7 @@ public record CSIDEOptions
     public required AzureBlobStorageOptions AzureBlobStorage { get; init; }
     public required KeyVaultOptions KeyVault { get; init; }
     public required GovNotifySettings GovNotify { get; init; }
+    public required ApiKeyAuthenticationOptions ApiKeyAuthentication { get; init; }
     public ThemeOptions Theme { get; init; } = new();
 
     public string AppName { get; init; } = "CSIDE";
@@ -19,4 +20,6 @@ public record CSIDEOptions
     public string PathBase { get; init; } = "";
     public bool UseHttpsRedirection { get; init; }
     public string LandownerDepositsPublicRegisterURL { get; init; } = "";
+    public string PublicMaintenanceJobURL { get; init; } = "";
+    public string PublicUnsubscribeURL { get; init; } = "";
 }

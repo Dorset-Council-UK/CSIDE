@@ -15,6 +15,7 @@ internal static class OpenApiExtensions
             services.AddOpenApi(versionInfo.DocumentName, options =>
             {
                 options.AddDocumentTransformer(new DocumentTransformer(versionInfo.Version));
+                options.AddOperationTransformer<SecurityOperationTransformer>();
             });
         }
     }
@@ -33,6 +34,7 @@ internal static class OpenApiExtensions
             {
                 swaggerOptions.SwaggerEndpoint($"{pathBase}openapi/{versionInfo.DocumentName}.json", $"CSIDE API | {versionInfo.DocumentName}");
             }
+            
         });
     }
 }

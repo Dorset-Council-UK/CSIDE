@@ -85,6 +85,11 @@
                     throw new ValidationException(localizer["File Too Large Upload Error", MaxFileSizeMB, file.Name]);
                 }
 
+                if (!MediaConstants.AllowedFileTypes.Contains(file.ContentType.ToLower()))
+                {
+                    throw new ValidationException(localizer["File Type Not Allowed Error", file.ContentType, file.Name]);
+                }
+
                 var fileRequest = new FileUploadRequest
                 {
                     FileName = file.Name,

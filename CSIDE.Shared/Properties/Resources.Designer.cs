@@ -2293,6 +2293,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File type &apos;{0}&apos; is not allowed.
+        /// </summary>
+        public static string File_Type_Not_Allowed_Error {
+            get {
+                return ResourceManager.GetString("File Type Not Allowed Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Find bridge by ID.
         /// </summary>
         public static string Find_Bridge_By_ID_Title {

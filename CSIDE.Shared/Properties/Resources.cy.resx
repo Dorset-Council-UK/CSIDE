@@ -1751,4 +1751,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="View All Label" xml:space="preserve">
     <value>Gweld y cyfan</value>
   </data>
+  <data name="File Type Not Allowed Error" xml:space="preserve">
+    <value>Ni chaniateir ffeil o'r math '{0}'</value>
+  </data>
 </root>

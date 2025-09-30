@@ -29,6 +29,7 @@ namespace CSIDE.Data
         public DbSet<JobMedia> MaintenanceJobMedia { get; set; }
         public DbSet<JobInfrastructure> MaintenanceJobInfrastructure { get; set; }
         public DbSet<JobProblemType> MaintenanceJobProblemTypes { get; set; }
+        public DbSet<JobSubscriber> MaintenanceJobSubscribers { get; set; }
 
         public DbSet<Models.RightsOfWay.Route> Routes { get; set; }
         public DbSet<Statement> Statements { get; set; }

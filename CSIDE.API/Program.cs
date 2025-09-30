@@ -1,6 +1,12 @@
+using CSIDE.API.Authorization;
+using CSIDE.API.Services;
 using CSIDE.Data.Services;
 using CSIDE.Shared.Options;
+using CSIDE.Shared.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using NetTopologySuite.IO.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,11 +33,46 @@ builder
 
 // Services from data project
 builder.Services.AddHttpClient(); // needed for PlacesSearchService
+builder.Services.AddMemoryCache();
+builder.Services.AddLocalization();
+builder.Services.AddGovNotify(builder.Configuration);
+
 builder.Services.AddScoped<IDMMOService, DMMOService>();
 builder.Services.AddScoped<ILandownerDepositService, LandownerDepositService>();
 builder.Services.AddScoped<IMaintenanceJobsService, MaintenanceJobsService>();
+builder.Services.AddScoped<IRightsOfWayService, RightsOfWayService>();
 builder.Services.AddScoped<IPlacesSearchService, PlacesSearchService>();
 builder.Services.AddScoped<IPPOService, PPOService>();
+builder.Services.AddScoped<ISharedDataService, SharedDataService>();
+builder.Services.AddScoped<IGovNotifyEmailSender, GovNotifyEmailSender>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+//file size limits
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 50 * 1024 * 1024;
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50 MB
+});
+
+//auth
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiKeyPolicy", policy =>
+    {
+        policy.AddAuthenticationSchemes(ApiKeyAuthenticationHandler.SchemeName);
+        policy.RequireAuthenticatedUser();
+    });
+});
+
+builder.Services
+    .AddAuthentication()
+    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+        ApiKeyAuthenticationHandler.SchemeName, null);
 
 // json serializer options
 builder.Services.Configure<JsonOptions>(options =>
@@ -59,9 +100,9 @@ if (options is not null && options.UseHttpsRedirection)
 {
     app.UseHttpsRedirection();
 }
-
 app.UseStaticFiles();
 
+app.UseStatusCodePages();
 // Map health checks
 app.MapApiHealthChecks();
 

@@ -134,4 +134,6 @@ public interface IMaintenanceJobsService
         int PageNumber = 1,
         int PageSize = DefaultPageSize,
         CancellationToken ct = default);
+
+    Task<JobPublicViewModel?> CreateMaintenanceJobFromPublic(JobPublicCreateModel model, CancellationToken ct = default);
 }

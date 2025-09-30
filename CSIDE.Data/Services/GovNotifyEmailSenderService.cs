@@ -9,11 +9,12 @@ namespace CSIDE.Data.Services;
 
 public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                             NotificationClient notificationClient,
-                            IOptions<GovNotifySettings> options,
+                            IOptions<GovNotifySettings> govNotifySettings,
+                            IOptions<CSIDEOptions> csideOptions,
                             IUserService userService,
                             IDbContextFactory<ApplicationDbContext> contextFactory) : IGovNotifyEmailSender
 {
-    private readonly GovNotifyTemplates _templates = options.Value.Templates;
+    private readonly GovNotifyTemplates _templates = govNotifySettings.Value.Templates;
 
     /// <summary>
     ///     <para>Send a confirmation link to the user via GovNotify.</para>
@@ -68,6 +69,52 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
         {
             logger.LogError(ex, "There was an error sending notification emails for bridge surveys");
         }     
+    }
+
+    /// <summary>
+    /// Sends a notification email to the user who logged a maintenance job.
+    /// </summary>
+    /// <param name="email">The email address to send the notification to</param>
+    /// <param name="jobId">The newly created maintenance job ID</param>
+    /// <param name="receiveUpdates">Whether the user has chosen to sign up to receive updates</param>
+    /// <returns></returns>
+    public async Task<bool> SendMaintenanceJobLoggedNotificationEmail(string email, int jobId, bool receiveUpdates)
+    {
+        var maintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{jobId}";
+        var publicReportUrl = $"{csideOptions.Value.PublicMaintenanceJobURL}{jobId}";
+        var personalisation = new Dictionary<string, dynamic>(StringComparer.CurrentCulture)
+            {
+                { "problemID", maintRefNo },
+                { "problemReportURL", publicReportUrl },
+                { "updates", receiveUpdates ? "yes" : "no" },
+            };
+        // Send the email
+        await SendEmail(email, _templates.NewMaintenanceJobCreated, personalisation).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Sends a confirmation email to the user who has signed up to maintenance job updates.
+    /// </summary>
+    /// <param name="email">The email address to send the notification to</param>
+    /// <param name="jobId">The maintenance job ID</param>
+    /// <param name="unsubscribeToken">The unsubscribe token used to uniquely identify this users subscription</param>
+    /// <returns></returns>
+    public async Task<bool> SendMaintenanceJobSignUpConfirmationEmail(string email, int jobId, Guid unsubscribeToken)
+    {
+        var maintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{jobId}";
+        var publicReportUrl = $"{csideOptions.Value.PublicMaintenanceJobURL}{jobId}";
+        var publicUnsubscribeUrl = $"{csideOptions.Value.PublicUnsubscribeURL}{unsubscribeToken}";
+        var personalisation = new Dictionary<string, dynamic>(StringComparer.CurrentCulture)
+            {
+                { "problemID", maintRefNo },
+                { "problemReportURL", publicReportUrl },
+                { "unsubURL", publicUnsubscribeUrl },
+            };
+
+        // Send the email
+        await SendEmail(email, _templates.NewMaintenanceSubscription, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        return true;
     }
 
     /// <summary>

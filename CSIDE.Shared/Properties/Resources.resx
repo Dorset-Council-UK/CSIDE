@@ -1740,4 +1740,7 @@
   <data name="View All Label" xml:space="preserve">
     <value>View all</value>
   </data>
+  <data name="File Type Not Allowed Error" xml:space="preserve">
+    <value>File type '{0}' is not allowed</value>
+  </data>
 </root>

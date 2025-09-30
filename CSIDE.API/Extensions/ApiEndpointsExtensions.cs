@@ -118,5 +118,20 @@ internal static class ApiEndpointsExtensions
             .MapGet("/search", MaintenanceJobEndpoints.GetMaintenanceJobsBySearchParameters)
             .WithSummary("Maintenance Jobs - search")
             .WithDescription("Search for maintenance jobs based on various parameters");
+
+        //create new maintenance job - secured endpoint
+        group
+            .MapPost("/create", MaintenanceJobEndpoints.CreateMaintenanceJob)
+            .RequireAuthorization("ApiKeyPolicy")
+            .WithSummary("Create Maintenance Job")
+            .WithDescription("Create a new maintenance job - key required");
+
+        group
+            .MapPost("/add-media/{id}", MaintenanceJobEndpoints.AddMediaToJob)
+            .RequireAuthorization("ApiKeyPolicy")
+            .WithSummary("Add Media to Job")
+            .WithDescription("Add a file to a maintenance job")
+            .DisableAntiforgery();
+
     }
 }
