@@ -10,15 +10,19 @@
     @if(Media.Format == MediaType.Image)
     {
         <div class="card my-2 bg-light">
-            <a href="@Media.URL" class="blueimp-img">
-                <img src="@Media.URL" class="img-fluid" />
+            <a href="@GetImageUrlWithCacheBuster()" class="blueimp-img">
+                <img src="@GetImageUrlWithCacheBuster()" class="img-fluid" style="@(_isRotating ? "opacity: 0.5;" : "")" />
             </a>
             <div class="card-body">
                 @if (IsEditable)
                 {
-                    <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="DeleteMedia"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Counter Clockwise Label"]"><i class="bi bi-arrow-counterclockwise"></i></button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Clockwise Label"]"><i class="bi bi-arrow-clockwise"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-danger me-2" @onclick="DeleteMedia" disabled="@_isRotating"><i class="bi bi-trash"></i> @localizer["Delete Label"]</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Counter Clockwise Label"]" @onclick="() => RotateImage(-90)" disabled="@_isRotating">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Rotate Clockwise Label"]" @onclick="() => RotateImage(90)" disabled="@_isRotating">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
                 }
                 <a href="@Media.URL" download target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="@localizer["Download Label"]"><i class="bi bi-cloud-arrow-down"></i></a>
                 <div class="mt-2 pt-2 border-1 border-top">
@@ -94,6 +98,17 @@
     [Parameter]
     public EventCallback OnRefreshComponent{ get; set; }
 
+    private long _cacheBuster = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    private bool _isRotating = false;
+
+    private string GetImageUrlWithCacheBuster()
+    {
+        if (Media?.URL == null) return string.Empty;
+        
+        var separator = Media.URL.Contains('?') ? "&" : "?";
+        return $"{Media.URL}{separator}v={_cacheBuster}";
+    }
+
     private async Task DeleteMedia()
     {
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Media Confirmation"].Value);
@@ -113,6 +128,44 @@
             {
                 logger.LogError(ex, "An error occurred deleting a media item");
             }
+        }
+    }
+
+    private async Task RotateImage(int degrees)
+    {
+        _isRotating = true;
+        StateHasChanged();
+        
+        try
+        {
+            var success = await sharedDataService.RotateMediaImage(Media.Id, degrees);
+            
+            if (success)
+            {
+                // Update cache buster to force image reload
+                _cacheBuster = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                
+                // Refresh the component to show the rotated image
+                if (OnRefreshComponent.HasDelegate)
+                {
+                    await OnRefreshComponent.InvokeAsync();
+                }
+            }
+            else
+            {
+                logger.LogWarning("Failed to rotate image for media item {MediaId}", Media.Id);
+                await JS.InvokeVoidAsync("alert", "Failed to rotate image. Please try again.");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred rotating a media item");
+            await JS.InvokeVoidAsync("alert", "An error occurred while rotating the image. Please try again.");
+        }
+        finally
+        {
+            _isRotating = false;
+            StateHasChanged();
         }
     }
 }

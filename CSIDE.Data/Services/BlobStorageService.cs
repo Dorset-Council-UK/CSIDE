@@ -68,6 +68,39 @@ public class BlobStorageService : IBlobStorageService
         return await DeleteFileFromBlobAsync(fileName).ConfigureAwait(false);
     }
 
+    public async Task<Stream?> DownloadFileFromBlobByURLAsync(string url)
+    {
+        var container = await GetContainer().ConfigureAwait(false);
+        if (container is null)
+        {
+            return null;
+        }
+
+        var uri = new Uri(url);
+        var fileName = uri.PathAndQuery.Replace($"/{_blobContainerName}/", "", StringComparison.OrdinalIgnoreCase);
+
+        try
+        {
+            var blob = container.GetBlobClient(fileName);
+            
+            if (!await blob.ExistsAsync().ConfigureAwait(false))
+            {
+                _logger.LogWarning("Blob {FileName} does not exist in container {BlobContainerName}.", fileName, _blobContainerName);
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            await blob.DownloadToAsync(memoryStream).ConfigureAwait(false);
+            memoryStream.Position = 0;
+            return memoryStream;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred downloading blob {FileName} from container {BlobContainerName}", fileName, _blobContainerName);
+            throw;
+        }
+    }
+
     public async Task<string> UploadFileToBlobAsync(string fileName, string contentType, Stream fileStream)
     {
         var container = await GetContainer().ConfigureAwait(false);

@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
-
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace CSIDE.Data.Services
 {
@@ -141,6 +142,59 @@ namespace CSIDE.Data.Services
                 .SqlQueryRaw<PointGeometryResult>(sql, x, y, fromCrs, toCrs)
                 .FirstOrDefaultAsync(ct)
                 .ConfigureAwait(false);
+        }
+
+        public async Task<bool> RotateMediaImage(int mediaItemId, int rotationDegrees, CancellationToken ct = default)
+        {
+            try
+            {
+                await using var context = await contextFactory.CreateDbContextAsync(ct);
+                var mediaItem = await context.Media.Where(m => m.Id == mediaItemId).FirstOrDefaultAsync(ct);
+                
+                if (mediaItem is null)
+                {
+                    logger.LogWarning("Media item with ID {MediaItemId} not found", mediaItemId);
+                    return false;
+                }
+
+                // Download the image from blob storage
+                var imageStream = await blobStorageService.DownloadFileFromBlobByURLAsync(mediaItem.URL);
+                if (imageStream is null)
+                {
+                    logger.LogWarning("Failed to download image from blob storage for media item {MediaItemId}", mediaItemId);
+                    return false;
+                }
+
+                // Load and rotate the image
+                using var image = await Image.LoadAsync(imageStream, ct);
+                imageStream.Dispose();
+
+                // Rotate the image based on degrees
+                image.Mutate(x => x.Rotate(rotationDegrees));
+
+                // Save rotated image to a memory stream
+                using var rotatedStream = new MemoryStream();
+                await image.SaveAsJpegAsync(rotatedStream, ct);
+                rotatedStream.Position = 0;
+
+                // Upload the rotated image back to blob storage (this will overwrite the existing image)
+                var uri = new Uri(mediaItem.URL);
+                var fileName = uri.PathAndQuery.Replace($"/{blobStorageService.GetType().Name}/", "", StringComparison.OrdinalIgnoreCase);
+                
+                // Extract just the filename from the URL
+                var segments = uri.Segments;
+                fileName = segments[^1]; // Get the last segment (filename)
+
+                await blobStorageService.UploadFileToBlobAsync(fileName, "image/jpeg", rotatedStream);
+
+                logger.LogInformation("Successfully rotated media item {MediaItemId} by {RotationDegrees} degrees", mediaItemId, rotationDegrees);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred rotating media item {MediaItemId}", mediaItemId);
+                return false;
+            }
         }
     }
 }
