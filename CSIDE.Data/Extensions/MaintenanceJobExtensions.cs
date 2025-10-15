@@ -24,7 +24,7 @@ namespace CSIDE.Data.Extensions
                 Parish = job.Parish?.Name,
                 Geom = job.Geom,
                 ProblemTypes = [.. job.ProblemTypes.Where(p => p.ProblemType != null).Select(p => p.ProblemType!.Name)],
-                Comments = [.. job.Comments.OrderByDescending(c => c.CreatedAt).Select(c => new CommentPublicViewModel()
+                Comments = [.. job.Comments.OrderByDescending(c => c.CreatedAt).Where(c => c.IsPublic == true).Select(c => new CommentPublicViewModel()
                 {
                     CommentText = c.CommentText,
                     CommentDate = c.CreatedAt.InUtc().LocalDateTime.Date.ToDateOnly(),

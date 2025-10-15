@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.Surveys;
+﻿using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.Surveys;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -109,13 +110,88 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
             {
                 { "problemID", maintRefNo },
                 { "problemReportURL", publicReportUrl },
-                { "unsubURL", publicUnsubscribeUrl },
+                { "unsubscribeURL", publicUnsubscribeUrl },
             };
 
         // Send the email
         await SendEmail(email, _templates.NewMaintenanceSubscription, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
         return true;
     }
+
+    public async Task<bool> SendMaintenanceJobCompletedNotificationEmail(string email, int jobId, string workDone, Guid unsubscribeToken)
+    {
+        var maintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{jobId}";
+        var publicReportUrl = $"{csideOptions.Value.PublicMaintenanceJobURL}{jobId}";
+        var publicUnsubscribeUrl = $"{csideOptions.Value.PublicUnsubscribeURL}{unsubscribeToken}";
+        var personalisation = new Dictionary<string, dynamic>(StringComparer.CurrentCulture)
+            {
+                { "problemID", maintRefNo },
+                { "workDone",workDone },
+                { "problemReportURL", publicReportUrl },
+                { "unsubscribeURL", publicUnsubscribeUrl },
+            };
+
+        // Send the email
+        await SendEmail(email, _templates.MaintenanceJobCompleted, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        return true;
+    }
+
+    public async Task<bool> SendMaintenanceJobDuplicateNotificationEmail(string email, int jobId, int duplicateJobId, Guid unsubscribeToken)
+    {
+        var maintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{jobId}";
+        var duplicateMaintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{duplicateJobId}";
+        var publicReportUrl = $"{csideOptions.Value.PublicMaintenanceJobURL}{duplicateJobId}";
+        var publicUnsubscribeUrl = $"{csideOptions.Value.PublicUnsubscribeURL}{unsubscribeToken}";
+        var personalisation = new Dictionary<string, dynamic>(StringComparer.CurrentCulture)
+            {
+                { "problemID", maintRefNo },
+                { "duplicateProblemID", duplicateMaintRefNo },
+                { "problemReportURL", publicReportUrl },
+                { "unsubscribeURL", publicUnsubscribeUrl },
+            };
+
+        // Send the email
+        await SendEmail(email, _templates.MaintenanceJobDuplicate, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        return true;
+    }
+
+    public async Task<bool> SendMaintenanceJobUpdatedNotificationEmail(string email, int jobId, JobStatus newStatus, Guid unsubscribeToken)
+    {
+        var maintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{jobId}";
+        var publicReportUrl = $"{csideOptions.Value.PublicMaintenanceJobURL}{jobId}";
+        var publicUnsubscribeUrl = $"{csideOptions.Value.PublicUnsubscribeURL}{unsubscribeToken}";
+        var personalisation = new Dictionary<string, dynamic>(StringComparer.CurrentCulture)
+            {
+                { "problemID", maintRefNo },
+                { "newStatus", newStatus.Description },
+                { "newStatusDetails",newStatus.FriendlyDescription },
+                { "problemReportURL", publicReportUrl },
+                { "unsubscribeURL", publicUnsubscribeUrl },
+            };
+
+        // Send the email
+        await SendEmail(email, _templates.MaintenanceJobUpdated, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        return true;
+    }
+
+    public async Task<bool> SendMaintenanceCommentAddedNotificationEmail(string email, int jobId, string comment, Guid unsubscribeToken)
+    {
+        var maintRefNo = $"{csideOptions.Value.IDPrefixes.Maintenance}{jobId}";
+        var publicReportUrl = $"{csideOptions.Value.PublicMaintenanceJobURL}{jobId}";
+        var publicUnsubscribeUrl = $"{csideOptions.Value.PublicUnsubscribeURL}{unsubscribeToken}";
+        var personalisation = new Dictionary<string, dynamic>(StringComparer.CurrentCulture)
+            {
+                { "problemID", maintRefNo },
+                { "comment", comment },
+                { "problemReportURL", publicReportUrl },
+                { "unsubscribeURL", publicUnsubscribeUrl },
+            };
+
+        // Send the email
+        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        return true;
+    }
+
 
     /// <summary>
     ///     <para>Send an email to the specified email address via GovNotify.</para>

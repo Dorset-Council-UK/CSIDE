@@ -16,4 +16,24 @@ public record GovNotifyTemplates
     /// GovNotify template Id for confirming a new maintenance subscription
     /// </summary>
     public required string NewMaintenanceSubscription { get; init; }
+
+    /// <summary>
+    /// GovNotify template Id for notifying about an update to the status of a maintenance job
+    /// </summary>
+    public required string MaintenanceJobUpdated { get; init; }
+
+    /// <summary>
+    /// GovNotify template Id for notifying a maintenance job being marked as a duplicate
+    /// </summary>
+    public required string MaintenanceJobDuplicate { get; init; }
+
+    /// <summary>
+    /// GovNotify template Id for notifying about a maintenance job being completed
+    /// </summary>
+    public required string MaintenanceJobCompleted { get; init; }
+
+    /// <summary>
+    /// GovNotify template Id for notifying about a new public comment being added to a maintenance job
+    /// </summary>
+    public required string MaintenanceCommentAdded { get; init; }
 }

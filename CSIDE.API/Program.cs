@@ -38,6 +38,7 @@ builder.Services.AddLocalization();
 builder.Services.AddGovNotify(builder.Configuration);
 
 builder.Services.AddScoped<IDMMOService, DMMOService>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
 builder.Services.AddScoped<ILandownerDepositService, LandownerDepositService>();
 builder.Services.AddScoped<IMaintenanceJobsService, MaintenanceJobsService>();
 builder.Services.AddScoped<IRightsOfWayService, RightsOfWayService>();

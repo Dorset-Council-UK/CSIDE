@@ -169,11 +169,13 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Infrastructure
-                .Where(i => i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
-                .OrderBy(i => i.Geom!.Distance(transformedPoint.Geom))
-                .Select(i => new BridgeWithDistance(i, i.Geom!.Distance(transformedPoint.Geom)))
-                .ToArrayAsync(ct)
-                .ConfigureAwait(false);
+            .IgnoreAutoIncludes()
+            .Include(i => i.InfrastructureType)
+            .Where(i => (i.InfrastructureType != null && i.InfrastructureType.IsBridge == true) && i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
+            .OrderBy(i => i.Geom!.Distance(transformedPoint.Geom))
+            .Select(i => new BridgeWithDistance(i, i.Geom!.Distance(transformedPoint.Geom)))
+            .ToArrayAsync(ct)
+            .ConfigureAwait(false);
     }
     public async Task<ICollection<InfrastructureType>> GetInfrastructureTypeOptions(CancellationToken ct = default)
     {

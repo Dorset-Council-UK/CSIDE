@@ -1,9 +1,7 @@
 ﻿using CSIDE.Data.Extensions;
 using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
-using CSIDE.Data.Validators.DMMO;
 using CSIDE.Data.Validators.Maintenance;
 using CSIDE.Shared.Options;
 using CSIDE.Shared.Properties;
@@ -25,6 +23,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
                                     IRightsOfWayService rightsOfWayService,
                                     ISharedDataService sharedDataService,
                                     IGovNotifyEmailSender emailSender,
+                                    INotificationsService notificationsService,
                                     IStringLocalizer<Resources> localizer,
                                     ILogger<MaintenanceJobsService> logger) : IMaintenanceJobsService
 {
@@ -232,9 +231,11 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     public async Task<Job?> UpdateMaintenanceJob(int id, Job job, IList<int> selectedProblemTypes, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var existingJob = await context.MaintenanceJobs.FindAsync([id], ct)
+        var existingJob = await context.MaintenanceJobs.Include(j => j.JobStatus).Where(j => j.Id == id).SingleAsync(ct)
                            ?? throw new Exception($"Maintenance job being edited (ID: {id}) was not found prior to updating");
-
+        //grab the status IDs for notifications
+        var originalStatusId = existingJob.JobStatusId ?? 0;
+        var newStatusId = job.JobStatusId ?? 0;
         // Save the original version for concurrency checking
         uint originalVersion = job.Version;
 
@@ -247,7 +248,14 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
         await UpdateMaintenanceProblemTypes(selectedProblemTypes, job, context);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
-
+        try
+        {
+            await notificationsService.SendMaintenanceJobUpdatedNotifications(id, originalStatusId, newStatusId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred sending maintenance update notifications for job {jobId}", id);
+        }
         return existingJob;
     }
 
@@ -274,6 +282,17 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceComments.Add(comment);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
+        if (comment.IsPublic)
+        {
+            try
+            {
+                await notificationsService.SendMaintenanceCommentNotification(comment.JobId, comment.CommentText ?? string.Empty, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred sending comment notification for comment {commentId} on job {jobId}", comment.Id, comment.JobId);
+            }
+        }
         return comment;
     }
 
@@ -680,7 +699,6 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<bool> SignUpUserToMaintenanceJobUpdates(int jobId, string email, bool withNotification = false, CancellationToken ct = default)
     {
-        //TODO implement
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         try
         {
@@ -706,4 +724,5 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         }
     }
     #endregion
+
 }

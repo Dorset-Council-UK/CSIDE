@@ -37,6 +37,7 @@ builder.Services.AddAutoMapper(typeof(ApplicationDbContext));
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddScoped<IDMMOService, DMMOService>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
 builder.Services.AddScoped<IGovNotifyEmailSender, GovNotifyEmailSender>();
 builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
 builder.Services.AddScoped<ILandownerDepositService, LandownerDepositService>();
