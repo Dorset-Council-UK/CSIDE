@@ -65,8 +65,15 @@ else
                                         </tr>
                                         <tr>
                                             <th>@localizer["Problem Description Label"]</th>
-                                            <td class="text-break comment-field">@Job.ProblemDescription</td>
+                                            <td class="text-break comment-field">@(Job.RedactedProblemDescription ?? Job.ProblemDescription)</td>
                                         </tr>
+                                        @if (!string.IsNullOrEmpty(Job.RedactedProblemDescription))
+                                        {
+                                            <tr>
+                                                <th>@localizer["Problem Description Label"]</th>
+                                                <td class="text-break comment-field">@(Job.ProblemDescription)</td>
+                                            </tr>
+                                        }
                                         <tr>
                                             <th>@localizer["Problem Types Label"]</th>
                                             <td>

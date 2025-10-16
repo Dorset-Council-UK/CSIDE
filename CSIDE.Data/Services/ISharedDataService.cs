@@ -16,5 +16,6 @@ namespace CSIDE.Data.Services
         Task<bool> DeleteMediaItem(int mediaItemId, CancellationToken ct = default);
         Task<PointGeometryResult?> TransformCoordinates(double x, double y, int fromCrs, int toCrs, CancellationToken ct = default);
         Task<bool> RotateMediaImage(int mediaItemId, int rotationDegrees, CancellationToken ct = default);
+        Task<string> RedactPII(string text, CancellationToken ct = default);
     }
 }

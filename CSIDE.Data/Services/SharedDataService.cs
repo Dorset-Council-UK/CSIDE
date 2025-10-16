@@ -1,7 +1,11 @@
-﻿using CSIDE.Data.Models.Shared;
+﻿using Azure;
+using Azure.AI.TextAnalytics;
+using CSIDE.Data.Models.Shared;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -12,8 +16,23 @@ namespace CSIDE.Data.Services
         IDbContextFactory<ApplicationDbContext> contextFactory,
         IBlobStorageService blobStorageService,
         IMemoryCache memoryCache,
+        IOptions<CSIDEOptions> csideOptions,
         ILogger<SharedDataService> logger) : ISharedDataService
     {
+        private static readonly RecognizePiiEntitiesOptions piiEntityOptions = new()
+        {
+            CategoriesFilter =
+                {
+                    PiiEntityCategory.Address,
+                    PiiEntityCategory.CreditCardNumber,
+                    PiiEntityCategory.Email,
+                    PiiEntityCategory.Person,
+                    PiiEntityCategory.PhoneNumber,
+                    PiiEntityCategory.URL,
+                    PiiEntityCategory.Organization,
+                }
+        };
+
         public async Task<IReadOnlyCollection<Parish>> GetParishes(CancellationToken ct = default)
         {
             //TODO - Cache
@@ -194,6 +213,45 @@ namespace CSIDE.Data.Services
             {
                 logger.LogError(ex, "An error occurred rotating media item {MediaItemId}", mediaItemId);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Runs PII detection on the provided text using Azure AI Text Analytics.
+        /// </summary>
+        /// <param name="text">The text to check for PII entities</param>
+        /// <param name="ct"></param>
+        /// <returns>A redacted string, or blank if no redaction has taken place</returns>
+        public async Task<string> RedactPII(string text, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "";
+            }
+            if (csideOptions.Value.AzureAI?.LanguageEndpoint is null || csideOptions.Value.AzureAI?.LanguageApiKey is null)
+            {
+                logger.LogInformation("Azure AI Text Analytics configuration is missing. PII detection skipped");
+                return "";
+            }
+            try
+            {
+                AzureKeyCredential credentials = new(csideOptions.Value.AzureAI.LanguageApiKey);
+                Uri endpoint = new(csideOptions.Value.AzureAI.LanguageEndpoint);
+                var client = new TextAnalyticsClient(endpoint, credentials);
+
+                PiiEntityCollection entities = await client.RecognizePiiEntitiesAsync(text, options: piiEntityOptions, cancellationToken: ct);
+
+                if (entities.Count == 0)
+                {
+                    return "";
+                }
+
+                return entities.RedactedText;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during PII detection");
+                return "";
             }
         }
     }

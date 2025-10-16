@@ -208,6 +208,10 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Job> CreateMaintenanceJob(Job job, IList<int> selectedProblemTypes, CancellationToken ct = default)
     {
+        if (!string.IsNullOrEmpty(job.ProblemDescription))
+        {
+            job.RedactedProblemDescription = await sharedDataService.RedactPII(job.ProblemDescription, ct);
+        }
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobs.Add(job);
 

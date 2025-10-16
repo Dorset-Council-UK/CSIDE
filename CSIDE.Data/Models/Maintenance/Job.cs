@@ -10,6 +10,7 @@ namespace CSIDE.Data.Models.Maintenance
         public int Id { get; set; }
         public Instant? LogDate {  get; set; }
         public string? ProblemDescription { get; set; }
+        public string? RedactedProblemDescription { get; set; }
         public LocalDate? CompletionDate { get; set; }
         public string? WorkDone { get; set; }
         public string? LoggedById { get; set; }
