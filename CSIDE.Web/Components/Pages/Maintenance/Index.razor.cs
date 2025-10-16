@@ -43,6 +43,14 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             {
                 IsBusy = true;
                 JobIDSearchErrorMessage = null;
+                if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance))
+                {
+                    //remove any left in place prefixes
+                    if (JobIDSearch.StartsWith(IDPrefixOptions.Value.Maintenance, StringComparison.OrdinalIgnoreCase))
+                    {
+                        JobIDSearch = JobIDSearch[IDPrefixOptions.Value.Maintenance.Length..].Trim();
+                    }
+                }
                 try
                 {
                     if (int.TryParse(JobIDSearch, CultureInfo.InvariantCulture, out int JobIDSearchInt))

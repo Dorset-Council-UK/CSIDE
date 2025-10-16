@@ -1,11 +1,12 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
 using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.Shared;
-using Microsoft.AspNetCore.Components;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Maintenance;
-using System.Globalization;
+using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
+using Microsoft.AspNetCore.Components;
+using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.Infrastructure
 {
@@ -49,6 +50,14 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 InfrastructureIDSearchErrorMessage = null;
                 try
                 {
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Infrastructure))
+                    {
+                        //remove any left in place prefixes
+                        if (InfrastructureIDSearch.StartsWith(IDPrefixOptions.Value.Infrastructure, StringComparison.OrdinalIgnoreCase))
+                        {
+                            InfrastructureIDSearch = InfrastructureIDSearch[IDPrefixOptions.Value.Infrastructure.Length..].Trim();
+                        }
+                    }
                     if (int.TryParse(InfrastructureIDSearch, CultureInfo.InvariantCulture, out int InfrastructureIDSearchInt))
                     {
                         var infrastructureExists = await infrastructureService.GetInfrastructureItemById(InfrastructureIDSearchInt) is not null;

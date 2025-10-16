@@ -1,6 +1,7 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
@@ -47,6 +48,14 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 DMMOSearchErrorMessage = null;
                 try
                 {
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.DMMO))
+                    {
+                        //remove any left in place prefixes
+                        if (DMMOIDSearch.StartsWith(IDPrefixOptions.Value.DMMO, StringComparison.OrdinalIgnoreCase))
+                        {
+                            DMMOIDSearch = DMMOIDSearch[IDPrefixOptions.Value.DMMO.Length..].Trim();
+                        }
+                    }
                     if (int.TryParse(DMMOIDSearch, CultureInfo.InvariantCulture, out int DMMOIDSearchInt))
                     {
                         var dmmoExists = await dmmoService.GetDMMOApplicationById(DMMOIDSearchInt) is not null;

@@ -57,6 +57,14 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 InfrastructureIDSearchErrorMessage = null;
                 try
                 {
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Infrastructure))
+                    {
+                        //remove any left in place prefixes
+                        if (InfrastructureIDSearch.StartsWith(IDPrefixOptions.Value.Infrastructure, StringComparison.OrdinalIgnoreCase))
+                        {
+                            InfrastructureIDSearch = InfrastructureIDSearch[IDPrefixOptions.Value.Infrastructure.Length..].Trim();
+                        }
+                    }
                     if (int.TryParse(InfrastructureIDSearch, CultureInfo.InvariantCulture, out int InfrastructureIDSearchInt))
                     {
                         var infrastructureExists = await infrastructureService.GetInfrastructureItemById(InfrastructureIDSearchInt) is not null;

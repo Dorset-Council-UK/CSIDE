@@ -80,7 +80,13 @@
                 <ValidationSummary />
                 <div class="mb-3">
                     <label class="form-label" for="infra-id">@localizer["Infrastructure ID Label"]</label>
-                    <InputNumber id="infra-id" class="form-control" @bind-Value="NewJobInfrastructure!.InfrastructureId"></InputNumber>
+                    <div class="input-group mb-3">
+                        @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Infrastructure))
+                        {
+                            <span class="input-group-text" id="infra-id-prefix">@IDPrefixOptions.Value.Infrastructure</span>
+                        }
+                        <InputNumber id="infra-id" class="form-control" @bind-Value="NewJobInfrastructure!.InfrastructureId"></InputNumber>
+                    </div>
                     <ValidationMessage For="() => NewJobInfrastructure.InfrastructureId" />
                 </div>
 

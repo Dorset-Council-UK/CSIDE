@@ -93,7 +93,13 @@
             <div class="mb-3 row">
                 <div class=" col-sm-4 col-md-6 col-lg-4">
                     <label class="form-label" for="duplicate-of-id">@localizer["Duplicate Job ID Label"]</label>
-                    <NumberInput id="duplicate-of-id" class="form-control" @bind-Value="Job.DuplicateJobId"></NumberInput>
+                    <div class="input-group mb-3">
+                        @if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance))
+                        {
+                            <span class="input-group-text" id="job-id-prefix">@IDPrefixOptions.Value.Maintenance</span>
+                        }
+                        <NumberInput id="duplicate-of-id" class="form-control" @bind-Value="Job.DuplicateJobId"></NumberInput>
+                    </div>
                 </div>
                 <ValidationMessage For="() => Job.DuplicateJobId" />
             </div>
