@@ -1754,4 +1754,22 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="File Type Not Allowed Error" xml:space="preserve">
     <value>Ni chaniateir ffeil o'r math '{0}'</value>
   </data>
+  <data name="Redacted Problem Description Help Text Short" xml:space="preserve">
+    <value>Mae'r maes hwn wedi'i olygu'n awtomatig ar gyfer y cyhoedd oherwydd PII neu iaith anweddus</value>
+  </data>
+  <data name="Redacted Problem Description Label" xml:space="preserve">
+    <value>Disgrifiad o'r broblem wedi'i sensro</value>
+  </data>
+  <data name="Redacted Problem Description Help Text Long" xml:space="preserve">
+    <value>Adolygwch y fersiwn wedi'i golygu a phenderfynwch sut i fwrw ymlaen:&lt;ul&gt;&lt;li&gt;Os yw'r golygu yn rhannol, gallwch:&lt;ul&gt;&lt;li&gt;Ei gadw fel y mae, neu&lt;/li&gt;&lt;li&gt;Dileu'r fersiwn wedi'i golygu a diweddaru'r maes Disgrifiad o'r Broblem gyda diwygiad addas.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;Os yw'r golygu wedi'i gwblhau, dylech:&lt;ul&gt;&lt;li&gt;Disodli'r maes Disgrifiad o'r Broblem gyda chrynodeb mwy priodol, a&lt;/li&gt;&lt;li&gt;Dileu'r fersiwn wedi'i golygu.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;</value>
+  </data>
+  <data name="Whats This Label" xml:space="preserve">
+    <value>Beth yw hyn?</value>
+  </data>
+  <data name="Delete Redaction Label" xml:space="preserve">
+    <value>Dileu'r golygiad hwn</value>
+  </data>
+  <data name="Delete Redaction Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod chi eisiau dileu'r golygiad hwn? Bydd y maes Manylion Problem gwreiddiol yn dod yn weladwy i'r cyhoedd. Gwnewch yn siŵr ei fod yn briodol.</value>
+  </data>
 </root>

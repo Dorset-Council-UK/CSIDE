@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Azure.AI.ContentSafety;
 using Azure.AI.TextAnalytics;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
@@ -252,6 +253,43 @@ namespace CSIDE.Data.Services
             {
                 logger.LogError(ex, "An error occurred during PII detection");
                 return "";
+            }
+        }
+
+        public async Task<bool> DoesTextContainProfanity(string text, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return false;
+            }
+
+            if (csideOptions.Value.AzureAI?.ContentSafetyEndpoint is null ||
+                csideOptions.Value.AzureAI?.ContentSafetyApiKey is null)
+            {
+                logger.LogInformation("Azure AI Content Safety configuration is missing. Profanity filtering skipped");
+                return false;
+            }
+
+            try
+            {
+                var credential = new AzureKeyCredential(csideOptions.Value.AzureAI.ContentSafetyApiKey);
+                var endpoint = new Uri(csideOptions.Value.AzureAI.ContentSafetyEndpoint);
+                var client = new ContentSafetyClient(endpoint, credential);
+
+                var request = new AnalyzeTextOptions(text);
+
+                var response = await client.AnalyzeTextAsync(request, ct);
+
+                // Check for hate speech or profanity
+                bool containsProfanity = response.Value.CategoriesAnalysis.Any(c =>
+                    c.Category == TextCategory.Hate && c.Severity >= 2);
+
+                return containsProfanity;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during profanity filtering");
+                return false;
             }
         }
     }

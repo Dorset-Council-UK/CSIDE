@@ -11,7 +11,7 @@ namespace CSIDE.Data.Extensions
                 Id = job.Id,
                 ReferenceNo = $"{maintIdPrefix}{job.Id}",
                 LogDate = job.LogDate!.Value.InUtc().LocalDateTime.Date.ToDateOnly(),
-                ProblemDescription = job.RedactedProblemDescription ?? job.ProblemDescription,
+                ProblemDescription = !string.IsNullOrEmpty(job.RedactedProblemDescription) ? job.RedactedProblemDescription : job.ProblemDescription,
                 CompletionDate = job.CompletionDate?.ToDateOnly(),
                 WorkDone = job.WorkDone,
                 DuplicateJobId = job.DuplicateJobId,
