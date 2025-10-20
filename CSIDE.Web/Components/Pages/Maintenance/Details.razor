@@ -41,6 +41,8 @@ else
 
         <a href="Maintenance/Edit/@Job.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
 
+
+
         <div class="row">
             <div class="col-lg-8">
 
@@ -51,6 +53,12 @@ else
                         
                                 <table class="table table-striped">
                                     <tbody>
+                                        <tr>
+                                            <td colspan="2">
+                                                <JobSubscribersCount>
+                                                </JobSubscribersCount>
+                                            </td>
+                                        </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Job ID Label"]</th>
                                             <td>@IDPrefixOptions.Value.Maintenance@Job.Id</td>
