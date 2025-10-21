@@ -9,6 +9,7 @@ public record CSIDEOptions
     public required IDPrefixOptions IDPrefixes { get; init; }
     public required ApplicationInsightsOptions ApplicationInsights { get; init; }
     public required AzureAdOptions AzureAd { get; init; }
+    public required AzureAIOptions AzureAI { get; init; }
     public required AzureBlobStorageOptions AzureBlobStorage { get; init; }
     public required KeyVaultOptions KeyVault { get; init; }
     public required GovNotifySettings GovNotify { get; init; }

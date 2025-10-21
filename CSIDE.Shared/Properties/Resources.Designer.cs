@@ -1969,6 +1969,24 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this redaction. The original Problem Details field will become visible to the public. Make sure it is appropriate..
+        /// </summary>
+        public static string Delete_Redaction_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Redaction Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete redaction.
+        /// </summary>
+        public static string Delete_Redaction_Label {
+            get {
+                return ResourceManager.GetString("Delete Redaction Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Determination date.
         /// </summary>
         public static string Determination_Date_Label {
@@ -4066,6 +4084,33 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please review the redacted version and decide how to proceed:&lt;ul&gt;&lt;li&gt;If the redaction is partial, you may:&lt;ul&gt;&lt;li&gt;Keep it as-is, or&lt;/li&gt;&lt;li&gt;Remove the redacted version and update the Problem Description field with a suitable revision.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;If the redaction is complete, you should:&lt;ul&gt;&lt;li&gt;Replace the Problem Description field with a more appropriate summary, and&lt;/li&gt;&lt;li&gt;Remove the redacted version.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;.
+        /// </summary>
+        public static string Redacted_Problem_Description_Help_Text_Long {
+            get {
+                return ResourceManager.GetString("Redacted Problem Description Help Text Long", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This field has been automatically redacted for the public due to PII or harmful content.
+        /// </summary>
+        public static string Redacted_Problem_Description_Help_Text_Short {
+            get {
+                return ResourceManager.GetString("Redacted Problem Description Help Text Short", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redacted problem description.
+        /// </summary>
+        public static string Redacted_Problem_Description_Label {
+            get {
+                return ResourceManager.GetString("Redacted Problem Description Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redraw.
         /// </summary>
         public static string Redraw_Label {
@@ -4890,6 +4935,15 @@ namespace CSIDE.Shared.Properties {
         public static string Welcome_Text {
             get {
                 return ResourceManager.GetString("Welcome Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What&apos;s this?.
+        /// </summary>
+        public static string Whats_This_Label {
+            get {
+                return ResourceManager.GetString("Whats This Label", resourceCulture);
             }
         }
         

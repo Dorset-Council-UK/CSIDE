@@ -109,7 +109,7 @@ public interface IMaintenanceJobsService
     /// Adds a contact to a maintenance job.
     /// </summary>
     Task<JobContact> AddContactToJob(Job job, Contact contact, CancellationToken ct = default);
-
+    Task<Job> RemoveRedactionFromJob(int id, CancellationToken ct = default);
 
     Task<ProblemType[]> GetMaintenanceProblemTypes(CancellationToken ct = default);
     Task<JobStatus[]> GetMaintenanceJobStatuses(CancellationToken ct = default);

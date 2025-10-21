@@ -15,6 +15,8 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.ProblemDescription)
                 .HasMaxLength(4000)
                 .IsRequired();
+            builder.Property(x => x.RedactedProblemDescription)
+                .HasMaxLength(4000);
             builder.Property(x => x.JobPriorityId).IsRequired();
             builder.Property(x => x.JobStatusId).IsRequired();
             builder.Property(x => x.WorkDone)

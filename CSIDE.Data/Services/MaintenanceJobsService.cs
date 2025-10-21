@@ -208,6 +208,18 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
 
     public async Task<Job> CreateMaintenanceJob(Job job, IList<int> selectedProblemTypes, CancellationToken ct = default)
     {
+        if (!string.IsNullOrEmpty(job.ProblemDescription))
+        {
+            var containsHarmfulContent = await sharedDataService.DoesTextContainHarmfulContent(job.ProblemDescription, ct);
+            if (containsHarmfulContent)
+            {
+                job.RedactedProblemDescription = "[Hidden due to potentially inappropriate content]";
+            }
+            else
+            {
+                job.RedactedProblemDescription = await sharedDataService.RedactPII(job.ProblemDescription, ct);
+            }
+        }
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobs.Add(job);
 
@@ -376,6 +388,16 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return jobContact;
     }
 
+    public async Task<Job> RemoveRedactionFromJob(int id, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingJob = await context.MaintenanceJobs.Where(j => j.Id == id).SingleAsync(ct)
+                           ?? throw new Exception($"Maintenance job being edited (ID: {id}) was not found prior to updating");
+
+        existingJob.RedactedProblemDescription = null;
+        await context.SaveChangesAsync(ct).ConfigureAwait(false);
+        return existingJob;
+    }
     public async Task<ProblemType[]> GetMaintenanceProblemTypes(CancellationToken ct = default)
     {
         //TODO - Cache

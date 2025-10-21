@@ -15,12 +15,14 @@
 @inject IOptions<MappingOptions> mappingOptions
 @inject ISettingsService settingsService
 @inject IMaintenanceJobsService maintenanceJobsService
+@inject ILogger<Details> logger
+@inject IJSRuntime JS
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
-@if (IsBusy)
+@if (IsLoading)
 {
     <PageTitle>@localizer["Loading Text"]</PageTitle>
     <p class="fs-4">
@@ -28,7 +30,7 @@
     </p>
 }
 
-@if (Job is null && !IsBusy)
+@if (Job is null && !IsLoading)
 {
     <PageTitle>@localizer["Maintenance Job Not Found Error Message", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</PageTitle>
     <Alert Color="AlertColor.Danger">@localizer["Maintenance Job Not Found Error Message", $"{IDPrefixOptions.Value.Maintenance}{JobId}"]</Alert>
@@ -67,6 +69,22 @@ else
                                             <th>@localizer["Problem Description Label"]</th>
                                             <td class="text-break comment-field">@Job.ProblemDescription</td>
                                         </tr>
+                                        @if (!string.IsNullOrEmpty(Job.RedactedProblemDescription))
+                                        {
+                                            <tr>
+                                                <th>@localizer["Redacted Problem Description Label"]</th>
+                                                <td class="text-break comment-field">
+                                                    <Alert Color="AlertColor.Warning" Class="mb-0">
+                                                        @localizer["Redacted Problem Description Help Text Short"] <a data-bs-toggle="collapse" href="#redactionNoticeText" role="button" aria-expanded="false" aria-controls="redactionNoticeText" title="@localizer["Whats This Label"]"><Icon Name="IconName.QuestionCircle"></Icon></a>
+                                                        <div class="collapse" id="redactionNoticeText">
+                                                            <CSIDE.Web.Components.Shared.Markdown Text="@localizer["Redacted Problem Description Help Text Long"]"></CSIDE.Web.Components.Shared.Markdown>
+                                                        </div>
+                                                    </Alert>
+                                                    @(Job.RedactedProblemDescription)
+                                                    <Button Color="ButtonColor.Danger" Outline="true" Disabled="@IsBusy" Size="ButtonSize.Small" Class="mt-4" @onclick="@DeleteRedaction">@localizer["Delete Redaction Label"]</Button>
+                                                </td>
+                                            </tr>
+                                        }
                                         <tr>
                                             <th>@localizer["Problem Types Label"]</th>
                                             <td>
@@ -228,6 +246,9 @@ else
     public int JobId{ get; set; }
     private Job? Job { get; set; }
 
+    //IsLoading is for the whole page
+    private bool IsLoading{ get; set; }
+    //IsBusy is to indicate some action is happening on the page and to prevent user interaction
     private bool IsBusy{ get; set; }
 
     [CascadingParameter]
@@ -253,14 +274,14 @@ else
             new BreadcrumbItem{ Text = localizer["Maintenance Details Title", $"{IDPrefixOptions.Value.Maintenance}{JobId}"], IsCurrentPage = true }
         };
 
-        IsBusy = true;
+        IsLoading = true;
         try
         {
             Job = await maintenanceJobsService.GetMaintenanceJobById(JobId);
         }
         finally
         {
-            IsBusy = false;
+            IsLoading = false;
         }
 
         //check user has permission to edit
@@ -297,4 +318,25 @@ else
         Job = await maintenanceJobsService.GetMaintenanceJobById(JobId);
         StateHasChanged();
     }
+    private async Task DeleteRedaction()
+    {
+        IsBusy = true;
+        try
+        {
+            bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Redaction Confirmation"].Value);
+            if (ConfirmDelete)
+            {
+                Job = await maintenanceJobsService.RemoveRedactionFromJob(JobId);
+            }
+        }catch(Exception ex)
+        {
+            logger.LogError(ex, "An error occurred removing a redaction from the maintenance job");
+            await JS.InvokeVoidAsync("alert", localizer["Save Error Message"].Value);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
 }
