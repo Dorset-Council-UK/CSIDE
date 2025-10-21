@@ -1744,7 +1744,7 @@
     <value>File type '{0}' is not allowed</value>
   </data>
   <data name="Redacted Problem Description Help Text Short" xml:space="preserve">
-    <value>This field has been automatically redacted for the public due to PII or profanity</value>
+    <value>This field has been automatically redacted for the public due to PII or harmful content</value>
   </data>
   <data name="Redacted Problem Description Label" xml:space="preserve">
     <value>Redacted problem description</value>

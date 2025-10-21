@@ -210,10 +210,10 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     {
         if (!string.IsNullOrEmpty(job.ProblemDescription))
         {
-            var containsProfanity = await sharedDataService.DoesTextContainProfanity(job.ProblemDescription, ct);
-            if (containsProfanity)
+            var containsHarmfulContent = await sharedDataService.DoesTextContainHarmfulContent(job.ProblemDescription, ct);
+            if (containsHarmfulContent)
             {
-                job.RedactedProblemDescription = "[Content hidden due to potentially inappropriate language]";
+                job.RedactedProblemDescription = "[Hidden due to potentially inappropriate content]";
             }
             else
             {

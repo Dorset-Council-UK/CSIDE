@@ -1755,7 +1755,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
     <value>Ni chaniateir ffeil o'r math '{0}'</value>
   </data>
   <data name="Redacted Problem Description Help Text Short" xml:space="preserve">
-    <value>Mae'r maes hwn wedi'i olygu'n awtomatig ar gyfer y cyhoedd oherwydd PII neu iaith anweddus</value>
+    <value>Mae'r maes hwn wedi'i olygu'n awtomatig ar gyfer y cyhoedd oherwydd PII neu gynnwys niweidiol.</value>
   </data>
   <data name="Redacted Problem Description Label" xml:space="preserve">
     <value>Disgrifiad o'r broblem wedi'i sensro</value>

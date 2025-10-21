@@ -256,7 +256,7 @@ namespace CSIDE.Data.Services
             }
         }
 
-        public async Task<bool> DoesTextContainProfanity(string text, CancellationToken ct = default)
+        public async Task<bool> DoesTextContainHarmfulContent(string text, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -266,7 +266,7 @@ namespace CSIDE.Data.Services
             if (csideOptions.Value.AzureAI?.ContentSafetyEndpoint is null ||
                 csideOptions.Value.AzureAI?.ContentSafetyApiKey is null)
             {
-                logger.LogInformation("Azure AI Content Safety configuration is missing. Profanity filtering skipped");
+                logger.LogInformation("Azure AI Content Safety configuration is missing. Harmful content filtering skipped");
                 return false;
             }
 
@@ -280,15 +280,14 @@ namespace CSIDE.Data.Services
 
                 var response = await client.AnalyzeTextAsync(request, ct);
 
-                // Check for hate speech or profanity
-                bool containsProfanity = response.Value.CategoriesAnalysis.Any(c =>
-                    c.Category == TextCategory.Hate && c.Severity >= 2);
+                // Check for any 
+                bool containsHarmfulContent = response.Value.CategoriesAnalysis.Any(c => c.Severity >= 2);
 
-                return containsProfanity;
+                return containsHarmfulContent;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred during profanity filtering");
+                logger.LogError(ex, "An error occurred during harmful content filtering");
                 return false;
             }
         }

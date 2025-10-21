@@ -4093,7 +4093,7 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This field has been automatically redacted for the public due to PII or profanity.
+        ///   Looks up a localized string similar to This field has been automatically redacted for the public due to PII or harmful content.
         /// </summary>
         public static string Redacted_Problem_Description_Help_Text_Short {
             get {
