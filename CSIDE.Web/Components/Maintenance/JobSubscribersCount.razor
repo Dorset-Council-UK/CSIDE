@@ -2,7 +2,12 @@
 <span class="bi @(SubscribersCount < 1 ? "bi-eye-slash" : "bi-eye")"></span>
 <span>@GetMessage()</span>
 @code {
-    int SubscribersCount = 4;
+    // int SubscribersCount = 4;
+    
+    [Parameter]
+    public int? SubscribersCount { get; set; }
+
+    // Determine message based on SubscribersCount
     public string GetMessage()
     {
         switch (SubscribersCount)
