@@ -133,5 +133,12 @@ internal static class ApiEndpointsExtensions
             .WithDescription("Add a file to a maintenance job")
             .DisableAntiforgery();
 
+        group.MapPost("/notifications/unsubscribe/{id}", MaintenanceJobEndpoints.UnsubscribeFromNotifications)
+            .WithSummary("Unsubscribe from Maintenance Job Notifications")
+            .WithDescription("Unsubscribe from maintenance job email notifications using a unique token");
+
+        group.MapGet("/notifications/unsubscribe/{id}", MaintenanceJobEndpoints.UnsubscribeFromNotifications)
+            .WithSummary("Unsubscribe from Maintenance Job Notifications")
+            .WithDescription("Unsubscribe from maintenance job email notifications using a unique token");
     }
 }

@@ -136,4 +136,5 @@ public interface IMaintenanceJobsService
         CancellationToken ct = default);
 
     Task<JobPublicViewModel?> CreateMaintenanceJobFromPublic(JobPublicCreateModel model, CancellationToken ct = default);
+    Task<bool> UnsubscribeFromNotifications(Guid unsubscribeToken, CancellationToken ct = default);
 }
