@@ -158,6 +158,8 @@ namespace CSIDE.API.Endpoints.Maintenance
                 return TypedResults.BadRequest("Email address is required");
             }
 
+            //this is an intentionally naive email validation, which matches FluentValidation's EmailAddressValidator
+            //see https://docs.fluentvalidation.net/en/latest/built-in-validators.html#email-validator
             if (!new EmailAddressAttribute().IsValid(normalizedEmail))
             {
                 return TypedResults.BadRequest("Invalid email address format");

@@ -177,10 +177,220 @@ public class MaintenanceEndpointsTests
             Northing = 654321,
         };
         jobService.CreateMaintenanceJobFromPublic(createModel, Arg.Any<CancellationToken>())
-        .ThrowsAsync(new FluentValidation.ValidationException("Validation failed"));
+            .ThrowsAsync(new FluentValidation.ValidationException("Validation failed"));
         // Act
         var httpResult = await MaintenanceJobEndpoints.CreateMaintenanceJob(jobService, options, createModel, TestContext.Current.CancellationToken);
         // Assert
         Assert.IsType<ValidationProblem>(httpResult.Result);
     }
+
+    #region AddSubscriptionToJob Tests
+
+    [Theory]
+    [InlineData(1, "user@example.com")]
+    [InlineData(5, "test.user@domain.co.uk")]
+    [InlineData(100, "admin@company.org")]
+    public async Task AddSubscriptionToJob_ReturnsSuccess_WhenSubscriptionCreated(int jobId, string email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        jobService.SignUpUserToMaintenanceJobUpdates(jobId, email.Trim().ToLowerInvariant(), true, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var okResult = Assert.IsType<Ok<string>>(httpResult.Result);
+        Assert.Equal("Successfully subscribed to maintenance job updates", okResult.Value);
+    }
+
+    [Theory]
+    [InlineData(1, "  user@example.com  ")]
+    [InlineData(5, "User@Example.com")]
+    [InlineData(100, "  ADMIN@COMPANY.ORG  ")]
+    public async Task AddSubscriptionToJob_NormalizesEmail_BeforeCallingService(int jobId, string email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        jobService.SignUpUserToMaintenanceJobUpdates(jobId, normalizedEmail, true, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var okResult = Assert.IsType<Ok<string>>(httpResult.Result);
+        Assert.Equal("Successfully subscribed to maintenance job updates", okResult.Value);
+
+        // Verify the service was called with normalized email
+        await jobService.Received(1).SignUpUserToMaintenanceJobUpdates(
+                jobId,
+                normalizedEmail,
+                true,
+          Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(1, "")]
+    [InlineData(5, "   ")]
+    [InlineData(100, null)]
+    public async Task AddSubscriptionToJob_ReturnsBadRequest_WhenEmailIsNullOrWhitespace(int jobId, string? email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        var request = new JobSubscriptionRequest { EmailAddress = email! };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequest<string>>(httpResult.Result);
+        Assert.Equal("Email address is required", badRequestResult.Value);
+    }
+
+    [Theory]
+    [InlineData(1, "invalid-email")]
+    [InlineData(5, "user@")]
+    [InlineData(100, "@example.com")]
+    public async Task AddSubscriptionToJob_ReturnsBadRequest_WhenEmailIsInvalid(int jobId, string email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequest<string>>(httpResult.Result);
+        Assert.Equal("Invalid email address format", badRequestResult.Value);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(999)]
+    [InlineData(5000)]
+    public async Task AddSubscriptionToJob_ReturnsNotFound_WhenJobDoesNotExist(int jobId)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var request = new JobSubscriptionRequest { EmailAddress = "user@example.com" };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.IsType<NotFound>(httpResult.Result);
+    }
+
+    [Theory]
+    [InlineData(1, "user@example.com")]
+    [InlineData(5, "test@domain.com")]
+    public async Task AddSubscriptionToJob_ReturnsBadRequest_WhenServiceFails(int jobId, string email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        jobService.SignUpUserToMaintenanceJobUpdates(jobId, email.ToLowerInvariant(), true, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequest<string>>(httpResult.Result);
+        Assert.Equal("Failed to subscribe to maintenance job updates", badRequestResult.Value);
+    }
+
+    [Theory]
+    [InlineData(1, "user@example.com")]
+    [InlineData(5, "existing@domain.com")]
+    public async Task AddSubscriptionToJob_ReturnsSuccess_WhenAlreadySubscribed(int jobId, string email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        // Service returns true even if already subscribed (idempotent behavior)
+        jobService.SignUpUserToMaintenanceJobUpdates(jobId, email.ToLowerInvariant(), true, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var okResult = Assert.IsType<Ok<string>>(httpResult.Result);
+        Assert.Equal("Successfully subscribed to maintenance job updates", okResult.Value);
+    }
+
+    [Theory]
+    [InlineData(1, "user+tag@example.com")]
+    [InlineData(5, "first.last@subdomain.example.co.uk")]
+    [InlineData(100, "test_user123@domain-name.org")]
+    public async Task AddSubscriptionToJob_AcceptsValidEmailFormats(int jobId, string email)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        jobService.SignUpUserToMaintenanceJobUpdates(jobId, email.ToLowerInvariant(), true, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        var okResult = Assert.IsType<Ok<string>>(httpResult.Result);
+        Assert.Equal("Successfully subscribed to maintenance job updates", okResult.Value);
+    }
+
+    [Fact]
+    public async Task AddSubscriptionToJob_CallsServiceWithNotificationEnabled()
+    {
+        // Arrange
+        var jobId = 1;
+        var email = "user@example.com";
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+
+        jobService.MaintenanceJobExists(jobId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        jobService.SignUpUserToMaintenanceJobUpdates(jobId, email, true, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var request = new JobSubscriptionRequest { EmailAddress = email };
+
+        // Act
+        await MaintenanceJobEndpoints.AddSubscriptionToJob(jobService, jobId, request, TestContext.Current.CancellationToken);
+
+        // Assert
+        // Verify the service was called with withNotification=true
+        await jobService.Received(1).SignUpUserToMaintenanceJobUpdates(
+              jobId,
+            email,
+           true,
+          Arg.Any<CancellationToken>());
+    }
+
+    #endregion
 }
