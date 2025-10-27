@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph.Beta.Models.ManagedTenants;
 using NetTopologySuite.Geometries;
 using NodaTime;
 using System.ComponentModel;
@@ -756,6 +757,24 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         catch (Exception ex)
         {
             logger.LogError(ex, "There was an error signing {email} up to maintenance job {jobId} update emails", email, jobId);
+            return false;
+        }
+    }
+
+    public async Task<bool> UnsubscribeFromNotifications(Guid unsubscribeToken, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        try
+        {
+            await context.MaintenanceJobSubscribers.Where(js => js.UnsubscribeToken == unsubscribeToken)
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "There was an error unsubscribing a user using unsubscribe token {token}", unsubscribeToken);
             return false;
         }
     }

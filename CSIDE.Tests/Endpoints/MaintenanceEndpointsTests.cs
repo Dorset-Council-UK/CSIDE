@@ -386,10 +386,106 @@ public class MaintenanceEndpointsTests
         // Assert
         // Verify the service was called with withNotification=true
         await jobService.Received(1).SignUpUserToMaintenanceJobUpdates(
-              jobId,
+            jobId,
             email,
-           true,
-          Arg.Any<CancellationToken>());
+            true,
+            Arg.Any<CancellationToken>());
+    }
+
+    #endregion
+
+    #region UnsubscribeFromNotifications Tests
+
+    [Theory]
+    [InlineData("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d")]
+    [InlineData("12345678-1234-1234-1234-123456789012")]
+    [InlineData("ffffffff-ffff-ffff-ffff-ffffffffffff")]
+    public async Task UnsubscribeFromNotifications_ReturnsOk_WhenUnsubscribeSuccessful(string guidString)
+    {
+        // Arrange
+        var unsubscribeToken = Guid.Parse(guidString);
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.UnsubscribeFromNotifications(unsubscribeToken, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.UnsubscribeFromNotifications(jobService, unsubscribeToken);
+
+        // Assert
+        Assert.IsType<Ok>(httpResult.Result);
+    }
+
+    [Theory]
+    [InlineData("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d")]
+    [InlineData("00000000-0000-0000-0000-000000000000")]
+    public async Task UnsubscribeFromNotifications_ReturnsInternalServerError_WhenServiceThrowsException(string guidString)
+    {
+        // Arrange
+        var unsubscribeToken = Guid.Parse(guidString);
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.UnsubscribeFromNotifications(unsubscribeToken, Arg.Any<CancellationToken>())
+            .ThrowsAsync(new Exception("Database error"));
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.UnsubscribeFromNotifications(jobService, unsubscribeToken);
+
+        // Assert
+        Assert.IsType<InternalServerError>(httpResult.Result);
+    }
+
+    [Fact]
+    public async Task UnsubscribeFromNotifications_CallsServiceWithCorrectToken()
+    {
+        // Arrange
+        var unsubscribeToken = Guid.NewGuid();
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.UnsubscribeFromNotifications(unsubscribeToken, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        // Act
+        await MaintenanceJobEndpoints.UnsubscribeFromNotifications(jobService, unsubscribeToken);
+
+        // Assert
+        await jobService.Received(1).UnsubscribeFromNotifications(
+            unsubscribeToken,
+            Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("invalid-guid-format")]
+    [InlineData("not-a-guid")]
+    public async Task UnsubscribeFromNotifications_ReturnsInternalServerError_WhenServiceThrowsFormatException(string guidString)
+    {
+        // Arrange
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+
+        // This test verifies error handling if somehow an invalid GUID gets through
+        // In practice, ASP.NET Core would handle this at the routing level
+        var invalidGuid = Guid.Empty; // Using Empty as proxy for invalid
+        jobService.UnsubscribeFromNotifications(invalidGuid, Arg.Any<CancellationToken>())
+            .ThrowsAsync(new FormatException("Invalid GUID format"));
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.UnsubscribeFromNotifications(jobService, invalidGuid);
+
+        // Assert
+        Assert.IsType<InternalServerError>(httpResult.Result);
+    }
+
+    [Fact]
+    public async Task UnsubscribeFromNotifications_ReturnsInternalServerError_WhenTokenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentToken = Guid.NewGuid();
+        var jobService = Substitute.For<IMaintenanceJobsService>();
+        jobService.UnsubscribeFromNotifications(nonExistentToken, Arg.Any<CancellationToken>())
+            .ThrowsAsync(new InvalidOperationException("Subscription not found"));
+
+        // Act
+        var httpResult = await MaintenanceJobEndpoints.UnsubscribeFromNotifications(jobService, nonExistentToken);
+
+        // Assert
+        Assert.IsType<InternalServerError>(httpResult.Result);
     }
 
     #endregion
