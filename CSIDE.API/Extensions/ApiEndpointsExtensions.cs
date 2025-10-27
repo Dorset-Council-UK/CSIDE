@@ -142,7 +142,7 @@ internal static class ApiEndpointsExtensions
             .WithDescription("Unsubscribe from maintenance job email notifications using a unique token");
         // Add subscription to maintenance job
         group
-            .MapPost("/subscriptions/add/{id}", MaintenanceJobEndpoints.AddSubscriptionToJob)
+            .MapPost("/notifications/subscribe/{id}", MaintenanceJobEndpoints.AddSubscriptionToJob)
             .WithSummary("Subscribe to Maintenance Job Updates")
             .WithDescription("Sign up to receive email notifications for a specific maintenance job");
     }
