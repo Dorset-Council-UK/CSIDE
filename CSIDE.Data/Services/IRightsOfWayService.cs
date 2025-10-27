@@ -29,6 +29,7 @@ namespace CSIDE.Data.Services
         Task<IReadOnlyCollection<RouteType>> GetRouteTypeOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<OperationalStatus>> GetOperationalStatusOptions(CancellationToken ct = default);
         Task<string?> GetNextAvailableRouteCodeForParish(string parishCode, CancellationToken ct = default);
+        Task<IReadOnlyCollection<Route>> GetClosedRoutes(CancellationToken ct = default);
         Task<Route> CreateRoute(Route route, CancellationToken ct = default);
         Task<Statement> AddStatement(Statement statement, CancellationToken ct = default);
         Task<Route> AddMediaToRoute(Route route, List<Media> UploadedMedia, bool IsClosureNotificationDocument, CancellationToken ct = default);

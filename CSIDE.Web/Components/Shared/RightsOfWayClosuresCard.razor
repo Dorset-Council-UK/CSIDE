@@ -1,0 +1,72 @@
+﻿@using CSIDE.Data.Services
+@using CSIDE.Data.Models.RightsOfWay
+
+@inject IRightsOfWayService rightsOfWayService
+@inject ILogger<RightsOfWayClosuresCard> logger
+
+<Card>
+    <CardBody>
+        <CardTitle Class="mb-4">@localizer["Rights of Way Closures Title"]</CardTitle>
+        <CardText>
+            @if (IsBusy)
+            {
+                <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-6"></span>
+                    <span class="placeholder col-8"></span>
+                </p>
+            } 
+            else
+            {
+                if (ErrorMessage is not null)
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+                <div class="list-group">
+                    @foreach (Route route in Routes.OrderByDescending(d => d.ClosureEndDate))
+                    {
+                        <a href="rights-of-way/Details/@route.RouteCode" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">@route.RouteCode</h5>
+                                <small>upcoming/today/overdue</small>
+                            </div>
+                            <p class="mb-1">Planned reopening: @route.ClosureEndDate</p>
+                        </a>
+                    }
+                </div>
+            }
+        </CardText>
+    </CardBody>
+</Card>
+
+@* TODO - Rights of Way that are due to be reopened soon (< 1 week?) and any that are passed due.
+Should also include any that don't have a reopening date and are not set to closed indefinitely. *@ 
+
+@code {
+    public IReadOnlyCollection<Route> Routes { get; set; } = [];
+    private bool IsBusy { get; set; }
+    private string? ErrorMessage { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusy = true;
+        ErrorMessage = null;
+        StateHasChanged();
+        try
+        {
+            Routes = await rightsOfWayService.GetClosedRoutes(); 
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = localizer["Rights Of Way Closure Card Error Message"];
+            logger.LogError(ex, "An error occurred loading closed rights of way in the card component");
+        }
+        finally
+        {
+            IsBusy = false;
+            StateHasChanged();
+        }
+    }
+}
