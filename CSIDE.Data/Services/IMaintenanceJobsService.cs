@@ -136,4 +136,9 @@ public interface IMaintenanceJobsService
         CancellationToken ct = default);
 
     Task<JobPublicViewModel?> CreateMaintenanceJobFromPublic(JobPublicCreateModel model, CancellationToken ct = default);
+    
+    /// <summary>
+    /// Signs up a user to receive email notifications for a specific maintenance job.
+    /// </summary>
+    Task<bool> SignUpUserToMaintenanceJobUpdates(int jobId, string email, bool withNotification = false, CancellationToken ct = default);
 }

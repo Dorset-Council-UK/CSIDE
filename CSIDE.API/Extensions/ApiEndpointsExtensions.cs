@@ -133,5 +133,10 @@ internal static class ApiEndpointsExtensions
             .WithDescription("Add a file to a maintenance job")
             .DisableAntiforgery();
 
+        // Add subscription to maintenance job
+        group
+            .MapPost("/subscriptions/add/{id}", MaintenanceJobEndpoints.AddSubscriptionToJob)
+            .WithSummary("Subscribe to Maintenance Job Updates")
+            .WithDescription("Sign up to receive email notifications for a specific maintenance job");
     }
 }
