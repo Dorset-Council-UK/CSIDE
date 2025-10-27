@@ -1,5 +1,4 @@
-﻿using CSIDE.Data.Extensions;
-using CSIDE.Data.Models.Infrastructure;
+﻿using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Validators.Maintenance;
@@ -506,7 +505,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return job.ToPublicViewModel(csideOptions.Value.IDPrefixes.Maintenance);
     }
 
-    public async Task<PagedResult<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
+    public async Task<PagedResult<JobSimplePublicViewModel>> GetPublicMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,

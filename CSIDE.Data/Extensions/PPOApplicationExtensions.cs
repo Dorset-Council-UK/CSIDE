@@ -1,7 +1,8 @@
-using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 
-namespace CSIDE.Data.Extensions
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace CSIDE.Data.Models.PPO
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public static class PPOApplicationExtensions
     {
