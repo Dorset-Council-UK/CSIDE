@@ -50,15 +50,10 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                        
+                                <JobSubscribersCount SubscribersCount=@Job.MaintenanceJobSubscribers.Count>
+                                </JobSubscribersCount>
                                 <table class="table table-striped">
                                     <tbody>
-                                        <tr>
-                                            <td colspan="2">
-                                                <JobSubscribersCount SubscribersCount=@Job.MaintenanceJobSubscribers.Count>
-                                                </JobSubscribersCount>
-                                            </td>
-                                        </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Job ID Label"]</th>
                                             <td>@IDPrefixOptions.Value.Maintenance@Job.Id</td>

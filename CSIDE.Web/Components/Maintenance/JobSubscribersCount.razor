@@ -1,14 +1,14 @@
-﻿@* <span class="bi bi-eye"></span><span>1 person is subscribed to updates for this job</span> *@
-<span class="bi @(SubscribersCount < 1 ? "bi-eye-slash" : "bi-eye")"></span>
-<span>@GetMessage()</span>
+﻿<p>
+    <span class="text-muted bi @(SubscribersCount < 1 ? "bi-eye-slash" : "bi-eye")"></span>
+    <span class="text-muted">@GetMessage()</span>
+</p>
 @code {
-    // int SubscribersCount = 4;
     
     [Parameter]
-    public int? SubscribersCount { get; set; }
+    public int SubscribersCount { get; set; }
 
     // Determine message based on SubscribersCount
-    public string GetMessage()
+    private string GetMessage()
     {
         switch (SubscribersCount)
         {
