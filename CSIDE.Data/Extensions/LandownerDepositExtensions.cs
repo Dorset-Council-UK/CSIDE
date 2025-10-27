@@ -1,8 +1,9 @@
-using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 
-namespace CSIDE.Data.Extensions
-{
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace CSIDE.Data.Models.LandownerDeposits;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
+
     public static class LandownerDepositExtensions
     {
         public static LandownerDepositPublicViewModel ToPublicViewModel(this LandownerDeposit landownerDeposit, string landownerDepositIdPrefix)
@@ -53,4 +54,3 @@ namespace CSIDE.Data.Extensions
             };
         }
     }
-}

@@ -1,6 +1,6 @@
-using CSIDE.Data.Models.Maintenance;
-
-namespace CSIDE.Data.Extensions
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace CSIDE.Data.Models.Maintenance
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public static class MaintenanceJobExtensions
     {

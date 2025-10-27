@@ -117,7 +117,7 @@ public interface IMaintenanceJobsService
     Task<IReadOnlyCollection<Team>> GetMaintenanceTeams(CancellationToken ct = default);
     Task<bool> MaintenanceJobExists(int id, CancellationToken ct = default);
     Task<JobPublicViewModel?> GetPublicMaintenanceJobById(int id, CancellationToken ct = default);
-    Task<PagedResult<JobSimplePublicViewModel>?> GetPublicMaintenanceJobsBySearchParameters(
+    Task<PagedResult<JobSimplePublicViewModel>> GetPublicMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,

@@ -21,7 +21,7 @@ internal static class DMMOApplicationEndpoints
         return application is null ? TypedResults.NotFound() : TypedResults.Ok(application);
     }
 
-    internal static async Task<Results<Ok<PagedResult<DMMOApplicationSimplePublicViewModel>>, NotFound>> GetDMMOApplicationsBySearchParameters(
+    internal static async Task<Results<Ok<PagedResult<DMMOApplicationSimplePublicViewModel>>, BadRequest>> GetDMMOApplicationsBySearchParameters(
             IDMMOService service, 
             string[]? parishIds,
             string? parishId,
@@ -52,6 +52,6 @@ internal static class DMMOApplicationEndpoints
                                                                                      PageSize: pageSize,
                                                                                      ct: ct)
             .ConfigureAwait(false);
-        return applications is null ? TypedResults.NotFound() : TypedResults.Ok(applications);
+        return TypedResults.Ok(applications);
     }
 }

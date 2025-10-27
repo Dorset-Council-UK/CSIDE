@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSIDE.Data\CSIDE.Data.csproj" />
+	<InternalsVisibleTo Include="CSIDE.Tests" />
   </ItemGroup>
 
 </Project>
