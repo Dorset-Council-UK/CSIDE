@@ -4156,6 +4156,24 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem loading this data. Try again or contact your system administrator..
+        /// </summary>
+        public static string Rights_Of_Way_Closure_Card_Error_Message {
+            get {
+                return ResourceManager.GetString("Rights Of Way Closure Card Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rights of Way due for reopening.
+        /// </summary>
+        public static string Rights_of_Way_Closures_Card_Title {
+            get {
+                return ResourceManager.GetString("Rights of Way Closures Card Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Right of Way {0}.
         /// </summary>
         public static string Rights_of_Way_Details_Title {

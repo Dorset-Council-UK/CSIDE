@@ -1761,4 +1761,10 @@
   <data name="Delete Redaction Confirmation" xml:space="preserve">
     <value>Are you sure you want to delete this redaction. The original Problem Details field will become visible to the public. Make sure it is appropriate.</value>
   </data>
+  <data name="Rights of Way Closures Card Title" xml:space="preserve">
+    <value>Rights of Way due for reopening</value>
+  </data>
+  <data name="Rights Of Way Closure Card Error Message" xml:space="preserve">
+    <value>There was a problem loading this data. Try again or contact your system administrator.</value>
+  </data>
 </root>

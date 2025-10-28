@@ -1772,4 +1772,10 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Delete Redaction Confirmation" xml:space="preserve">
     <value>Ydych chi'n siŵr eich bod chi eisiau dileu'r golygiad hwn? Bydd y maes Manylion Problem gwreiddiol yn dod yn weladwy i'r cyhoedd. Gwnewch yn siŵr ei fod yn briodol.</value>
   </data>
+  <data name="Rights of Way Closures Card Title" xml:space="preserve">
+    <value>Hawliau Mynd i Fyny a ddylai ailagor</value>
+  </data>
+  <data name="Rights Of Way Closure Card Error Message" xml:space="preserve">
+    <value>Bu problem wrth lwytho'r data hwn. Ceisiwch eto neu cysylltwch â gweinyddwr eich system.</value>
+  </data>
 </root>
