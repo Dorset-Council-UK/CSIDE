@@ -412,7 +412,8 @@ public class MaintenanceEndpointsTests
         var httpResult = await MaintenanceJobEndpoints.UnsubscribeFromNotifications(jobService, unsubscribeToken);
 
         // Assert
-        Assert.IsType<Ok>(httpResult.Result);
+        var okResult = Assert.IsType<Ok<string>>(httpResult.Result);
+        Assert.Equal("You've been unsubscribed from updates for this maintenance job", okResult.Value);
     }
 
     [Theory]

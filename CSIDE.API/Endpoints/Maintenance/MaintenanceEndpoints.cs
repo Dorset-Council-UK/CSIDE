@@ -183,14 +183,14 @@ namespace CSIDE.API.Endpoints.Maintenance
             return TypedResults.Ok("Successfully subscribed to maintenance job updates");
         }
 
-        internal static async Task<Results<Ok,InternalServerError>> UnsubscribeFromNotifications(
+        internal static async Task<Results<Ok<string>,InternalServerError>> UnsubscribeFromNotifications(
             IMaintenanceJobsService maintService,
             Guid id)
         {
             try
             {
                 await maintService.UnsubscribeFromNotifications(id);
-                return TypedResults.Ok();
+                return TypedResults.Ok("You've been unsubscribed from updates for this maintenance job");
             }
             catch (Exception)
             {
