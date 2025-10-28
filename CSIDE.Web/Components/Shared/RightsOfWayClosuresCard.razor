@@ -8,7 +8,7 @@
 
 <AuthorizeView Roles="Administrator, RoW Officer, Ranger">
 <Card>
-    <CardBody>
+    <CardBody Style="overflow-y:auto ; max-height:28rem">
         <CardTitle Class="mb-4">@localizer["Rights of Way Closures Card Title"]</CardTitle>
         <CardText>
             @if (IsBusy)
@@ -29,11 +29,11 @@
                 }
                 if (Routes is not null && Routes.Count != 0)
                 {
-                    <div class="list-group">
+                        <div class="list-group">
                         @foreach (Route route in Routes.OrderByDescending(d => d.ClosureEndDate))
                         {
                             <a href="rights-of-way/Details/@route.RouteCode" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
+                                    <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1">@route.RouteCode</h5>
                                     <small>upcoming/today/overdue</small>
                                 </div>
@@ -51,9 +51,6 @@
     </CardBody>
 </Card>
 </AuthorizeView>
-
-@* TODO - Rights of Way that are due to be reopened soon (< 1 week?) and any that are passed due.
-Should also include any that don't have a reopening date and are not set to closed indefinitely. *@ 
 
 @code {
     public IReadOnlyCollection<Route> Routes { get; set; } = [];
@@ -82,7 +79,6 @@ Should also include any that don't have a reopening date and are not set to clos
             {
                 MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
             }
-
 
             if (MaintenanceTeam.Count >= 1)
             {
