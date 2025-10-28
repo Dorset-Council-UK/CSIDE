@@ -13,11 +13,11 @@
         switch (SubscribersCount)
         {
             case 0:
-                return "No one is subscribed to updates for this job";
+                return localizer["Maintenance Job No Subscribers"];
             case 1:
-                return "1 person is subscribed to updates for this job";
+                return localizer["Maintenance Job One Subscriber"];
             default:
-                return $"{SubscribersCount} people are subscribed to updates for this job";
+                return localizer["Maintenance Job Multiple Subscribers", $"{SubscribersCount}"];
         }
     }
 }
