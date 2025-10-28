@@ -7,7 +7,7 @@
 @inject ILogger<RightsOfWayClosuresCard> logger
 
 <AuthorizeView Roles="Administrator, RoW Officer, Ranger">
-<Card>
+<Card Class="h-100">
     <CardBody Style="overflow-y:auto ; max-height:28rem">
         <CardTitle Class="mb-4">@localizer["Rights of Way Closures Card Title"]</CardTitle>
         <CardText>
@@ -30,12 +30,29 @@
                 if (Routes is not null && Routes.Count != 0)
                 {
                         <div class="list-group">
-                        @foreach (Route route in Routes.OrderByDescending(d => d.ClosureEndDate))
+                        @foreach (Route route in Routes.OrderBy(d => d.ClosureEndDate))
                         {
+                            var today = LocalDate.FromDateTime(DateTime.Today);
+                            var status = route.ClosureEndDate switch
+                            {
+                                var date when date == today => "Today",
+                                var date when date > today => "Upcoming",
+                                var date when date < today => "Overdue",
+                                _ => "Unknown"
+                            };
+
+                            var style = status switch
+                            {
+                                "Today" => "text-bg-warning",
+                                "Upcoming" => "text-bg-info",
+                                "Overdue" => "text-bg-danger",
+                                _ => "text-bg-secondary"
+                            };
+
                             <a href="rights-of-way/Details/@route.RouteCode" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
+                                <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1">@route.RouteCode</h5>
-                                    <small>upcoming/today/overdue</small>
+                                    <span class="mb-1 badge @style">@status</span>
                                 </div>
                                 <p class="mb-1">Planned reopening: @route.ClosureEndDate</p>
                             </a>
