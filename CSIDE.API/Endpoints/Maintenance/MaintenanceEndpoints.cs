@@ -2,9 +2,9 @@
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using CSIDE.Shared.Options;
-using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations;
 
 namespace CSIDE.API.Endpoints.Maintenance
 {
@@ -72,7 +72,7 @@ namespace CSIDE.API.Endpoints.Maintenance
                     return TypedResults.Created(publicUrl, job);
                 }
             }
-            catch (ValidationException vex)
+            catch (FluentValidation.ValidationException vex)
             {
                 var errors = new Dictionary<string, string[]>();
 
@@ -141,6 +141,61 @@ namespace CSIDE.API.Endpoints.Maintenance
             
             return TypedResults.InternalServerError();
 
+        }
+
+        internal static async Task<Results<Ok<string>, BadRequest<string>, NotFound>> AddSubscriptionToJob(
+            IMaintenanceJobsService maintService,
+            int id,
+            JobSubscriptionRequest request,
+            CancellationToken ct)
+        {
+            // Normalize email address: trim whitespace and convert to lowercase
+            var normalizedEmail = request.EmailAddress?.Trim().ToLowerInvariant();
+
+            // Validate email address
+            if (string.IsNullOrWhiteSpace(normalizedEmail))
+            {
+                return TypedResults.BadRequest("Email address is required");
+            }
+
+            //this is an intentionally naive email validation, which matches FluentValidation's EmailAddressValidator
+            //see https://docs.fluentvalidation.net/en/latest/built-in-validators.html#email-validator
+            if (!new EmailAddressAttribute().IsValid(normalizedEmail))
+            {
+                return TypedResults.BadRequest("Invalid email address format");
+            }
+
+            // Check if maintenance job exists
+            var jobExists = await maintService.MaintenanceJobExists(id, ct);
+            if (!jobExists)
+            {
+                return TypedResults.NotFound();
+            }
+
+            // Sign up user to maintenance job updates
+            var success = await maintService.SignUpUserToMaintenanceJobUpdates(id, normalizedEmail, withNotification: true, ct);
+            
+            if (!success)
+            {
+                return TypedResults.BadRequest("Failed to subscribe to maintenance job updates");
+            }
+
+            return TypedResults.Ok("Successfully subscribed to maintenance job updates");
+        }
+
+        internal static async Task<Results<Ok<string>,InternalServerError>> UnsubscribeFromNotifications(
+            IMaintenanceJobsService maintService,
+            Guid id)
+        {
+            try
+            {
+                await maintService.UnsubscribeFromNotifications(id);
+                return TypedResults.Ok("You've been unsubscribed from updates for this maintenance job");
+            }
+            catch (Exception)
+            {
+                return TypedResults.InternalServerError();
+            }
         }
     }
 }
