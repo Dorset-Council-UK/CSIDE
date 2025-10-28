@@ -1767,4 +1767,7 @@
   <data name="Rights Of Way Closure Card Error Message" xml:space="preserve">
     <value>There was a problem loading this data. Try again or contact your system administrator.</value>
   </data>
+  <data name="No Closed Routes Message" xml:space="preserve">
+    <value>There are no Rights of Way due to be opening soon</value>
+  </data>
 </root>

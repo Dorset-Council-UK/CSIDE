@@ -1778,4 +1778,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Rights Of Way Closure Card Error Message" xml:space="preserve">
     <value>Bu problem wrth lwytho'r data hwn. Ceisiwch eto neu cysylltwch â gweinyddwr eich system.</value>
   </data>
+  <data name="No Closed Routes Message" xml:space="preserve">
+    <value>Nid oes Hawliau Mynd ar Agor yn fuan</value>
+  </data>
 </root>

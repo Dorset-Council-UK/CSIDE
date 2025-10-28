@@ -3418,6 +3418,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no Rights of Way due to be opening soon.
+        /// </summary>
+        public static string No_Closed_Routes_Message {
+            get {
+                return ResourceManager.GetString("No Closed Routes Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No contacts found for this item.
         /// </summary>
         public static string No_Contacts_Message {
