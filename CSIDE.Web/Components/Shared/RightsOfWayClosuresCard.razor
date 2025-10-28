@@ -4,6 +4,7 @@
 @inject IRightsOfWayService rightsOfWayService
 @inject ILogger<RightsOfWayClosuresCard> logger
 
+<AuthorizeView Roles="Administrator, RoW Officer, Ranger">
 <Card>
     <CardBody>
         <CardTitle Class="mb-4">@localizer["Rights of Way Closures Card Title"]</CardTitle>
@@ -40,6 +41,7 @@
         </CardText>
     </CardBody>
 </Card>
+</AuthorizeView>
 
 @* TODO - Rights of Way that are due to be reopened soon (< 1 week?) and any that are passed due.
 Should also include any that don't have a reopening date and are not set to closed indefinitely. *@ 
