@@ -1,7 +1,9 @@
-﻿@using CSIDE.Data.Services
+﻿@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Services
 @using CSIDE.Data.Models.RightsOfWay
 
 @inject IRightsOfWayService rightsOfWayService
+@inject IMaintenanceJobsService maintenanceJobsService
 @inject ILogger<RightsOfWayClosuresCard> logger
 
 <AuthorizeView Roles="Administrator, RoW Officer, Ranger">
@@ -48,6 +50,10 @@ Should also include any that don't have a reopening date and are not set to clos
 
 @code {
     public IReadOnlyCollection<Route> Routes { get; set; } = [];
+    private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+    private string? UserID { get; set; }
     private bool IsBusy { get; set; }
     private string? ErrorMessage { get; set; } = null;
 
@@ -56,9 +62,30 @@ Should also include any that don't have a reopening date and are not set to clos
         IsBusy = true;
         ErrorMessage = null;
         StateHasChanged();
+
         try
         {
-            Routes = await rightsOfWayService.GetClosedRoutes(); 
+            if (AuthenticationStateTask != null)
+            {
+                var authState = await AuthenticationStateTask;
+                UserID = authState.GetUserId();
+            }
+
+            if (UserID != null)
+            {
+                MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
+            }
+
+
+            if (MaintenanceTeam.Count >= 1)
+            {
+                var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
+                Routes = await rightsOfWayService.GetClosedRoutesForTeam(teamIds);
+            }
+            else
+            {
+                Routes = await rightsOfWayService.GetClosedRoutes();
+            }
         }
         catch (Exception ex)
         {

@@ -230,6 +230,22 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             .ConfigureAwait(false);
     }
 
+    public async Task<IReadOnlyCollection<Route>> GetClosedRoutesForTeam(List<int> teamId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        var today = LocalDate.FromDateTime(DateTime.UtcNow.Date);
+        var cutoff = today.PlusDays(7);
+
+        return await context.Routes
+            .Where(r => r.MaintenanceTeamId != null && teamId.Contains(r.MaintenanceTeamId.Value))
+            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => r.ClosureEndDate != null)
+            .Where(r => r.ClosureEndDate < cutoff)
+            .ToArrayAsync(cancellationToken: ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task<bool> RouteExists(string RouteCode, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
