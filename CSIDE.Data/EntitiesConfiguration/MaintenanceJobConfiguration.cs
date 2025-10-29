@@ -62,6 +62,10 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .AutoInclude();
 
             builder
+                .Navigation(x => x.MaintenanceJobSubscribers)
+                .AutoInclude();
+
+            builder
                 .Navigation(x => x.Parish)
                 .AutoInclude();
 

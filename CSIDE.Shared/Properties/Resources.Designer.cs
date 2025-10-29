@@ -3148,11 +3148,38 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} people are subscribed to updates for this job.
+        /// </summary>
+        public static string Maintenance_Job_Multiple_Subscribers {
+            get {
+                return ResourceManager.GetString("Maintenance Job Multiple Subscribers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No one is subscribed to updates for this job.
+        /// </summary>
+        public static string Maintenance_Job_No_Subscribers {
+            get {
+                return ResourceManager.GetString("Maintenance Job No Subscribers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maintenance job with ID &apos;{0}&apos; was not found in the database.
         /// </summary>
         public static string Maintenance_Job_Not_Found_Error_Message {
             get {
                 return ResourceManager.GetString("Maintenance Job Not Found Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1 person is subscribed to updates for this job.
+        /// </summary>
+        public static string Maintenance_Job_One_Subscriber {
+            get {
+                return ResourceManager.GetString("Maintenance Job One Subscriber", resourceCulture);
             }
         }
         

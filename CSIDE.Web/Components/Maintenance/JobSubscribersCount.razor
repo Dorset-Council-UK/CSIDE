@@ -1,0 +1,23 @@
+﻿<p>
+    <span class="text-muted bi @(SubscribersCount < 1 ? "bi-eye-slash" : "bi-eye")"></span>
+    <span class="text-muted">@GetMessage()</span>
+</p>
+@code {
+    
+    [Parameter]
+    public int SubscribersCount { get; set; }
+
+    // Determine message based on SubscribersCount
+    private string GetMessage()
+    {
+        switch (SubscribersCount)
+        {
+            case 0:
+                return localizer["Maintenance Job No Subscribers"];
+            case 1:
+                return localizer["Maintenance Job One Subscriber"];
+            default:
+                return localizer["Maintenance Job Multiple Subscribers", $"{SubscribersCount}"];
+        }
+    }
+}

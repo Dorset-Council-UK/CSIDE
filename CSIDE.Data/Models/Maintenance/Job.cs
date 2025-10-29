@@ -38,6 +38,7 @@ namespace CSIDE.Data.Models.Maintenance
         public ICollection<JobMedia> JobMedia { get; } = [];
         public ICollection<JobInfrastructure> JobInfrastructure { get; } = [];
         public ICollection<JobProblemType> ProblemTypes { get; } = [];
+        public ICollection<JobSubscriber> MaintenanceJobSubscribers { get; } = [];
 
         //Concurrency token
         public uint Version { get; set; }

@@ -43,6 +43,8 @@ else
 
         <a href="Maintenance/Edit/@Job.Id" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
 
+
+
         <div class="row">
             <div class="col-lg-8">
 
@@ -50,7 +52,8 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                        
+                                <JobSubscribersCount SubscribersCount="@Job.MaintenanceJobSubscribers.Count">
+                                </JobSubscribersCount>
                                 <table class="table table-striped">
                                     <tbody>
                                         <tr>

@@ -132,6 +132,15 @@
   <data name="Maintenance Title" xml:space="preserve">
     <value>Cynhaliaeth</value>
   </data>
+  <data name="Maintenance Job No Subscribers" xml:space="preserve">
+    <value>Nid oes neb wedi cofrestru ar gyfer diweddariadau am y swydd hon</value>
+  </data>
+  <data name="Maintenance Job One Subscriber" xml:space="preserve">
+    <value>Mae 1 person wedi cofrestru ar gyfer diweddariadau am y swydd hon</value>
+  </data>
+  <data name="Maintenance Job Multiple Subscribers" xml:space="preserve">
+    <value>Mae {0} o bobl wedi cofrestru ar gyfer diweddariadau am y swydd hon</value>
+  </data>
   <data name="Infrastructure Title" xml:space="preserve">
     <value>Seilwaith</value>
   </data>

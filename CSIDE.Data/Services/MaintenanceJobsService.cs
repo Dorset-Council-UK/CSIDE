@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph.Beta.Models.ManagedTenants;
 using NetTopologySuite.Geometries;
 using NodaTime;
 using System.ComponentModel;
@@ -723,17 +724,32 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         try
         {
+            // Normalize email address for consistent storage and lookup
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+
+            // Check if user is already subscribed
+            var existingSubscription = await context.MaintenanceJobSubscribers
+                .FirstOrDefaultAsync(s => s.JobId == jobId && s.EmailAddress == normalizedEmail, ct)
+                .ConfigureAwait(false);
+
+            if (existingSubscription is not null)
+            {
+                // User is already subscribed, return success
+                logger.LogInformation("User {email} is already subscribed to maintenance job {jobId}", normalizedEmail, jobId);
+                return true;
+            }
+
             var sub = new JobSubscriber
             {
                 JobId = jobId,
-                EmailAddress = email
+                EmailAddress = normalizedEmail
             };
             context.MaintenanceJobSubscribers.Add(sub);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
+            
             if (withNotification)
             {
-                //send confirmation email
-                await emailSender.SendMaintenanceJobSignUpConfirmationEmail(email, jobId, sub.UnsubscribeToken);
+                await emailSender.SendMaintenanceJobSignUpConfirmationEmail(normalizedEmail, jobId, sub.UnsubscribeToken);
             }
 
             return true;
@@ -741,6 +757,24 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         catch (Exception ex)
         {
             logger.LogError(ex, "There was an error signing {email} up to maintenance job {jobId} update emails", email, jobId);
+            return false;
+        }
+    }
+
+    public async Task<bool> UnsubscribeFromNotifications(Guid unsubscribeToken, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        try
+        {
+            await context.MaintenanceJobSubscribers.Where(js => js.UnsubscribeToken == unsubscribeToken)
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "There was an error unsubscribing a user using unsubscribe token {token}", unsubscribeToken);
             return false;
         }
     }

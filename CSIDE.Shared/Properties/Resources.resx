@@ -132,6 +132,15 @@
   <data name="Maintenance Title" xml:space="preserve">
     <value>Maintenance</value>
   </data>
+  <data name="Maintenance Job No Subscribers" xml:space="preserve">
+    <value>No one is subscribed to updates for this job</value>
+  </data>
+  <data name="Maintenance Job One Subscriber" xml:space="preserve">
+    <value>1 person is subscribed to updates for this job</value>
+  </data>
+  <data name="Maintenance Job Multiple Subscribers" xml:space="preserve">
+    <value>{0} people are subscribed to updates for this job</value>
+  </data>
   <data name="Infrastructure Title" xml:space="preserve">
     <value>Infrastructure</value>
   </data>
