@@ -29,7 +29,7 @@
                 }
                 if (Routes is not null && Routes.Count != 0)
                 {
-                        <div class="list-group">
+                    <div class="list-group">
                         @foreach (Route route in Routes.OrderBy(d => d.ClosureEndDate))
                         {
                             var today = LocalDate.FromDateTime(DateTime.Today);

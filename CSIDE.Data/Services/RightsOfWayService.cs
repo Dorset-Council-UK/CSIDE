@@ -219,6 +219,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
+        // Get closed routes that are due to reopen within a week
         var today = LocalDate.FromDateTime(DateTime.UtcNow.Date);
         var cutoff = today.PlusDays(7);
 
@@ -234,6 +235,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
+        //Get closed routes that are due to reopen within a week
         var today = LocalDate.FromDateTime(DateTime.UtcNow.Date);
         var cutoff = today.PlusDays(7);
 
