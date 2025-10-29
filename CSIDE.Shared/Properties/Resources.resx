@@ -1779,4 +1779,16 @@
   <data name="No Closed Routes Message" xml:space="preserve">
     <value>There are no Rights of Way due to be opening soon</value>
   </data>
+  <data name="Rights of Way Reopening Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Rights of Way Reopening Upcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="Rights of Way Reopening Overdue" xml:space="preserve">
+    <value>Overdue</value>
+  </data>
+  <data name="Rights of Way Planned Reopening" xml:space="preserve">
+    <value>Planned reopening</value>
+  </data>
 </root>

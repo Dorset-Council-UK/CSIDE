@@ -1790,4 +1790,16 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="No Closed Routes Message" xml:space="preserve">
     <value>Nid oes Hawliau Mynd ar Agor yn fuan</value>
   </data>
+  <data name="Rights of Way Reopening Today" xml:space="preserve">
+    <value>Heddiw</value>
+  </data>
+  <data name="Rights of Way Reopening Upcoming" xml:space="preserve">
+    <value>Dyfodol</value>
+  </data>
+  <data name="Rights of Way Reopening Overdue" xml:space="preserve">
+    <value>Dros ben y dyddiad cau</value>
+  </data>
+  <data name="Rights of Way Planned Reopening" xml:space="preserve">
+    <value>Ailagor cynlluniedig</value>
+  </data>
 </root>

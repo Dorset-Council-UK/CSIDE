@@ -4228,6 +4228,42 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Planned reopening.
+        /// </summary>
+        public static string Rights_of_Way_Planned_Reopening {
+            get {
+                return ResourceManager.GetString("Rights of Way Planned Reopening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overdue.
+        /// </summary>
+        public static string Rights_of_Way_Reopening_Overdue {
+            get {
+                return ResourceManager.GetString("Rights of Way Reopening Overdue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Today.
+        /// </summary>
+        public static string Rights_of_Way_Reopening_Today {
+            get {
+                return ResourceManager.GetString("Rights of Way Reopening Today", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upcoming.
+        /// </summary>
+        public static string Rights_of_Way_Reopening_Upcoming {
+            get {
+                return ResourceManager.GetString("Rights of Way Reopening Upcoming", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rights of Way.
         /// </summary>
         public static string Rights_of_Way_Title {

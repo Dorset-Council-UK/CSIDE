@@ -34,18 +34,18 @@
                         var today = LocalDate.FromDateTime(DateTime.Today);
                         var status = route.ClosureEndDate switch
                         {
-                            var date when date == today => "Today",
-                            var date when date > today => "Upcoming",
-                            var date when date < today => "Overdue",
-                            _ => "Unknown"
+                            var date when date == today => localizer["Rights of Way Reopening Today"].Value,
+                            var date when date > today => localizer["Rights of Way Reopening Upcoming"].Value,
+                            var date when date < today => localizer["Rights of Way Reopening Overdue"].Value,
+                            _ => localizer["Rights of Way Reopening Unknown"].Value
                         };
 
                         var style = status switch
                         {
-                            "Today" => "text-bg-warning",
-                            "Upcoming" => "text-bg-info",
-                            "Overdue" => "text-bg-danger",
-                            _ => "text-bg-secondary"
+                            var s when s == localizer["Rights of Way Reopening Today"].Value => "text-bg-warning",
+                            var s when s == localizer["Rights of Way Reopening Upcoming"].Value => "text-bg-info",
+                            var s when s == localizer["Rights of Way Reopening Overdue"].Value => "text-bg-danger",
+                            _ => localizer["Rights of Way Reopening Unknown"].Value
                         };
 
                         <a href="rights-of-way/Details/@route.RouteCode" class="list-group-item list-group-item-action">
@@ -53,7 +53,7 @@
                                 <h5 class="mb-1">@route.RouteCode</h5>
                                 <span class="mb-1 badge @style">@status</span>
                             </div>
-                            <p class="mb-1">Planned reopening: @route.ClosureEndDate</p>
+                                <p class="mb-1">@localizer["Rights of Way Planned Reopening"]: @route.ClosureEndDate</p>
                         </a>
                     }
                 </div>
