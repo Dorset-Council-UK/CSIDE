@@ -10,45 +10,43 @@
 
 <Card Class="h-100">
     <CardBody>
-        <CardTitle Class="mb-4">@MaintenanceCardTitle</CardTitle>
-        <CardText>
-            @if (IsBusy)
+    <CardTitle Class="mb-4">@MaintenanceCardTitle</CardTitle>
+        @if (IsBusy)
+        {
+            <p class="card-text placeholder-glow">
+                <span class="placeholder col-7"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-6"></span>
+                <span class="placeholder col-8"></span>
+            </p>
+        }
+        else
+        {
+            if (ErrorMessage is not null)
             {
-                <p class="card-text placeholder-glow">
-                    <span class="placeholder col-7"></span>
-                    <span class="placeholder col-4"></span>
-                    <span class="placeholder col-4"></span>
-                    <span class="placeholder col-6"></span>
-                    <span class="placeholder col-8"></span>
-                </p>
+                <div class="alert alert-danger">@ErrorMessage</div>
+            }
+            if (Jobs is not null && Jobs.Count != 0)
+            {
+                <div class="list-group">
+                    @foreach (Job job in Jobs.OrderByDescending(l => l.LogDate))
+                    {
+                        <a href="Maintenance/Details/@job.Id" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">@IDPrefixOptions.Value.Maintenance@job.Id</h5>
+                                <small>@(job.LogDate.HasValue? job.LogDate.Value.ToDateTimeUtc().Humanize() : localizer["Unknown Label"])</small>
+                            </div>
+                            <p class="mb-1">@job.ProblemDescription?.ReplaceLineEndings(" ").Truncate(50)</p>
+                        </a>
+                    }
+                </div>
             }
             else
             {
-                if (ErrorMessage is not null)
-                {
-                    <div class="alert alert-danger">@ErrorMessage</div>
-                }
-                if (Jobs is not null && Jobs.Count != 0)
-                {
-                    <div class="list-group">
-                        @foreach (Job job in Jobs.OrderByDescending(l => l.LogDate))
-                        {
-                            <a href="Maintenance/Details/@job.Id" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">@IDPrefixOptions.Value.Maintenance@job.Id</h5>
-                                    <small>@(job.LogDate.HasValue? job.LogDate.Value.ToDateTimeUtc().Humanize() : localizer["Unknown Label"])</small>
-                                </div>
-                                <p class="mb-1">@job.ProblemDescription?.ReplaceLineEndings(" ").Truncate(50)</p>
-                            </a>
-                      }
-                    </div>
-                }
-                else
-                {
-                    <Alert Color="AlertColor.Info">@localizer["No Job Message"]</Alert>
-                }
+                <Alert Color="AlertColor.Info">@localizer["No Job Message"]</Alert>
             }
-        </CardText>
+        }
     </CardBody>
 </Card>
 

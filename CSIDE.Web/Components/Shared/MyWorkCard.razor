@@ -11,47 +11,44 @@
 
 <Card Class="h-100">
     <CardBody>
-        <CardTitle Class="mb-4">@localizer["My Work Card Title"]</CardTitle>
-        <CardText>
-            @if (IsBusy)
+    <CardTitle Class="mb-4">@localizer["My Work Card Title"]</CardTitle>
+        @if (IsBusy)
+        {
+            <p class="card-text placeholder-glow">
+                <span class="placeholder col-7"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-6"></span>
+                <span class="placeholder col-8"></span>
+            </p>
+        }
+        else
+        {
+            if (ErrorMessage is not null)
             {
-                <p class="card-text placeholder-glow">
-                    <span class="placeholder col-7"></span>
-                    <span class="placeholder col-4"></span>
-                    <span class="placeholder col-4"></span>
-                    <span class="placeholder col-6"></span>
-                    <span class="placeholder col-8"></span>
-                </p>
+                <div class="alert alert-danger">@ErrorMessage</div>
+            }
+            if (RecentWork is not null && RecentWork.Count != 0)
+            {
+                <div class="list-group">
+                    @foreach (RecentWork work in RecentWork.Reverse())
+                    {
+                        <a href="@work.URL" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1"><span class="bi @GetIconForWorkType(work.EntityType)"></span> @work.EntityId</h5>
+                                <small>@(work.VisitTime.Humanize())</small>
+                            </div>
+                            <p class="mb-1">@work.EntityDescription?.ReplaceLineEndings(" ")</p>
+
+                        </a>
+                    }
+                </div>
             }
             else
             {
-                if (ErrorMessage is not null)
-                {
-                    <div class="alert alert-danger">@ErrorMessage</div>
-                }
-                if (RecentWork is not null && RecentWork.Count != 0)
-                {
-                    <div class="list-group">
-                        @foreach (RecentWork work in RecentWork.Reverse())
-                        {
-                            <a href="@work.URL" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1"><span class="bi @GetIconForWorkType(work.EntityType)"></span> @work.EntityId</h5>
-                                    <small>@(work.VisitTime.Humanize())</small>
-                                </div>
-                                <p class="mb-1">@work.EntityDescription?.ReplaceLineEndings(" ")</p>
-
-                            </a>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <Alert Color="AlertColor.Info">@localizer["No Recent Work Message"]</Alert>
-                }
+                <Alert Color="AlertColor.Info">@localizer["No Recent Work Message"]</Alert>
             }
-            
-        </CardText>
+        }       
     </CardBody>
 </Card>
 
