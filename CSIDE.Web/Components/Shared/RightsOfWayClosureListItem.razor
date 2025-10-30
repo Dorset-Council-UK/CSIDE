@@ -1,0 +1,32 @@
+@using CSIDE.Data.Models.Maintenance
+@using CSIDE.Data.Services
+@using CSIDE.Data.Models.RightsOfWay
+
+<a href="rights-of-way/Details/@route.RouteCode" class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">@route.RouteCode</h5>
+        <span class="mb-1 badge @style">@statusText</span>
+    </div>
+        <p class="mb-1">@localizer["Rights of Way Planned Reopening"]: @route.ClosureEndDate</p>
+</a>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public Route route { get; set; }
+    private string statusText = string.Empty;
+    private string style = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        var today = LocalDate.FromDateTime(DateTime.Today);
+        var closureEndDate = route.ClosureEndDate;
+        (statusText, style) = closureEndDate switch
+        {
+            _ when closureEndDate == today => (localizer["Rights of Way Reopening Today"].Value, "text-bg-warning"),
+            _ when closureEndDate > today => (localizer["Rights of Way Reopening Upcoming"].Value, "text-bg-info"),
+            _ when closureEndDate < today => (localizer["Rights of Way Reopening Overdue"].Value, "text-bg-danger"),
+            _ => (localizer["Rights of Way Reopening Unknown"].Value, "text-bg-secondary")
+        };
+    }
+}

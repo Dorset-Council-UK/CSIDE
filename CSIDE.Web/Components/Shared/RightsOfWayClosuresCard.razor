@@ -7,18 +7,12 @@
 @inject ILogger<RightsOfWayClosuresCard> logger
 
 <AuthorizeView Roles="Administrator, RoW Officer, Ranger">
-<Card Class="h-100">
-    <CardBody Style="overflow-y:auto ; max-height:28rem">
+    <Card Class="h-100" Style="max-height:75vh;overflow-y:auto;">
+    <CardBody>
     <CardTitle Class="mb-4">@localizer["Rights of Way Closures Card Title"]</CardTitle>
         @if (IsBusy)
         {
-            <p class="card-text placeholder-glow">
-                <span class="placeholder col-7"></span>
-                <span class="placeholder col-4"></span>
-                <span class="placeholder col-4"></span>
-                <span class="placeholder col-6"></span>
-                <span class="placeholder col-8"></span>
-            </p>
+            <CardTextPlaceholder />
         } 
         else
         {
@@ -31,30 +25,7 @@
                 <div class="list-group">
                     @foreach (Route route in Routes.OrderBy(d => d.ClosureEndDate))
                     {
-                        var today = LocalDate.FromDateTime(DateTime.Today);
-                        var status = route.ClosureEndDate switch
-                        {
-                            var date when date == today => localizer["Rights of Way Reopening Today"].Value,
-                            var date when date > today => localizer["Rights of Way Reopening Upcoming"].Value,
-                            var date when date < today => localizer["Rights of Way Reopening Overdue"].Value,
-                            _ => localizer["Rights of Way Reopening Unknown"].Value
-                        };
-
-                        var style = status switch
-                        {
-                            var s when s == localizer["Rights of Way Reopening Today"].Value => "text-bg-warning",
-                            var s when s == localizer["Rights of Way Reopening Upcoming"].Value => "text-bg-info",
-                            var s when s == localizer["Rights of Way Reopening Overdue"].Value => "text-bg-danger",
-                            _ => localizer["Rights of Way Reopening Unknown"].Value
-                        };
-
-                        <a href="rights-of-way/Details/@route.RouteCode" class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">@route.RouteCode</h5>
-                                <span class="mb-1 badge @style">@status</span>
-                            </div>
-                                <p class="mb-1">@localizer["Rights of Way Planned Reopening"]: @route.ClosureEndDate</p>
-                        </a>
+                        <RightsOfWayClosureListItem route="@route" />
                     }
                 </div>
             }
