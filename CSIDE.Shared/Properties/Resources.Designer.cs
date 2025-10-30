@@ -3445,6 +3445,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no Rights of Way due to be opening soon.
+        /// </summary>
+        public static string No_Closed_Routes_Message {
+            get {
+                return ResourceManager.GetString("No Closed Routes Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No contacts found for this item.
         /// </summary>
         public static string No_Contacts_Message {
@@ -4183,6 +4192,24 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was a problem loading this data. Try again or contact your system administrator..
+        /// </summary>
+        public static string Rights_Of_Way_Closure_Card_Error_Message {
+            get {
+                return ResourceManager.GetString("Rights Of Way Closure Card Error Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rights of Way due for reopening.
+        /// </summary>
+        public static string Rights_of_Way_Closures_Card_Title {
+            get {
+                return ResourceManager.GetString("Rights of Way Closures Card Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Right of Way {0}.
         /// </summary>
         public static string Rights_of_Way_Details_Title {
@@ -4197,6 +4224,42 @@ namespace CSIDE.Shared.Properties {
         public static string Rights_of_Way_Edit_Title {
             get {
                 return ResourceManager.GetString("Rights of Way Edit Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planned reopening.
+        /// </summary>
+        public static string Rights_of_Way_Planned_Reopening {
+            get {
+                return ResourceManager.GetString("Rights of Way Planned Reopening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overdue.
+        /// </summary>
+        public static string Rights_of_Way_Reopening_Overdue {
+            get {
+                return ResourceManager.GetString("Rights of Way Reopening Overdue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Today.
+        /// </summary>
+        public static string Rights_of_Way_Reopening_Today {
+            get {
+                return ResourceManager.GetString("Rights of Way Reopening Today", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upcoming.
+        /// </summary>
+        public static string Rights_of_Way_Reopening_Upcoming {
+            get {
+                return ResourceManager.GetString("Rights of Way Reopening Upcoming", resourceCulture);
             }
         }
         

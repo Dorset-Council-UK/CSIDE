@@ -2,6 +2,7 @@
 using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -212,6 +213,39 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
                 .Max();
         }
         return $"{parishCode}/{highestNumber + 1}";
+    }
+
+    public async Task<IReadOnlyCollection<Route>> GetClosedRoutes(CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        // Get closed routes that are due to reopen within a week
+        var today = LocalDate.FromDateTime(DateTime.UtcNow.Date);
+        var cutoff = today.PlusDays(7);
+
+        return await context.Routes
+            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => r.ClosureEndDate != null)
+            .Where(r => r.ClosureEndDate < cutoff)
+            .ToArrayAsync(cancellationToken: ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<IReadOnlyCollection<Route>> GetClosedRoutesForTeam(List<int> teamId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        //Get closed routes that are due to reopen within a week
+        var today = LocalDate.FromDateTime(DateTime.UtcNow.Date);
+        var cutoff = today.PlusDays(7);
+
+        return await context.Routes
+            .Where(r => r.MaintenanceTeamId != null && teamId.Contains(r.MaintenanceTeamId.Value))
+            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => r.ClosureEndDate != null)
+            .Where(r => r.ClosureEndDate < cutoff)
+            .ToArrayAsync(cancellationToken: ct)
+            .ConfigureAwait(false);
     }
 
     public async Task<bool> RouteExists(string RouteCode, CancellationToken ct = default)
