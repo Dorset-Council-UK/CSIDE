@@ -24,7 +24,7 @@
 {
     <PageTitle>@localizer["Bridge Survey Details Title", $"{IDPrefixOptions.Value.Infrastructure}{Survey.InfrastructureItemId}/{SurveyId}"]</PageTitle>
 
-    <AuthorizeView Policy="IsSurveyor" Resource="Survey" Context="SurveyDetailsView">
+    <AuthorizeView Roles="Administrator, RoW Officer, Ranger" Resource="Survey" Context="SurveyDetailsView">
         <NotAuthorized>
             <AccessDenied></AccessDenied>
         </NotAuthorized>
