@@ -35,7 +35,6 @@ namespace CSIDE.Data.Services
             return await context.PPOApplication
                 .AsNoTracking()
                 .IgnoreAutoIncludes()
-                .AsSplitQuery()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
         }
@@ -441,7 +440,6 @@ namespace CSIDE.Data.Services
                 .OrderBy(p => p.Id)
                 .Skip(skip)
                 .Take(take)
-                .AsSplitQuery()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
