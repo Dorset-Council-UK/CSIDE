@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace CSIDE.API.Models;
 
@@ -15,23 +15,14 @@ internal class SecurityOperationTransformer : IOpenApiOperationTransformer
 
         if (authorizeData != null)
         {
-            operation.Security =
-            [
-                new()
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "ApiKey"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                }
-            ];
+            operation.Security ??= [];
+            
+            // Add security requirement with OR logic (either header OR query parameter)
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("ApiKeyHeader", context.Document)] = [],
+                [new OpenApiSecuritySchemeReference("ApiKeyQuery", context.Document)] = []
+            });
         }
 
         return Task.CompletedTask;
