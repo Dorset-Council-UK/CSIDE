@@ -17,7 +17,7 @@
 		{
 			<div class="mb-3">
 				<fieldset>
-					<legend class="form-check-label fs-6">@localizer["Landowner Deposit Type Label"]</legend>
+					<legend class="form-label fs-6">@localizer["Landowner Deposit Type Label"]</legend>
 
 					@foreach (var LandownerDepositType in LandownerDepositTypeNames)
 					{
@@ -35,8 +35,8 @@
 		}
 
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="received-date">@localizer["Landowner Deposit Received Date Label"]</label>
+			<label class="form-label" for="received-date">@localizer["Landowner Deposit Received Date Label"]</label>
+			<div class=" col-sm-4 col-md-6 col-lg-4">
 				@{
 					string ReceivedDateStringRepresentation = "";
 					if (LandownerDeposit.ReceivedDate.HasValue)
@@ -49,13 +49,13 @@
 			<ValidationMessage For="() => LandownerDeposit.ReceivedDate" />
 		</div>
 
-		<div class="mb-3 row">
+		<div class="mb-3">
 			<label class="form-label" for="location-description">@localizer["Landowner Deposit Location Description Label"]</label>
 			<InputTextArea id="location-description" class="form-control" @bind-Value="LandownerDeposit.Location"></InputTextArea>
 			<ValidationMessage For="() => LandownerDeposit.Location" />
 		</div>
 
-		<div class="mb-3 row">
+		<div class="mb-3">
 			<div class="form-check">
 				<InputCheckbox id="form-completed" class="form-check-input" @bind-Value="LandownerDeposit.FormCompleted"></InputCheckbox>
 				<label class="form-check-label" for="form-completed">@localizer["Landowner Deposit Completed Correctly Label"]</label>
@@ -63,7 +63,7 @@
 			</div>
 		</div>
 
-		<div class="mb-3 row">
+		<div class="mb-3">
 			<div class="form-check">
 				<InputCheckbox id="map-correct" class="form-check-input" @bind-Value="LandownerDeposit.MapCorrect"></InputCheckbox>
 				<label class="form-check-label" for="map-correct">@localizer["Landowner Deposit Map Correct Label"]</label>
@@ -71,7 +71,7 @@
 			</div>
 		</div>
 
-		<div class="mb-3 row">
+		<div class="mb-3">
 			<div class="form-check">
 				<InputCheckbox id="fee-paid" class="form-check-input" @bind-Value="LandownerDeposit.FeePaid"></InputCheckbox>
 				<label class="form-check-label" for="fee-paid">@localizer["Landowner Deposit Fee Paid Label"]</label>
@@ -79,7 +79,7 @@
 			</div>
 		</div>
 
-		<div class="mb-3 row">
+		<div class="mb-3">
 			<div class="form-check">
 				<InputCheckbox id="all-signed" class="form-check-input" @bind-Value="LandownerDeposit.AllSigned"></InputCheckbox>
 				<label class="form-check-label" for="all-signed">@localizer["Landowner Deposit Signed Label"]</label>
@@ -88,8 +88,8 @@
 		</div>
 
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="acknowledged-date">@localizer["Landowner Deposit Date Acknowledged Label"]</label>
+			<label class="form-label" for="acknowledged-date">@localizer["Landowner Deposit Date Acknowledged Label"]</label>
+			<div class=" col-sm-4 col-md-6 col-lg-4">
 				@{
 					string AcknowledgeDateStringRepresentation = "";
 					if (LandownerDeposit.DateAcknowledged.HasValue)
@@ -111,8 +111,8 @@
 		</div>
 		
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
 			<label class="form-label" for="paid-in-date">@localizer["Landowner Deposit Cheque Paid In Label"]</label>
+			<div class="col-sm-4 col-md-6 col-lg-4">
 				@{
 					string ChequePaidDateStringRepresentation = "";
 					if (LandownerDeposit.ChequePaidInDate.HasValue)
@@ -126,8 +126,8 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="notice-drafted-date">@localizer["Landowner Deposit Notice Drafted Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="notice-drafted-date">@localizer["Landowner Deposit Notice Drafted Label"]</label>
 				@{
 					string NoticeDraftedDateStringRepresentation = "";
 					if (LandownerDeposit.NoticeDrafted.HasValue)
@@ -141,8 +141,8 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="website-notice-date">@localizer["Landowner Deposit Website Notice Published Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="website-notice-date">@localizer["Landowner Deposit Website Notice Published Label"]</label>
 				@{
 					string WebsiteNoticeDateStringRepresentation = "";
 					if (LandownerDeposit.WebsiteNoticePublished.HasValue)
@@ -156,8 +156,8 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="email-notice-date">@localizer["Landowner Deposit Email Notice Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="email-notice-date">@localizer["Landowner Deposit Email Notice Label"]</label>
 				@{
 					string EmailNoticeDateStringRepresentation = "";
 					if (LandownerDeposit.EmailNoticeSent.HasValue)
@@ -171,8 +171,8 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="onsite-notice-date">@localizer["Landowner Deposit Onsite Notice Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="onsite-notice-date">@localizer["Landowner Deposit Onsite Notice Label"]</label>
 				@{
 					string OnsiteNoticeDateStringRepresentation = "";
 					if (LandownerDeposit.OnsiteNoticeErected.HasValue)
@@ -186,8 +186,8 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="website-entry-date">@localizer["Landowner Deposit Website Entry Printed Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="website-entry-date">@localizer["Landowner Deposit Website Entry Printed Label"]</label>
 				@{
 					string WebsiteEntryAddedDateStringRepresentation = "";
 					if (LandownerDeposit.WebsiteEntryAdded.HasValue)
@@ -201,8 +201,8 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="archive-date">@localizer["Landowner Deposit Archive Date Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="archive-date">@localizer["Landowner Deposit Archive Date Label"]</label>
 				@{
 					string ArchiveDateStringRepresentation = "";
 					if (LandownerDeposit.SentToArchive.HasValue)
