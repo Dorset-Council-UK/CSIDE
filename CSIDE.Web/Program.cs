@@ -1,3 +1,4 @@
+using ClosedXML.Excel;
 using CSIDE.Authorization;
 using CSIDE.Data;
 using CSIDE.Data.Services;
@@ -8,8 +9,11 @@ using CSIDE.Web.Components;
 using CSIDE.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using NodaTime;
+using System.ComponentModel;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +93,65 @@ if (options is not null && options.UseHttpsRedirection)
 {
     app.UseHttpsRedirection();
 }
+
+app.MapGet("/api/ppo/export", async (HttpContext http, [FromServices] IPPOService ppoService) =>
+{
+    // Parse query parameters as needed
+    // Fetch all results matching the current filters (no paging)
+    var results = await ppoService.GetPPOApplicationsBySearchParameters(
+        ParishIds: null,
+        ParishId: null,
+        ApplicationTypeId: null,
+        ApplicationCaseStatusId: null,
+        ApplicationIntentId: null,
+        ApplicationPriorityId: null,
+        Location: null,
+        ReceivedDateFrom: null,
+        ReceivedDateTo: null,
+        IsPublic: null,
+        OrderBy: "Id",
+        OrderDirection: ListSortDirection.Descending,
+        PageNumber: 1,
+        PageSize: int.MaxValue,
+        ct: http.RequestAborted);
+
+    using var workbook = new ClosedXML.Excel.XLWorkbook();
+    var worksheet = workbook.Worksheets.Add("PPO Applications");
+
+    // Add headers
+    worksheet.Cell(1, 1).Value = "Reference Number";
+    worksheet.Cell(1, 2).Value = "Application Type";
+    worksheet.Cell(1, 3).Value = "Received Date";
+    worksheet.Cell(1, 4).Value = "Application Details";
+    worksheet.Cell(1, 5).Value = "Parish";
+    worksheet.Cell(1, 6).Value = "Case Status";
+
+    var headerStyle = worksheet.Range("A1:F1");
+    headerStyle.Style.Font.Bold = true;
+
+    // Add data rows
+    int row = 2;
+    foreach (var app in results.Results)
+    {
+        worksheet.Cell(row, 1).Value = app.Id;
+        worksheet.Cell(row, 2).Value = app.ApplicationType?.Name;
+        worksheet.Cell(row, 3).Value = app.ReceivedDate?.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture);
+        worksheet.Cell(row, 4).Value = app.ApplicationDetails;
+        worksheet.Cell(row, 5).Value = string.Join(", ", app.PPOParishes.Select(p => p.Parish.Name));
+        worksheet.Cell(row, 6).Value = app.CaseStatus?.Name;
+        row++;
+    }
+
+    worksheet.Columns().AdjustToContents();
+
+    using var stream = new MemoryStream();
+    workbook.SaveAs(stream);
+    stream.Position = 0;
+
+    http.Response.Headers.ContentDisposition = "attachment; filename=PPOApplications.xlsx";
+    http.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    await http.Response.BodyWriter.WriteAsync(stream.ToArray(), http.RequestAborted);
+});
 
 app.MapStaticAssets();
 app.UseAuthentication();

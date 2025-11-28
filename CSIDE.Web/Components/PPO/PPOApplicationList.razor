@@ -7,7 +7,11 @@
 @inject NavigationManager navigationManager
 @inject IPPOService ppoService
 
+<div class="mb-2">
 <a href="PPO#search-form">@localizer["Search Again Label"]</a>
+ |
+    <a href="#" @onclick="ExportResultsAsync">Export results</a>
+</div>
 
 <Grid TItem="PPOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
@@ -117,4 +121,28 @@ Responsive="true">
     }
 
     private void OnRowClick(GridRowEventArgs<PPOApplication> args) => navigationManager.NavigateTo($"PPO/Details/{args.Item.Id}");
+
+    private async Task ExportResultsAsync()
+    {
+        // Build the query string with current filter parameters
+        var query = new Dictionary<string, object?>
+        {
+            ["ParishIds"] = ParishIds,
+            ["ParishId"] = ParishId,
+            ["Location"] = Location,
+            ["ApplicationCaseStatusId"] = ApplicationCaseStatusId,
+            ["ApplicationTypeId"] = ApplicationTypeId,
+            ["ApplicationIntentId"] = ApplicationIntentId,
+            ["ApplicationPriorityId"] = ApplicationPriorityId,
+            ["ReceivedDateFrom"] = ReceivedDateFrom,
+            ["ReceivedDateTo"] = ReceivedDateTo,
+        };
+
+        // Build the query string for navigation
+        var queryString = string.Join("&", query.Where(kv => kv.Value != null)
+            .Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value?.ToString() ?? "")}"));
+
+        // Navigate to the export endpoint
+        navigationManager.NavigateTo($"/api/ppo/export?{queryString}", forceLoad: true);
+    }
 }
