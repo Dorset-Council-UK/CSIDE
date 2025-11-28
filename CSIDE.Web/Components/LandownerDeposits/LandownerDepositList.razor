@@ -25,7 +25,7 @@
 
     <GridColumns>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
-            <a href="landowner-deposits/Details/@context.Id/@context.SecondaryId">@IDPrefixOptions.Value.LandownerDeposit@context.Id/@context.SecondaryId</a>
+            <a href="landowner-deposits/Details/@context.Id/@context.SecondaryId" @onclick:stopPropagation>@IDPrefixOptions.Value.LandownerDeposit@context.Id/@context.SecondaryId</a>
         </GridColumn>
         <GridColumn TItem="LandownerDeposit" Filterable="false" HeaderText="@localizer["Landowner Deposit Type Label"]" PropertyName="LandownerDepositTypes">
             @foreach (var landownerDepositType in context.LandownerDepositTypes)

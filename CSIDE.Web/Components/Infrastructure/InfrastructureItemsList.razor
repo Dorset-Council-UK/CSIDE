@@ -22,7 +22,7 @@
 
     <GridColumns>
         <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Infrastructure ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
-            <a href="Infrastructure/Details/@context.Id">@IDPrefixOptions.Value.Infrastructure@context.Id</a>
+            <a href="Infrastructure/Details/@context.Id" @onclick:stopPropagation>@IDPrefixOptions.Value.Infrastructure@context.Id</a>
         </GridColumn>
         <GridColumn TItem="InfrastructureItem" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty" SortString="Parish">
             @context.Parish?.Name

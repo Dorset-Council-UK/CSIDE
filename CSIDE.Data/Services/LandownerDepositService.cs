@@ -331,7 +331,6 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             .ThenBy(p => p.SecondaryId)
             .Skip(skip)
             .Take(take)
-            .AsSplitQuery()
             .ToListAsync(ct)
             .ConfigureAwait(false);
 

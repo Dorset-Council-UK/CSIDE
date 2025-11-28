@@ -22,7 +22,7 @@
 
     <GridColumns>
         <GridColumn TItem="Route" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteCode" SortKeySelector="item => item.RouteCode" SortString="RouteId">
-            <a href="rights-of-way/Details/@context.RouteCode">@context.RouteCode</a>
+            <a href="rights-of-way/Details/@context.RouteCode" @onclick:stopPropagation>@context.RouteCode</a>
         </GridColumn>
         <GridColumn TItem="Route" HeaderText="@localizer["Parish Label"]" PropertyName="Parish" SortKeySelector="item => item.Parish != null ? item.Parish.Name : string.Empty" SortString="Parish">
             @context.Parish?.Name

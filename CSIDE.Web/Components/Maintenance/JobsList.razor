@@ -24,7 +24,7 @@ Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Job ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
-            <a href="Maintenance/Details/@context.Id">@IDPrefixOptions.Value.Maintenance@context.Id</a>
+            <a href="Maintenance/Details/@context.Id" @onclick:stopPropagation>@IDPrefixOptions.Value.Maintenance@context.Id</a>
         </GridColumn>
         <GridColumn TItem="Job" Filterable="false" HeaderText="@localizer["Route ID Label"]" PropertyName="RouteId" SortKeySelector="item => item.RouteId" SortString="RouteId">
             @context.RouteId

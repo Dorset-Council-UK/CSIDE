@@ -454,7 +454,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .OrderBy(p => p.Id)
             .Skip(skip)
             .Take(take)
-            .AsSplitQuery()
             .ToListAsync(ct)
             .ConfigureAwait(false);
 

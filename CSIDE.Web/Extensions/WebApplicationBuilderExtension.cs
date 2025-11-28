@@ -204,6 +204,7 @@ internal static class WebApplicationBuilderExtension
                 x.UseNodaTime();
                 x.UseNetTopologySuite();
                 x.MapEnum<SurveyStatus>("survey_status");
+                x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             });
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
         });

@@ -134,6 +134,9 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
+            .IgnoreAutoIncludes()
+            .Include(s => s.Infrastructure)
+            .ThenInclude(i => i!.Parish)
             .ToArrayAsync(ct)
             .ConfigureAwait(false);
     }
@@ -143,6 +146,9 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
             .Where(s => s.SurveyorId == userId)
+            .IgnoreAutoIncludes()
+            .Include(s => s.Infrastructure)
+            .ThenInclude(i => i!.Parish)
             .ToArrayAsync(ct)
             .ConfigureAwait(false);
     }
@@ -152,6 +158,9 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.BridgeSurveys
             .Where(s => s.InfrastructureItemId == infrastructureItemId && s.Status == SurveyStatus.Verified)
+            .IgnoreAutoIncludes()
+            .Include(s => s.Infrastructure)
+            .ThenInclude(i => i!.Parish)
             .ToArrayAsync(ct)
             .ConfigureAwait(false);
     }
