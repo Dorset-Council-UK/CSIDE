@@ -1,7 +1,7 @@
 ﻿@using CSIDE.Data.Models.LandownerDeposits
 @using System.Globalization
 
-<div class="card comment-card bg-light mb-1" id="event-@Event.Id">
+<div class="card comment-card bg-light-subtle mb-1" id="event-@Event.Id">
     <div class="card-header d-flex justify-content-between">
         <span class="@(IsEditing ? "visually-hidden" : "")">
             @Event.EventDate.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture)

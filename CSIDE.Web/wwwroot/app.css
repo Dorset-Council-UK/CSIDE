@@ -4,6 +4,9 @@ iframe {
 a, .btn-link {
     color: #006bb7;
 }
+[data-bs-theme="dark"] a, [data-bs-theme="dark"] .btn-link{
+  color:white;
+}
 .btn-primary {
   color: #fff;
   background-color: var(--primary-color);
@@ -26,6 +29,9 @@ a, .btn-link {
   --bs-btn-disabled-color: var(--primary-color);
   --bs-btn-disabled-border-color: var(--primary-color);
 }
+[data-bs-theme="dark"] .btn-outline-primary{
+  color:white;
+}
 .btn-outline-primary:hover {
   color:#fff;
   background-color: var(--primary-color-dark);
@@ -46,8 +52,11 @@ a, .btn-link {
   background-color: var(--primary-color-dark);
   border-color: var(--primary-color-dark);
 }
-.form-label{
-  font-weight:500;
+[data-bs-theme="dark"] .btn-outline-secondary {
+  --bs-btn-color: white;
+}
+.form-label {
+  font-weight: 500;
 }
 .form-switch > label{
   cursor:pointer;
@@ -82,9 +91,6 @@ fieldset.valid.modified:not([type=checkbox]){
   --bs-pagination-hover-color: var(--primary-color-dark);
   --bs-pagination-active-border-color: var(--primary-color-dark);
 }
-.list-group-item-action{
-  color:#000;
-}
 .comment-field {
   white-space: pre-line;
 }
@@ -102,9 +108,11 @@ fieldset.valid.modified:not([type=checkbox]){
 .loading-indicator-overlay p {
   background-color: rgba(255,255,255,0.8);
 }
-
+[data-bs-theme="dark"] .loading-indicator-overlay p, [data-bs-theme="dark"] .loading-indicator-overlay {
+  background-color: rgba(0,0,0,0.6);
+}
 h1:focus {
-    outline: none;
+  outline: none;
 }
 
 .valid.modified:not([type=checkbox]) {
