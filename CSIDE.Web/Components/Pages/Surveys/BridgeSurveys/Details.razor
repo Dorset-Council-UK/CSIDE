@@ -90,18 +90,66 @@
                                 <th class="w-25">@localizer["Bridge Survey Beams Short Label"]</th>
                                 <td>@(Survey.BeamMaterial?.Name ?? localizer["Not Provided Label"])</td>
                             </tr>
+                            @if (Survey.BeamMaterial is not null && Survey.BeamMaterial.IsWood)
+                            {
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Num Timbers Short Label"]: @(Survey.NumBeamTimbers.HasValue? localizer[$"{Survey.NumBeamTimbers}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Timbers Size Short Label"]: @(Survey.BeamTimbersSize is not null ? localizer[$"{Survey.BeamTimbersSize}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                            }
                             <tr>
                                 <th class="w-25">@localizer["Bridge Survey Decking Short Label"]</th>
                                 <td>@(Survey.DeckingMaterial?.Name ?? localizer["Not Provided Label"])</td>
                             </tr>
+                            @if (Survey.DeckingMaterial is not null && Survey.DeckingMaterial.IsWood)
+                            {
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Num Boards Short Label"]: @(Survey.NumDeckingBoards.HasValue? localizer[$"{Survey.NumDeckingBoards}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Timbers Size Short Label"]: @(Survey.DeckingBoardsSize is not null ? localizer[$"{Survey.DeckingBoardsSize}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Timbers Length Short Label"]: @(Survey.DeckingBoardsLength.HasValue? localizer[$"{Survey.DeckingBoardsLength} {localizer["Metres Label"]}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                            }
                             <tr>
                                 <th class="w-25">@localizer["Bridge Survey Handrail Short Label"]</th>
                                 <td>@(Survey.HandrailMaterial?.Name ?? localizer["Not Provided Label"])</td>
                             </tr>
+                            @if (Survey.HandrailMaterial is not null && Survey.HandrailMaterial.IsWood)
+                            {
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Handrails In Place Short Label"]: <NullableBooleanDisplay Value="Survey.HandrailsInPlace"></NullableBooleanDisplay></td>
+                                </tr>
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Timbers Size Short Label"]: @(Survey.HandrailTimbersSize is not null ? localizer[$"{Survey.HandrailTimbersSize}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                            }
                             <tr>
                                 <th class="w-25">@localizer["Bridge Survey Handrail Posts Short Label"]</th>
                                 <td>@(Survey.HandrailPostsMaterial?.Name ?? localizer["Not Provided Label"])</td>
                             </tr>
+                            @if (Survey.HandrailPostsMaterial is not null && Survey.HandrailPostsMaterial.IsWood)
+                            {
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Num Timbers Short Label"]: @(Survey.NumHandrailPostsTimbers is not null ? localizer[$"{Survey.NumHandrailPostsTimbers}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                                <tr>
+                                    <th class="w-25"></th>
+                                    <td>@localizer["Bridge Timbers Size Short Label"]: @(Survey.HandrailPostsTimbersSize is not null ? localizer[$"{Survey.HandrailPostsTimbersSize}"] : localizer["Not Provided Label"])</td>
+                                </tr>
+                            }
                             <tr>
                                 <th class="w-25">@localizer["Bridge Survey Bank Seat Short Label"]</th>
                                 <td>@(Survey.BankSeatMaterial?.Name ?? localizer["Not Provided Label"])</td>
