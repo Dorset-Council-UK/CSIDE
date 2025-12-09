@@ -19,7 +19,7 @@ namespace CSIDE.Shared.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -1443,6 +1443,15 @@ namespace CSIDE.Shared.Properties {
         public static string Bridge_Survey_What_Happens_Next_Text {
             get {
                 return ResourceManager.GetString("Bridge Survey What Happens Next Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length of boards.
+        /// </summary>
+        public static string Bridge_Timbers_Length_Short_Label {
+            get {
+                return ResourceManager.GetString("Bridge Timbers Length Short Label", resourceCulture);
             }
         }
         
@@ -2964,6 +2973,15 @@ namespace CSIDE.Shared.Properties {
         public static string Legal_Status_Label {
             get {
                 return ResourceManager.GetString("Legal Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to metres.
+        /// </summary>
+        public static string Length_Unit {
+            get {
+                return ResourceManager.GetString("Length Unit", resourceCulture);
             }
         }
         
