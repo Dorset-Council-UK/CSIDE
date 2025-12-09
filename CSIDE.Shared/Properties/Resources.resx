@@ -1794,7 +1794,4 @@
   <data name="Bridge Timbers Length Short Label" xml:space="preserve">
     <value>Length of boards</value>
   </data>
-  <data name="Length Unit" xml:space="preserve">
-    <value>metres</value>
-  </data>
 </root>

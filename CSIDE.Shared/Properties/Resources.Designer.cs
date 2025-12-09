@@ -2977,15 +2977,6 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to metres.
-        /// </summary>
-        public static string Length_Unit {
-            get {
-                return ResourceManager.GetString("Length Unit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Linked item ID.
         /// </summary>
         public static string Linked_Item_ID_Label {
