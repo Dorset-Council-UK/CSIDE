@@ -1802,4 +1802,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Rights of Way Planned Reopening" xml:space="preserve">
     <value>Ailagor cynlluniedig</value>
   </data>
+  <data name="Bridge Timbers Length Short Label" xml:space="preserve">
+    <value>Hyd byrddau</value>
+  </data>
 </root>
