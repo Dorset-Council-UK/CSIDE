@@ -24,6 +24,9 @@ main {
     display: flex;
     align-items: center;
 }
+[data-bs-theme="dark"] .top-row {
+  background-color: var(--bs-body-bg);
+}
 
 @media (max-width: 768px) {
 

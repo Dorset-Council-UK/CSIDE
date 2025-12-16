@@ -9,7 +9,7 @@
 {
     @if(Media.Format == MediaType.Image)
     {
-        <div class="card my-2 bg-light">
+        <div class="card my-2 bg-light-subtle">
             <a href="@GetImageUrlWithCacheBuster()" class="blueimp-img">
                 <img src="@GetImageUrlWithCacheBuster()" class="img-fluid" style="@(_isRotating ? "opacity: 0.5;" : "")" />
             </a>

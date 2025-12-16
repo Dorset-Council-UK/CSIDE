@@ -1,7 +1,7 @@
 ﻿@using CSIDE.Data.Models.Maintenance
 @using System.Globalization
 
-<div class="card comment-card bg-light mb-1" id="comment-@Comment.Id">
+<div class="card comment-card bg-light-subtle mb-1" id="comment-@Comment.Id">
     <div class="card-header d-flex justify-content-between">
         <span>
             @localizer["Comment Author Title", (string.IsNullOrEmpty(Comment.AuthorName) ? "" : Comment.AuthorName), Comment.CreatedAt.InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).LocalDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)]

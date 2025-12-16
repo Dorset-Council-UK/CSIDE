@@ -13,7 +13,7 @@
             @foreach (DMMOOrder order in Orders.OrderBy(c => c.OrderId))
             {
                 <div class="col-lg-6 my-2">
-                    <div class="card bg-light h-100" id="order-@order.OrderId">
+                    <div class="card bg-light-subtle h-100" id="order-@order.OrderId">
                         <div class="card-header">
                             <strong>@(order.DMMOApplicationId)/@(order.OrderId)</strong>
                         </div>
