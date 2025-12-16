@@ -8,7 +8,7 @@ namespace Microsoft.AspNetCore.Builder;
 
 internal static class OpenApiExtensions
 {
-    internal static void AddOpenApiSwagger(this IServiceCollection services)
+    internal static void AddOpenApi(this IServiceCollection services)
     {
         foreach (var versionInfo in Versions.All)
         {
@@ -18,23 +18,5 @@ internal static class OpenApiExtensions
                 options.AddOperationTransformer<SecurityOperationTransformer>();
             });
         }
-    }
-
-    internal static void MapSwaggerUI(this WebApplication app)
-    {
-        var options = app.Services.GetRequiredService<IOptions<CSIDEOptions>>().Value;
-        var pathBase = string.IsNullOrEmpty(options.PathBase) ? "/" : $"/{options.PathBase}";
-
-        app.UseSwaggerUI(swaggerOptions =>
-        {
-            swaggerOptions.InjectStylesheet($"{pathBase}css/custom.css");
-            swaggerOptions.DocumentTitle = "CSIDE API";
-            swaggerOptions.EnableTryItOutByDefault();
-            foreach (var versionInfo in Versions.All)
-            {
-                swaggerOptions.SwaggerEndpoint($"{pathBase}openapi/{versionInfo.DocumentName}.json", $"CSIDE API | {versionInfo.DocumentName}");
-            }
-            
-        });
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using NetTopologySuite.IO.Converters;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddApiHealthChecks();
 builder.Services.AddVersioning();
 
 // Add OpenAPI/Swagger
-builder.Services.AddOpenApiSwagger();
+OpenApiExtensions.AddOpenApi(builder.Services);
 
 // Add db, options, telemetry and key vault
 builder
@@ -93,8 +94,11 @@ app.UsePathBase($"/{options?.PathBase}");
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    // Map Swagger UI
-    app.MapSwaggerUI();
+
+    app.MapGet("/swagger", () => Results.Redirect("/scalar", permanent: false));
+
+    // Map Scalar
+    app.MapScalarApiReference();
 }
 
 if (options is not null && options.UseHttpsRedirection)
