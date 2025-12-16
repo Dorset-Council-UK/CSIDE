@@ -55,6 +55,9 @@ a, .btn-link {
 [data-bs-theme="dark"] .btn-outline-secondary {
   --bs-btn-color: white;
 }
+#bb-theme {
+  color: var(--bs-nav-link-color)
+}
 .form-label {
   font-weight: 500;
 }
