@@ -32,7 +32,7 @@ namespace CSIDE.Data.Models.PPO
         public int CaseStatusId { get; set; }
 
         //navigation properties
-        public ApplicationType? ApplicationType { get; set; }
+        public PPOLegislation? ApplicationType { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
         public ApplicationPriority? Priority { get; set; } = null!;
         //one-many relationships

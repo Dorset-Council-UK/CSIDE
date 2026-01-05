@@ -53,7 +53,7 @@ namespace CSIDE.Data
 
         public DbSet<PPOApplication> PPOApplication { get; set; }
         public DbSet<Models.PPO.ApplicationCaseStatus> PPOApplicationCaseStatuses { get; set; }
-        public DbSet<Models.PPO.ApplicationType> PPOApplicationTypes { get; set; }
+        public DbSet<Models.PPO.PPOLegislation> PPOApplicationTypes { get; set; }
         public DbSet<ApplicationIntent> PPOApplicationIntents { get; set; }
         public DbSet<ApplicationPriority> PPOApplicationPriorities { get; set; }
 
