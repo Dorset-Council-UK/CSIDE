@@ -13,7 +13,7 @@ namespace CSIDE.Web.Components.PPO
         [Parameter, EditorRequired]
         public IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses { get; set; }
         [Parameter, EditorRequired]
-        public IReadOnlyCollection<PPOLegislation>? ApplicationTypes { get; set; }
+        public IReadOnlyCollection<PPOLegislation>? Legislation { get; set; }
         [Parameter, EditorRequired]
         public IReadOnlyCollection<ApplicationIntent>? Intents { get; set; }
         [Parameter, EditorRequired]

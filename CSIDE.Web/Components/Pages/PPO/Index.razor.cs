@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.Pages.PPO
         private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
         private IReadOnlyCollection<ApplicationIntent>? Intents = [];
         private IReadOnlyCollection<ApplicationPriority>? Priorities = [];
-        private IReadOnlyCollection<PPOLegislation>? ApplicationTypes = [];
+        private IReadOnlyCollection<PPOLegislation>? Legislation = [];
         private IReadOnlyCollection<Parish> Parishes { get; set; } = [];
 
         private string? PPOSearchErrorMessage { get; set; }
@@ -36,7 +36,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
             Intents = await ppoService.GetPPOApplicationIntents();
             Priorities = await ppoService.GetPPOApplicationPriorities();
-            ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
+            Legislation = await ppoService.GetPPOLegislationOptions();
 
             SearchParams = new();
         }

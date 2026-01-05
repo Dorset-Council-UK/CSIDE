@@ -19,7 +19,7 @@ namespace CSIDE.Data.Validators.PPO
                 s.ReceivedDateTo.HasValue ||
                 s.ApplicationCaseStatusId.HasValue ||
                 s.ApplicationIntentId.HasValue ||
-                s.ApplicationTypeId.HasValue ||
+                s.LegislationId.HasValue ||
                 s.ApplicationPriorityId.HasValue)
                 .WithMessage(_localizer["Search Validation At Least One Message"]);
 

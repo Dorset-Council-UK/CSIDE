@@ -136,12 +136,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="type-search">@localizer["Application Type Label"]</label>
-                    <InputSelect id="type-search" class="form-select" @bind-Value="SearchParams.ApplicationTypeId">
-                        @if (ApplicationTypes is not null)
+                    <label class="form-label" for="type-search">@localizer["PPO Legislation Label"]</label>
+                    <InputSelect id="type-search" class="form-select" @bind-Value="SearchParams.LegislationId">
+                        @if (Legislation is not null)
                         {
                             <option value=""></option>
-                            @foreach (var type in ApplicationTypes.OrderBy(t => t.Name))
+                            @foreach (var type in Legislation.OrderBy(t => t.Name))
                             {
                                 <option value="@type.Id">@type.Name</option>
                             }

@@ -27,12 +27,12 @@ namespace CSIDE.Data.Models.PPO
         public required MultiLineString Geom { get; set; }
 
         //linked properties
-        public int ApplicationTypeId { get; set; }
+        public int LegislationId { get; set; }
         public int PriorityId { get; set; }
         public int CaseStatusId { get; set; }
 
         //navigation properties
-        public PPOLegislation? ApplicationType { get; set; }
+        public PPOLegislation? Legislation { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
         public ApplicationPriority? Priority { get; set; } = null!;
         //one-many relationships

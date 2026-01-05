@@ -11,7 +11,7 @@ namespace CSIDE.Data.Services
         Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? LegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,
@@ -27,7 +27,7 @@ namespace CSIDE.Data.Services
         Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default);
         Task<PPOOrder?> GetPPOOrderById(int orderId, int applicationId, CancellationToken ct = default);
         Task<IReadOnlyCollection<ApplicationCaseStatus>> GetPPOCaseStatusOptions(CancellationToken ct = default);
-        Task<IReadOnlyCollection<PPOLegislation>> GetPPOApplicationTypeOptions(CancellationToken ct = default);
+        Task<IReadOnlyCollection<PPOLegislation>> GetPPOLegislationOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<ApplicationIntent>> GetPPOApplicationIntents(CancellationToken ct = default);
         Task<IReadOnlyCollection<ApplicationPriority>> GetPPOApplicationPriorities(CancellationToken ct = default);
         Task<IReadOnlyCollection<PPOMediaType>> GetPPOMediaTypes(CancellationToken ct = default);
@@ -55,7 +55,7 @@ namespace CSIDE.Data.Services
         Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? LegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,

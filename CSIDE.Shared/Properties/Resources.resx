@@ -729,8 +729,8 @@
   <data name="Case Status Label" xml:space="preserve">
     <value>Case status</value>
   </data>
-  <data name="Application Type Label" xml:space="preserve">
-    <value>Application type</value>
+  <data name="PPO Legislation Label" xml:space="preserve">
+    <value>Legislation</value>
   </data>
   <data name="Claimed Status Label" xml:space="preserve">
     <value>Claimed status</value>

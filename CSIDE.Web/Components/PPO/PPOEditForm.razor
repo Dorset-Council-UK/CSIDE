@@ -20,11 +20,11 @@
 
         <div class="mb-3 row">
             <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="app-type">@localizer["Application Type Label"]</label>
-                <InputSelect id="app-type" class="form-select" @bind-Value="PPOApplication.ApplicationTypeId">
-                    @if (ApplicationTypes is not null)
+                <label class="form-label" for="app-type">@localizer["PPO Legislation Label"]</label>
+                <InputSelect id="app-type" class="form-select" @bind-Value="PPOApplication.LegislationId">
+                    @if (Legislation is not null)
                     {
-                        @foreach (var type in ApplicationTypes.OrderBy(r => r.Name))
+                        @foreach (var type in Legislation.OrderBy(r => r.Name))
                         {
                             <option value="@type.Id">@type.Name</option>
                         }
@@ -32,7 +32,7 @@
 
                 </InputSelect>
             </div>
-            <ValidationMessage For="() => PPOApplication.ApplicationTypeId" />
+            <ValidationMessage For="() => PPOApplication.LegislationId" />
         </div>
 
         @if (Intents is not null && Intents.Count != 0)

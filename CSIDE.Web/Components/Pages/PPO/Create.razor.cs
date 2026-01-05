@@ -19,7 +19,7 @@ namespace CSIDE.Web.Components.Pages.PPO
     {
         private PPOApplication? PPOApplication { get; set; }
         private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
-        private IReadOnlyCollection<PPOLegislation>? ApplicationTypes = [];
+        private IReadOnlyCollection<PPOLegislation>? Legislation = [];
         private IReadOnlyCollection<ApplicationIntent>? Intents = [];
         private IReadOnlyCollection<ApplicationPriority>? Priorities = [];
         private List<int> SelectedIntents { get; set; } = [];
@@ -45,7 +45,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             try
             {
                 CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
-                ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
+                Legislation = await ppoService.GetPPOLegislationOptions();
                 Intents = await ppoService.GetPPOApplicationIntents();
                 Priorities = await ppoService.GetPPOApplicationPriorities();
 

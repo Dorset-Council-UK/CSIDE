@@ -10,14 +10,14 @@ namespace CSIDE.Data.EntitiesConfiguration
         {
 
             builder.Property(x => x.ApplicationDetails).IsRequired();
-            builder.Property(x => x.ApplicationTypeId).IsRequired();
+            builder.Property(x => x.LegislationId).IsRequired();
             builder.Property(x => x.CaseStatusId).IsRequired();
             builder.Property(x => x.PriorityId).IsRequired();
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (multilinestring)");
             builder.Property(x => x.Version).IsRowVersion();
 
             builder
-                .Navigation(x => x.ApplicationType)
+                .Navigation(x => x.Legislation)
                 .AutoInclude();
 
             builder

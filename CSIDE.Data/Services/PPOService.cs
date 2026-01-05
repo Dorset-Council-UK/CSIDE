@@ -19,7 +19,7 @@ namespace CSIDE.Data.Services
         private static readonly Dictionary<string, Expression<Func<PPOApplication, object>>> SortExpressions = new()
         {
             { "Id", x => x.Id },
-            { "ApplicationType", x => x.ApplicationType.Name ?? string.Empty },
+            { "Legislation", x => x.Legislation.Name ?? string.Empty },
             { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
             { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
         };
@@ -42,7 +42,7 @@ namespace CSIDE.Data.Services
         public async Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? LegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,
@@ -77,9 +77,9 @@ namespace CSIDE.Data.Services
             {
                 query = query.Where(d => d.PPOParishes.Any(p => p.ParishId == parsedParishId));
             }
-            if (ApplicationTypeId is not null && int.TryParse(ApplicationTypeId, CultureInfo.InvariantCulture, out int parsedApplicationTypeId))
+            if (LegislationId is not null && int.TryParse(LegislationId, CultureInfo.InvariantCulture, out int parsedLegislationId))
             {
-                query = query.Where(d => d.ApplicationTypeId == parsedApplicationTypeId);
+                query = query.Where(d => d.LegislationId == parsedLegislationId);
             }
             if (ApplicationCaseStatusId is not null && int.TryParse(ApplicationCaseStatusId, CultureInfo.InvariantCulture, out int parsedApplicationCaseStatusId))
             {
@@ -191,11 +191,11 @@ namespace CSIDE.Data.Services
                 .ToArrayAsync(ct);
         }
 
-        public async Task<IReadOnlyCollection<PPOLegislation>> GetPPOApplicationTypeOptions(CancellationToken ct = default)
+        public async Task<IReadOnlyCollection<PPOLegislation>> GetPPOLegislationOptions(CancellationToken ct = default)
         {
             //TODO - cache this
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            return await context.PPOApplicationTypes
+            return await context.PPOLegislation
                 .AsNoTracking()
                 .OrderBy(p => p.Id)
                 .ToArrayAsync(ct);
@@ -435,7 +435,7 @@ namespace CSIDE.Data.Services
                 .IgnoreAutoIncludes()
                 .Include(d => d.CaseStatus)
                 .Include(d => d.Priority)
-                .Include(d => d.ApplicationType)
+                .Include(d => d.Legislation)
                 .Include(a => a.PPOParishes).ThenInclude(p => p.Parish)
                 .OrderBy(p => p.Id)
                 .Skip(skip)
@@ -467,7 +467,7 @@ namespace CSIDE.Data.Services
         public async Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? LegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,
@@ -483,7 +483,7 @@ namespace CSIDE.Data.Services
 
             var applications = await GetPPOApplicationsBySearchParameters(ParishIds,
                                                                           ParishId,
-                                                                          ApplicationTypeId,
+                                                                          LegislationId,
                                                                           ApplicationCaseStatusId,
                                                                           ApplicationIntentId,
                                                                           ApplicationPriorityId,
