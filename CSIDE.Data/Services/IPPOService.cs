@@ -11,7 +11,7 @@ namespace CSIDE.Data.Services
         Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? LegislationId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,
@@ -55,7 +55,7 @@ namespace CSIDE.Data.Services
         Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? LegislationId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,

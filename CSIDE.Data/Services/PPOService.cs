@@ -42,7 +42,7 @@ namespace CSIDE.Data.Services
         public async Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? LegislationId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,
@@ -77,9 +77,9 @@ namespace CSIDE.Data.Services
             {
                 query = query.Where(d => d.PPOParishes.Any(p => p.ParishId == parsedParishId));
             }
-            if (LegislationId is not null && int.TryParse(LegislationId, CultureInfo.InvariantCulture, out int parsedLegislationId))
+            if (ApplicationLegislationId is not null && int.TryParse(ApplicationLegislationId, CultureInfo.InvariantCulture, out int parsedApplicationLegislationId))
             {
-                query = query.Where(d => d.LegislationId == parsedLegislationId);
+                query = query.Where(d => d.LegislationId == parsedApplicationLegislationId);
             }
             if (ApplicationCaseStatusId is not null && int.TryParse(ApplicationCaseStatusId, CultureInfo.InvariantCulture, out int parsedApplicationCaseStatusId))
             {
@@ -195,7 +195,7 @@ namespace CSIDE.Data.Services
         {
             //TODO - cache this
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            return await context.PPOLegislation
+            return await context.PPOApplicationLegislation
                 .AsNoTracking()
                 .OrderBy(p => p.Id)
                 .ToArrayAsync(ct);
@@ -467,7 +467,7 @@ namespace CSIDE.Data.Services
         public async Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? LegislationId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
             string? ApplicationIntentId,
             string? ApplicationPriorityId,
@@ -483,7 +483,7 @@ namespace CSIDE.Data.Services
 
             var applications = await GetPPOApplicationsBySearchParameters(ParishIds,
                                                                           ParishId,
-                                                                          LegislationId,
+                                                                          ApplicationLegislationId,
                                                                           ApplicationCaseStatusId,
                                                                           ApplicationIntentId,
                                                                           ApplicationPriorityId,
