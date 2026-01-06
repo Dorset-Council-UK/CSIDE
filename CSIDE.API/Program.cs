@@ -95,7 +95,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 
-    app.MapGet("/swagger", () => Results.Redirect("/scalar", permanent: false));
+    app.MapGet("/swagger", () => Results.Redirect("scalar", permanent: false));
 
     // Map Scalar
     app.MapScalarApiReference(options =>
