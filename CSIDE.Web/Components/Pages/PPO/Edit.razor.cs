@@ -18,7 +18,7 @@ namespace CSIDE.Web.Components.Pages.PPO
         public int PPOApplicationId { get; set; }
         private PPOApplication? PPOApplication { get; set; }
         private IReadOnlyCollection<ApplicationCaseStatus> CaseStatuses = [];
-        private IReadOnlyCollection<PPOLegislation> Legislation = [];
+        private IReadOnlyCollection<ApplicationLegislation> Legislation = [];
         private IReadOnlyCollection<ApplicationIntent> Intents = [];
         private IReadOnlyCollection<ApplicationPriority> Priorities = [];
         private List<int> SelectedIntents { get; set; } = [];

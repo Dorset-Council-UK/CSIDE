@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.Pages.PPO
         private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
         private IReadOnlyCollection<ApplicationIntent>? Intents = [];
         private IReadOnlyCollection<ApplicationPriority>? Priorities = [];
-        private IReadOnlyCollection<PPOLegislation>? Legislation = [];
+        private IReadOnlyCollection<ApplicationLegislation>? Legislation = [];
         private IReadOnlyCollection<Parish> Parishes { get; set; } = [];
 
         private string? PPOSearchErrorMessage { get; set; }

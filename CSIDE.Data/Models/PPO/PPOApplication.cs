@@ -32,9 +32,10 @@ namespace CSIDE.Data.Models.PPO
         public int CaseStatusId { get; set; }
 
         //navigation properties
-        public PPOLegislation? Legislation { get; set; }
+        public ApplicationLegislation? Legislation { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
         public ApplicationPriority? Priority { get; set; } = null!;
+        
         //one-many relationships
         public ICollection<PPOOrder> Orders { get; } = [];
         public ICollection<PPOContact> PPOContacts { get; } = [];

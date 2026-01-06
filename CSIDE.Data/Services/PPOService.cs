@@ -191,7 +191,7 @@ namespace CSIDE.Data.Services
                 .ToArrayAsync(ct);
         }
 
-        public async Task<IReadOnlyCollection<PPOLegislation>> GetPPOLegislationOptions(CancellationToken ct = default)
+        public async Task<IReadOnlyCollection<ApplicationLegislation>> GetPPOLegislationOptions(CancellationToken ct = default)
         {
             //TODO - cache this
             await using var context = await contextFactory.CreateDbContextAsync(ct);
