@@ -98,7 +98,13 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/swagger", () => Results.Redirect("/scalar", permanent: false));
 
     // Map Scalar
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        options.Theme = ScalarTheme.Kepler;
+        options.Title = "CSIDE API Reference - Scalar";
+        options.DefaultOpenAllTags = true;
+        options.HideClientButton = true;
+    });
 }
 
 if (options is not null && options.UseHttpsRedirection)
