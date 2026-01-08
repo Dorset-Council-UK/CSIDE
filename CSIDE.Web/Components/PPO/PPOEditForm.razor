@@ -20,8 +20,8 @@
 
         <div class="mb-3 row">
             <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="app-type">@localizer["PPO Legislation Label"]</label>
-                <InputSelect id="app-type" class="form-select" @bind-Value="PPOApplication.LegislationId">
+                <label class="form-label" for="legislation">@localizer["PPO Legislation Label"]</label>
+                <InputSelect id="legislation" class="form-select" @bind-Value="PPOApplication.LegislationId">
                     @if (Legislation is not null)
                     {
                         @foreach (var type in Legislation.OrderBy(r => r.Name))
