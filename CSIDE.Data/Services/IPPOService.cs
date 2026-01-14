@@ -57,7 +57,7 @@ namespace CSIDE.Data.Services
             string? ParishId,
             string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
-            string? ApplicationIntentId,
+            string? ApplicationTypeId,
             string? ApplicationPriorityId,
             string? Location,
             DateOnly? ReceivedDateFrom,
