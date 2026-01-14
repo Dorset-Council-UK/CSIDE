@@ -41,6 +41,9 @@ internal class DocumentTransformer(ApiVersion version) : IOpenApiDocumentTransfo
             Description = "API Key in query string for accessing protected endpoints (accepts: api-key, key, or apikey - case insensitive)"
         };
 
+        // Remove internal redirect endpoints from documentation
+        document.Paths.Remove("/swagger");
+
         return Task.CompletedTask;
     }
 }

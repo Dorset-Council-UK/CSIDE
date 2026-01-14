@@ -6,6 +6,7 @@ namespace CSIDE.API.Models;
 
 internal class SecurityOperationTransformer : IOpenApiOperationTransformer
 {
+    
     public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
         // Check if the endpoint requires authorization
@@ -16,11 +17,16 @@ internal class SecurityOperationTransformer : IOpenApiOperationTransformer
         if (authorizeData != null)
         {
             operation.Security ??= [];
-            
-            // Add security requirement with OR logic (either header OR query parameter)
+
+            // Add security requirements with OR logic (either header OR query parameter)
+            // Each scheme is added as a separate requirement to express OR logic
+            // (multiple schemes in one requirement = AND, separate requirements = OR)
             operation.Security.Add(new OpenApiSecurityRequirement
             {
-                [new OpenApiSecuritySchemeReference("ApiKeyHeader", context.Document)] = [],
+                [new OpenApiSecuritySchemeReference("ApiKeyHeader", context.Document)] = []
+            });
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
                 [new OpenApiSecuritySchemeReference("ApiKeyQuery", context.Document)] = []
             });
         }
