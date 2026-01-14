@@ -9,7 +9,7 @@
         public DateOnly? ReceivedDateTo { get; set; }
         public int? ApplicationCaseStatusId { get; set; }
         public int? ApplicationLegislationId { get; set; }
-        public int? ApplicationIntentId { get; set; }
+        public int? ApplicationTypeId { get; set; }
         public int? ApplicationPriorityId { get; set; }
     }
 }

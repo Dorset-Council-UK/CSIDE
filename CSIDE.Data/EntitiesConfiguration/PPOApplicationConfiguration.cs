@@ -48,9 +48,8 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .Navigation(x => x.PPOParishes)
                 .AutoInclude();
 
-            builder.Navigation(x => x.PPOIntents)
+            builder.Navigation(x => x.PPOTypes)
                 .AutoInclude();
-
         }
     }
 }

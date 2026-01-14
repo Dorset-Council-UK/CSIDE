@@ -3913,6 +3913,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application type.
+        /// </summary>
+        public static string PPO_Application_Types_Label {
+            get {
+                return ResourceManager.GetString("PPO Application Types Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new order for PPO {0}.
         /// </summary>
         public static string PPO_Create_Order_Title {
@@ -3945,15 +3954,6 @@ namespace CSIDE.Shared.Properties {
         public static string PPO_ID_Label {
             get {
                 return ResourceManager.GetString("PPO ID Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Application intent.
-        /// </summary>
-        public static string PPO_Intents_Label {
-            get {
-                return ResourceManager.GetString("PPO Intents Label", resourceCulture);
             }
         }
         

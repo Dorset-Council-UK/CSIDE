@@ -19,7 +19,7 @@ namespace CSIDE.Web.Components.Pages.PPO
         [SupplyParameterFromQuery]
         private string? ApplicationLegislationId { get; set; }
         [SupplyParameterFromQuery]
-        private string? ApplicationIntentId { get; set; }
+        private string? ApplicationTypeId { get; set; }
         [SupplyParameterFromQuery]
         private string? ApplicationPriorityId { get; set; }
         [SupplyParameterFromQuery]

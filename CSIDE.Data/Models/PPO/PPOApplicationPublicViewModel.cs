@@ -11,7 +11,7 @@ namespace CSIDE.Data.Models.PPO
         //one-many relationships
         public ICollection<ContactPublicViewModel> Contacts { get; set; } = [];
         public ICollection<MediaPublicViewModel> Media { get; set; } = [];
-        public ICollection<string> ApplicationIntents { get; set; } = [];
+        public ICollection<string> ApplicationTypes { get; set; } = [];
         public ICollection<OrderPublicViewModel> Orders { get; set; } = [];
     }
 }

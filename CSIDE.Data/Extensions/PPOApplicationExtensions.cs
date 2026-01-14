@@ -28,7 +28,7 @@ namespace CSIDE.Data.Models.PPO
                 CaseStatus = application.CaseStatus?.Name,
                 Priority = application.Priority?.Description,
                 Parishes = [.. application.PPOParishes.Select(p => p.Parish.Name)],
-                ApplicationIntents = [.. application.PPOIntents.Select(i => i.Intent.Name)],
+                ApplicationTypes = [.. application.PPOTypes.Select(i => i.Type.Name)],
                 Media = [.. application.PPOMedia.Select(m => new MediaPublicViewModel
                 {
                     Title = m.Media.Title,

@@ -69,14 +69,14 @@ else
                                             <td>@PPOApplication.CaseStatus?.Name</td>
                                         </tr>
                                         <tr>
-                                            <th class="w-25">@localizer["PPO Intents Label"]</th>
+                                            <th class="w-25">@localizer["PPO Application Types Label"]</th>
                                             <td>
-                                                @if (PPOApplication.PPOIntents.Count != 0)
+                                                @if (PPOApplication.PPOTypes.Count != 0)
                                                 {
                                                     <ul class="list-unstyled">
-                                                        @foreach (var intent in PPOApplication.PPOIntents)
+                                                        @foreach (var type in PPOApplication.PPOTypes)
                                                         {
-                                                            <li>@intent?.Intent.Name</li>
+                                                            <li>@type?.Type.Name</li>
                                                         }
                                                     </ul>
                                                 }
@@ -296,7 +296,7 @@ else
         nameof(Data.Models.PPO.PPOContact),
         nameof(Data.Models.PPO.PPOMedia),
         nameof(Data.Models.PPO.PPOOrder),
-        nameof(Data.Models.PPO.PPOIntent),
+        nameof(Data.Models.PPO.PPOApplicationType),
         nameof(Data.Models.PPO.PPOEvent)
     };
 
