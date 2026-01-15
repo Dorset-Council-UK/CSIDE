@@ -26,8 +26,8 @@ Responsive="true">
         <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Reference Number Label"]" PropertyName="Id" SortKeySelector="item => item.Id" SortString="Id">
             <a href="PPO/Details/@context.Id" @onclick:stopPropagation>@IDPrefixOptions.Value.PPO@context.Id</a>
         </GridColumn>
-        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Application Type Label"]" PropertyName="ApplicationType" SortKeySelector="item => item.ApplicationType != null ? item.ApplicationType.Name : string.Empty" SortString="ApplicationType">
-            @context.ApplicationType?.Name
+        <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["PPO Legislation Label"]" PropertyName="Legislation" SortKeySelector="item => item.Legislation != null ? item.Legislation.Name : string.Empty" SortString="Legislation">
+            @context.Legislation?.Name
         </GridColumn>
         <GridColumn TItem="PPOApplication" Filterable="false" HeaderText="@localizer["Received Date Label"]" PropertyName="ReceivedDate" SortKeySelector="item => item.ReceivedDate" SortString="ReceivedDate">
             @(context.ReceivedDate.HasValue ? context.ReceivedDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
@@ -73,9 +73,9 @@ Responsive="true">
     [Parameter]
     public string? ApplicationCaseStatusId { get; set; }
     [Parameter]
-    public string? ApplicationTypeId { get; set; }
+    public string? LegislationId { get; set; }
     [Parameter]
-    public string? ApplicationIntentId { get; set; }
+    public string? ApplicationTypeId { get; set; }
     [Parameter]
     public string? ApplicationPriorityId { get; set; }
     [Parameter]
@@ -100,9 +100,9 @@ Responsive="true">
         var result = await ppoService.GetPPOApplicationsBySearchParameters(
                 ParishIds,
                 ParishId,
-                ApplicationTypeId,
+                LegislationId,
                 ApplicationCaseStatusId,
-                ApplicationIntentId,
+                ApplicationTypeId,
                 ApplicationPriorityId,
                 Location,
                 ReceivedDateFrom,

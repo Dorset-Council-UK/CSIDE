@@ -5,6 +5,7 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -15,9 +16,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260113094319_PPORenameApplicationTypeToLegislation")]
+    partial class PPORenameApplicationTypeToLegislation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1305,6 +1308,23 @@ namespace CSIDE.Migrations
                     b.ToTable("PPOApplicationCaseStatuses", "cside");
                 });
 
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationIntent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PPOApplicationIntents", "cside");
+                });
+
             modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationLegislation", b =>
                 {
                     b.Property<int>("Id")
@@ -1340,23 +1360,6 @@ namespace CSIDE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PPOApplicationPriorities", "cside");
-                });
-
-            modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PPOApplicationTypes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOApplication", b =>
@@ -1446,21 +1449,6 @@ namespace CSIDE.Migrations
                     b.ToTable("PPOApplication", "cside");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOApplicationType", b =>
-                {
-                    b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("PPOApplicationId", "TypeId");
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("PPOTypes", "cside");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
                 {
                     b.Property<int>("PPOApplicationId")
@@ -1510,6 +1498,21 @@ namespace CSIDE.Migrations
                     b.HasIndex("PPOApplicationId");
 
                     b.ToTable("PPOEvents", "cside");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOIntent", b =>
+                {
+                    b.Property<int>("PPOApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IntentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PPOApplicationId", "IntentId");
+
+                    b.HasIndex("IntentId");
+
+                    b.ToTable("PPOIntents", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOMedia", b =>
@@ -2758,25 +2761,6 @@ namespace CSIDE.Migrations
                     b.Navigation("Priority");
                 });
 
-            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOApplicationType", b =>
-                {
-                    b.HasOne("CSIDE.Data.Models.PPO.PPOApplication", "PPOApplication")
-                        .WithMany("PPOTypes")
-                        .HasForeignKey("PPOApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CSIDE.Data.Models.PPO.ApplicationType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PPOApplication");
-
-                    b.Navigation("Type");
-                });
-
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
                 {
                     b.HasOne("CSIDE.Data.Models.Shared.Contact", "Contact")
@@ -2803,6 +2787,25 @@ namespace CSIDE.Migrations
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PPOApplication");
+                });
+
+            modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOIntent", b =>
+                {
+                    b.HasOne("CSIDE.Data.Models.PPO.ApplicationIntent", "Intent")
+                        .WithMany()
+                        .HasForeignKey("IntentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSIDE.Data.Models.PPO.PPOApplication", "PPOApplication")
+                        .WithMany("PPOIntents")
+                        .HasForeignKey("PPOApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Intent");
 
                     b.Navigation("PPOApplication");
                 });
@@ -3120,11 +3123,11 @@ namespace CSIDE.Migrations
 
                     b.Navigation("PPOContacts");
 
+                    b.Navigation("PPOIntents");
+
                     b.Navigation("PPOMedia");
 
                     b.Navigation("PPOParishes");
-
-                    b.Navigation("PPOTypes");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>

@@ -18,10 +18,10 @@ namespace CSIDE.Web.Components.Pages.PPO
         public int PPOApplicationId { get; set; }
         private PPOApplication? PPOApplication { get; set; }
         private IReadOnlyCollection<ApplicationCaseStatus> CaseStatuses = [];
-        private IReadOnlyCollection<ApplicationType> ApplicationTypes = [];
-        private IReadOnlyCollection<ApplicationIntent> Intents = [];
+        private IReadOnlyCollection<ApplicationLegislation> Legislation = [];
+        private IReadOnlyCollection<ApplicationType> Types = [];
         private IReadOnlyCollection<ApplicationPriority> Priorities = [];
-        private List<int> SelectedIntents { get; set; } = [];
+        private List<int> SelectedTypes { get; set; } = [];
 
 
         private PPOEditForm? childPPOEditForm;
@@ -46,13 +46,13 @@ namespace CSIDE.Web.Components.Pages.PPO
             try
             {
                 CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
-                ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
-                Intents = await ppoService.GetPPOApplicationIntents();
+                Legislation = await ppoService.GetPPOLegislationOptions();
+                Types = await ppoService.GetPPOApplicationTypes();
                 Priorities = await ppoService.GetPPOApplicationPriorities();
                 PPOApplication = await ppoService.GetPPOApplicationById(PPOApplicationId);
                 if(PPOApplication is not null)
                 {
-                    SelectedIntents = PPOApplication.PPOIntents.Select(i => i.IntentId).ToList();
+                    SelectedTypes = PPOApplication.PPOTypes.Select(i => i.TypeId).ToList();
                 }
                 GeometryIsValid = true;
             }
@@ -77,7 +77,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                 {
                     if (PPOApplication is not null)
                     {
-                        await ppoService.UpdatePPO(PPOApplication, SelectedIntents);
+                        await ppoService.UpdatePPO(PPOApplication, SelectedTypes);
                         //redirect
                         navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
                     }

@@ -19,7 +19,7 @@ namespace CSIDE.Data.Services
         private static readonly Dictionary<string, Expression<Func<PPOApplication, object>>> SortExpressions = new()
         {
             { "Id", x => x.Id },
-            { "ApplicationType", x => x.ApplicationType.Name ?? string.Empty },
+            { "Legislation", x => x.Legislation.Name ?? string.Empty },
             { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
             { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
         };
@@ -42,9 +42,9 @@ namespace CSIDE.Data.Services
         public async Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
-            string? ApplicationIntentId,
+            string? ApplicationTypeId,
             string? ApplicationPriorityId,
             string? Location,
             DateOnly? ReceivedDateFrom,
@@ -77,17 +77,17 @@ namespace CSIDE.Data.Services
             {
                 query = query.Where(d => d.PPOParishes.Any(p => p.ParishId == parsedParishId));
             }
-            if (ApplicationTypeId is not null && int.TryParse(ApplicationTypeId, CultureInfo.InvariantCulture, out int parsedApplicationTypeId))
+            if (ApplicationLegislationId is not null && int.TryParse(ApplicationLegislationId, CultureInfo.InvariantCulture, out int parsedApplicationLegislationId))
             {
-                query = query.Where(d => d.ApplicationTypeId == parsedApplicationTypeId);
+                query = query.Where(d => d.LegislationId == parsedApplicationLegislationId);
             }
             if (ApplicationCaseStatusId is not null && int.TryParse(ApplicationCaseStatusId, CultureInfo.InvariantCulture, out int parsedApplicationCaseStatusId))
             {
                 query = query.Where(d => d.CaseStatusId == parsedApplicationCaseStatusId);
             }
-            if (ApplicationIntentId is not null && int.TryParse(ApplicationIntentId, CultureInfo.InvariantCulture, out int parsedApplicationIntentId))
+            if (ApplicationTypeId is not null && int.TryParse(ApplicationTypeId, CultureInfo.InvariantCulture, out int parsedApplicationTypeId))
             {
-                query = query.Where(d => d.PPOIntents.Any(p => parsedApplicationIntentId == p.IntentId));
+                query = query.Where(d => d.PPOTypes.Any(p => parsedApplicationTypeId == p.TypeId));
             }
             if (ApplicationPriorityId is not null && int.TryParse(ApplicationPriorityId, CultureInfo.InvariantCulture, out int parsedApplicationPriorityId))
             {
@@ -191,21 +191,21 @@ namespace CSIDE.Data.Services
                 .ToArrayAsync(ct);
         }
 
-        public async Task<IReadOnlyCollection<ApplicationType>> GetPPOApplicationTypeOptions(CancellationToken ct = default)
+        public async Task<IReadOnlyCollection<ApplicationLegislation>> GetPPOLegislationOptions(CancellationToken ct = default)
         {
             //TODO - cache this
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            return await context.PPOApplicationTypes
+            return await context.PPOApplicationLegislation
                 .AsNoTracking()
                 .OrderBy(p => p.Id)
                 .ToArrayAsync(ct);
         }
 
-        public async Task<IReadOnlyCollection<ApplicationIntent>> GetPPOApplicationIntents(CancellationToken ct = default)
+        public async Task<IReadOnlyCollection<ApplicationType>> GetPPOApplicationTypes(CancellationToken ct = default)
         {
             //TODO - cache this
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            return await context.PPOApplicationIntents
+            return await context.PPOApplicationTypes
                 .AsNoTracking()
                 .OrderBy(p => p.Name)
                 .ToArrayAsync(ct);
@@ -251,22 +251,22 @@ namespace CSIDE.Data.Services
                 .ToArrayAsync(ct);
         }
 
-        public async Task<PPOApplication> CreatePPO(PPOApplication PPOApplication, List<int> SelectedIntents, CancellationToken ct = default)
+        public async Task<PPOApplication> CreatePPO(PPOApplication PPOApplication, List<int> SelectedTypes, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             context.Add(PPOApplication);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
-            CreateApplicationIntents(SelectedIntents, PPOApplication.Id, context);
+            CreateApplicationTypes(SelectedTypes, PPOApplication.Id, context);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
             return PPOApplication;
         }
 
-        private static void CreateApplicationIntents(List<int> selectedIntents, int PPOApplicationId, ApplicationDbContext context)
+        private static void CreateApplicationTypes(List<int> selectedTypes, int PPOApplicationId, ApplicationDbContext context)
         {
-            //add new problem types
-            foreach (int intent in selectedIntents)
+            //add new aapplication types
+            foreach (int type in selectedTypes)
             {
-                context.PPOIntents.Add(new PPOIntent { IntentId = intent, PPOApplicationId = PPOApplicationId });
+                context.PPOTypes.Add(new PPOApplicationType { TypeId = type, PPOApplicationId = PPOApplicationId });
             }
         }
 
@@ -314,11 +314,11 @@ namespace CSIDE.Data.Services
             return ppoContact;
         }
 
-        public async Task<PPOApplication> UpdatePPO(PPOApplication PPOApplication, List<int> SelectedIntents, CancellationToken ct = default)
+        public async Task<PPOApplication> UpdatePPO(PPOApplication PPOApplication, List<int> SelectedTypes, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
 
-            //get the existing job to enable the smarter change tracker
+            //get the existing PPO to enable the smarter change tracker
             var existingApp = await context.PPOApplication.FindAsync([PPOApplication.Id], ct) ??
                 throw new Exception($"PPO Application being edited (ID: {PPOApplication.Id}) was not found prior to updating");
 
@@ -332,43 +332,43 @@ namespace CSIDE.Data.Services
             // This is the critical line that makes concurrency checking work
             context.Entry(existingApp).Property(j => j.Version).OriginalValue = originalVersion;
 
-            await UpdateApplicationIntents(SelectedIntents, PPOApplication, context);
+            await UpdateApplicationTypes(SelectedTypes, PPOApplication, context);
             await context.SaveChangesAsync(ct);
             return PPOApplication;
         }
 
-        public async Task UpdateApplicationIntents(List<int> SelectedIntents, PPOApplication PPOApplication, ApplicationDbContext context)
+        public async Task UpdateApplicationTypes(List<int> SelectedTypes, PPOApplication PPOApplication, ApplicationDbContext context)
         {
             if (PPOApplication is null) return;
 
-            // Retrieve the existing problem types for the job
-            var existingIntents = await context.PPOIntents
+            // Retrieve the existing application types for the job
+            var existingTypes = await context.PPOTypes
                 .Where(c => c.PPOApplicationId == PPOApplication.Id)
                 .ToListAsync();
 
-            // Determine the problem types to remove
-            var intentsToRemove = existingIntents
-                .Where(c => !SelectedIntents.Contains(c.IntentId))
+            // Determine the application types to remove
+            var typesToRemove = existingTypes
+                .Where(c => !SelectedTypes.Contains(c.TypeId))
                 .ToList();
 
             // Remove the entities
-            context.PPOIntents.RemoveRange(intentsToRemove);
+            context.PPOTypes.RemoveRange(typesToRemove);
 
-            // Determine the problem types to add
-            var intentsToAdd = SelectedIntents
-                .Where(intentId => !existingIntents.Exists(c => c.IntentId == intentId))
-                .Select(intentId => new PPOIntent { IntentId = intentId, PPOApplicationId = PPOApplication.Id })
+            // Determine the application types to add
+            var typesToAdd = SelectedTypes
+                .Where(typeId => !existingTypes.Exists(c => c.TypeId == typeId))
+                .Select(typeId => new PPOApplicationType { TypeId = typeId, PPOApplicationId = PPOApplication.Id })
                 .ToList();
 
-            // Add the new problem types
-            context.PPOIntents.AddRange(intentsToAdd);
+            // Add the new application types
+            context.PPOTypes.AddRange(typesToAdd);
 
             // Mark entities as unchanged if they haven't actually changed
-            foreach (var existingIntent in existingIntents)
+            foreach (var existingType in existingTypes)
             {
-                if (SelectedIntents.Contains(existingIntent.IntentId))
+                if (SelectedTypes.Contains(existingType.TypeId))
                 {
-                    context.Entry(existingIntent).State = EntityState.Unchanged;
+                    context.Entry(existingType).State = EntityState.Unchanged;
                 }
             }
         }
@@ -435,7 +435,7 @@ namespace CSIDE.Data.Services
                 .IgnoreAutoIncludes()
                 .Include(d => d.CaseStatus)
                 .Include(d => d.Priority)
-                .Include(d => d.ApplicationType)
+                .Include(d => d.Legislation)
                 .Include(a => a.PPOParishes).ThenInclude(p => p.Parish)
                 .OrderBy(p => p.Id)
                 .Skip(skip)
@@ -467,9 +467,9 @@ namespace CSIDE.Data.Services
         public async Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
-            string? ApplicationIntentId,
+            string? ApplicationTypeId,
             string? ApplicationPriorityId,
             string? Location,
             DateOnly? ReceivedDateFrom,
@@ -483,9 +483,9 @@ namespace CSIDE.Data.Services
 
             var applications = await GetPPOApplicationsBySearchParameters(ParishIds,
                                                                           ParishId,
-                                                                          ApplicationTypeId,
+                                                                          ApplicationLegislationId,
                                                                           ApplicationCaseStatusId,
-                                                                          ApplicationIntentId,
+                                                                          ApplicationTypeId,
                                                                           ApplicationPriorityId,
                                                                           Location,
                                                                           ReceivedDateFrom,

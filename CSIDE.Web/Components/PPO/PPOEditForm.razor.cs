@@ -13,9 +13,9 @@ namespace CSIDE.Web.Components.PPO
         [Parameter, EditorRequired]
         public IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses { get; set; }
         [Parameter, EditorRequired]
-        public IReadOnlyCollection<ApplicationType>? ApplicationTypes { get; set; }
+        public IReadOnlyCollection<ApplicationLegislation>? Legislation { get; set; }
         [Parameter, EditorRequired]
-        public IReadOnlyCollection<ApplicationIntent>? Intents { get; set; }
+        public IReadOnlyCollection<ApplicationType>? Types { get; set; }
         [Parameter, EditorRequired]
         public IReadOnlyCollection<ApplicationPriority>? Priorities { get; set; }
         [Parameter]
@@ -27,7 +27,7 @@ namespace CSIDE.Web.Components.PPO
         [Parameter, EditorRequired]
         public EventCallback OnCancel { get; set; }
         [Parameter]
-        public IList<int> SelectedIntents { get; set; } = [];
+        public IList<int> SelectedTypes { get; set; } = [];
 
         public IList<string> CaseOfficerSuggestions = [];
         private FluentValidationValidator? fluentValidationValidator;
@@ -93,20 +93,20 @@ namespace CSIDE.Web.Components.PPO
                 }
             }
         }
-        private void IntentChanged(ApplicationIntent Intent, ChangeEventArgs eventArgs)
+        private void TypeChanged(ApplicationType Type, ChangeEventArgs eventArgs)
         {
             if (Convert.ToBoolean(eventArgs.Value))
             {
-                if (!SelectedIntents.Contains(Intent.Id))
+                if (!SelectedTypes.Contains(Type.Id))
                 {
-                    SelectedIntents.Add(Intent.Id);
+                    SelectedTypes.Add(Type.Id);
                 }
             }
             else
             {
-                if (SelectedIntents.Contains(Intent.Id))
+                if (SelectedTypes.Contains(Type.Id))
                 {
-                    SelectedIntents.Remove(Intent.Id);
+                    SelectedTypes.Remove(Type.Id);
                 }
             }
         }

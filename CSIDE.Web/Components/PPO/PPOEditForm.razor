@@ -20,11 +20,11 @@
 
         <div class="mb-3 row">
             <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="app-type">@localizer["Application Type Label"]</label>
-                <InputSelect id="app-type" class="form-select" @bind-Value="PPOApplication.ApplicationTypeId">
-                    @if (ApplicationTypes is not null)
+                <label class="form-label" for="legislation">@localizer["PPO Legislation Label"]</label>
+                <InputSelect id="legislation" class="form-select" @bind-Value="PPOApplication.LegislationId">
+                    @if (Legislation is not null)
                     {
-                        @foreach (var type in ApplicationTypes.OrderBy(r => r.Name))
+                        @foreach (var type in Legislation.OrderBy(r => r.Name))
                         {
                             <option value="@type.Id">@type.Name</option>
                         }
@@ -32,26 +32,25 @@
 
                 </InputSelect>
             </div>
-            <ValidationMessage For="() => PPOApplication.ApplicationTypeId" />
+            <ValidationMessage For="() => PPOApplication.LegislationId" />
         </div>
 
-        @if (Intents is not null && Intents.Count != 0)
+        @if (Types is not null && Types.Count != 0)
         {
             <div class="mb-3">
                 <fieldset>
-                    <legend class="form-label fs-6">@localizer["PPO Intents Label"]</legend>
+                    <legend class="form-label fs-6">@localizer["PPO Application Types Label"]</legend>
 
-                    @foreach (var Intent in Intents)
+                    @foreach (var Type in Types)
                     {
-                        var selected = PPOApplication.PPOIntents.Select(j => j.IntentId).Contains(Intent.Id);
+                        var selected = PPOApplication.PPOTypes.Select(j => j.TypeId).Contains(Type.Id);
 
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="@Intent.Id" checked="@selected" id="Intent__@Intent.Id" @onchange="(e) => { IntentChanged(Intent, e); }">
-                            <label class="form-check-label" for="Intent__@Intent.Id">
-                                @Intent.Name
+                            <input class="form-check-input" type="checkbox" value="@Type.Id" checked="@selected" id="Type__@Type.Id" @onchange="(e) => { TypeChanged(Type, e); }">
+                            <label class="form-check-label" for="Type__@Type.Id">
+                                @Type.Name
                             </label>
                         </div>
-
                     }
                 </fieldset>
             </div>

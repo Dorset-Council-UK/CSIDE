@@ -19,10 +19,10 @@ namespace CSIDE.Web.Components.Pages.PPO
     {
         private PPOApplication? PPOApplication { get; set; }
         private IReadOnlyCollection<ApplicationCaseStatus>? CaseStatuses = [];
-        private IReadOnlyCollection<ApplicationType>? ApplicationTypes = [];
-        private IReadOnlyCollection<ApplicationIntent>? Intents = [];
+        private IReadOnlyCollection<ApplicationLegislation>? Legislation = [];
+        private IReadOnlyCollection<ApplicationType>? Types = [];
         private IReadOnlyCollection<ApplicationPriority>? Priorities = [];
-        private List<int> SelectedIntents { get; set; } = [];
+        private List<int> SelectedTypes { get; set; } = [];
 
         private PPOEditForm? childPPOEditForm;
 
@@ -45,8 +45,8 @@ namespace CSIDE.Web.Components.Pages.PPO
             try
             {
                 CaseStatuses = await ppoService.GetPPOCaseStatusOptions();
-                ApplicationTypes = await ppoService.GetPPOApplicationTypeOptions();
-                Intents = await ppoService.GetPPOApplicationIntents();
+                Legislation = await ppoService.GetPPOLegislationOptions();
+                Types = await ppoService.GetPPOApplicationTypes();
                 Priorities = await ppoService.GetPPOApplicationPriorities();
 
                 PPOApplication = new()
@@ -77,7 +77,7 @@ namespace CSIDE.Web.Components.Pages.PPO
                 {
                     if (PPOApplication is not null)
                     {
-                        await ppoService.CreatePPO(PPOApplication, SelectedIntents);
+                        await ppoService.CreatePPO(PPOApplication, SelectedTypes);
                         //redirect
                         navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
                     }

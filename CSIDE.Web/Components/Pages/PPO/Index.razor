@@ -108,14 +108,14 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="intent-search">@localizer["PPO Intents Label"]</label>
-                    <InputSelect id="intent-search" class="form-select" @bind-Value="SearchParams.ApplicationIntentId">
-                        @if (Intents is not null)
+                    <label class="form-label" for="type-search">@localizer["PPO Application Types Label"]</label>
+                    <InputSelect id="type-search" class="form-select" @bind-Value="SearchParams.ApplicationTypeId">
+                        @if (Types is not null)
                         {
                             <option value=""></option>
-                            @foreach (var intent in Intents.OrderBy(t => t.Name))
+                            @foreach (var type in Types.OrderBy(t => t.Name))
                             {
-                                <option value="@intent.Id">@intent.Name</option>
+                                <option value="@type.Id">@type.Name</option>
                             }
                         }
                     </InputSelect>
@@ -136,12 +136,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="type-search">@localizer["Application Type Label"]</label>
-                    <InputSelect id="type-search" class="form-select" @bind-Value="SearchParams.ApplicationTypeId">
-                        @if (ApplicationTypes is not null)
+                    <label class="form-label" for="legislation-search">@localizer["PPO Legislation Label"]</label>
+                    <InputSelect id="legislation-search" class="form-select" @bind-Value="SearchParams.ApplicationLegislationId">
+                        @if (Legislation is not null)
                         {
                             <option value=""></option>
-                            @foreach (var type in ApplicationTypes.OrderBy(t => t.Name))
+                            @foreach (var type in Legislation.OrderBy(t => t.Name))
                             {
                                 <option value="@type.Id">@type.Name</option>
                             }

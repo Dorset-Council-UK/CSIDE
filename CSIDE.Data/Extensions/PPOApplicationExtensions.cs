@@ -24,11 +24,11 @@ namespace CSIDE.Data.Models.PPO
                 ConfirmationPublishedDate = application.ConfirmationPublishedDate?.ToDateOnly(),
                 CouncilLandAffected = application.CouncilLandAffected,
                 Geom = application.Geom,
-                ApplicationType = application.ApplicationType?.Name,
+                Legislation = application.Legislation?.Name,
                 CaseStatus = application.CaseStatus?.Name,
                 Priority = application.Priority?.Description,
                 Parishes = [.. application.PPOParishes.Select(p => p.Parish.Name)],
-                ApplicationIntents = [.. application.PPOIntents.Select(i => i.Intent.Name)],
+                ApplicationTypes = [.. application.PPOTypes.Select(i => i.Type.Name)],
                 Media = [.. application.PPOMedia.Select(m => new MediaPublicViewModel
                 {
                     Title = m.Media.Title,
@@ -78,7 +78,7 @@ namespace CSIDE.Data.Models.PPO
                 InspectionCertificationDate = application.InspectionCertificationDate?.ToDateOnly(),
                 ConfirmationPublishedDate = application.ConfirmationPublishedDate?.ToDateOnly(),
                 CouncilLandAffected = application.CouncilLandAffected,
-                ApplicationType = application.ApplicationType?.Name,
+                Legislation = application.Legislation?.Name,
                 CaseStatus = application.CaseStatus?.Name,
                 Priority = application.Priority?.Description,
                 Parishes = [.. application.PPOParishes.Select(p => p.Parish.Name)]

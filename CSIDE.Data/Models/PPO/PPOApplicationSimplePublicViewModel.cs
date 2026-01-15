@@ -21,7 +21,7 @@ namespace CSIDE.Data.Models.PPO
         public bool? CouncilLandAffected { get; set; }
         public string? PublicComments { get; set; }
 
-        public string? ApplicationType { get; set; }
+        public string? Legislation { get; set; }
         public string? Priority { get; set; }
         public string? CaseStatus { get; set; }
 

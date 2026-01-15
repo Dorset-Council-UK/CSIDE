@@ -29,7 +29,7 @@ namespace CSIDE.Data.Models.PPO
         public int CaseStatusId { get; set; }
 
         //navigation properties
-        public ApplicationType? ApplicationType { get; set; }
+        public ApplicationLegislation? Legislation { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
         public ApplicationPriority? Priority { get; set; } = null!;
 
@@ -37,6 +37,6 @@ namespace CSIDE.Data.Models.PPO
         public ICollection<PPOContact> PPOContacts { get; } = [];
         public ICollection<PPOParish> PPOParishes { get; } = [];
         public ICollection<PPOMedia> PPOMedia { get; } = [];
-        public ICollection<PPOIntent> PPOIntents { get; } = [];
+        public ICollection<PPOApplicationType> PPOIntents { get; } = [];
     }
 }

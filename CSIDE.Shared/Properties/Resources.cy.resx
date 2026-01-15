@@ -738,8 +738,8 @@ Disgrifiad</value>
   <data name="Case Status Label" xml:space="preserve">
     <value>Statws achos</value>
   </data>
-  <data name="Application Type Label" xml:space="preserve">
-    <value>Math o gais</value>
+  <data name="PPO Legislation Label" xml:space="preserve">
+    <value>Deddfwriaeth</value>
   </data>
   <data name="Claimed Status Label" xml:space="preserve">
     <value>Statws hawlio</value>
@@ -1619,9 +1619,6 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Create New PPO Text" xml:space="preserve">
     <value>Ychwanegwch gais OLC newydd at y gronfa ddata drwy ei luniadu ar y map a llenwi'r manylion perthnasol.</value>
   </data>
-  <data name="PPO Intents Label" xml:space="preserve">
-    <value>Bwriad y cais</value>
-  </data>
   <data name="PPO Not Found Error Message" xml:space="preserve">
     <value>OLC gyda'r cyfeirnod '{0}' heb ei ganfod</value>
   </data>
@@ -1804,5 +1801,8 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   </data>
   <data name="Bridge Timbers Length Short Label" xml:space="preserve">
     <value>Hyd byrddau</value>
+  </data>
+  <data name="PPO Application Types Label" xml:space="preserve">
+    <value>Math o gais</value>
   </data>
 </root>

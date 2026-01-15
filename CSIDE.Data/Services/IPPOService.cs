@@ -11,9 +11,9 @@ namespace CSIDE.Data.Services
         Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
-            string? ApplicationIntentId,
+            string? ApplicationTypeId,
             string? ApplicationPriorityId,
             string? Location,
             DateOnly? ReceivedDateFrom,
@@ -27,22 +27,22 @@ namespace CSIDE.Data.Services
         Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default);
         Task<PPOOrder?> GetPPOOrderById(int orderId, int applicationId, CancellationToken ct = default);
         Task<IReadOnlyCollection<ApplicationCaseStatus>> GetPPOCaseStatusOptions(CancellationToken ct = default);
-        Task<IReadOnlyCollection<ApplicationType>> GetPPOApplicationTypeOptions(CancellationToken ct = default);
-        Task<IReadOnlyCollection<ApplicationIntent>> GetPPOApplicationIntents(CancellationToken ct = default);
+        Task<IReadOnlyCollection<ApplicationLegislation>> GetPPOLegislationOptions(CancellationToken ct = default);
+        Task<IReadOnlyCollection<ApplicationType>> GetPPOApplicationTypes(CancellationToken ct = default);
         Task<IReadOnlyCollection<ApplicationPriority>> GetPPOApplicationPriorities(CancellationToken ct = default);
         Task<IReadOnlyCollection<PPOMediaType>> GetPPOMediaTypes(CancellationToken ct = default);
         Task<IReadOnlyCollection<OrderDecisionOfSecState>> GetOrderDecisionOfSecStateOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<OrderDeterminationProcess>> GetOrderDeterminationProcessOptions(CancellationToken ct = default);
 
-        Task<PPOApplication> CreatePPO(PPOApplication PPOApplication, List<int> SelectedIntents, CancellationToken ct = default);
+        Task<PPOApplication> CreatePPO(PPOApplication PPOApplication, List<int> SelectedTypes, CancellationToken ct = default);
         
         Task<PPOApplication> AddMediaToPPO(PPOApplication PPOApplication, PPOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default);
         Task<PPOEvent> AddEventToPPO(PPOEvent ppoEvent, CancellationToken ct = default);
         Task<PPOOrder> AddOrderToPPO(PPOOrder ppoOrder, CancellationToken ct = default);
         Task<PPOContact> AddContactToPPO(Contact newContact, PPOApplication ppoApplication, CancellationToken ct = default);
 
-        Task<PPOApplication> UpdatePPO(PPOApplication PPOApplication, List<int> SelectedIntents, CancellationToken ct = default);
-        Task UpdateApplicationIntents(List<int> SelectedIntents, PPOApplication PPOApplication, ApplicationDbContext context);
+        Task<PPOApplication> UpdatePPO(PPOApplication PPOApplication, List<int> SelectedTypes, CancellationToken ct = default);
+        Task UpdateApplicationTypes(List<int> SelectedTypes, PPOApplication PPOApplication, ApplicationDbContext context);
         Task<PPOEvent> UpdatePPOEvent(int Id, PPOEvent ppoEvent, CancellationToken ct = default);
         Task<PPOOrder> UpdatePPOOrder(int OrderId, PPOOrder ppoOrder, CancellationToken ct = default);
 
@@ -55,9 +55,9 @@ namespace CSIDE.Data.Services
         Task<PagedResult<PPOApplicationSimplePublicViewModel>> GetPublicPPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
-            string? ApplicationTypeId,
+            string? ApplicationLegislationId,
             string? ApplicationCaseStatusId,
-            string? ApplicationIntentId,
+            string? ApplicationTypeId,
             string? ApplicationPriorityId,
             string? Location,
             DateOnly? ReceivedDateFrom,

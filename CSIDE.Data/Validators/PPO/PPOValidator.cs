@@ -26,9 +26,9 @@ namespace CSIDE.Data.Validators.PPO
                 .NotEmpty();
             RuleFor(app => app.ReceivedDate)
                 .NotEmpty();
-            RuleFor(app => app.ApplicationTypeId)
+            RuleFor(app => app.LegislationId)
                 .NotEmpty()
-                .WithName(_localizer["Application Type Label"]);
+                .WithName(_localizer["PPO Legislation Label"]);
             RuleFor(app => app.CaseStatusId)
                 .NotEmpty()
                 .WithName(_localizer["Case Status Label"]);

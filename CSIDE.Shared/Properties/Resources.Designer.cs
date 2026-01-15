@@ -421,15 +421,6 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application type.
-        /// </summary>
-        public static string Application_Type_Label {
-            get {
-                return ResourceManager.GetString("Application Type Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Approve survey.
         /// </summary>
         public static string Approve_Survey_Label {
@@ -3922,6 +3913,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application type.
+        /// </summary>
+        public static string PPO_Application_Types_Label {
+            get {
+                return ResourceManager.GetString("PPO Application Types Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new order for PPO {0}.
         /// </summary>
         public static string PPO_Create_Order_Title {
@@ -3958,11 +3958,11 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application intent.
+        ///   Looks up a localized string similar to Legislation.
         /// </summary>
-        public static string PPO_Intents_Label {
+        public static string PPO_Legislation_Label {
             get {
-                return ResourceManager.GetString("PPO Intents Label", resourceCulture);
+                return ResourceManager.GetString("PPO Legislation Label", resourceCulture);
             }
         }
         

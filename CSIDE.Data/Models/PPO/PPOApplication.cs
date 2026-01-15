@@ -27,20 +27,21 @@ namespace CSIDE.Data.Models.PPO
         public required MultiLineString Geom { get; set; }
 
         //linked properties
-        public int ApplicationTypeId { get; set; }
+        public int LegislationId { get; set; }
         public int PriorityId { get; set; }
         public int CaseStatusId { get; set; }
 
         //navigation properties
-        public ApplicationType? ApplicationType { get; set; }
+        public ApplicationLegislation? Legislation { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
         public ApplicationPriority? Priority { get; set; } = null!;
+        
         //one-many relationships
         public ICollection<PPOOrder> Orders { get; } = [];
         public ICollection<PPOContact> PPOContacts { get; } = [];
         public ICollection<PPOParish> PPOParishes { get; } = [];
         public ICollection<PPOMedia> PPOMedia { get; } = [];
-        public ICollection<PPOIntent> PPOIntents { get; } = [];
+        public ICollection<PPOApplicationType> PPOTypes { get; } = [];
         public ICollection<PPOEvent> Events { get; } = [];
         //Concurrency token
         public uint Version { get; set; }
