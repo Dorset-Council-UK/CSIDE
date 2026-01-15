@@ -26,22 +26,23 @@ namespace CSIDE.Data.Models.DMMO
         //linked properties
         public int ApplicationTypeId { get; set; }
         public int CaseStatusId { get; set; }
-        public int ClaimedStatusId { get; set; }
         public int? DirectionOfSecStateId { get; set; }
 
         //navigation properties
         public ApplicationType? ApplicationType { get; set; }
         public ApplicationCaseStatus? CaseStatus { get; set; }
-        public ApplicationClaimedStatus? ClaimedStatus { get; set; }
         public ApplicationDirectionOfSecState? DirectionOfSecState { get; set; } = null!;
+        
         //one-many relationships
         public ICollection<DMMOOrder> Orders { get; } = [];
+        public ICollection<DMMOClaimedStatus> DMMOClaimedStatuses { get; } = [];
         public ICollection<DMMOContact> DMMOContacts { get; } = [];
         public ICollection<DMMOAddress> DMMOAddresses { get; } = [];
         public ICollection<DMMOParish> DMMOParishes { get; } = [];
         public ICollection<DMMOMedia> DMMOMedia { get; } = [];
         public ICollection<DMMOLinkedRoute> DMMOLinkedRoutes { get; } = [];
         public ICollection<DMMOEvent> Events { get; } = [];
+        
         //Concurrency token
         public uint Version { get; set; }
 

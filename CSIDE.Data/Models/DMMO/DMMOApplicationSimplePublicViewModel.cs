@@ -21,9 +21,10 @@ namespace CSIDE.Data.Models.DMMO
 
         public string? ApplicationType { get; set; }
         public string? CaseStatus { get; set; }
-        public string? ClaimedStatus { get; set; }
         public string? DirectionOfSecState { get; set; }
 
+        //one-many relationships
+        public ICollection<string?> ClaimedStatuses { get; set; }
         public ICollection<string> Parishes { get; set; } = [];
     }
 }

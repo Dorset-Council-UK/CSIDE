@@ -12,7 +12,6 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.ApplicationDetails).IsRequired();
             builder.Property(x => x.ApplicationTypeId).IsRequired();
             builder.Property(x => x.CaseStatusId).IsRequired();
-            builder.Property(x => x.ClaimedStatusId).IsRequired();
             builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (multilinestring)");
             builder.Property(x => x.Version).IsRowVersion();
 
@@ -22,10 +21,6 @@ namespace CSIDE.Data.EntitiesConfiguration
 
             builder
                 .Navigation(x => x.CaseStatus)
-                .AutoInclude();
-
-            builder
-                .Navigation(x => x.ClaimedStatus)
                 .AutoInclude();
 
             builder
@@ -58,6 +53,10 @@ namespace CSIDE.Data.EntitiesConfiguration
 
             builder
                 .Navigation(x => x.DMMOLinkedRoutes)
+                .AutoInclude();
+
+            builder
+                .Navigation(x => x.DMMOClaimedStatuses)
                 .AutoInclude();
         }
     }

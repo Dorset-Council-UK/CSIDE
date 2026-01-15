@@ -33,7 +33,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
             ];
 
             Parishes = await sharedDataService.GetParishes();
-            ClaimedStatuses = await dmmoService.GetClaimedStatusOptions();
+            ClaimedStatuses = await dmmoService.GetClaimedStatuses();
             CaseStatuses = await dmmoService.GetCaseStatusOptions();
             ApplicationTypes = await dmmoService.GetApplicationTypeOptions();
 
