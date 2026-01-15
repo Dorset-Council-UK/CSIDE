@@ -1805,4 +1805,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="PPO Application Types Label" xml:space="preserve">
     <value>Math o gais</value>
   </data>
+  <data name="Application Type Label" xml:space="preserve">
+    <value>Math o gais</value>
+  </data>
 </root>

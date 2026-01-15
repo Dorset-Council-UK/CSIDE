@@ -25,9 +25,6 @@ namespace CSIDE.Data.Validators.DMMO
                 .NotEmpty();
             RuleFor(app => app.ReceivedDate)
                 .NotEmpty();
-            RuleFor(app => app.DMMOClaimedStatuses)
-                .NotEmpty()
-                .WithName(_localizer["Claimed Status Label"]);
             RuleFor(app => app.ApplicationTypeId)
                 .NotEmpty()
                 .WithName(_localizer["Application Type Label"]);
