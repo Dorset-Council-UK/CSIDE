@@ -1794,4 +1794,7 @@
   <data name="PPO Application Types Label" xml:space="preserve">
     <value>Application type</value>
   </data>
+  <data name="Application Type Label" xml:space="preserve">
+    <value>Application type</value>
+  </data>
 </root>

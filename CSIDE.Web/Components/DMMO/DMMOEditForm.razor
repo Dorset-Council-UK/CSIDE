@@ -36,22 +36,26 @@
             <ValidationMessage For="() => DMMOApplication.ApplicationTypeId" />
         </div>
 
-        <div class="mb-3 row">
-            <label class="form-label" for="claimed-status">@localizer["Claimed Status Label"]</label>
-            <div class="col-sm-8 col-lg-6">
-                <InputSelect id="claimed-status" class="form-select" @bind-Value="DMMOApplication.ClaimedStatusId">
-                    @if (ClaimedStatuses is not null)
-                    {
-                        @foreach (var status in ClaimedStatuses.OrderBy(r => r.Name))
-                        {
-                            <option value="@status.Id">@status.Name</option>
-                        }
-                    }
+        @if (ClaimedStatuses is not null && ClaimedStatuses.Count != 0)
+        {
+            <div class="mb-3">
+                <fieldset>
+                    <legend class="form-label fs-6">@localizer["Claimed Status Label"]</legend>
 
-                </InputSelect>
+                    @foreach (var claimedStatus in ClaimedStatuses)
+                    {
+                        var selected = DMMOApplication.DMMOClaimedStatuses.Select(j => j.ClaimedStatusId).Contains(claimedStatus.Id);
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@claimedStatus.Id" checked="@selected" id="ClaimedStatus__@claimedStatus.Id" @onchange="(e) => { ClaimedStatusChanged(claimedStatus, e); }">
+                            <label class="form-check-label" for="ClaimedStatus__@claimedStatus.Id">
+                                @claimedStatus.Name
+                            </label>
+                        </div>
+                    }
+                </fieldset>
             </div>
-            <ValidationMessage For="() => DMMOApplication.ClaimedStatusId" />
-        </div>
+        }
 
         <div class="mb-3 row">
             <label class="form-label" for="case-status">@localizer["Case Status Label"]</label>

@@ -421,6 +421,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application type.
+        /// </summary>
+        public static string Application_Type_Label {
+            get {
+                return ResourceManager.GetString("Application Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Approve survey.
         /// </summary>
         public static string Approve_Survey_Label {
