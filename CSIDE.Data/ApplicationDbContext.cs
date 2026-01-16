@@ -45,6 +45,7 @@ namespace CSIDE.Data
         public DbSet<Models.DMMO.ApplicationDirectionOfSecState> DMMOApplicationDirectionsOfSecState { get; set; }
 
         public DbSet<DMMOMedia> DMMOMedia { get; set; }
+        public DbSet<DMMOClaimedStatus> DMMOClaimedStatuses { get; set; }
         public DbSet<DMMOContact> DMMOContact { get; set; }
         public DbSet<DMMOAddress> DMMOAddresses { get; set; }
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }

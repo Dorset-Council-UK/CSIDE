@@ -68,7 +68,17 @@ else
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Claimed Status Label"]</th>
-                                            <td>@DMMOApplication.ClaimedStatus?.Name</td>
+                                            <td>
+                                                @if (DMMOApplication.DMMOClaimedStatuses.Count != 0)
+                                                {
+                                                    <ul class="list-unstyled">
+                                                        @foreach (var claimedStatus in DMMOApplication.DMMOClaimedStatuses)
+                                                        {
+                                                            <li>@claimedStatus?.ClaimedStatus.Name</li>
+                                                        }
+                                                    </ul>
+                                                }
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Case Status Label"]</th>
@@ -309,7 +319,8 @@ else
         nameof(Data.Models.DMMO.DMMOLinkedRoute),
         nameof(Data.Models.DMMO.DMMOMedia),
         nameof(Data.Models.DMMO.DMMOOrder),
-        nameof(Data.Models.DMMO.DMMOEvent)
+        nameof(Data.Models.DMMO.DMMOEvent),
+        nameof(Data.Models.DMMO.DMMOClaimedStatus)
     };
 
     protected override async Task OnParametersSetAsync()

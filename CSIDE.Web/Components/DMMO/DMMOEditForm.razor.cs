@@ -26,6 +26,8 @@ namespace CSIDE.Web.Components.DMMO
         public EventCallback OnSubmit { get; set; }
         [Parameter, EditorRequired]
         public EventCallback OnCancel { get; set; }
+        [Parameter]
+        public IList<int> SelectedClaimedStatuses { get; set; } = [];
         public IList<string> CaseOfficerSuggestions = [];
 
         private FluentValidationValidator? fluentValidationValidator;
@@ -101,6 +103,24 @@ namespace CSIDE.Web.Components.DMMO
                 return [.. users.Select(u => u.DisplayName ?? string.Empty).Order(StringComparer.OrdinalIgnoreCase)];
             }
             return [];
+        }
+
+        private void ClaimedStatusChanged(ApplicationClaimedStatus claimedStatus, ChangeEventArgs eventArgs)
+        {
+            if (Convert.ToBoolean(eventArgs.Value))
+            {
+                if (!SelectedClaimedStatuses.Contains(claimedStatus.Id))
+                {
+                    SelectedClaimedStatuses.Add(claimedStatus.Id);
+                }
+            }
+            else
+            {
+                if (SelectedClaimedStatuses.Contains(claimedStatus.Id))
+                {
+                    SelectedClaimedStatuses.Remove(claimedStatus.Id);
+                }
+            }
         }
 
         private async Task HandleCancel()

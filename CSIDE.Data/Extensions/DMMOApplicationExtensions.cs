@@ -25,8 +25,8 @@ public static class DMMOApplicationExtensions
             Geom = application.Geom,
             ApplicationType = application.ApplicationType?.Name,
             CaseStatus = application.CaseStatus?.Name,
-            ClaimedStatus = application.ClaimedStatus?.Name,
             DirectionOfSecState = application.DirectionOfSecState?.Name,
+            ClaimedStatuses = [.. application.DMMOClaimedStatuses.Select(c => c.ClaimedStatus.Name)],
             Parishes = [.. application.DMMOParishes.Select(p => p.Parish.Name)],
             LinkedRoutes = [.. application.DMMOLinkedRoutes.Select(r => r.RouteId)],
             AffectedAddresses = [.. application.DMMOAddresses.Where(a => a.Address != null).Select(a => a.Address!)],
@@ -80,8 +80,8 @@ public static class DMMOApplicationExtensions
             DateOfDirectionOfSecState = application.DateOfDirectionOfSecState?.ToDateOnly(),
             ApplicationType = application.ApplicationType?.Name,
             CaseStatus = application.CaseStatus?.Name,
-            ClaimedStatus = application.ClaimedStatus?.Name,
             DirectionOfSecState = application.DirectionOfSecState?.Name,
+            ClaimedStatuses = [.. application.DMMOClaimedStatuses.Select(c => c.ClaimedStatus.Name)],
             Parishes = [.. application.DMMOParishes.Select(p => p.Parish.Name)]
         };
     }

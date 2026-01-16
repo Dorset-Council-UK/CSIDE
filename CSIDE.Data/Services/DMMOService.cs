@@ -82,7 +82,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         }
         if (ApplicationClaimedStatusId is not null && int.TryParse(ApplicationClaimedStatusId, CultureInfo.InvariantCulture, out int parsedApplicationClaimedStatusId))
         {
-            query = query.Where(d => d.ClaimedStatusId == parsedApplicationClaimedStatusId);
+            query = query.Where(d => d.DMMOClaimedStatuses.Any(c => c.ClaimedStatusId == parsedApplicationClaimedStatusId));
         }
         if (Location is not null)
         {
@@ -188,14 +188,14 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<ApplicationClaimedStatus>> GetClaimedStatusOptions(CancellationToken ct = default)
+    public async Task<ICollection<ApplicationClaimedStatus>> GetClaimedStatuses(CancellationToken ct = default)
     {
         //TODO - Cache this
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.DMMOApplicationClaimedStatuses
             .AsNoTracking()
             .OrderBy(s => s.Id)
-            .ToArrayAsync(cancellationToken: ct);
+            .ToArrayAsync(ct);
     }
 
     public async Task<ICollection<ApplicationCaseStatus>> GetCaseStatusOptions(CancellationToken ct = default)
@@ -266,12 +266,23 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
                 .ToArrayAsync(cancellationToken: ct);
     }
 
-    public async Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, CancellationToken ct = default)
+    public async Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Add(dmmoApplication);
         await context.SaveChangesAsync(ct);
+        CreateClaimedStatuses(SelectedClaimedStatuses, dmmoApplication.Id, context);
+        await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoApplication;
+    }
+
+    private static void CreateClaimedStatuses(List<int> selectedClaimedStatuses, int DMMOApplicationId, ApplicationDbContext context)
+    {
+        //add new claimed statuses
+        foreach (int claimedStatus in selectedClaimedStatuses)
+        {
+            context.DMMOClaimedStatuses.Add(new DMMOClaimedStatus { ClaimedStatusId = claimedStatus, DMMOApplicationId = DMMOApplicationId });
+        }
     }
 
     public async Task<DMMOAddress> AddDMMOAddress(DMMOAddress dmmoAddress, CancellationToken ct = default)
@@ -331,7 +342,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return dmmoContact;
     }
 
-    public async Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, CancellationToken ct = default)
+    public async Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existingApplication = await context.DMMOApplication.FindAsync([dmmoApplication.Id], cancellationToken: ct) ?? throw new Exception($"DMMO Application being edited (ID: {dmmoApplication.Id}) was not found prior to updating");
@@ -342,8 +353,45 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         // Restore original version to ensure concurrency check works
         context.Entry(existingApplication).Property(j => j.Version).OriginalValue = originalVersion;
 
+        await UpdateClaimedStatuses(SelectedClaimedStatuses, dmmoApplication, context);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoApplication;
+    }
+
+    public async Task UpdateClaimedStatuses(List<int> SelectedClaimedStatuses, DMMOApplication DMMOApplication, ApplicationDbContext context)
+    {
+        if (DMMOApplication is null) return;
+
+        // Retrieve the existing claimed statuses for the application
+        var existingStatuses = await context.DMMOClaimedStatuses
+            .Where(c => c.DMMOApplicationId == DMMOApplication.Id)
+            .ToListAsync();
+
+        // Determine the claimed statuses to remove
+        var statusesToRemove = existingStatuses
+            .Where(c => !SelectedClaimedStatuses.Contains(c.ClaimedStatusId))
+            .ToList();
+
+        // Remove the entities
+        context.DMMOClaimedStatuses.RemoveRange(statusesToRemove);
+
+        // Determine the claimed statuses to add
+        var statusesToAdd = SelectedClaimedStatuses
+            .Where(statusId => !existingStatuses.Exists(c => c.ClaimedStatusId == statusId))
+            .Select(statusId => new DMMOClaimedStatus { ClaimedStatusId = statusId, DMMOApplicationId = DMMOApplication.Id })
+            .ToList();
+
+        // Add the new claimed statuses
+        context.DMMOClaimedStatuses.AddRange(statusesToAdd);
+
+        // Mark entities as unchanged if they haven't actually changed
+        foreach (var existingStatus in existingStatuses)
+        {
+            if (SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId))
+            {
+                context.Entry(existingStatus).State = EntityState.Unchanged;
+            }
+        }
     }
 
     public async Task<DMMOEvent> UpdateDMMOEvent(int id, DMMOEvent dmmoEvent, CancellationToken ct = default)
@@ -447,7 +495,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Include(d => d.CaseStatus)
-            .Include(d => d.ClaimedStatus)
+            .Include(d => d.DMMOClaimedStatuses).ThenInclude(c => c.ClaimedStatus)
             .Include(d => d.DirectionOfSecState)
             .Include(d => d.ApplicationType)
             .Include(a => a.DMMOParishes).ThenInclude(p => p.Parish)
