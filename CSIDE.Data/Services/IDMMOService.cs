@@ -34,10 +34,9 @@ namespace CSIDE.Data.Services
         Task<ICollection<OrderDeterminationProcess>> GetOrderDeterminationProcessOptions(CancellationToken ct = default);
         Task<ICollection<ApplicationClaimedStatus>> GetClaimedStatuses(CancellationToken ct = default);
         Task<ICollection<ApplicationType>> GetApplicationTypes(CancellationToken ct = default);
-
         Task<ICollection<ApplicationCaseStatus>> GetCaseStatusOptions(CancellationToken ct = default);
-        Task<ICollection<ApplicationType>> GetApplicationTypeOptions(CancellationToken ct = default);
         Task<ICollection<ApplicationDirectionOfSecState>> GetDirectionOfSecStateOptions(CancellationToken ct = default);
+        
         Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, List<int> SelectedApplicationTypes, CancellationToken ct = default);
         Task<DMMOAddress> AddDMMOAddress(DMMOAddress dmmoAddress, CancellationToken ct = default);
         Task<DMMOLinkedRoute> AddLinkedRouteToDMMO(DMMOLinkedRoute dmmoLinkedRoute, CancellationToken ct = default);

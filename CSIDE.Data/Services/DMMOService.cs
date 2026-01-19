@@ -218,16 +218,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ToArrayAsync(cancellationToken: ct);
     }
 
-    public async Task<ICollection<ApplicationType>> GetApplicationTypeOptions(CancellationToken ct = default)
-    {
-        //TODO - Cache this
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
-        return await context.DMMOApplicationTypes
-            .AsNoTracking()
-            .OrderBy(p => p.Id)
-            .ToArrayAsync(cancellationToken: ct);
-    }
-
     public async Task<ICollection<ApplicationDirectionOfSecState>> GetDirectionOfSecStateOptions(CancellationToken ct = default)
     {
         //TODO - Cache this
