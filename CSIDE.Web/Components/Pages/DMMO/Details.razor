@@ -64,7 +64,17 @@ else
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Application Type Label"]</th>
-                                            <td>@DMMOApplication.ApplicationType?.Name</td>
+                                            <td>
+                                                @if (DMMOApplication.DMMOApplicationTypes.Count != 0)
+                                                {
+                                                    <ul class="list-unstyled">
+                                                        @foreach (var applicationType in DMMOApplication.DMMOApplicationTypes)
+                                                        {
+                                                            <li>@applicationType?.ApplicationType.Name</li>
+                                                        }
+                                                    </ul>
+                                                }
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th class="w-25">@localizer["Claimed Status Label"]</th>
@@ -320,7 +330,8 @@ else
         nameof(Data.Models.DMMO.DMMOMedia),
         nameof(Data.Models.DMMO.DMMOOrder),
         nameof(Data.Models.DMMO.DMMOEvent),
-        nameof(Data.Models.DMMO.DMMOClaimedStatus)
+        nameof(Data.Models.DMMO.DMMOClaimedStatus),
+        nameof(Data.Models.DMMO.DMMOApplicationType)
     };
 
     protected override async Task OnParametersSetAsync()

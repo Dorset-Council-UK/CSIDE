@@ -23,6 +23,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
         private ICollection<ApplicationType> ApplicationTypes = [];
         private ICollection<ApplicationDirectionOfSecState>? DirectionsOfSecState;
         private List<int> SelectedClaimedStatuses { get; set; } = [];
+        private List<int> SelectedApplicationTypes { get; set; } = [];
 
         private DMMOEditForm? childDMMOEditForm;
 
@@ -38,7 +39,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
             NavItems =
             [
                 new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
-            new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
+                new BreadcrumbItem{ Text = localizer["DMMO Abbreviation"], Href="DMMO" },
                 new BreadcrumbItem{ Text = localizer["Create New DMMO Label"], IsCurrentPage = true },
             ];
             IsBusy = true;
@@ -46,14 +47,13 @@ namespace CSIDE.Web.Components.Pages.DMMO
             {
                 ClaimedStatuses = await dmmoService.GetClaimedStatuses();
                 CaseStatuses = await dmmoService.GetCaseStatusOptions();
-                ApplicationTypes = await dmmoService.GetApplicationTypeOptions();
+                ApplicationTypes = await dmmoService.GetApplicationTypes();
                 DirectionsOfSecState = await dmmoService.GetDirectionOfSecStateOptions();
                 DMMOApplication = new()
                 {
                     Geom = MultiLineString.Empty,
                     ApplicationDetails = "",
                     CaseStatusId = CaseStatuses.Select(o => o.Id).FirstOrDefault(),
-                    ApplicationTypeId = ApplicationTypes.Select(r => r.Id).FirstOrDefault(),
                 };
                 GeometryIsValid = true;
             }
@@ -78,7 +78,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 {
                     if (DMMOApplication is not null)
                     {
-                        await dmmoService.CreateDMMO(DMMOApplication, SelectedClaimedStatuses);
+                        await dmmoService.CreateDMMO(DMMOApplication, SelectedClaimedStatuses, SelectedApplicationTypes);
                         //redirect
                         navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
                     }

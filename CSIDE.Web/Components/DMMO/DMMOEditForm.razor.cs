@@ -28,6 +28,8 @@ namespace CSIDE.Web.Components.DMMO
         public EventCallback OnCancel { get; set; }
         [Parameter]
         public IList<int> SelectedClaimedStatuses { get; set; } = [];
+        [Parameter]
+        public IList<int> SelectedApplicationTypes { get; set; } = [];
         public IList<string> CaseOfficerSuggestions = [];
 
         private FluentValidationValidator? fluentValidationValidator;
@@ -119,6 +121,24 @@ namespace CSIDE.Web.Components.DMMO
                 if (SelectedClaimedStatuses.Contains(claimedStatus.Id))
                 {
                     SelectedClaimedStatuses.Remove(claimedStatus.Id);
+                }
+            }
+        }
+
+        private void ApplicationTypeChanged(ApplicationType applicationType, ChangeEventArgs eventArgs)
+        {
+            if (Convert.ToBoolean(eventArgs.Value))
+            {
+                if (!SelectedApplicationTypes.Contains(applicationType.Id))
+                {
+                    SelectedApplicationTypes.Add(applicationType.Id);
+                }
+            }
+            else
+            {
+                if (SelectedApplicationTypes.Contains(applicationType.Id))
+                {
+                    SelectedApplicationTypes.Remove(applicationType.Id);
                 }
             }
         }

@@ -19,12 +19,12 @@ namespace CSIDE.Data.Models.DMMO
         public DateOnly? AppealDate { get; set; }
         public DateOnly? DateOfDirectionOfSecState { get; set; }
 
-        public string? ApplicationType { get; set; }
         public string? CaseStatus { get; set; }
         public string? DirectionOfSecState { get; set; }
 
         //one-many relationships
-        public ICollection<string?> ClaimedStatuses { get; set; }
+        public ICollection<string?> ClaimedStatuses { get; set; } = [];
+        public ICollection<string> ApplicationTypes { get; set; } = [];
         public ICollection<string> Parishes { get; set; } = [];
     }
 }
