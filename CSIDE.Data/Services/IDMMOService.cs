@@ -33,18 +33,21 @@ namespace CSIDE.Data.Services
         Task<ICollection<OrderDecisionOfSecState>> GetOrderDecisionOfSecStateOptions(CancellationToken ct = default);
         Task<ICollection<OrderDeterminationProcess>> GetOrderDeterminationProcessOptions(CancellationToken ct = default);
         Task<ICollection<ApplicationClaimedStatus>> GetClaimedStatuses(CancellationToken ct = default);
+        Task<ICollection<ApplicationType>> GetApplicationTypes(CancellationToken ct = default);
         Task<ICollection<ApplicationCaseStatus>> GetCaseStatusOptions(CancellationToken ct = default);
-        Task<ICollection<ApplicationType>> GetApplicationTypeOptions(CancellationToken ct = default);
         Task<ICollection<ApplicationDirectionOfSecState>> GetDirectionOfSecStateOptions(CancellationToken ct = default);
-        Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, CancellationToken ct = default);
+        
+        Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, List<int> SelectedApplicationTypes, CancellationToken ct = default);
         Task<DMMOAddress> AddDMMOAddress(DMMOAddress dmmoAddress, CancellationToken ct = default);
         Task<DMMOLinkedRoute> AddLinkedRouteToDMMO(DMMOLinkedRoute dmmoLinkedRoute, CancellationToken ct = default);
         Task<DMMOEvent> AddEventToDMMO(DMMOEvent dmmoEvent, CancellationToken ct = default);
         Task<DMMOOrder> AddOrderToDMMO(DMMOOrder dmmoOrder, CancellationToken ct = default);
         Task<DMMOApplication> AddMediaToDMMO(DMMOApplication DMMOApplication, DMMOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default);
         Task<DMMOContact> AddContactToDMMO(Contact newContact, DMMOApplication dmmoApplication, CancellationToken ct = default);
-        Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, CancellationToken ct = default);
+        Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, List<int> SelectedApplicationTypes, CancellationToken ct = default);
         Task UpdateClaimedStatuses(List<int> SelectedClaimedStatuses, DMMOApplication DMMOApplication, ApplicationDbContext context);
+        Task UpdateApplicationTypes(List<int> SelectedApplicationTypes, DMMOApplication DMMOApplication, ApplicationDbContext context);
+
         Task<DMMOEvent> UpdateDMMOEvent(int id, DMMOEvent dmmoEvent, CancellationToken ct = default);
         Task<DMMOOrder> UpdateDMMOOrder(int OrderId, DMMOOrder dmmoOrder, CancellationToken ct = default);
         Task<bool> DeleteDMMOAddress(int ApplicationId, long UPRN, CancellationToken ct = default);

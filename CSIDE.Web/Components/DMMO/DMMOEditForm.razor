@@ -18,23 +18,27 @@
             <label class="form-check-label" for="is-public">@localizer["Is Public Label"]</label>
         </div>
 
+        @if (ApplicationTypes is not null && ApplicationTypes.Count != 0)
+        {
+            <div class="mb-3">
+                <fieldset>
+                    <legend class="form-label fs-6">@localizer["Application Type Label"]</legend>
 
-        <div class="mb-3 row">
-            <div class="col-sm-8 col-lg-6">
-                <label class="form-label" for="app-type">@localizer["Application Type Label"]</label>
-                <InputSelect id="app-type" class="form-select" @bind-Value="DMMOApplication.ApplicationTypeId">
-                    @if (ApplicationTypes is not null)
+                    @foreach (var applicationType in ApplicationTypes)
                     {
-                        @foreach (var type in ApplicationTypes.OrderBy(r => r.Name))
-                        {
-                            <option value="@type.Id">@type.Name</option>
-                        }
-                    }
+                        var selected = DMMOApplication.DMMOApplicationTypes.Select(j => j.ApplicationTypeId).Contains(applicationType.Id);
 
-                </InputSelect>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@applicationType.Id" checked="@selected" id="ApplicationType__@applicationType.Id" @onchange="(e) => { ApplicationTypeChanged(applicationType, e); }">
+                            <label class="form-check-label" for="ApplicationType__@applicationType.Id">
+                                @applicationType.Name
+                            </label>
+                        </div>
+                    }
+                </fieldset>
+                <ValidationMessage For="() => DMMOApplication.DMMOApplicationTypes" />
             </div>
-            <ValidationMessage For="() => DMMOApplication.ApplicationTypeId" />
-        </div>
+        }
 
         @if (ClaimedStatuses is not null && ClaimedStatuses.Count != 0)
         {

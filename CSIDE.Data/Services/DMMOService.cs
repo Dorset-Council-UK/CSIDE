@@ -74,7 +74,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         }
         if (ApplicationTypeId is not null && int.TryParse(ApplicationTypeId, CultureInfo.InvariantCulture, out int parsedApplicationTypeId))
         {
-            query = query.Where(d => d.ApplicationTypeId == parsedApplicationTypeId);
+            query = query.Where(d => d.DMMOApplicationTypes.Any(at => at.ApplicationTypeId == parsedApplicationTypeId));
         }
         if (ApplicationCaseStatusId is not null && int.TryParse(ApplicationCaseStatusId, CultureInfo.InvariantCulture, out int parsedApplicationCaseStatusId))
         {
@@ -198,6 +198,16 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ToArrayAsync(ct);
     }
 
+    public async Task<ICollection<ApplicationType>> GetApplicationTypes(CancellationToken ct = default)
+    {
+        //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOApplicationTypes
+            .AsNoTracking()
+            .OrderBy(at => at.Id)
+            .ToArrayAsync(ct);
+    }
+
     public async Task<ICollection<ApplicationCaseStatus>> GetCaseStatusOptions(CancellationToken ct = default)
     {
         //TODO - Cache this
@@ -205,16 +215,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.DMMOApplicationCaseStatuses
             .AsNoTracking()
             .OrderBy(p => p.Name)
-            .ToArrayAsync(cancellationToken: ct);
-    }
-
-    public async Task<ICollection<ApplicationType>> GetApplicationTypeOptions(CancellationToken ct = default)
-    {
-        //TODO - Cache this
-        await using var context = await contextFactory.CreateDbContextAsync(ct);
-        return await context.DMMOApplicationTypes
-            .AsNoTracking()
-            .OrderBy(p => p.Id)
             .ToArrayAsync(cancellationToken: ct);
     }
 
@@ -266,12 +266,13 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
                 .ToArrayAsync(cancellationToken: ct);
     }
 
-    public async Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, CancellationToken ct = default)
+    public async Task<DMMOApplication> CreateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, List<int> SelectedApplicationTypes, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.Add(dmmoApplication);
         await context.SaveChangesAsync(ct);
         CreateClaimedStatuses(SelectedClaimedStatuses, dmmoApplication.Id, context);
+        CreateApplicationTypes(SelectedApplicationTypes, dmmoApplication.Id, context);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoApplication;
     }
@@ -282,6 +283,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         foreach (int claimedStatus in selectedClaimedStatuses)
         {
             context.DMMOClaimedStatuses.Add(new DMMOClaimedStatus { ClaimedStatusId = claimedStatus, DMMOApplicationId = DMMOApplicationId });
+        }
+    }
+
+    private static void CreateApplicationTypes(List<int> selectedApplicationTypes, int DMMOApplicationId, ApplicationDbContext context)
+    {
+        //add new application types
+        foreach (int applicationType in selectedApplicationTypes)
+        {
+            context.DMMOTypes.Add(new DMMOApplicationType { ApplicationTypeId = applicationType, DMMOApplicationId = DMMOApplicationId });
         }
     }
 
@@ -342,7 +352,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return dmmoContact;
     }
 
-    public async Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, CancellationToken ct = default)
+    public async Task<DMMOApplication> UpdateDMMO(DMMOApplication dmmoApplication, List<int> SelectedClaimedStatuses, List<int> SelectedApplicationTypes, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var existingApplication = await context.DMMOApplication.FindAsync([dmmoApplication.Id], cancellationToken: ct) ?? throw new Exception($"DMMO Application being edited (ID: {dmmoApplication.Id}) was not found prior to updating");
@@ -354,6 +364,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.Entry(existingApplication).Property(j => j.Version).OriginalValue = originalVersion;
 
         await UpdateClaimedStatuses(SelectedClaimedStatuses, dmmoApplication, context);
+        await UpdateApplicationTypes(SelectedApplicationTypes, dmmoApplication, context);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoApplication;
     }
@@ -390,6 +401,42 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             if (SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId))
             {
                 context.Entry(existingStatus).State = EntityState.Unchanged;
+            }
+        }
+    }
+
+    public async Task UpdateApplicationTypes(List<int> SelectedApplicationTypes, DMMOApplication DMMOApplication, ApplicationDbContext context)
+    {
+        if (DMMOApplication is null) return;
+
+        // Retrieve the existing application types for the application
+        var existingTypes = await context.DMMOTypes
+            .Where(at => at.DMMOApplicationId == DMMOApplication.Id)
+            .ToListAsync();
+
+        // Determine the application types to remove
+        var typesToRemove = existingTypes
+            .Where(at => !SelectedApplicationTypes.Contains(at.ApplicationTypeId))
+            .ToList();
+
+        // Remove the entities
+        context.DMMOTypes.RemoveRange(typesToRemove);
+
+        // Determine the application types to add
+        var typesToAdd = SelectedApplicationTypes
+            .Where(typeId => !existingTypes.Exists(at => at.ApplicationTypeId == typeId))
+            .Select(typeId => new DMMOApplicationType { ApplicationTypeId = typeId, DMMOApplicationId = DMMOApplication.Id })
+            .ToList();
+
+        // Add the new application types
+        context.DMMOTypes.AddRange(typesToAdd);
+
+        // Mark entities as unchanged if they haven't actually changed
+        foreach (var existingType in existingTypes)
+        {
+            if (SelectedApplicationTypes.Contains(existingType.ApplicationTypeId))
+            {
+                context.Entry(existingType).State = EntityState.Unchanged;
             }
         }
     }
@@ -497,7 +544,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .Include(d => d.CaseStatus)
             .Include(d => d.DMMOClaimedStatuses).ThenInclude(c => c.ClaimedStatus)
             .Include(d => d.DirectionOfSecState)
-            .Include(d => d.ApplicationType)
+            .Include(d => d.DMMOApplicationTypes).ThenInclude(at => at.ApplicationType)
             .Include(a => a.DMMOParishes).ThenInclude(p => p.Parish)
             .OrderBy(p => p.Id)
             .Skip(skip)

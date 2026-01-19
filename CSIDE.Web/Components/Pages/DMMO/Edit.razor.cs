@@ -22,6 +22,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
         private ICollection<ApplicationType> ApplicationTypes = [];
         private ICollection<ApplicationDirectionOfSecState> DirectionsOfSecState = [];
         private List<int> SelectedClaimedStatuses { get; set; } = [];
+        private List<int> SelectedApplicationTypes { get; set; } = [];
 
 
         private DMMOEditForm? childDMMOEditForm;
@@ -47,12 +48,13 @@ namespace CSIDE.Web.Components.Pages.DMMO
             {
                 ClaimedStatuses = await dmmoService.GetClaimedStatuses();
                 CaseStatuses = await dmmoService.GetCaseStatusOptions();
-                ApplicationTypes = await dmmoService.GetApplicationTypeOptions();
+                ApplicationTypes = await dmmoService.GetApplicationTypes();
                 DirectionsOfSecState = await dmmoService.GetDirectionOfSecStateOptions();
                 DMMOApplication = await dmmoService.GetDMMOApplicationById(DMMOApplicationId);
                 if (DMMOApplication is not null)
                 {
                     SelectedClaimedStatuses = DMMOApplication.DMMOClaimedStatuses.Select(c => c.ClaimedStatusId).ToList();
+                    SelectedApplicationTypes = DMMOApplication.DMMOApplicationTypes.Select(at => at.ApplicationTypeId).ToList();
                 }
                 GeometryIsValid = true;
             }
@@ -77,7 +79,7 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 {
                     if (DMMOApplication is not null)
                     {
-                        await dmmoService.UpdateDMMO(DMMOApplication, SelectedClaimedStatuses);
+                        await dmmoService.UpdateDMMO(DMMOApplication, SelectedClaimedStatuses, SelectedApplicationTypes);
                         //redirect
                         navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
                     }

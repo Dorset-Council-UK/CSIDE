@@ -46,6 +46,7 @@ namespace CSIDE.Data
 
         public DbSet<DMMOMedia> DMMOMedia { get; set; }
         public DbSet<DMMOClaimedStatus> DMMOClaimedStatuses { get; set; }
+        public DbSet<DMMOApplicationType> DMMOTypes { get; set; }
         public DbSet<DMMOContact> DMMOContact { get; set; }
         public DbSet<DMMOAddress> DMMOAddresses { get; set; }
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
