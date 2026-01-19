@@ -134,38 +134,6 @@
             <ValidationMessage For="() => PPOApplication.DeterminationDate" />
         </div>
 
-        <YesNoBoolean @bind-Value="PPOApplication.InspectionCertification" Label="@localizer["Inspection Certification Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
-        
-        <div class="mb-3 row">
-            <label class="form-label" for="dir-ss-date">@localizer["Date Inspection Certification Label"]</label>
-            <div class=" col-sm-4 col-md-6 col-lg-4">
-                @{
-                    string DateInspectionStringRepresentation = "";
-                    if (PPOApplication.InspectionCertificationDate.HasValue)
-                    {
-                        DateInspectionStringRepresentation = PPOApplication.InspectionCertificationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
-                    }
-                }
-                <input id="insp-cer-date" type="date" class="form-control" value="@DateInspectionStringRepresentation" @onchange="UpdateInspectionCertificationDateProperty" />
-            </div>
-            <ValidationMessage For="() => PPOApplication.InspectionCertificationDate" />
-        </div>
-
-        <div class="mb-3 row">
-            <label class="form-label" for="confirmation-published-date">@localizer["Date Confirmation Published Label"]</label>
-            <div class=" col-sm-4 col-md-6 col-lg-4">
-                @{
-                    string DateConfirmationPublishedStringRepresentation = "";
-                    if (PPOApplication.ConfirmationPublishedDate.HasValue)
-                    {
-                        DateConfirmationPublishedStringRepresentation = PPOApplication.ConfirmationPublishedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
-                    }
-                }
-                <input id="confirmation-published-date" type="date" class="form-control" value="@DateConfirmationPublishedStringRepresentation" @onchange="UpdateConfirmationPublishedDateProperty" />
-            </div>
-            <ValidationMessage For="() => PPOApplication.ConfirmationPublishedDate" />
-        </div>
-
         <YesNoBoolean @bind-Value="PPOApplication.CouncilLandAffected" Label="@localizer["Council Land Affected Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
 
         <div class="mb-3 row">

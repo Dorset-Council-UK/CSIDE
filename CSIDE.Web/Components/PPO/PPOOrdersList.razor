@@ -95,6 +95,18 @@
                                 <td>@SelectedOrder.DecisionOfSecState?.Name</td>
                             </tr>
                             <tr>
+                                <th>@localizer["Inspection Certification Label"]</th>
+                                <td><NullableBooleanDisplay Value="SelectedOrder.InspectionCertification"></NullableBooleanDisplay></td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Date Inspection Certification Label"]</th>
+                                <td>@SelectedOrder.InspectionCertificationDate</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Date Confirmation Published Label"]</th>
+                                <td>@SelectedOrder.ConfirmationPublishedDate</td>
+                            </tr>
+                            <tr>
                                 <th>@localizer["Order Confirmed Date Label"]</th>
                                 <td>@SelectedOrder.DateConfirmed</td>
                             </tr>

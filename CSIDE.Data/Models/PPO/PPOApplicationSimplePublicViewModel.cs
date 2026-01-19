@@ -14,10 +14,6 @@ namespace CSIDE.Data.Models.PPO
         public string? LocationDescription { get; set; }
         public string? CaseOfficer { get; set; }
         public DateOnly? DeterminationDate { get; set; }
-        public DateOnly? DateOfDirection { get; set; }
-        public bool? InspectionCertification { get; set; }
-        public DateOnly? InspectionCertificationDate { get; set; }
-        public DateOnly? ConfirmationPublishedDate { get; set; }
         public bool? CouncilLandAffected { get; set; }
         public string? PublicComments { get; set; }
 
