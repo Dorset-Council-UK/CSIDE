@@ -134,22 +134,6 @@
             <ValidationMessage For="() => PPOApplication.DeterminationDate" />
         </div>
 
-        <div class="mb-3 row">
-            <label class="form-label" for="dir-ss-date">@localizer["Date of Direction Label"]</label>
-            <div class=" col-sm-4 col-md-6 col-lg-4">
-                @{
-                    string DateOfDirectionStringRepresentation = "";
-                    if (PPOApplication.DateOfDirection.HasValue)
-                    {
-                        DateOfDirectionStringRepresentation = PPOApplication.DateOfDirection.Value.ToDateOnly().ToString("yyyy-MM-dd");
-                    }
-                }
-                <input id="dir-ss-date" type="date" class="form-control" value="@DateOfDirectionStringRepresentation" @onchange="UpdateDirectionDateProperty" />
-            </div>
-            <ValidationMessage For="() => PPOApplication.DateOfDirection" />
-        </div>
-
-
         <YesNoBoolean @bind-Value="PPOApplication.InspectionCertification" Label="@localizer["Inspection Certification Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
         
         <div class="mb-3 row">
