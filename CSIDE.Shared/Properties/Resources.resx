@@ -1797,4 +1797,7 @@
   <data name="Application Type Label" xml:space="preserve">
     <value>Application type</value>
   </data>
+  <data name="Order Title Label" xml:space="preserve">
+    <value>Order title</value>
+  </data>
 </root>
