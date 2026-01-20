@@ -21,6 +21,18 @@ builder.Services.AddApiHealthChecks();
 // Add versioning
 builder.Services.AddVersioning();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin();
+            policy.WithMethods("POST", "GET");
+            policy.WithHeaders("X-API-Key");
+        });
+});
+
 // Add OpenAPI/Swagger
 OpenApiExtensions.AddOpenApi(builder.Services);
 
@@ -113,6 +125,7 @@ if (options is not null && options.UseHttpsRedirection)
 }
 app.UseStaticFiles();
 
+app.UseCors();
 app.UseStatusCodePages();
 // Map health checks
 app.MapApiHealthChecks();

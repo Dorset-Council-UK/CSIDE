@@ -2,6 +2,7 @@
 using CSIDE.API.Endpoints.LandownerDeposits;
 using CSIDE.API.Endpoints.Maintenance;
 using CSIDE.API.Endpoints.PPO;
+using CSIDE.API.Endpoints.RightsOfWay;
 using CSIDE.API.Models;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -16,6 +17,7 @@ internal static class ApiEndpointsExtensions
         MapPPOApplicationEndpoints(app);
         MapLandownerDepositEndpoints(app);
         MapMaintenanceJobEndpoints(app);
+        MapRightsOfWayEndpoints(app);
     }
 
     private static void MapDMMOApplicationEndpoints(WebApplication app)
@@ -146,4 +148,18 @@ internal static class ApiEndpointsExtensions
             .WithSummary("Subscribe to Maintenance Job Updates")
             .WithDescription("Sign up to receive email notifications for a specific maintenance job");
     }
-}
+    private static void MapRightsOfWayEndpoints(WebApplication app)
+    {
+        var group = app
+            .NewVersionedApi()
+            .HasApiVersion(Versions.V1.Version)
+            .MapGroup("/api/rights-of-way")
+            .WithTags("rightsofway");
+
+        // Get a specific maintenance job by its ID
+        group
+            .MapGet("/nearest", RightsOfWayEndpoints.GetNearestRoute)
+            .WithSummary("Rights of Way - Get nearest route")
+            .WithDescription("Get the nearest route to a specified x and y coordinate");
+    }
+    }
