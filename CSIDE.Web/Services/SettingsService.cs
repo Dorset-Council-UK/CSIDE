@@ -15,7 +15,7 @@ public class SettingsService(ProtectedLocalStorage ProtectedLocalStore, ILogger<
             {
                 return data.Value;
             }
-        } catch (InvalidOperationException ex)
+        } catch (InvalidOperationException)
         {
             //ignore
         }catch(Exception ex) { 

@@ -452,10 +452,8 @@ public class MaintenanceEndpointsTests
             Arg.Any<CancellationToken>());
     }
 
-    [Theory]
-    [InlineData("invalid-guid-format")]
-    [InlineData("not-a-guid")]
-    public async Task UnsubscribeFromNotifications_ReturnsInternalServerError_WhenServiceThrowsFormatException(string guidString)
+    [Fact]
+    public async Task UnsubscribeFromNotifications_ReturnsInternalServerError_WhenServiceThrowsFormatException()
     {
         // Arrange
         var jobService = Substitute.For<IMaintenanceJobsService>();
