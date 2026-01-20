@@ -86,7 +86,12 @@ else
                                         </tr>
                                         <tr>
                                             <th>@localizer["Operational Status Label"]</th>
-                                            <td>@Route.OperationalStatus?.Name</td>
+                                            <td>
+                                                @Route.OperationalStatus?.Name 
+                                                @if (IsPlannedClosure) {
+                                                    <span class="badge text-bg-primary ms-2">@localizer["Planned Label"]</span>
+                                                }
+                                            </td>
                                         </tr>
                                         @if(Route.OperationalStatus is not null && Route.OperationalStatus.IsClosed){
                                             <tr>
@@ -270,4 +275,10 @@ else
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    private bool IsPlannedClosure =>
+        Route?.OperationalStatus is not null &&
+        Route.OperationalStatus.IsClosed &&
+        Route.ClosureStartDate.HasValue &&
+        Route.ClosureStartDate.Value.ToDateOnly() > DateOnly.FromDateTime(DateTime.Now);
 }

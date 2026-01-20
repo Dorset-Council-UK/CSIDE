@@ -1811,4 +1811,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Order Title Label" xml:space="preserve">
     <value>Teitl archeb</value>
   </data>
+  <data name="Planned Label" xml:space="preserve">
+    <value>Wedi'i gynllunio</value>
+  </data>
 </root>

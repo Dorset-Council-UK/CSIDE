@@ -1800,4 +1800,7 @@
   <data name="Order Title Label" xml:space="preserve">
     <value>Order title</value>
   </data>
+  <data name="Planned Label" xml:space="preserve">
+    <value>Planned</value>
+  </data>
 </root>
