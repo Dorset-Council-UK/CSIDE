@@ -19,6 +19,10 @@
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled">
+                                @if (order.OrderTitle is not null)
+                                {
+                                    <li><strong>@localizer["Order Title Label"]</strong>: @order.OrderTitle</li>
+                                }
                                 @if (order.DateSealed.HasValue)
                                 {
                                     <li><strong>@localizer["Order Date Sealed Label"]</strong>: @order.DateSealed</li>
@@ -59,6 +63,10 @@
                                 <td>@(IDPrefixOptions.Value.PPO)@(SelectedOrder.PPOApplicationId)/@(SelectedOrder.OrderId)</td>
                             </tr>
                             <tr>
+                                <th>@localizer["Order Title Label"]</th>
+                                <td>@SelectedOrder.OrderTitle</td>
+                            </tr>
+                            <tr>
                                 <th>@localizer["Order Date Sealed Label"]</th>
                                 <td>@SelectedOrder.DateSealed</td>
                             </tr>
@@ -85,6 +93,18 @@
                             <tr>
                                 <th>@localizer["Decision Of Secretary Of State Label"]</th>
                                 <td>@SelectedOrder.DecisionOfSecState?.Name</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Inspection Certification Label"]</th>
+                                <td><NullableBooleanDisplay Value="SelectedOrder.InspectionCertification"></NullableBooleanDisplay></td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Date Inspection Certification Label"]</th>
+                                <td>@SelectedOrder.InspectionCertificationDate</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Date Confirmation Published Label"]</th>
+                                <td>@SelectedOrder.ConfirmationPublishedDate</td>
                             </tr>
                             <tr>
                                 <th>@localizer["Order Confirmed Date Label"]</th>

@@ -56,6 +56,17 @@ namespace CSIDE.Web.Components.PPO
         {
             UpdateDateProperty(eventArgs, date => Order!.ObjectionsEndDate = date);
         }
+
+        private void UpdateInspectionCertificationDateProperty(ChangeEventArgs eventArgs)
+        {
+            UpdateDateProperty(eventArgs, date => Order!.InspectionCertificationDate = date);
+        }
+
+        private void UpdateConfirmationPublishedDateProperty(ChangeEventArgs eventArgs)
+        {
+            UpdateDateProperty(eventArgs, date => Order!.ConfirmationPublishedDate = date);
+        }
+
         private void UpdateConfirmedDateProperty(ChangeEventArgs eventArgs)
         {
             UpdateDateProperty(eventArgs, date => Order!.DateConfirmed = date);

@@ -3859,6 +3859,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order title.
+        /// </summary>
+        public static string Order_Title_Label {
+            get {
+                return ResourceManager.GetString("Order Title Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Orders ({0}).
         /// </summary>
         public static string Orders_Label {

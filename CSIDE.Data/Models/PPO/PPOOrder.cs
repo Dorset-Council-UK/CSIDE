@@ -8,6 +8,7 @@ namespace CSIDE.Data.Models.PPO
         public int OrderId { get; set; }
         public required int PPOApplicationId { get; set; }
 
+        public string? OrderTitle { get; set; }
         public LocalDate? ObjectionsEndDate { get; set; }
         public bool? ObjectionsReceived { get; set; }
         public bool? ObjectionsWithdrawn { get; set; }
@@ -19,5 +20,8 @@ namespace CSIDE.Data.Models.PPO
         public LocalDate? DateSealed { get; set; }
         public LocalDate? DatePublished { get; set; }
         public bool? SubmitToPINS { get; set; }
+        public bool? InspectionCertification { get; set; }
+        public LocalDate? InspectionCertificationDate { get; set; }
+        public LocalDate? ConfirmationPublishedDate { get; set; }
     }
 }

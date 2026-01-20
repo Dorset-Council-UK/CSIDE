@@ -54,29 +54,16 @@ namespace CSIDE.Web.Components.PPO
             return await fluentValidationValidator!.ValidateAsync();
         }
 
-        private void UpdateDirectionDateProperty(ChangeEventArgs eventArgs)
-        {
-            UpdateDateProperty(eventArgs, date => PPOApplication!.DateOfDirection = date);
-        }
-
         private void UpdateDeterminationDateProperty(ChangeEventArgs eventArgs)
         {
             UpdateDateProperty(eventArgs, date => PPOApplication!.DeterminationDate = date);
         }
 
-        private void UpdateInspectionCertificationDateProperty(ChangeEventArgs eventArgs)
-        {
-            UpdateDateProperty(eventArgs, date => PPOApplication!.InspectionCertificationDate = date);
-        }
         private void UpdateReceivedDateProperty(ChangeEventArgs eventArgs)
         {
             UpdateDateProperty(eventArgs, date => PPOApplication!.ReceivedDate = date);
         }
-        private void UpdateConfirmationPublishedDateProperty(ChangeEventArgs eventArgs)
-        {
-            UpdateDateProperty(eventArgs, date => PPOApplication!.ConfirmationPublishedDate = date);
-        }
-
+        
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate?> updateProperty)
         {
             if (PPOApplication is not null && eventArgs.Value is not null)

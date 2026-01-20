@@ -6,6 +6,14 @@
 
         <FluentValidationValidator @ref="fluentValidationValidator" />
         <ValidationSummary />
+        
+        <div class="mb-3 row">
+            <label class="form-label" for="order-title">@localizer["Order Title Label"]</label>
+            <div class="col-sm-8 col-lg-6">
+                <InputText id="order-title" class="form-control" @bind-Value="Order.OrderTitle"></InputText>
+            </div>
+            <ValidationMessage For="() => Order.OrderTitle" />
+        </div>
 
         <div class="mb-3 row">
             <div class=" col-sm-4 col-md-6 col-lg-4">
@@ -92,6 +100,37 @@
             <ValidationMessage For="() => Order.DecisionOfSecStateId" />
         </div>
 
+        <YesNoBoolean @bind-Value="Order.InspectionCertification" Label="@localizer["Inspection Certification Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="insp-cer-date">@localizer["Date Inspection Certification Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string DateInspectionStringRepresentation = "";
+                    if (Order.InspectionCertificationDate.HasValue)
+                    {
+                        DateInspectionStringRepresentation = Order.InspectionCertificationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="insp-cer-date" type="date" class="form-control" value="@DateInspectionStringRepresentation" @onchange="UpdateInspectionCertificationDateProperty" />
+            </div>
+            <ValidationMessage For="() => Order.InspectionCertificationDate" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="confirmation-published-date">@localizer["Date Confirmation Published Label"]</label>
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                @{
+                    string DateConfirmationPublishedStringRepresentation = "";
+                    if (Order.ConfirmationPublishedDate.HasValue)
+                    {
+                        DateConfirmationPublishedStringRepresentation = Order.ConfirmationPublishedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="confirmation-published-date" type="date" class="form-control" value="@DateConfirmationPublishedStringRepresentation" @onchange="UpdateConfirmationPublishedDateProperty" />
+            </div>
+            <ValidationMessage For="() => Order.ConfirmationPublishedDate" />
+        </div>
 
         <div class="mb-3 row">
             <div class=" col-sm-4 col-md-6 col-lg-4">

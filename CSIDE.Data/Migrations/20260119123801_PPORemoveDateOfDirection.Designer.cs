@@ -5,6 +5,7 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -15,9 +16,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119123801_PPORemoveDateOfDirection")]
+    partial class PPORemoveDateOfDirection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1406,6 +1409,9 @@ namespace CSIDE.Migrations
                     b.Property<decimal?>("Charge")
                         .HasColumnType("numeric");
 
+                    b.Property<LocalDate?>("ConfirmationPublishedDate")
+                        .HasColumnType("date");
+
                     b.Property<bool?>("CouncilLandAffected")
                         .HasColumnType("boolean");
 
@@ -1415,6 +1421,12 @@ namespace CSIDE.Migrations
                     b.Property<MultiLineString>("Geom")
                         .IsRequired()
                         .HasColumnType("geometry (multilinestring)");
+
+                    b.Property<bool?>("InspectionCertification")
+                        .HasColumnType("boolean");
+
+                    b.Property<LocalDate?>("InspectionCertificationDate")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean");
@@ -1576,9 +1588,6 @@ namespace CSIDE.Migrations
                     b.Property<int>("PPOApplicationId")
                         .HasColumnType("integer");
 
-                    b.Property<LocalDate?>("ConfirmationPublishedDate")
-                        .HasColumnType("date");
-
                     b.Property<LocalDate?>("DateConfirmed")
                         .HasColumnType("date");
 
@@ -1594,12 +1603,6 @@ namespace CSIDE.Migrations
                     b.Property<int?>("DeterminationProcessId")
                         .HasColumnType("integer");
 
-                    b.Property<bool?>("InspectionCertification")
-                        .HasColumnType("boolean");
-
-                    b.Property<LocalDate?>("InspectionCertificationDate")
-                        .HasColumnType("date");
-
                     b.Property<LocalDate?>("ObjectionsEndDate")
                         .HasColumnType("date");
 
@@ -1608,9 +1611,6 @@ namespace CSIDE.Migrations
 
                     b.Property<bool?>("ObjectionsWithdrawn")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("OrderTitle")
-                        .HasColumnType("text");
 
                     b.Property<bool?>("SubmitToPINS")
                         .HasColumnType("boolean");

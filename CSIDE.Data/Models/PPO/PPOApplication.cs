@@ -14,10 +14,6 @@ namespace CSIDE.Data.Models.PPO
         public string? CaseOfficer { get; set; }
         public string? CaseOfficerUserId { get; set; }
         public LocalDate? DeterminationDate { get; set; }
-        public LocalDate? DateOfDirection { get; set; }
-        public bool? InspectionCertification { get; set; }
-        public LocalDate? InspectionCertificationDate { get; set; }
-        public LocalDate? ConfirmationPublishedDate { get; set; }
         public bool? CouncilLandAffected { get; set; }
         public decimal? Charge { get; set; }
         public string? BoxNumber { get; set; }
