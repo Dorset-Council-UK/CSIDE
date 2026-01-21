@@ -101,9 +101,9 @@ namespace CSIDE.Web.Components.Pages.DMMO
             }
         }
 
-        private void NavigateBackToRouteSearchPage()
+        private void NavigateBackToDMMODetailsPage()
         {
-            navigationManager.NavigateTo($"DMMO");
+            navigationManager.NavigateTo($"DMMO/Details/{DMMOApplicationId}");
         }
 
         //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)
