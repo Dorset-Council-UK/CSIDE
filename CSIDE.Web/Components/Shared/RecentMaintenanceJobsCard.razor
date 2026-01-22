@@ -24,12 +24,12 @@
             if (Jobs is not null && Jobs.Count != 0)
             {
                 <div class="list-group">
-                    @foreach (Job job in Jobs.OrderByDescending(l => l.LogDate))
+                    @foreach (RecentJobViewModel job in Jobs.OrderByDescending(l => l.LogDate))
                     {
                         <a href="Maintenance/Details/@job.Id" class="list-group-item list-group-item-action">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">@IDPrefixOptions.Value.Maintenance@job.Id</h5>
-                                <small>@(job.LogDate.HasValue? job.LogDate.Value.ToDateTimeUtc().Humanize() : localizer["Unknown Label"])</small>
+                                <small>@(job.LogDate.HasValue? job.LogDate.Value.Humanize() : localizer["Unknown Label"])</small>
                             </div>
                             <p class="mb-1">@job.ProblemDescription?.ReplaceLineEndings(" ").Truncate(50)</p>
                         </a>
@@ -45,56 +45,62 @@
 </Card>
 
 @code {
-    public IReadOnlyCollection<Job> Jobs { get; set; } = [];
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
-    private string? UserID { get; set; }
-    private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
-    private bool IsBusy { get; set; }
-    private string? ErrorMessage { get; set; } = null;
-    private string? MaintenanceCardTitle { get; set; }
+[PersistentState]
+public IReadOnlyCollection<RecentJobViewModel>? Jobs { get; set; }
+[CascadingParameter]
+private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+private string? UserID { get; set; }
+private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
+private bool IsBusy { get; set; }
+private string? ErrorMessage { get; set; } = null;
+[PersistentState]
+public string? MaintenanceCardTitle { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        MaintenanceCardTitle = localizer["Recent Maintenance Jobs Card Title"];
-
-        IsBusy = true;
-        ErrorMessage = null;
-        StateHasChanged();
-        try
+        if (Jobs is null)
         {
 
-            if (AuthenticationStateTask != null)
-            {
-                var authState = await AuthenticationStateTask;
-                UserID = authState.GetUserId();
-            }
+            MaintenanceCardTitle = localizer["Recent Maintenance Jobs Card Title"];
 
-            if (UserID != null)
-            {
-                MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
-            }
-
-            if (MaintenanceTeam.Count >= 1)
-            {
-                var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
-                Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForTeam(teamIds, 5);
-            }
-            else
-            {
-                Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForAllTeams(5);
-                MaintenanceCardTitle = localizer["Recent Maintenance Jobs Card Title for All Teams"];
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = localizer["Maintenance Jobs Card Error Message"];
-            logger.LogError(ex, "An error occurred loading a user's recent maintenance jobs in the card component");
-        }
-        finally
-        {
-            IsBusy = false;
+            IsBusy = true;
+            ErrorMessage = null;
             StateHasChanged();
+            try
+            {
+
+                if (AuthenticationStateTask != null)
+                {
+                    var authState = await AuthenticationStateTask;
+                    UserID = authState.GetUserId();
+                }
+
+                if (UserID != null)
+                {
+                    MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
+                }
+
+                if (MaintenanceTeam.Count >= 1)
+                {
+                    var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
+                    Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForTeam(teamIds, 5);
+                }
+                else
+                {
+                    Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForAllTeams(5);
+                    MaintenanceCardTitle = localizer["Recent Maintenance Jobs Card Title for All Teams"];
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Maintenance Jobs Card Error Message"];
+                logger.LogError(ex, "An error occurred loading a user's recent maintenance jobs in the card component");
+            }
+            finally
+            {
+                IsBusy = false;
+                StateHasChanged();
+            }
         }
     }
 }
