@@ -2,6 +2,7 @@ import { Map, View } from "ol";
 import EditBar from "ol-ext/control/EditBar";
 import Feature from "ol/Feature";
 import { extend } from "ol/extent";
+import { Control } from 'ol/control';
 import { GeoJSON } from "ol/format";
 import { GeometryCollection, LineString, MultiLineString, MultiPoint, Point, SimpleGeometry } from "ol/geom";
 import { Draw, Select, Snap } from "ol/interaction";
@@ -95,6 +96,7 @@ const bngTilegrid: TileGrid = new TileGrid({
   "resolutions": [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375],
   "origin": [-238375.0, 1376256.0]
 });
+let originalGeometry: string;
 
 
 export function initMap(geomType: string, geometry: string, mapConfigJSON: string, component: any) {
@@ -136,7 +138,7 @@ export function initMap(geomType: string, geometry: string, mapConfigJSON: strin
       map.addLayer(layer);
     });
   }
-
+  originalGeometry = geometry;
   initGeometry(geometry);
 
   initEditing(geomType, component);
@@ -193,6 +195,7 @@ function initEditing(geomType: string, component: any) {
         const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
         component.invokeMethodAsync('OnDrawEnd', geoJson);
       });
+      var revert = new RevertControl({});
       var edit = new EditBar({
         interactions: {
           // Use our own interaction > set the title inside
@@ -209,6 +212,7 @@ function initEditing(geomType: string, component: any) {
         } as any,
         source: editSource
       });
+      edit.addControl(revert);
       map.addControl(edit);
 
       // Set line drawing tool active if there are no features, otherwise set select as the default tool
@@ -271,6 +275,7 @@ function initEditing(geomType: string, component: any) {
 
       // Add the editbar
       var select = new Select({ style: selectedStyle });
+      var revert = new RevertControl({});
       var edit = new EditBar({
         interactions: {
           // Use our own interaction > set the title inside
@@ -283,10 +288,11 @@ function initEditing(geomType: string, component: any) {
           DrawHole: false,
           Info: false,
           Offset: false,
-          Split: false
+          Split: false,
         } as any,
         source: editSource
       });
+      edit.addControl(revert);
       map.addControl(edit);
 
       // Set polygon drawing tool active if there are no features, otherwise set select as the default tool
@@ -402,6 +408,65 @@ class PickRoute extends Draw {
       type: 'Point',
       style: {}
     });
+  }
+}
+
+class RevertControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options: any) {
+    const options = opt_options || {};
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.innerHTML = '<span class="bi bi-arrow-counterclockwise"></span>';
+
+    const element = document.createElement('div');
+    element.className = 'revert-button ol-control';
+    element.appendChild(button);
+
+    super({
+      element: element,
+      target: options.target,
+    });
+
+    button.addEventListener('click', this.revertEdits.bind(this), false);
+  }
+
+  revertEdits() {
+    editSource.clear();
+    const features = new GeoJSON().readFeatures(originalGeometry);
+    if (features) {
+      const mapExtent = features[0].getGeometry()!.getExtent();
+      features.forEach(feature => {
+        extend(mapExtent, feature.getGeometry()!.getExtent())
+      });
+      map.getView().fit(mapExtent, {
+        padding: [20, 20, 20, 20],
+        maxZoom: 16
+      });
+
+      // Split MultiLineString into individual LineString features
+      features.forEach(feature => {
+        const geom = feature.getGeometry();
+        if (geom) {
+          if (geom.getType() === 'MultiLineString') {
+            const lineStrings = (geom as MultiLineString).getLineStrings();
+            lineStrings.forEach(lineString => {
+              const lineFeature = new Feature({
+                geometry: lineString
+              });
+              editSource.addFeature(lineFeature);
+            });
+          } else {
+            editSource.addFeature(feature);
+          }
+        }
+      });
+
+    }
+    editSource.changed();
   }
 }
 
