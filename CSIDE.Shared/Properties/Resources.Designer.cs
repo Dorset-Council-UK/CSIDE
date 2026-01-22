@@ -3922,6 +3922,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Planned.
+        /// </summary>
+        public static string Planned_Label {
+            get {
+                return ResourceManager.GetString("Planned Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PPO.
         /// </summary>
         public static string PPO_Abbreviation {

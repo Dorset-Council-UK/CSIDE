@@ -99,9 +99,9 @@ namespace CSIDE.Web.Components.Pages.PPO
             }
         }
 
-        private void NavigateBackToRouteSearchPage()
+        private void NavigateBackToPPODetailsPage()
         {
-            navigationManager.NavigateTo($"PPO");
+            navigationManager.NavigateTo($"PPO/Details/{PPOApplicationId}");
         }
 
         //TODO - The following is reused in Edit.razor, so should be shared somewhere (unless they diverge significantly)

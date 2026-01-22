@@ -7,6 +7,7 @@ a, .btn-link {
 [data-bs-theme="dark"] a, [data-bs-theme="dark"] .btn-link{
   color:white;
 }
+
 .btn-primary {
   color: #fff;
   background-color: var(--primary-color);
@@ -253,4 +254,7 @@ h1:focus {
 .ol-control.ol-bar .ol-control.ol-text-button > div, .ol-control.ol-bar .ol-control.ol-text-button > div:hover {
   color: rgba(0,60,136,1);
   cursor:pointer;
+}
+[data-bs-theme="dark"] .ol-attribution a {
+  color: var(--ol-subtle-foreground-color);
 }
