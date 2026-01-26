@@ -11,13 +11,13 @@
 @code {
 
     [Parameter, EditorRequired]
-    public Route route { get; set; }
+    public ClosedRoutesViewModel route { get; set; }
     private string statusText = string.Empty;
     private string style = string.Empty;
 
     protected override void OnInitialized()
     {
-        var today = LocalDate.FromDateTime(DateTime.Today);
+        var today = LocalDate.FromDateTime(DateTime.Today).ToDateOnly();
         var closureEndDate = route.ClosureEndDate;
         (statusText, style) = closureEndDate switch
         {

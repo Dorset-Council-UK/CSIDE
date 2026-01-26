@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.RightsOfWay;
+﻿using CSIDE.Data.Models.Maintenance;
+using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -215,7 +216,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         return $"{parishCode}/{highestNumber + 1}";
     }
 
-    public async Task<IReadOnlyCollection<Route>> GetClosedRoutes(CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<ClosedRoutesViewModel>> GetClosedRoutes(CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
@@ -227,11 +228,16 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             .Where(r => r.ClosureIsIndefinite == false)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
+            .Select(r => new ClosedRoutesViewModel
+            {
+                RouteCode = r.RouteCode,
+                ClosureEndDate = r.ClosureEndDate.Value.ToDateOnly(),
+            })
             .ToArrayAsync(cancellationToken: ct)
             .ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyCollection<Route>> GetClosedRoutesForTeam(List<int> teamId, CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<ClosedRoutesViewModel>> GetClosedRoutesForTeam(List<int> teamId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
@@ -244,6 +250,11 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             .Where(r => r.ClosureIsIndefinite == false)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
+            .Select(r => new ClosedRoutesViewModel
+            {
+                RouteCode = r.RouteCode,
+                ClosureEndDate = r.ClosureEndDate!.Value.ToDateOnly(),
+            })
             .ToArrayAsync(cancellationToken: ct)
             .ConfigureAwait(false);
     }

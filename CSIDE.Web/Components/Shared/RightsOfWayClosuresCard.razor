@@ -23,7 +23,7 @@
             if (Routes is not null && Routes.Count != 0)
             {
                 <div class="list-group">
-                    @foreach (Route route in Routes.OrderBy(d => d.ClosureEndDate))
+                    @foreach (ClosedRoutesViewModel route in Routes.OrderBy(d => d.ClosureEndDate))
                     {
                         <RightsOfWayClosureListItem route="@route" />
                     }
@@ -39,7 +39,8 @@
 </AuthorizeView>
 
 @code {
-    public IReadOnlyCollection<Route> Routes { get; set; } = [];
+    [PersistentState]
+    public IReadOnlyCollection<ClosedRoutesViewModel> Routes { get; set; } = [];
     private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
@@ -49,42 +50,45 @@
 
     protected override async Task OnInitializedAsync()
     {
-        IsBusy = true;
-        ErrorMessage = null;
-        StateHasChanged();
-
-        try
+        if (Routes is null)
         {
-            if (AuthenticationStateTask != null)
-            {
-                var authState = await AuthenticationStateTask;
-                UserID = authState.GetUserId();
-            }
-
-            if (UserID != null)
-            {
-                MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
-            }
-
-            if (MaintenanceTeam.Count >= 1)
-            {
-                var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
-                Routes = await rightsOfWayService.GetClosedRoutesForTeam(teamIds);
-            }
-            else
-            {
-                Routes = await rightsOfWayService.GetClosedRoutes();
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = localizer["Rights Of Way Closure Card Error Message"];
-            logger.LogError(ex, "An error occurred loading closed rights of way in the card component");
-        }
-        finally
-        {
-            IsBusy = false;
+            IsBusy = true;
+            ErrorMessage = null;
             StateHasChanged();
+
+            try
+            {
+                if (AuthenticationStateTask != null)
+                {
+                    var authState = await AuthenticationStateTask;
+                    UserID = authState.GetUserId();
+                }
+
+                if (UserID != null)
+                {
+                    MaintenanceTeam = await maintenanceJobsService.GetMaintenanceTeamForUser(UserID);
+                }
+
+                if (MaintenanceTeam.Count >= 1)
+                {
+                    var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
+                    Routes = await rightsOfWayService.GetClosedRoutesForTeam(teamIds);
+                }
+                else
+                {
+                    Routes = await rightsOfWayService.GetClosedRoutes();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = localizer["Rights Of Way Closure Card Error Message"];
+                logger.LogError(ex, "An error occurred loading closed rights of way in the card component");
+            }
+            finally
+            {
+                IsBusy = false;
+                StateHasChanged();
+            }
         }
     }
 }

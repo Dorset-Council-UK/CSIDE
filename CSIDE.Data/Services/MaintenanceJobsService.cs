@@ -181,27 +181,41 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForTeam(List<int> teamId, int maxResults = 5, CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<RecentJobViewModel>> GetRecentIncompleteJobsForTeam(List<int> teamId, int maxResults = 5, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobs
             .AsNoTracking()
+            .IgnoreAutoIncludes()
             .Where(j => j.MaintenanceTeamId != null && teamId.Contains(j.MaintenanceTeamId.Value))
             .Where(job => job.JobStatus!.IsComplete == false)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
+            .Select(j => new RecentJobViewModel
+            {
+                Id = j.Id,
+                LogDate = j.LogDate!.Value.ToDateTimeUtc(),
+                ProblemDescription = j.ProblemDescription
+            })
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyCollection<Job>> GetRecentIncompleteJobsForAllTeams(int maxResults = 5, CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<RecentJobViewModel>> GetRecentIncompleteJobsForAllTeams(int maxResults = 5, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.MaintenanceJobs
             .AsNoTracking()
+            .IgnoreAutoIncludes()
             .Where(job => job.JobStatus!.IsComplete == false)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
+            .Select(j => new RecentJobViewModel
+            {
+                Id = j.Id,
+                LogDate = j.LogDate!.Value.ToDateTimeUtc(),
+                ProblemDescription = j.ProblemDescription
+            })
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
