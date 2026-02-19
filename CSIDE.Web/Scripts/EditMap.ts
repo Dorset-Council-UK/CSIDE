@@ -2,6 +2,7 @@ import { Map, View } from "ol";
 import EditBar from "ol-ext/control/EditBar";
 import Feature from "ol/Feature";
 import { extend } from "ol/extent";
+import { Control } from 'ol/control';
 import { GeoJSON } from "ol/format";
 import { GeometryCollection, LineString, MultiLineString, MultiPoint, Point, SimpleGeometry } from "ol/geom";
 import { Draw, Select, Snap } from "ol/interaction";
@@ -95,6 +96,7 @@ const bngTilegrid: TileGrid = new TileGrid({
   "resolutions": [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375],
   "origin": [-238375.0, 1376256.0]
 });
+let originalGeometry: string;
 
 
 export function initMap(geomType: string, geometry: string, mapConfigJSON: string, component: any) {
@@ -136,7 +138,7 @@ export function initMap(geomType: string, geometry: string, mapConfigJSON: strin
       map.addLayer(layer);
     });
   }
-
+  originalGeometry = geometry;
   initGeometry(geometry);
 
   initEditing(geomType, component);
@@ -173,149 +175,11 @@ function initEditing(geomType: string, component: any) {
 
     case "Line":
     case "Line+RoutePicker":
-      //create line editing tools
-      const lineVectorLayer = new VectorLayer({
-        source: editSource,
-        style: lineStyle
-      });
-      map.addLayer(lineVectorLayer);
-
-      // Add the editbar
-      var select = new Select({ style: selectedStyle });
-
-      //Add the route picker (will only be enabled if Line+RoutePicker geom type is chosen)
-      var pickRoute = new PickRoute();
-      pickRoute.on('drawend', async (e) => {
-        const selectedRoute: string = await component.invokeMethodAsync('GetRoute', (e.feature.getGeometry() as Point).getCoordinates());
-        if (selectedRoute != null) {
-          editSource.addFeatures(new GeoJSON().readFeatures(selectedRoute));
-        }
-        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
-        component.invokeMethodAsync('OnDrawEnd', geoJson);
-      });
-      var edit = new EditBar({
-        interactions: {
-          // Use our own interaction > set the title inside
-          Select: select,
-          // Define button title
-          DrawLine: 'Draw line',
-          DrawPolygon: false,
-          DrawPoint: (geomType === 'Line+RoutePicker' ? pickRoute : false) ,
-          DrawRegular: false,
-          DrawHole: false,
-          Info: false,
-          Offset: false,
-          Split: false,
-        } as any,
-        source: editSource
-      });
-      map.addControl(edit);
-
-      // Set line drawing tool active if there are no features, otherwise set select as the default tool
-      const lineFeatures = editSource.getFeatures();
-      lineFeatures && lineFeatures.length > 0
-        ? edit.getInteraction('Select').setActive(true)
-        : edit.getInteraction('DrawLine').setActive(true);
-
-      const sourceSnap = new Snap({
-        source: editSource,
-      });
-      const snappableRoutes = new VectorSource();
-      const routeSnap = new Snap({
-        source: snappableRoutes,
-      });
-      map.addInteraction(sourceSnap);
-      map.addInteraction(routeSnap);
-
-      edit.getInteraction('ModifySelect').on('modifyend' as any, (e) => {
-        //convert to GeoJSON
-        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
-        component.invokeMethodAsync('OnDrawEnd', geoJson);
-      });
-      edit.getInteraction('DrawLine').on('drawend' as any, (e) => {
-        //convert to GeoJSON
-        const geoJson = new GeoJSON().writeFeatures([...editSource.getFeatures(), (e as any).feature]);
-        component.invokeMethodAsync('OnDrawEnd', geoJson);
-      });
-      edit.getInteraction('Delete').on('deleteend' as any, (e) => {
-        editSource.removeFeatures((e as any).features);
-        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
-        component.invokeMethodAsync('OnDrawEnd', geoJson);
-      });
-
-      map.on('moveend', async (e) => {
-        const view = map.getView();
-        if (view.getZoom()! < 15) { return; }
-        //get current openlayers map view bounding box
-        const extent = view.calculateExtent(map.getSize());
-        const routesGeojson = await component.invokeMethodAsync('GetSnappables', extent);
-        snappableRoutes.clear();
-        snappableRoutes.addFeatures(new GeoJSON().readFeatures(routesGeojson));
-
-      });
-      map.on('pointermove', (e) => {
-        var pixel = map.getEventPixel(e.originalEvent);
-        var hit = map.hasFeatureAtPixel(pixel, { layerFilter: (lyr) => { return lyr === lineVectorLayer }});
-        map.getViewport().style.cursor = hit ? 'pointer' : '';
-      });
-
+      setupLineEditing(geomType, component);
       break;
 
     case "Polygon":
-      //create polygon editing tools
-      const polygonVectorLayer = new VectorLayer({
-        source: editSource,
-        style: polygonDrawStyle
-      });
-      map.addLayer(polygonVectorLayer);
-
-      // Add the editbar
-      var select = new Select({ style: selectedStyle });
-      var edit = new EditBar({
-        interactions: {
-          // Use our own interaction > set the title inside
-          Select: select,
-          // Define button title
-          DrawLine: false,
-          DrawPolygon: 'Draw polygon',
-          DrawPoint: false,
-          DrawRegular: false,
-          DrawHole: false,
-          Info: false,
-          Offset: false,
-          Split: false
-        } as any,
-        source: editSource
-      });
-      map.addControl(edit);
-
-      // Set polygon drawing tool active if there are no features, otherwise set select as the default tool
-      const polygonFeatures = editSource.getFeatures();
-      polygonFeatures && polygonFeatures.length > 0
-        ? edit.getInteraction('Select').setActive(true)
-        : edit.getInteraction('DrawPolygon').setActive(true);
-
-      edit.getInteraction('ModifySelect').on('modifyend' as any, (e) => {
-        //convert to GeoJSON
-        const geoJson = new GeoJSON().writeFeatures(editSource.getFeatures());
-        component.invokeMethodAsync('OnDrawEnd', geoJson);
-      });
-      edit.getInteraction('DrawPolygon').on('drawend' as any, (e) => {
-        //convert to GeoJSON
-        const geoJson = new GeoJSON().writeFeatures([...editSource.getFeatures(), (e as any).feature]);
-        component.invokeMethodAsync('OnDrawEnd', geoJson);
-      });
-
-      map.on('moveend', async (e) => {
-        const view = map.getView();
-        if (view.getZoom()! < 15) { return; }
-      });
-      map.on('pointermove', (e) => {
-        var pixel = map.getEventPixel(e.originalEvent);
-        var hit = map.hasFeatureAtPixel(pixel, { layerFilter: (lyr) => { return lyr === polygonVectorLayer } });
-        map.getViewport().style.cursor = hit ? 'pointer' : '';
-      });
-
+      setupPolygonEditing(component);
       break;
 
     case "PolygonSelector":
@@ -351,38 +215,10 @@ function initEditing(geomType: string, component: any) {
 function initGeometry(geometry:string) {
   editSource = new VectorSource();
   if (geometry) {
-    const features = new GeoJSON().readFeatures(geometry);
-    if (features) {
-      const mapExtent = features[0].getGeometry()!.getExtent();
-      features.forEach(feature => {
-        extend(mapExtent, feature.getGeometry()!.getExtent())
-      });
-      map.getView().fit(mapExtent, {
-        padding: [20, 20, 20, 20],
-        maxZoom: 16
-      });
-
-      // Split MultiLineString into individual LineString features
-      features.forEach(feature => {
-        const geom = feature.getGeometry();
-        if (geom) {
-          if (geom.getType() === 'MultiLineString') {
-            const lineStrings = (geom as MultiLineString).getLineStrings();
-            lineStrings.forEach(lineString => {
-              const lineFeature = new Feature({
-                geometry: lineString
-              });
-              editSource.addFeature(lineFeature);
-            });
-          } else {
-            editSource.addFeature(feature);
-          }
-        }
-      });
-
-    }
+    loadFeaturesFromGeoJSON(geometry);
   }
 }
+
 function setProj4Defs() {
 //convert x/y from BNG to Spherical Mercator
   proj4.defs(
@@ -395,6 +231,186 @@ function setProj4Defs() {
   register(proj4);
 }
 
+// Helper Functions
+
+function loadFeaturesFromGeoJSON(geometry: string) {
+  const features = new GeoJSON().readFeatures(geometry);
+  if (features && features.length > 0) {
+    const mapExtent = features[0].getGeometry()!.getExtent();
+    features.forEach(feature => {
+      extend(mapExtent, feature.getGeometry()!.getExtent())
+    });
+    map.getView().fit(mapExtent, {
+      padding: [20, 20, 20, 20],
+      maxZoom: 16
+    });
+
+    addFeaturesToSource(features);
+  }
+}
+
+function addFeaturesToSource(features: Feature[]) {
+  features.forEach(feature => {
+    const geom = feature.getGeometry();
+    if (geom) {
+      if (geom.getType() === 'MultiLineString') {
+        const lineStrings = (geom as MultiLineString).getLineStrings();
+        lineStrings.forEach(lineString => {
+          const lineFeature = new Feature({ geometry: lineString });
+          editSource.addFeature(lineFeature);
+        });
+      } else {
+        editSource.addFeature(feature);
+      }
+    }
+  });
+}
+
+function serializeFeaturesAsGeoJSON(features: Feature[]): string {
+  return new GeoJSON().writeFeatures(features);
+}
+
+function createDrawEndHandler(component: any, includeExistingFeatures: boolean = true) {
+  return (e: any) => {
+    const features = includeExistingFeatures 
+      ? [...editSource.getFeatures(), e.feature] 
+      : editSource.getFeatures();
+    const geoJson = serializeFeaturesAsGeoJSON(features);
+    component.invokeMethodAsync('OnDrawEnd', geoJson);
+  };
+}
+
+function createModifyEndHandler(component: any) {
+  return (e: any) => {
+    const geoJson = serializeFeaturesAsGeoJSON(editSource.getFeatures());
+    component.invokeMethodAsync('OnDrawEnd', geoJson);
+  };
+}
+
+function createDeleteEndHandler(component: any) {
+  return (e: any) => {
+    editSource.removeFeatures(e.features);
+    const geoJson = serializeFeaturesAsGeoJSON(editSource.getFeatures());
+    component.invokeMethodAsync('OnDrawEnd', geoJson);
+  };
+}
+
+function setupPointerCursor(layer: VectorLayer<any>) {
+  map.on('pointermove', (e) => {
+    const pixel = map.getEventPixel(e.originalEvent);
+    const hit = map.hasFeatureAtPixel(pixel, { 
+      layerFilter: (lyr) => lyr === layer 
+    });
+    map.getViewport().style.cursor = hit ? 'pointer' : '';
+  });
+}
+
+function createEditBarConfig(geomType: 'line' | 'polygon', select: Select, pickRoute?: PickRoute): any {
+  const baseConfig: any = {
+    interactions: {
+      Select: select,
+      DrawLine: false,
+      DrawPolygon: false,
+      DrawPoint: false,
+      DrawRegular: false,
+      DrawHole: false,
+      Info: false,
+      Offset: false,
+      Split: false,
+    },
+    source: editSource
+  };
+
+  if (geomType === 'line') {
+    baseConfig.interactions.DrawLine = 'Draw line';
+    baseConfig.interactions.DrawPoint = pickRoute || false;
+  } else if (geomType === 'polygon') {
+    baseConfig.interactions.DrawPolygon = 'Draw polygon';
+  }
+
+  return baseConfig;
+}
+
+function setInitialEditInteraction(edit: EditBar, drawInteractionName: string) {
+  const features = editSource.getFeatures();
+  if (features && features.length > 0) {
+    edit.getInteraction('Select').setActive(true);
+  } else {
+    edit.getInteraction(drawInteractionName).setActive(true);
+  }
+}
+
+function setupLineEditing(geomType: string, component: any) {
+  const lineVectorLayer = new VectorLayer({
+    source: editSource,
+    style: lineStyle
+  });
+  map.addLayer(lineVectorLayer);
+
+  const select = new Select({ style: selectedStyle });
+  const pickRoute = geomType === 'Line+RoutePicker' ? new PickRoute() : undefined;
+  
+  if (pickRoute) {
+    pickRoute.on('drawend', async (e) => {
+      const selectedRoute: string = await component.invokeMethodAsync('GetRoute', (e.feature.getGeometry() as Point).getCoordinates());
+      if (selectedRoute != null) {
+        editSource.addFeatures(new GeoJSON().readFeatures(selectedRoute));
+      }
+      const geoJson = serializeFeaturesAsGeoJSON(editSource.getFeatures());
+      component.invokeMethodAsync('OnDrawEnd', geoJson);
+    });
+  }
+
+  const revert = new RevertControl({}, component);
+  const edit = new EditBar(createEditBarConfig('line', select, pickRoute));
+  edit.addControl(revert);
+  map.addControl(edit);
+
+  setInitialEditInteraction(edit, 'DrawLine');
+
+  const sourceSnap = new Snap({ source: editSource });
+  const snappableRoutes = new VectorSource();
+  const routeSnap = new Snap({ source: snappableRoutes });
+  map.addInteraction(sourceSnap);
+  map.addInteraction(routeSnap);
+
+  edit.getInteraction('ModifySelect').on('modifyend' as any, createModifyEndHandler(component));
+  edit.getInteraction('DrawLine').on('drawend' as any, createDrawEndHandler(component));
+  edit.getInteraction('Delete').on('deleteend' as any, createDeleteEndHandler(component));
+
+  map.on('moveend', async (e) => {
+    const view = map.getView();
+    if (view.getZoom()! < 15) { return; }
+    const extent = view.calculateExtent(map.getSize());
+    const routesGeojson = await component.invokeMethodAsync('GetSnappables', extent);
+    snappableRoutes.clear();
+    snappableRoutes.addFeatures(new GeoJSON().readFeatures(routesGeojson));
+  });
+
+  setupPointerCursor(lineVectorLayer);
+}
+
+function setupPolygonEditing(component: any) {
+  const polygonVectorLayer = new VectorLayer({
+    source: editSource,
+    style: polygonDrawStyle
+  });
+  map.addLayer(polygonVectorLayer);
+
+  const select = new Select({ style: selectedStyle });
+  const revert = new RevertControl({}, component);
+  const edit = new EditBar(createEditBarConfig('polygon', select));
+  edit.addControl(revert);
+  map.addControl(edit);
+
+  setInitialEditInteraction(edit, 'DrawPolygon');
+
+  edit.getInteraction('ModifySelect').on('modifyend' as any, createModifyEndHandler(component));
+  edit.getInteraction('DrawPolygon').on('drawend' as any, createDrawEndHandler(component));
+
+  setupPointerCursor(polygonVectorLayer);
+}
+
 /**Custom interaction that slightly abuses the OpenLayers 'Draw' control to allow arbitrary selection of routes*/
 class PickRoute extends Draw {
   constructor() {
@@ -402,6 +418,38 @@ class PickRoute extends Draw {
       type: 'Point',
       style: {}
     });
+  }
+}
+
+class RevertControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options: any, component:any) {
+    const options = opt_options || {};
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.innerHTML = '<span class="bi bi-arrow-counterclockwise"></span>';
+
+    const element = document.createElement('div');
+    element.className = 'revert-button ol-control';
+    element.appendChild(button);
+
+    super({
+      element: element,
+      target: options.target,
+    });
+
+    button.addEventListener('click', this.revertEdits.bind(this, component), false);
+  }
+
+  revertEdits(component: any) {
+    editSource.clear();
+    loadFeaturesFromGeoJSON(originalGeometry);
+    editSource.changed();
+    const geoJson = serializeFeaturesAsGeoJSON(editSource.getFeatures());
+    component.invokeMethodAsync('OnDrawEnd', geoJson);
   }
 }
 

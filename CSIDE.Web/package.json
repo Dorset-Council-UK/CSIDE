@@ -16,16 +16,16 @@
   "author": "Dorset Council",
   "license": "MIT",
   "dependencies": {
-    "ol": "10.6.1",
-    "ol-ext": "4.0.35",
-    "proj4": "2.19.10"
+    "ol": "10.7.0",
+    "ol-ext": "4.0.37",
+    "proj4": "2.20.2"
   },
   "devDependencies": {
-    "@types/ol-ext": "npm:@siedlerchr/types-ol-ext@3.6.2",
-    "eslint": "9.37.0",
+    "@types/ol-ext": "npm:@siedlerchr/types-ol-ext@3.6.6",
+    "eslint": "9.39.2",
     "ts-loader": "9.5.4",
-    "typescript": "5.8.3",
-    "webpack": "5.102.0",
+    "typescript": "5.9.3",
+    "webpack": "5.104.1",
     "webpack-cli": "6.0.1",
     "webpack-merge": "6.0.1"
   },
