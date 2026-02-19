@@ -361,7 +361,7 @@ function setupLineEditing(geomType: string, component: any) {
     });
   }
 
-  const revert = new RevertControl({});
+  const revert = new RevertControl({}, component);
   const edit = new EditBar(createEditBarConfig('line', select, pickRoute));
   edit.addControl(revert);
   map.addControl(edit);
@@ -398,7 +398,7 @@ function setupPolygonEditing(component: any) {
   map.addLayer(polygonVectorLayer);
 
   const select = new Select({ style: selectedStyle });
-  const revert = new RevertControl({});
+  const revert = new RevertControl({}, component);
   const edit = new EditBar(createEditBarConfig('polygon', select));
   edit.addControl(revert);
   map.addControl(edit);
@@ -425,7 +425,7 @@ class RevertControl extends Control {
   /**
    * @param {Object} [opt_options] Control options.
    */
-  constructor(opt_options: any) {
+  constructor(opt_options: any, component:any) {
     const options = opt_options || {};
 
     const button = document.createElement('button');
@@ -441,13 +441,15 @@ class RevertControl extends Control {
       target: options.target,
     });
 
-    button.addEventListener('click', this.revertEdits.bind(this), false);
+    button.addEventListener('click', this.revertEdits.bind(this, component), false);
   }
 
-  revertEdits() {
+  revertEdits(component: any) {
     editSource.clear();
     loadFeaturesFromGeoJSON(originalGeometry);
     editSource.changed();
+    const geoJson = serializeFeaturesAsGeoJSON(editSource.getFeatures());
+    component.invokeMethodAsync('OnDrawEnd', geoJson);
   }
 }
 
