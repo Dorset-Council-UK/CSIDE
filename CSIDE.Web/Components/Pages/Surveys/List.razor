@@ -53,6 +53,9 @@
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
                             </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="TeamName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.MaintenanceTeam != null ? item.Infrastructure.MaintenanceTeam.Name : string.Empty">
+                                @context.Infrastructure?.MaintenanceTeam?.Name
+                            </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName
                             </GridColumn>
@@ -95,6 +98,9 @@
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
                             </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="TeamName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.MaintenanceTeam != null ? item.Infrastructure.MaintenanceTeam.Name : string.Empty">
+                                @context.Infrastructure?.MaintenanceTeam?.Name
+                            </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName
                             </GridColumn>
@@ -135,6 +141,9 @@
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="TeamName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.MaintenanceTeam != null ? item.Infrastructure.MaintenanceTeam.Name : string.Empty">
+                                @context.Infrastructure?.MaintenanceTeam?.Name
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName
