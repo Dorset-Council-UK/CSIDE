@@ -1803,4 +1803,7 @@
   <data name="Planned Label" xml:space="preserve">
     <value>Planned</value>
   </data>
+  <data name="Filter By My Maintenance Area Only Text" xml:space="preserve">
+    <value>Show only my maintenance area</value>
+  </data>
 </root>

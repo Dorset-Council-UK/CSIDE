@@ -1814,4 +1814,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Planned Label" xml:space="preserve">
     <value>Wedi'i gynllunio</value>
   </data>
+  <data name="Filter By My Maintenance Area Only Text" xml:space="preserve">
+    <value>Dangos fy ardal cynnal a chadw yn unig</value>
+  </data>
 </root>

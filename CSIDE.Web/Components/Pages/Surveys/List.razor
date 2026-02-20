@@ -33,7 +33,13 @@
                 <Authorized>
                     <h2>@localizer["Surveys Awaiting Validation Title"]</h2>
 
-                    <Grid TItem="BridgeSurvey"
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="filterByMyArea" checked="@FilterByMyArea" @onchange="OnFilterByMyAreaChanged" />
+                        <label class="form-check-label" for="filterByMyArea">@localizer["Filter By My Maintenance Area Only Text"]</label>
+                    </div>
+
+                    <Grid @ref="SurveysAwaitingValidationGrid"
+                          TItem="BridgeSurvey"
                           Class="table table-hover table-bordered table-striped mt-2"
                           DataProvider="SurveysAwaitingValidationDataProvider"
                           AllowFiltering="false"
@@ -52,6 +58,9 @@
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="TeamName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.MaintenanceTeam != null ? item.Infrastructure.MaintenanceTeam.Name : string.Empty">
+                                @context.Infrastructure?.MaintenanceTeam?.Name
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName
@@ -95,6 +104,9 @@
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
                             </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="TeamName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.MaintenanceTeam != null ? item.Infrastructure.MaintenanceTeam.Name : string.Empty">
+                                @context.Infrastructure?.MaintenanceTeam?.Name
+                            </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName
                             </GridColumn>
@@ -135,6 +147,9 @@
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Parish Label"]" PropertyName="ParishName" SortKeySelector="item =>  item.Infrastructure != null && item.Infrastructure.Parish != null ? item.Infrastructure.Parish.Name : string.Empty">
                                 @context.Infrastructure?.Parish?.Name
+                            </GridColumn>
+                            <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Maintenance Team Label"]" PropertyName="TeamName" SortKeySelector="item => item.Infrastructure != null && item.Infrastructure.MaintenanceTeam != null ? item.Infrastructure.MaintenanceTeam.Name : string.Empty">
+                                @context.Infrastructure?.MaintenanceTeam?.Name
                             </GridColumn>
                             <GridColumn TItem="BridgeSurvey" HeaderText="@localizer["Surveyor Name Label"]" PropertyName="SurveyorName" SortKeySelector="item => item.SurveyorName">
                                 @context.SurveyorName

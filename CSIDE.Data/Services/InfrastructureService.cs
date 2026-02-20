@@ -137,6 +137,8 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
             .IgnoreAutoIncludes()
             .Include(s => s.Infrastructure)
             .ThenInclude(i => i!.Parish)
+            .Include(s => s.Infrastructure)
+            .ThenInclude(i => i!.MaintenanceTeam)
             .ToArrayAsync(ct)
             .ConfigureAwait(false);
     }
