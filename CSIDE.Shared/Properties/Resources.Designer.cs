@@ -2329,6 +2329,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show only my maintenance area.
+        /// </summary>
+        public static string Filter_By_My_Maintenance_Area_Only_Text {
+            get {
+                return ResourceManager.GetString("Filter By My Maintenance Area Only Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Find bridge by ID.
         /// </summary>
         public static string Find_Bridge_By_ID_Title {
