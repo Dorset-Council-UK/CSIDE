@@ -14,13 +14,13 @@
 #    - "gi-production" — self-hosted Windows runner(s) with IIS
 #    - Ensure runners have the WebAdministration PowerShell module available
 #
-# 3. Environment Secrets (per environment):
+# 3. Environment Variables (per environment):
 #    - WEB_APP_POOL_NAME   — IIS Application Pool name for CSIDE.Web
 #    - WEB_SITE_PATH       — Physical path for CSIDE.Web (e.g. C:\inetpub\gi\cside)
 #    - API_APP_POOL_NAME   — IIS Application Pool name for CSIDE.API
 #    - API_SITE_PATH       — Physical path for CSIDE.API (e.g. C:\inetpub\gi\cside-api)
 #
-# 4. Environment Secrets for appsettings overrides (per environment):
+# 4. Environment Variables for appsettings overrides (per environment):
 #    - WEB_APPSETTINGS_OVERRIDE — Full JSON content for appsettings override (CSIDE.Web)
 #    - API_APPSETTINGS_OVERRIDE — Full JSON content for appsettings override (CSIDE.API)
 #
@@ -185,6 +185,7 @@ jobs:
           Write-Host "Deploying to: $Env:SITE_PATH"
           robocopy .\artifacts\web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
+          $global:LASTEXITCODE = 0
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
@@ -215,6 +216,7 @@ jobs:
           Write-Host "Deploying to: $Env:SITE_PATH"
           robocopy .\artifacts\api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
+          $global:LASTEXITCODE = 0
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
@@ -293,6 +295,7 @@ jobs:
           Write-Host "Deploying to: $Env:SITE_PATH"
           robocopy .\artifacts\web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
+          $global:LASTEXITCODE = 0
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
@@ -323,6 +326,7 @@ jobs:
           Write-Host "Deploying to: $Env:SITE_PATH"
           robocopy .\artifacts\api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
+          $global:LASTEXITCODE = 0
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
