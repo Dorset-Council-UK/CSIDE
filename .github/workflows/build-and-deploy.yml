@@ -148,21 +148,21 @@ jobs:
       - name: Apply Web appsettings overrides
         if: env.WEB_APPSETTINGS_OVERRIDE != ''
         env:
-          WEB_APPSETTINGS_OVERRIDE: ${{ secrets.WEB_APPSETTINGS_OVERRIDE }}
+          WEB_APPSETTINGS_OVERRIDE: ${{ vars.WEB_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Staging.json" -Encoding utf8
 
       - name: Apply API appsettings overrides
         if: env.API_APPSETTINGS_OVERRIDE != ''
         env:
-          API_APPSETTINGS_OVERRIDE: ${{ secrets.API_APPSETTINGS_OVERRIDE }}
+          API_APPSETTINGS_OVERRIDE: ${{ vars.API_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Staging.json" -Encoding utf8
 
       - name: Deploy CSIDE.Web to IIS
         env:
-          APP_POOL_NAME: ${{ secrets.WEB_APP_POOL_NAME }}
-          SITE_PATH: ${{ secrets.WEB_SITE_PATH }}
+          APP_POOL_NAME: ${{ vars.WEB_APP_POOL_NAME }}
+          SITE_PATH: ${{ vars.WEB_SITE_PATH }}
         run: |
           Import-Module WebAdministration
 
@@ -191,8 +191,8 @@ jobs:
 
       - name: Deploy CSIDE.API to IIS
         env:
-          APP_POOL_NAME: ${{ secrets.API_APP_POOL_NAME }}
-          SITE_PATH: ${{ secrets.API_SITE_PATH }}
+          APP_POOL_NAME: ${{ vars.API_APP_POOL_NAME }}
+          SITE_PATH: ${{ vars.API_SITE_PATH }}
         run: |
           Import-Module WebAdministration
 
@@ -256,21 +256,21 @@ jobs:
       - name: Apply Web appsettings overrides
         if: env.WEB_APPSETTINGS_OVERRIDE != ''
         env:
-          WEB_APPSETTINGS_OVERRIDE: ${{ secrets.WEB_APPSETTINGS_OVERRIDE }}
+          WEB_APPSETTINGS_OVERRIDE: ${{ vars.WEB_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Production.json" -Encoding utf8
 
       - name: Apply API appsettings overrides
         if: env.API_APPSETTINGS_OVERRIDE != ''
         env:
-          API_APPSETTINGS_OVERRIDE: ${{ secrets.API_APPSETTINGS_OVERRIDE }}
+          API_APPSETTINGS_OVERRIDE: ${{ vars.API_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Production.json" -Encoding utf8
 
       - name: Deploy CSIDE.Web to IIS
         env:
-          APP_POOL_NAME: ${{ secrets.WEB_APP_POOL_NAME }}
-          SITE_PATH: ${{ secrets.WEB_SITE_PATH }}
+          APP_POOL_NAME: ${{ vars.WEB_APP_POOL_NAME }}
+          SITE_PATH: ${{ vars.WEB_SITE_PATH }}
         run: |
           Import-Module WebAdministration
 
@@ -299,8 +299,8 @@ jobs:
 
       - name: Deploy CSIDE.API to IIS
         env:
-          APP_POOL_NAME: ${{ secrets.API_APP_POOL_NAME }}
-          SITE_PATH: ${{ secrets.API_SITE_PATH }}
+          APP_POOL_NAME: ${{ vars.API_APP_POOL_NAME }}
+          SITE_PATH: ${{ vars.API_SITE_PATH }}
         run: |
           Import-Module WebAdministration
 
