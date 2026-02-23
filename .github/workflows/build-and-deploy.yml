@@ -1,0 +1,288 @@
+# =============================================================================
+# Build and Deploy Workflow
+# =============================================================================
+#
+# GITHUB SETUP REQUIRED:
+#
+# 1. Environments (Settings > Environments):
+#    - Create "staging" and "production" environments
+#    - On "production", add a Required Reviewer protection rule so that
+#      deployments require manual approval before proceeding
+#
+# 2. Runner Groups (Settings > Actions > Runner groups):
+#    - "gi-staging"   — self-hosted Windows runner(s) with IIS
+#    - "gi-production" — self-hosted Windows runner(s) with IIS
+#    - Ensure runners have the WebAdministration PowerShell module available
+#
+# 3. Environment Secrets (per environment):
+#    - WEB_APP_POOL_NAME   — IIS Application Pool name for CSIDE.Web
+#    - WEB_SITE_PATH       — Physical path for CSIDE.Web (e.g. C:\inetpub\gi\cside)
+#    - API_APP_POOL_NAME   — IIS Application Pool name for CSIDE.API
+#    - API_SITE_PATH       — Physical path for CSIDE.API (e.g. C:\inetpub\gi\cside-api)
+#
+# 4. Environment Secrets for appsettings overrides (per environment):
+#    - WEB_APPSETTINGS_OVERRIDE — Full JSON content for appsettings override (CSIDE.Web)
+#    - API_APPSETTINGS_OVERRIDE — Full JSON content for appsettings override (CSIDE.API)
+#
+#    These are written as appsettings.Production.json / appsettings.Staging.json
+#    and .NET's layered configuration will merge them on top of the base
+#    appsettings.json at runtime. Example secret value:
+#
+#    {
+#      "CSIDE": {
+#        "Mapping": { "OSMapsAPIKey": "actual-key" },
+#        "KeyVault": { "Name": "my-vault" }
+#      },
+#      "ConnectionStrings": { "Default": "Server=..." }
+#    }
+#
+# =============================================================================
+
+name: Build and Deploy
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  NODE_VERSION: "20"
+
+jobs:
+  # ===========================================================================
+  # Build & Test
+  # ===========================================================================
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: npm install
+        working-directory: CSIDE.Web
+        run: npm ci
+
+      - name: Webpack Build
+        working-directory: CSIDE.Web
+        run: npm run build
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+      # --- Publish & upload artifacts (only on tag push) ---
+
+      - name: Publish CSIDE.Web
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: dotnet publish CSIDE.Web/CSIDE.Web.csproj --no-build --configuration Release --output ./publish/web
+
+      - name: Publish CSIDE.API
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: dotnet publish CSIDE.API/CSIDE.API.csproj --no-build --configuration Release --output ./publish/api
+
+      - name: Upload Web artifact
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: cside-web
+          path: ./publish/web
+
+      - name: Upload API artifact
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: cside-api
+          path: ./publish/api
+
+  # ===========================================================================
+  # Deploy to Staging  (tags like v1.0.0-rc, v2.3.1-rc.1, etc.)
+  # ===========================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-rc')
+    runs-on:
+      group: gi-staging
+    environment: staging
+
+    steps:
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cside-web
+          path: ./artifacts/web
+
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cside-api
+          path: ./artifacts/api
+
+      - name: Apply Web appsettings overrides
+        if: env.WEB_APPSETTINGS_OVERRIDE != ''
+        shell: pwsh
+        env:
+          WEB_APPSETTINGS_OVERRIDE: ${{ secrets.WEB_APPSETTINGS_OVERRIDE }}
+        run: |
+          $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Staging.json" -Encoding utf8
+
+      - name: Apply API appsettings overrides
+        if: env.API_APPSETTINGS_OVERRIDE != ''
+        shell: pwsh
+        env:
+          API_APPSETTINGS_OVERRIDE: ${{ secrets.API_APPSETTINGS_OVERRIDE }}
+        run: |
+          $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Staging.json" -Encoding utf8
+
+      - name: Deploy CSIDE.Web to IIS
+        shell: pwsh
+        env:
+          APP_POOL_NAME: ${{ secrets.WEB_APP_POOL_NAME }}
+          SITE_PATH: ${{ secrets.WEB_SITE_PATH }}
+        run: |
+          Import-Module WebAdministration
+
+          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          $timeout = 30
+          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+            Start-Sleep -Seconds 1
+            $timeout--
+          }
+
+          Write-Host "Deploying to: $Env:SITE_PATH"
+          Copy-Item -Path "./artifacts/web/*" -Destination $Env:SITE_PATH -Recurse -Force
+
+          Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
+          Start-WebAppPool -Name $Env:APP_POOL_NAME
+
+      - name: Deploy CSIDE.API to IIS
+        shell: pwsh
+        env:
+          APP_POOL_NAME: ${{ secrets.API_APP_POOL_NAME }}
+          SITE_PATH: ${{ secrets.API_SITE_PATH }}
+        run: |
+          Import-Module WebAdministration
+
+          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          $timeout = 30
+          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+            Start-Sleep -Seconds 1
+            $timeout--
+          }
+
+          Write-Host "Deploying to: $Env:SITE_PATH"
+          Copy-Item -Path "./artifacts/api/*" -Destination $Env:SITE_PATH -Recurse -Force
+
+          Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
+          Start-WebAppPool -Name $Env:APP_POOL_NAME
+
+  # ===========================================================================
+  # Deploy to Production  (tags like v1.0.0, v2.3.1, etc.)
+  #
+  # The "production" environment MUST have a Required Reviewer protection rule
+  # configured in GitHub Settings > Environments so that a person must approve
+  # before this job runs.
+  # ===========================================================================
+  deploy-production:
+    name: Deploy to Production
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-rc')
+    runs-on:
+      group: gi-production
+    environment: production
+
+    steps:
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cside-web
+          path: ./artifacts/web
+
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cside-api
+          path: ./artifacts/api
+
+      - name: Apply Web appsettings overrides
+        if: env.WEB_APPSETTINGS_OVERRIDE != ''
+        shell: pwsh
+        env:
+          WEB_APPSETTINGS_OVERRIDE: ${{ secrets.WEB_APPSETTINGS_OVERRIDE }}
+        run: |
+          $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Production.json" -Encoding utf8
+
+      - name: Apply API appsettings overrides
+        if: env.API_APPSETTINGS_OVERRIDE != ''
+        shell: pwsh
+        env:
+          API_APPSETTINGS_OVERRIDE: ${{ secrets.API_APPSETTINGS_OVERRIDE }}
+        run: |
+          $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Production.json" -Encoding utf8
+
+      - name: Deploy CSIDE.Web to IIS
+        shell: pwsh
+        env:
+          APP_POOL_NAME: ${{ secrets.WEB_APP_POOL_NAME }}
+          SITE_PATH: ${{ secrets.WEB_SITE_PATH }}
+        run: |
+          Import-Module WebAdministration
+
+          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          $timeout = 30
+          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+            Start-Sleep -Seconds 1
+            $timeout--
+          }
+
+          Write-Host "Deploying to: $Env:SITE_PATH"
+          Copy-Item -Path "./artifacts/web/*" -Destination $Env:SITE_PATH -Recurse -Force
+
+          Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
+          Start-WebAppPool -Name $Env:APP_POOL_NAME
+
+      - name: Deploy CSIDE.API to IIS
+        shell: pwsh
+        env:
+          APP_POOL_NAME: ${{ secrets.API_APP_POOL_NAME }}
+          SITE_PATH: ${{ secrets.API_SITE_PATH }}
+        run: |
+          Import-Module WebAdministration
+
+          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          $timeout = 30
+          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+            Start-Sleep -Seconds 1
+            $timeout--
+          }
+
+          Write-Host "Deploying to: $Env:SITE_PATH"
+          Copy-Item -Path "./artifacts/api/*" -Destination $Env:SITE_PATH -Recurse -Force
+
+          Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
+          Start-WebAppPool -Name $Env:APP_POOL_NAME
