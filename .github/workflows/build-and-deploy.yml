@@ -128,6 +128,9 @@ jobs:
         - self-hosted
         - windows
     environment: staging
+    defaults:
+      run:
+        shell: powershell
 
     steps:
       - name: Download Web artifact
@@ -144,7 +147,6 @@ jobs:
 
       - name: Apply Web appsettings overrides
         if: env.WEB_APPSETTINGS_OVERRIDE != ''
-        shell: pwsh
         env:
           WEB_APPSETTINGS_OVERRIDE: ${{ secrets.WEB_APPSETTINGS_OVERRIDE }}
         run: |
@@ -152,14 +154,12 @@ jobs:
 
       - name: Apply API appsettings overrides
         if: env.API_APPSETTINGS_OVERRIDE != ''
-        shell: pwsh
         env:
           API_APPSETTINGS_OVERRIDE: ${{ secrets.API_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Staging.json" -Encoding utf8
 
       - name: Deploy CSIDE.Web to IIS
-        shell: pwsh
         env:
           APP_POOL_NAME: ${{ secrets.WEB_APP_POOL_NAME }}
           SITE_PATH: ${{ secrets.WEB_SITE_PATH }}
@@ -182,14 +182,13 @@ jobs:
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          robocopy ./artifacts/web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          robocopy .\artifacts\web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
 
       - name: Deploy CSIDE.API to IIS
-        shell: pwsh
         env:
           APP_POOL_NAME: ${{ secrets.API_APP_POOL_NAME }}
           SITE_PATH: ${{ secrets.API_SITE_PATH }}
@@ -212,7 +211,7 @@ jobs:
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          robocopy ./artifacts/api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          robocopy .\artifacts\api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
@@ -235,6 +234,9 @@ jobs:
         - self-hosted
         - windows
     environment: production
+    defaults:
+      run:
+        shell: powershell
 
     steps:
       - name: Download Web artifact
@@ -251,7 +253,6 @@ jobs:
 
       - name: Apply Web appsettings overrides
         if: env.WEB_APPSETTINGS_OVERRIDE != ''
-        shell: pwsh
         env:
           WEB_APPSETTINGS_OVERRIDE: ${{ secrets.WEB_APPSETTINGS_OVERRIDE }}
         run: |
@@ -259,14 +260,12 @@ jobs:
 
       - name: Apply API appsettings overrides
         if: env.API_APPSETTINGS_OVERRIDE != ''
-        shell: pwsh
         env:
           API_APPSETTINGS_OVERRIDE: ${{ secrets.API_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Production.json" -Encoding utf8
 
       - name: Deploy CSIDE.Web to IIS
-        shell: pwsh
         env:
           APP_POOL_NAME: ${{ secrets.WEB_APP_POOL_NAME }}
           SITE_PATH: ${{ secrets.WEB_SITE_PATH }}
@@ -289,14 +288,13 @@ jobs:
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          robocopy ./artifacts/web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          robocopy .\artifacts\web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
 
       - name: Deploy CSIDE.API to IIS
-        shell: pwsh
         env:
           APP_POOL_NAME: ${{ secrets.API_APP_POOL_NAME }}
           SITE_PATH: ${{ secrets.API_SITE_PATH }}
@@ -319,7 +317,7 @@ jobs:
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          robocopy ./artifacts/api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          robocopy .\artifacts\api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
           if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
