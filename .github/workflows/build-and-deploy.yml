@@ -166,19 +166,20 @@ jobs:
         run: |
           Import-Module WebAdministration
 
-          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
-            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
-          }
+          try { $state = (Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value }
+          catch { throw "App Pool '$Env:APP_POOL_NAME' does not exist or is not accessible on this server." }
 
-          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME
-          $timeout = 30
-          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
-            Start-Sleep -Seconds 1
-            $timeout--
-          }
-          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
-            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          if ($state -ne "Stopped") {
+            Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+            Stop-WebAppPool -Name $Env:APP_POOL_NAME
+            $timeout = 30
+            while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+              Start-Sleep -Seconds 1
+              $timeout--
+            }
+            if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+              throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+            }
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
@@ -195,19 +196,20 @@ jobs:
         run: |
           Import-Module WebAdministration
 
-          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
-            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
-          }
+          try { $state = (Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value }
+          catch { throw "App Pool '$Env:APP_POOL_NAME' does not exist or is not accessible on this server." }
 
-          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME
-          $timeout = 30
-          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
-            Start-Sleep -Seconds 1
-            $timeout--
-          }
-          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
-            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          if ($state -ne "Stopped") {
+            Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+            Stop-WebAppPool -Name $Env:APP_POOL_NAME
+            $timeout = 30
+            while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+              Start-Sleep -Seconds 1
+              $timeout--
+            }
+            if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+              throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+            }
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
@@ -272,19 +274,20 @@ jobs:
         run: |
           Import-Module WebAdministration
 
-          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
-            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
-          }
+          try { $state = (Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value }
+          catch { throw "App Pool '$Env:APP_POOL_NAME' does not exist or is not accessible on this server." }
 
-          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME
-          $timeout = 30
-          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
-            Start-Sleep -Seconds 1
-            $timeout--
-          }
-          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
-            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          if ($state -ne "Stopped") {
+            Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+            Stop-WebAppPool -Name $Env:APP_POOL_NAME
+            $timeout = 30
+            while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+              Start-Sleep -Seconds 1
+              $timeout--
+            }
+            if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+              throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+            }
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
@@ -301,19 +304,20 @@ jobs:
         run: |
           Import-Module WebAdministration
 
-          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
-            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
-          }
+          try { $state = (Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value }
+          catch { throw "App Pool '$Env:APP_POOL_NAME' does not exist or is not accessible on this server." }
 
-          Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME
-          $timeout = 30
-          while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
-            Start-Sleep -Seconds 1
-            $timeout--
-          }
-          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
-            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          if ($state -ne "Stopped") {
+            Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
+            Stop-WebAppPool -Name $Env:APP_POOL_NAME
+            $timeout = 30
+            while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
+              Start-Sleep -Seconds 1
+              $timeout--
+            }
+            if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+              throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+            }
           }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
