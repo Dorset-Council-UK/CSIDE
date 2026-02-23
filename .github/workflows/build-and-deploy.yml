@@ -124,6 +124,9 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-rc')
     runs-on:
       group: gi-staging
+      labels:
+        - self-hosted
+        - windows
     environment: staging
 
     steps:
@@ -163,16 +166,24 @@ jobs:
         run: |
           Import-Module WebAdministration
 
+          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
+            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
+          }
+
           Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME
           $timeout = 30
           while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
             Start-Sleep -Seconds 1
             $timeout--
           }
+          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          Copy-Item -Path "./artifacts/web/*" -Destination $Env:SITE_PATH -Recurse -Force
+          robocopy ./artifacts/web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
@@ -185,22 +196,30 @@ jobs:
         run: |
           Import-Module WebAdministration
 
+          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
+            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
+          }
+
           Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME
           $timeout = 30
           while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
             Start-Sleep -Seconds 1
             $timeout--
           }
+          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          Copy-Item -Path "./artifacts/api/*" -Destination $Env:SITE_PATH -Recurse -Force
+          robocopy ./artifacts/api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
 
   # ===========================================================================
-  # Deploy to Production  (tags like v1.0.0, v2.3.1, etc.)
+  # Deploy to Production
   #
   # The "production" environment MUST have a Required Reviewer protection rule
   # configured in GitHub Settings > Environments so that a person must approve
@@ -212,6 +231,9 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-rc')
     runs-on:
       group: gi-production
+      labels:
+        - self-hosted
+        - windows
     environment: production
 
     steps:
@@ -251,16 +273,24 @@ jobs:
         run: |
           Import-Module WebAdministration
 
+          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
+            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
+          }
+
           Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME
           $timeout = 30
           while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
             Start-Sleep -Seconds 1
             $timeout--
           }
+          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          Copy-Item -Path "./artifacts/web/*" -Destination $Env:SITE_PATH -Recurse -Force
+          robocopy ./artifacts/web $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
@@ -273,16 +303,24 @@ jobs:
         run: |
           Import-Module WebAdministration
 
+          if (-not (Test-Path "IIS:\AppPools\$Env:APP_POOL_NAME")) {
+            throw "App Pool '$Env:APP_POOL_NAME' does not exist on this server."
+          }
+
           Write-Host "Stopping App Pool: $Env:APP_POOL_NAME"
-          Stop-WebAppPool -Name $Env:APP_POOL_NAME -ErrorAction SilentlyContinue
+          Stop-WebAppPool -Name $Env:APP_POOL_NAME
           $timeout = 30
           while ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped" -and $timeout -gt 0) {
             Start-Sleep -Seconds 1
             $timeout--
           }
+          if ((Get-WebAppPoolState -Name $Env:APP_POOL_NAME).Value -ne "Stopped") {
+            throw "App Pool '$Env:APP_POOL_NAME' did not stop within 30 seconds."
+          }
 
           Write-Host "Deploying to: $Env:SITE_PATH"
-          Copy-Item -Path "./artifacts/api/*" -Destination $Env:SITE_PATH -Recurse -Force
+          robocopy ./artifacts/api $Env:SITE_PATH /MIR /NJH /NJS /NDL /NP
+          if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
 
           Write-Host "Starting App Pool: $Env:APP_POOL_NAME"
           Start-WebAppPool -Name $Env:APP_POOL_NAME
