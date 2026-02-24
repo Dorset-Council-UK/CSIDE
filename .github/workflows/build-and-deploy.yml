@@ -153,14 +153,14 @@ jobs:
           path: ./artifacts/api
 
       - name: Apply Web appsettings overrides
-        if: env.WEB_APPSETTINGS_OVERRIDE != ''
+        if: vars.WEB_APPSETTINGS_OVERRIDE != ''
         env:
           WEB_APPSETTINGS_OVERRIDE: ${{ vars.WEB_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Development.json" -Encoding utf8
 
       - name: Apply API appsettings overrides
-        if: env.API_APPSETTINGS_OVERRIDE != ''
+        if: vars.API_APPSETTINGS_OVERRIDE != ''
         env:
           API_APPSETTINGS_OVERRIDE: ${{ vars.API_APPSETTINGS_OVERRIDE }}
         run: |
@@ -263,14 +263,14 @@ jobs:
           path: ./artifacts/api
 
       - name: Apply Web appsettings overrides
-        if: env.WEB_APPSETTINGS_OVERRIDE != ''
+        if: vars.WEB_APPSETTINGS_OVERRIDE != ''
         env:
           WEB_APPSETTINGS_OVERRIDE: ${{ vars.WEB_APPSETTINGS_OVERRIDE }}
         run: |
           $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Production.json" -Encoding utf8
 
       - name: Apply API appsettings overrides
-        if: env.API_APPSETTINGS_OVERRIDE != ''
+        if: vars.API_APPSETTINGS_OVERRIDE != ''
         env:
           API_APPSETTINGS_OVERRIDE: ${{ vars.API_APPSETTINGS_OVERRIDE }}
         run: |
