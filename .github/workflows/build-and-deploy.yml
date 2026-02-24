@@ -24,7 +24,7 @@
 #    - WEB_APPSETTINGS_OVERRIDE — Full JSON content for appsettings override (CSIDE.Web)
 #    - API_APPSETTINGS_OVERRIDE — Full JSON content for appsettings override (CSIDE.API)
 #
-#    These are written as appsettings.Production.json / appsettings.Staging.json
+#    These are written as appsettings.Production.json / appsettings.Development.json
 #    and .NET's layered configuration will merge them on top of the base
 #    appsettings.json at runtime. Example secret value:
 #
@@ -157,14 +157,14 @@ jobs:
         env:
           WEB_APPSETTINGS_OVERRIDE: ${{ vars.WEB_APPSETTINGS_OVERRIDE }}
         run: |
-          $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Staging.json" -Encoding utf8
+          $Env:WEB_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/web/appsettings.Development.json" -Encoding utf8
 
       - name: Apply API appsettings overrides
         if: env.API_APPSETTINGS_OVERRIDE != ''
         env:
           API_APPSETTINGS_OVERRIDE: ${{ vars.API_APPSETTINGS_OVERRIDE }}
         run: |
-          $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Staging.json" -Encoding utf8
+          $Env:API_APPSETTINGS_OVERRIDE | Out-File -FilePath "./artifacts/api/appsettings.Development.json" -Encoding utf8
 
       - name: Deploy CSIDE.Web to IIS
         env:
