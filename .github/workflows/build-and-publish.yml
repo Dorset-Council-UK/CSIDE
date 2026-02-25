@@ -1,0 +1,83 @@
+name: Build and Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  NODE_VERSION: "20"
+
+jobs:
+
+  # --- Build & Test ---
+
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: npm install
+        working-directory: CSIDE.Web
+        run: npm ci
+
+      - name: Webpack Build
+        working-directory: CSIDE.Web
+        run: npm run build
+
+      - name: Stamp version from tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION="${{ github.ref_name }}"
+          echo "Stamping version: $VERSION"
+          jq --arg v "$VERSION" '.CSIDE.Version = $v' CSIDE.Web/appsettings.json > tmp.json && mv tmp.json CSIDE.Web/appsettings.json
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+      # --- Publish & upload artifacts (only on tag push) ---
+
+      - name: Publish CSIDE.Web
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: dotnet publish CSIDE.Web/CSIDE.Web.csproj --no-build --configuration Release --output ./publish/web
+
+      - name: Publish CSIDE.API
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: dotnet publish CSIDE.API/CSIDE.API.csproj --no-build --configuration Release --output ./publish/api
+
+      - name: Upload Web artifact
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: cside-web
+          path: ./publish/web
+
+      - name: Upload API artifact
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: cside-api
+          path: ./publish/api
