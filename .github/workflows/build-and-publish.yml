@@ -68,16 +68,26 @@ jobs:
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: dotnet publish CSIDE.API/CSIDE.API.csproj --no-build --configuration Release --output ./publish/api
 
-      - name: Upload Web artifact
+      - name: Zip Web publish output
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
-        with:
-          name: cside-web
-          path: ./publish/web
+        run: |
+          cd publish/web
+          zip -r "../../cside-web-${{ github.ref_name }}.zip" .
+          cd ../..
 
-      - name: Upload API artifact
+      - name: Zip API publish output
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+        run: |
+          cd publish/api
+          zip -r "../../cside-api-${{ github.ref_name }}.zip" .
+          cd ../..
+
+      - name: Create GitHub Release and upload assets
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
         with:
-          name: cside-api
+          tag_name: ${{ github.ref_name }}
+          files: |
+            cside-web-${{ github.ref_name }}.zip
+            cside-api-${{ github.ref_name }}.zip
           path: ./publish/api
