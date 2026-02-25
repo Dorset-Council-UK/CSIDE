@@ -1,19 +1,21 @@
 name: Build and Publish
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [published]
   pull_request:
     branches:
       - main
+
+# Required so we can upload assets to the *existing* Release using GITHUB_TOKEN
+permissions:
+  contents: write
 
 env:
   DOTNET_VERSION: "10.0.x"
   NODE_VERSION: "20"
 
 jobs:
-
   # --- Build & Test ---
 
   build:
@@ -23,6 +25,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # On release events, build the exact tag that was released.
+          # On pull_request, this is ignored and checkout uses the PR ref as normal.
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -42,10 +48,10 @@ jobs:
         working-directory: CSIDE.Web
         run: npm run build
 
-      - name: Stamp version from tag
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      - name: Stamp version from release tag
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
         run: |
-          VERSION="${{ github.ref_name }}"
+          VERSION="${{ github.event.release.tag_name }}"
           echo "Stamping version: $VERSION"
           jq --arg v "$VERSION" '.CSIDE.Version = $v' CSIDE.Web/appsettings.json > tmp.json && mv tmp.json CSIDE.Web/appsettings.json
 
@@ -58,35 +64,38 @@ jobs:
       - name: Test
         run: dotnet test --no-build --configuration Release
 
-      # --- Publish & upload artifacts (only on tag push) ---
+      # --- Publish & attach Release assets (only on Release publish) ---
 
       - name: Publish CSIDE.Web
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
         run: dotnet publish CSIDE.Web/CSIDE.Web.csproj --no-build --configuration Release --output ./publish/web
 
       - name: Publish CSIDE.API
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
         run: dotnet publish CSIDE.API/CSIDE.API.csproj --no-build --configuration Release --output ./publish/api
 
       - name: Zip Web publish output
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
         run: |
           cd publish/web
-          zip -r "../../cside-web-${{ github.ref_name }}.zip" .
+          zip -r "../../cside-web-${{ github.event.release.tag_name }}.zip" .
           cd ../..
 
       - name: Zip API publish output
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
         run: |
           cd publish/api
-          zip -r "../../cside-api-${{ github.ref_name }}.zip" .
+          zip -r "../../cside-api-${{ github.event.release.tag_name }}.zip" .
           cd ../..
 
-      - name: Create GitHub Release and upload assets
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          files: |
-            cside-web-${{ github.ref_name }}.zip
-            cside-api-${{ github.ref_name }}.zip
+      - name: Upload assets to the GitHub Release
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh --version
+          gh release upload "$TAG" \
+            "cside-web-$TAG.zip" \
+            "cside-api-$TAG.zip" \
+            --clobber
