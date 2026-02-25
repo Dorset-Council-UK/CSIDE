@@ -90,4 +90,3 @@ jobs:
           files: |
             cside-web-${{ github.ref_name }}.zip
             cside-api-${{ github.ref_name }}.zip
-          path: ./publish/api
