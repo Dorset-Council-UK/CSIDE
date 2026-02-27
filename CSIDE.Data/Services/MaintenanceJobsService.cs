@@ -749,7 +749,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             if (existingSubscription is not null)
             {
                 // User is already subscribed, return success
-                logger.LogInformation("User {email} is already subscribed to maintenance job {jobId}", normalizedEmail, jobId);
+                logger.LogInformation("User is already subscribed to maintenance job {jobId}", jobId);
                 return true;
             }
 
@@ -770,7 +770,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "There was an error signing {email} up to maintenance job {jobId} update emails", email, jobId);
+            logger.LogError(ex, "There was an error signing up a user to maintenance job {jobId} update emails", jobId);
             return false;
         }
     }
