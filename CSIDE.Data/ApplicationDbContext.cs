@@ -9,11 +9,13 @@ using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CSIDE.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IOptions<DatabaseOptions> databaseOptions) : DbContext(options)
     {
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
@@ -115,7 +117,10 @@ namespace CSIDE.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("cside");
+            if (!string.IsNullOrWhiteSpace(databaseOptions.Value.Schema))
+            {
+                modelBuilder.HasDefaultSchema(databaseOptions.Value.Schema);
+            }
 
             modelBuilder.Entity<ApplicationRole>().HasData(
                 new ApplicationRole { Id = 1, RoleName = "Administrator" },

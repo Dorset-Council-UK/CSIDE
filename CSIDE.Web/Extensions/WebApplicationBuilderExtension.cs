@@ -72,6 +72,7 @@ internal static class WebApplicationBuilderExtension
         var sectionAzureBlobStorage = sectionCSIDE.GetSection(AzureBlobStorageOptions.SectionName);
         var sectionNetworking = sectionCSIDE.GetSection(NetworkingOptions.SectionName);
         var sectionIDPrefixes = sectionCSIDE.GetSection(IDPrefixOptions.SectionName);
+        var sectionDatabase = sectionCSIDE.GetSection(DatabaseOptions.SectionName);
 
         builder.Services
             .Configure<CSIDEOptions>(sectionCSIDE)
@@ -81,7 +82,8 @@ internal static class WebApplicationBuilderExtension
             .Configure<ThemeOptions>(sectionTheme)
             .Configure<AzureBlobStorageOptions>(sectionAzureBlobStorage)
             .Configure<NetworkingOptions>(sectionNetworking)
-            .Configure<IDPrefixOptions>(sectionIDPrefixes);
+            .Configure<IDPrefixOptions>(sectionIDPrefixes)
+            .Configure<DatabaseOptions>(sectionDatabase);
 
         return builder;
     }
@@ -196,11 +198,16 @@ internal static class WebApplicationBuilderExtension
     {
         var connectionString = builder.Configuration.GetConnectionString(CSIDEOptions.ConnectionStringName);
 
+        var databaseOptions = builder.Configuration
+            .GetSection(CSIDEOptions.SectionName)
+            .GetSection(DatabaseOptions.SectionName)
+            .Get<DatabaseOptions>();
+
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(connectionString, x =>
             {
-                x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
+                x.MigrationsHistoryTable("__EFMigrationsHistory", databaseOptions?.Schema);
                 x.UseNodaTime();
                 x.UseNetTopologySuite();
                 x.MapEnum<SurveyStatus>("survey_status");
