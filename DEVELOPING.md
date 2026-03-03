@@ -20,6 +20,9 @@ Create a schema within your database called cside. To avoid complex permissions,
 #### Let EF create the schema for you
 In order for EF to be able to create the schema, your user will need permission on the database to create schemas.
 
+#### Using a different schema name
+If you want to use a different schema name, you can change the app settings `CSIDE:Database:SchemaName`, however, if you generate an EF migration script, you will have to manually find and change the schema name in the generated SQL before running it against your database. You will also need to change the SearchPath in your connection string to include your schema.
+
 ### Adding the unmanaged Parish table
 The 'Parishes' entity is NOT managed by Entity Framework, but is required in foreign key relationships. By convention, the table should:
 - Be named 'Parishes'
