@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CSIDE.Migrations
+namespace CSIDE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,10 +22,10 @@ namespace CSIDE.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("cside")
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "survey_status", new[] { "completed", "incomplete", "rejected", "verified" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "cside", "survey_status", new[] { "completed", "incomplete", "rejected", "verified" });
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
@@ -2034,7 +2034,7 @@ namespace CSIDE.Migrations
 
                     b.Property<SurveyStatus>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("survey_status")
+                        .HasColumnType("cside.survey_status")
                         .HasDefaultValueSql("'incomplete'::survey_status");
 
                     b.Property<string>("SurveyorId")
