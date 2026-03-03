@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Interceptors;
+﻿using CSIDE.Data.EntitiesConfiguration;
+using CSIDE.Data.Interceptors;
 using CSIDE.Data.Models.Audit;
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Models.DMMO;
@@ -134,7 +135,10 @@ namespace CSIDE.Data
 
             modelBuilder.Entity<Survey>().UseTpcMappingStrategy();
             // DbSet configurations
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new BridgeSurveyConfiguration(databaseOptions.Value.Schema));
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                typeof(ApplicationDbContext).Assembly,
+                t => t != typeof(BridgeSurveyConfiguration));
         }
     }
 }

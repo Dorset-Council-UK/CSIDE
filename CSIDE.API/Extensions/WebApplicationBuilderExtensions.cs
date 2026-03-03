@@ -80,7 +80,7 @@ internal static class WebApplicationBuilderExtensions
                 x.MigrationsHistoryTable("__EFMigrationsHistory", databaseOptions?.Schema);
                 x.UseNodaTime();
                 x.UseNetTopologySuite();
-                x.MapEnum<SurveyStatus>("survey_status");
+                x.MapEnum<SurveyStatus>("survey_status", databaseOptions?.Schema);
                 x.EnableRetryOnFailure(3);
             });
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());

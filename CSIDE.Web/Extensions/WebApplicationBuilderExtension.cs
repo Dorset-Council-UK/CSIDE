@@ -210,7 +210,7 @@ internal static class WebApplicationBuilderExtension
                 x.MigrationsHistoryTable("__EFMigrationsHistory", databaseOptions?.Schema);
                 x.UseNodaTime();
                 x.UseNetTopologySuite();
-                x.MapEnum<SurveyStatus>("survey_status");
+                x.MapEnum<SurveyStatus>("survey_status", databaseOptions?.Schema);
                 x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             });
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
