@@ -16,10 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .AddCountrysideNetworking()
     .AddCountrysideOptions()
-    .AddCountrysideTelemetry()
     .AddCountrysideAzureKeyVault()
     .AddCountrysideAuthentication()
-    .AddCountrysideDatabase();
+    .AddCountrysideDatabase()
+    .AddCountrysideTelemetry();
 
 builder.Services
     .AddRazorComponents()

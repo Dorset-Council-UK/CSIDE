@@ -40,9 +40,9 @@ OpenApiExtensions.AddOpenApi(builder.Services);
 builder
     .AddCountrysideNetworking()
     .AddCountrysideOptions()
-    .AddCountrysideTelemetry()
     .AddCountrysideAzureKeyVault()
-    .AddCountrysideDatabase();
+    .AddCountrysideDatabase()
+    .AddCountrysideTelemetry();
 
 // Services from data project
 builder.Services.AddHttpClient(); // needed for PlacesSearchService
