@@ -134,6 +134,14 @@ namespace CSIDE.Data
             );
 
             modelBuilder.Entity<Survey>().UseTpcMappingStrategy();
+            // EFCore.NamingConventions does not rename sequences auto-generated
+            // by the TPC mapping strategy. Explicitly declare with snake_case name.
+            // see https://github.com/efcore/EFCore.NamingConventions/issues/13
+            modelBuilder.HasSequence<int>("survey_sequence");
+            modelBuilder.Entity<BridgeSurvey>()
+                .Property(x => x.Id)
+                .UseSequence("survey_sequence");
+
             // DbSet configurations
             modelBuilder.ApplyConfiguration(new BridgeSurveyConfiguration(databaseOptions.Value.Schema));
             modelBuilder.ApplyConfigurationsFromAssembly(

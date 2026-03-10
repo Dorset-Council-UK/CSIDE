@@ -29,7 +29,7 @@ namespace CSIDE.Data.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence("SurveySequence");
+            modelBuilder.HasSequence<int>("survey_sequence");
 
             modelBuilder.Entity("CSIDE.Data.Models.Audit.AuditLog", b =>
                 {
@@ -2504,9 +2504,9 @@ namespace CSIDE.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("nextval('cside.\"SurveySequence\"')");
+                        .HasDefaultValueSql("nextval('cside.survey_sequence')");
 
-                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"), "survey_sequence");
 
                     b.Property<Instant?>("EndDate")
                         .HasColumnType("timestamp with time zone")

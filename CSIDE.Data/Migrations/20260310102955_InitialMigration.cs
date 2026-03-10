@@ -25,8 +25,8 @@ namespace CSIDE.Data.Migrations
                 .Annotation("Npgsql:Enum:cside.survey_status", "completed,incomplete,rejected,verified")
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,");
 
-            migrationBuilder.CreateSequence(
-                name: "SurveySequence",
+            migrationBuilder.CreateSequence<int>(
+                name: "survey_sequence",
                 schema: "cside");
 
             migrationBuilder.CreateTable(
@@ -1528,7 +1528,7 @@ namespace CSIDE.Data.Migrations
                 schema: "cside",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "nextval('cside.\"SurveySequence\"')"),
+                    id = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "nextval('cside.survey_sequence')"),
                     start_date = table.Column<Instant>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     end_date = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
                     status = table.Column<SurveyStatus>(type: "cside.survey_status", nullable: false, defaultValueSql: "'incomplete'::\"cside\".survey_status"),
@@ -2722,7 +2722,7 @@ namespace CSIDE.Data.Migrations
                 schema: "cside");
 
             migrationBuilder.DropSequence(
-                name: "SurveySequence",
+                name: "survey_sequence",
                 schema: "cside");
         }
     }

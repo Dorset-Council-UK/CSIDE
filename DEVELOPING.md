@@ -24,8 +24,8 @@ In order for EF to be able to create the schema, your user will need permission 
 If you want to use a different schema name, you can change the app settings `CSIDE:Database:SchemaName`, however, if you generate an EF migration script, you will have to manually find and change the schema name in the generated SQL before running it against your database. You will also need to change the SearchPath in your connection string to include your schema.
 
 ### Adding the unmanaged Parish table
-The 'Parishes' entity is NOT managed by Entity Framework, but is required in foreign key relationships. By convention, the table should:
-- Be named 'Parishes'
+The 'parishes' entity is NOT managed by Entity Framework, but is required in foreign key relationships. By convention, the table should:
+- Be named 'parishes'
 - Have a column called 'name' which contains the parish or community name
 - Have a column called 'admin_unit_id' which contains the unique, integer based ID. This should be the primary key of the table.
 - Have a column called 'geom' of type MultiPolygon in EPSG:27700
@@ -33,21 +33,21 @@ The 'Parishes' entity is NOT managed by Entity Framework, but is required in for
 This basic structure should fit with OS Boundary-Line Parish data. You can use the following SQL to create a suitable table in your database.
 
 ```
-CREATE TABLE IF NOT EXISTS cside."Parishes"
+CREATE TABLE IF NOT EXISTS cside.parishes
 (
-    name text COLLATE pg_catalog."default",
+    name text COLLATE pg_catalog.default,
     admin_unit_id integer NOT NULL,
     geom geometry(MultiPolygon,27700),
-    CONSTRAINT "Parishes_pkey" PRIMARY KEY (admin_unit_id)
+    CONSTRAINT parishes_pkey PRIMARY KEY (admin_unit_id)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS cside."Parishes"
-    OWNER to "<YOUR USER HERE>";
+ALTER TABLE IF EXISTS cside.parishes
+    OWNER to "<your-userame-here>";
 
-CREATE INDEX IF NOT EXISTS "Parishes_geom_1732881166632"
-    ON cside."Parishes" USING gist
+CREATE INDEX IF NOT EXISTS parishes_geom_sx
+    ON cside.parishes USING gist
     (geom)
     TABLESPACE pg_default;
 ```
