@@ -13,7 +13,7 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (multipolygon)");
+            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry(multipolygon, 27700)");
 
             builder.Property(x => x.Version)
                 .IsRowVersion();
