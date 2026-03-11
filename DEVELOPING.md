@@ -35,7 +35,7 @@ This basic structure should fit with OS Boundary-Line Parish data. You can use t
 ```
 CREATE TABLE IF NOT EXISTS cside.parishes
 (
-    name text COLLATE pg_catalog.default,
+    name text COLLATE pg_catalog."default",
     admin_unit_id integer NOT NULL,
     geom geometry(MultiPolygon,27700),
     CONSTRAINT parishes_pkey PRIMARY KEY (admin_unit_id)
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS cside.parishes
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS cside.parishes
-    OWNER to "<your-userame-here>";
+    OWNER to "<your-username-here>";
 
 CREATE INDEX IF NOT EXISTS parishes_geom_sx
     ON cside.parishes USING gist
