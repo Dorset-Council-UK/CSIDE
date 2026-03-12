@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<Team> builder)
         {
-            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (polygon)");
+            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry(polygon, 27700)");
         }
     }
 }

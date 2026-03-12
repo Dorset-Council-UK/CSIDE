@@ -10,11 +10,11 @@ namespace CSIDE.Data.EntitiesConfiguration
         {
             builder.Property(x => x.ParishId).HasColumnName("admin_unit_id");
             builder.Property(x => x.Name).HasColumnName("name");
-            builder.Property(x => x.Geom).HasColumnName("geom").IsRequired().HasColumnType("geometry (multipolygon)");
+            builder.Property(x => x.Geom).HasColumnName("geom").IsRequired().HasColumnType("geometry(multipolygon, 27700)");
 
             builder.HasKey(x => x.ParishId);
 
-            builder.ToTable("Parishes", p => p.ExcludeFromMigrations());
+            builder.ToTable("parishes", p => p.ExcludeFromMigrations());
         }
     }
 }

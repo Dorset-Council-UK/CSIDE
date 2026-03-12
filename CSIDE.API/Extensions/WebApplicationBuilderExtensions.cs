@@ -82,7 +82,8 @@ internal static class WebApplicationBuilderExtensions
                 x.UseNetTopologySuite();
                 x.MapEnum<SurveyStatus>("survey_status", databaseOptions?.Schema);
                 x.EnableRetryOnFailure(3);
-            });
+            })
+            .UseSnakeCaseNamingConvention();
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
         });
 

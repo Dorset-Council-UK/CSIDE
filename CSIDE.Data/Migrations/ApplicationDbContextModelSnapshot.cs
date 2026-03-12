@@ -29,70 +29,84 @@ namespace CSIDE.Data.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence("SurveySequence");
+            modelBuilder.HasSequence<int>("survey_sequence");
 
             modelBuilder.Entity("CSIDE.Data.Models.Audit.AuditLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ChangeType")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("change_type");
 
                     b.Property<string>("EntityId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("entity_id");
 
                     b.Property<string>("EntityName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("entity_name");
 
                     b.Property<Instant>("LogDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("log_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<JsonDocument>("NewValues")
-                        .HasColumnType("jsonb");
+                        .HasColumnType("jsonb")
+                        .HasColumnName("new_values");
 
                     b.Property<JsonDocument>("OldValues")
-                        .HasColumnType("jsonb");
+                        .HasColumnType("jsonb")
+                        .HasColumnName("old_values");
 
                     b.Property<string>("SecondaryEntityId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("secondary_entity_id");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("user_name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_audit_logs");
 
-                    b.ToTable("AuditLogs", "cside");
+                    b.ToTable("audit_logs", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Authorization.ApplicationRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("role_name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_application_roles");
 
-                    b.ToTable("ApplicationRoles", "cside");
+                    b.ToTable("application_roles", "cside");
 
                     b.HasData(
                         new
@@ -135,159 +149,196 @@ namespace CSIDE.Data.Migrations
             modelBuilder.Entity("CSIDE.Data.Models.Authorization.ApplicationUserRole", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
 
                     b.Property<int>("ApplicationRoleId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("application_role_id");
 
-                    b.HasKey("UserId", "ApplicationRoleId");
+                    b.HasKey("UserId", "ApplicationRoleId")
+                        .HasName("pk_application_user_roles");
 
-                    b.HasIndex("ApplicationRoleId");
+                    b.HasIndex("ApplicationRoleId")
+                        .HasDatabaseName("ix_application_user_roles_application_role_id");
 
-                    b.ToTable("ApplicationUserRoles", "cside");
+                    b.ToTable("application_user_roles", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationCaseStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_application_case_statuses");
 
-                    b.ToTable("DMMOApplicationCaseStatuses", "cside");
+                    b.ToTable("dmmo_application_case_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationClaimedStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_application_claimed_statuses");
 
-                    b.ToTable("DMMOApplicationClaimedStatuses", "cside");
+                    b.ToTable("dmmo_application_claimed_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationDirectionOfSecState", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_application_directions_of_sec_state");
 
-                    b.ToTable("DMMOApplicationDirectionsOfSecState", "cside");
+                    b.ToTable("dmmo_application_directions_of_sec_state", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.ApplicationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_application_types");
 
-                    b.ToTable("DMMOApplicationTypes", "cside");
+                    b.ToTable("dmmo_application_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOAddress", b =>
                 {
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<long>("UPRN")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("uprn");
 
                     b.Property<string>("Address")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("address");
 
-                    b.HasKey("DMMOApplicationId", "UPRN");
+                    b.HasKey("DMMOApplicationId", "UPRN")
+                        .HasName("pk_dmmo_addresses");
 
-                    b.ToTable("DMMOAddresses", "cside");
+                    b.ToTable("dmmo_addresses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOApplication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool?>("Appeal")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("appeal");
 
                     b.Property<LocalDate?>("AppealDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("appeal_date");
 
                     b.Property<LocalDate?>("ApplicationDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("application_date");
 
                     b.Property<string>("ApplicationDetails")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("application_details");
 
                     b.Property<string>("CaseOfficer")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("case_officer");
 
                     b.Property<string>("CaseOfficerUserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("case_officer_user_id");
 
                     b.Property<int>("CaseStatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("case_status_id");
 
                     b.Property<LocalDate?>("DateOfDirectionOfSecState")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_direction_of_sec_state");
 
                     b.Property<LocalDate?>("DeterminationDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("determination_date");
 
                     b.Property<int?>("DirectionOfSecStateId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("direction_of_sec_state_id");
 
                     b.Property<MultiLineString>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (multilinestring)");
+                        .HasColumnType("geometry(multilinestring, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_public");
 
                     b.Property<string>("LocationDescription")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("location_description");
 
                     b.Property<string>("PrivateComments")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("private_comments");
 
                     b.Property<string>("PublicComments")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("public_comments");
 
                     b.Property<LocalDate?>("ReceivedDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("received_date");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -295,387 +346,500 @@ namespace CSIDE.Data.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_application");
 
-                    b.HasIndex("CaseStatusId");
+                    b.HasIndex("CaseStatusId")
+                        .HasDatabaseName("ix_dmmo_application_case_status_id");
 
-                    b.HasIndex("DirectionOfSecStateId");
+                    b.HasIndex("DirectionOfSecStateId")
+                        .HasDatabaseName("ix_dmmo_application_direction_of_sec_state_id");
 
-                    b.ToTable("DMMOApplication", "cside");
+                    b.ToTable("dmmo_application", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOApplicationType", b =>
                 {
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<int>("ApplicationTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("application_type_id");
 
-                    b.HasKey("DMMOApplicationId", "ApplicationTypeId");
+                    b.HasKey("DMMOApplicationId", "ApplicationTypeId")
+                        .HasName("pk_dmmo_types");
 
-                    b.HasIndex("ApplicationTypeId");
+                    b.HasIndex("ApplicationTypeId")
+                        .HasDatabaseName("ix_dmmo_types_application_type_id");
 
-                    b.ToTable("DMMOTypes", "cside");
+                    b.ToTable("dmmo_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOClaimedStatus", b =>
                 {
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<int>("ClaimedStatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("claimed_status_id");
 
-                    b.HasKey("DMMOApplicationId", "ClaimedStatusId");
+                    b.HasKey("DMMOApplicationId", "ClaimedStatusId")
+                        .HasName("pk_dmmo_claimed_statuses");
 
-                    b.HasIndex("ClaimedStatusId");
+                    b.HasIndex("ClaimedStatusId")
+                        .HasDatabaseName("ix_dmmo_claimed_statuses_claimed_status_id");
 
-                    b.ToTable("DMMOClaimedStatuses", "cside");
+                    b.ToTable("dmmo_claimed_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOContact", b =>
                 {
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<int>("ContactId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("contact_id");
 
-                    b.HasKey("DMMOApplicationId", "ContactId");
+                    b.HasKey("DMMOApplicationId", "ContactId")
+                        .HasName("pk_dmmo_contact");
 
-                    b.HasIndex("ContactId");
+                    b.HasIndex("ContactId")
+                        .HasDatabaseName("ix_dmmo_contact_contact_id");
 
-                    b.ToTable("DMMOContact", "cside");
+                    b.ToTable("dmmo_contact", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOEvent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_id");
 
                     b.Property<string>("AuthorName")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_name");
 
                     b.Property<Instant>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<LocalDate>("EventDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("event_date");
 
                     b.Property<string>("EventText")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("event_text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_events");
 
-                    b.HasIndex("DMMOApplicationId");
+                    b.HasIndex("DMMOApplicationId")
+                        .HasDatabaseName("ix_dmmo_events_dmmo_application_id");
 
-                    b.ToTable("DMMOEvents", "cside");
+                    b.ToTable("dmmo_events", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOLinkedRoute", b =>
                 {
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<string>("RouteId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("route_id");
 
-                    b.HasKey("DMMOApplicationId", "RouteId");
+                    b.HasKey("DMMOApplicationId", "RouteId")
+                        .HasName("pk_dmmo_linked_routes");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("RouteId")
+                        .HasDatabaseName("ix_dmmo_linked_routes_route_id");
 
-                    b.ToTable("DMMOLinkedRoutes", "cside");
+                    b.ToTable("dmmo_linked_routes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOMedia", b =>
                 {
                     b.Property<int>("DMMOId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<int>("MediaTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_type_id");
 
-                    b.HasKey("DMMOId", "MediaId");
+                    b.HasKey("DMMOId", "MediaId")
+                        .HasName("pk_dmmo_media");
 
-                    b.HasIndex("DMMOApplicationId");
+                    b.HasIndex("DMMOApplicationId")
+                        .HasDatabaseName("ix_dmmo_media_dmmo_application_id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_dmmo_media_media_id");
 
-                    b.HasIndex("MediaTypeId");
+                    b.HasIndex("MediaTypeId")
+                        .HasDatabaseName("ix_dmmo_media_media_type_id");
 
-                    b.ToTable("DMMOMedia", "cside");
+                    b.ToTable("dmmo_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOMediaType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FileTypesLimit")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("file_types_limit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<int>("NumFilesLimit")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_files_limit");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dmmo_media_type");
 
-                    b.ToTable("DMMOMediaType", "cside");
+                    b.ToTable("dmmo_media_type", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOOrder", b =>
                 {
                     b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("order_id");
 
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<LocalDate?>("DateConfirmed")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_confirmed");
 
                     b.Property<LocalDate?>("DatePublished")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_published");
 
                     b.Property<LocalDate?>("DateSealed")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_sealed");
 
                     b.Property<int?>("DecisionOfSecStateId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("decision_of_sec_state_id");
 
                     b.Property<int?>("DeterminationProcessId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("determination_process_id");
 
                     b.Property<LocalDate?>("ObjectionsEndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("objections_end_date");
 
                     b.Property<bool?>("ObjectionsReceived")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("objections_received");
 
                     b.Property<bool?>("ObjectionsWithdrawn")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("objections_withdrawn");
 
                     b.Property<bool?>("SubmitToPINS")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("submit_to_pins");
 
-                    b.HasKey("OrderId", "DMMOApplicationId");
+                    b.HasKey("OrderId", "DMMOApplicationId")
+                        .HasName("pk_dmmo_orders");
 
-                    b.HasIndex("DMMOApplicationId");
+                    b.HasIndex("DMMOApplicationId")
+                        .HasDatabaseName("ix_dmmo_orders_dmmo_application_id");
 
-                    b.HasIndex("DecisionOfSecStateId");
+                    b.HasIndex("DecisionOfSecStateId")
+                        .HasDatabaseName("ix_dmmo_orders_decision_of_sec_state_id");
 
-                    b.HasIndex("DeterminationProcessId");
+                    b.HasIndex("DeterminationProcessId")
+                        .HasDatabaseName("ix_dmmo_orders_determination_process_id");
 
-                    b.ToTable("DMMOOrders", "cside");
+                    b.ToTable("dmmo_orders", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.DMMO.DMMOParish", b =>
                 {
                     b.Property<int>("DMMOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("dmmo_application_id");
 
                     b.Property<int>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
-                    b.HasKey("DMMOApplicationId", "ParishId");
+                    b.HasKey("DMMOApplicationId", "ParishId")
+                        .HasName("pk_dmmo_parish");
 
-                    b.HasIndex("ParishId");
+                    b.HasIndex("ParishId")
+                        .HasDatabaseName("ix_dmmo_parish_parish_id");
 
-                    b.ToTable("DMMOParish", "cside");
+                    b.ToTable("dmmo_parish", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureBridgeDetails", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool?>("AntiSlipInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("anti_slip_installed");
 
                     b.Property<int?>("BankSeatConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bank_seat_condition_id");
 
                     b.Property<int?>("BankSeatMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bank_seat_material_id");
 
                     b.Property<int?>("BeamConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("beam_condition_id");
 
                     b.Property<int?>("BeamMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("beam_material_id");
 
                     b.Property<string>("BeamTimbersSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("beam_timbers_size");
 
                     b.Property<bool?>("CoverBoardsInPlace")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("cover_boards_in_place");
 
                     b.Property<decimal?>("DeckingBoardsLength")
                         .HasPrecision(3, 1)
-                        .HasColumnType("numeric(3,1)");
+                        .HasColumnType("numeric(3,1)")
+                        .HasColumnName("decking_boards_length");
 
                     b.Property<string>("DeckingBoardsSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("decking_boards_size");
 
                     b.Property<int?>("DeckingConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("decking_condition_id");
 
                     b.Property<int?>("DeckingMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("decking_material_id");
 
                     b.Property<bool?>("GateInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("gate_installed");
 
                     b.Property<int?>("HandrailConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_condition_id");
 
                     b.Property<int?>("HandrailMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_material_id");
 
                     b.Property<int?>("HandrailPostsConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_posts_condition_id");
 
                     b.Property<int?>("HandrailPostsMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_posts_material_id");
 
                     b.Property<string>("HandrailPostsTimbersSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("handrail_posts_timbers_size");
 
                     b.Property<string>("HandrailTimbersSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("handrail_timbers_size");
 
                     b.Property<bool?>("HandrailsInPlace")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("handrails_in_place");
 
                     b.Property<bool?>("HighUsage")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("high_usage");
 
                     b.Property<int>("InfrastructureId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("infrastructure_id");
 
                     b.Property<int?>("NumBeamTimbers")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_beam_timbers");
 
                     b.Property<int?>("NumDeckingBoards")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_decking_boards");
 
                     b.Property<int?>("NumHandrailPostsTimbers")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_handrail_posts_timbers");
 
                     b.Property<bool?>("Overgrown")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("overgrown");
 
                     b.Property<bool?>("RampInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("ramp_installed");
 
                     b.Property<bool?>("SeriouslyEroded")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("seriously_eroded");
 
                     b.Property<bool?>("SignsOfBankErosion")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("signs_of_bank_erosion");
 
                     b.Property<bool?>("StepsInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("steps_installed");
 
                     b.Property<bool?>("StileInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("stile_installed");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_infrastructure_bridge_details");
 
-                    b.HasIndex("BankSeatConditionId");
+                    b.HasIndex("BankSeatConditionId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_bank_seat_condition_id");
 
-                    b.HasIndex("BankSeatMaterialId");
+                    b.HasIndex("BankSeatMaterialId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_bank_seat_material_id");
 
-                    b.HasIndex("BeamConditionId");
+                    b.HasIndex("BeamConditionId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_beam_condition_id");
 
-                    b.HasIndex("BeamMaterialId");
+                    b.HasIndex("BeamMaterialId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_beam_material_id");
 
-                    b.HasIndex("DeckingConditionId");
+                    b.HasIndex("DeckingConditionId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_decking_condition_id");
 
-                    b.HasIndex("DeckingMaterialId");
+                    b.HasIndex("DeckingMaterialId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_decking_material_id");
 
-                    b.HasIndex("HandrailConditionId");
+                    b.HasIndex("HandrailConditionId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_handrail_condition_id");
 
-                    b.HasIndex("HandrailMaterialId");
+                    b.HasIndex("HandrailMaterialId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_handrail_material_id");
 
-                    b.HasIndex("HandrailPostsConditionId");
+                    b.HasIndex("HandrailPostsConditionId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_handrail_posts_condition_id");
 
-                    b.HasIndex("HandrailPostsMaterialId");
+                    b.HasIndex("HandrailPostsMaterialId")
+                        .HasDatabaseName("ix_infrastructure_bridge_details_handrail_posts_material_id");
 
                     b.HasIndex("InfrastructureId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_infrastructure_bridge_details_infrastructure_id");
 
-                    b.ToTable("InfrastructureBridgeDetails", "cside");
+                    b.ToTable("infrastructure_bridge_details", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
 
                     b.Property<Point>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (point)");
+                        .HasColumnType("geometry(point, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<double?>("Height")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("height");
 
                     b.Property<int?>("InfrastructureTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("infrastructure_type_id");
 
                     b.Property<LocalDate?>("InstallationDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("installation_date");
 
                     b.Property<double?>("Length")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("length");
 
                     b.Property<int?>("MaintenanceTeamId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("maintenance_team_id");
 
                     b.Property<int?>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
                     b.Property<string>("RouteId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("route_id");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -684,129 +848,165 @@ namespace CSIDE.Data.Migrations
                         .HasColumnName("xmin");
 
                     b.Property<double?>("Width")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("width");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_infrastructure");
 
-                    b.HasIndex("InfrastructureTypeId");
+                    b.HasIndex("InfrastructureTypeId")
+                        .HasDatabaseName("ix_infrastructure_infrastructure_type_id");
 
-                    b.HasIndex("MaintenanceTeamId");
+                    b.HasIndex("MaintenanceTeamId")
+                        .HasDatabaseName("ix_infrastructure_maintenance_team_id");
 
-                    b.HasIndex("ParishId");
+                    b.HasIndex("ParishId")
+                        .HasDatabaseName("ix_infrastructure_parish_id");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("RouteId")
+                        .HasDatabaseName("ix_infrastructure_route_id");
 
-                    b.ToTable("Infrastructure", "cside");
+                    b.ToTable("infrastructure", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureMedia", b =>
                 {
                     b.Property<int>("InfrastructureItemId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("infrastructure_item_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
-                    b.HasKey("InfrastructureItemId", "MediaId");
+                    b.HasKey("InfrastructureItemId", "MediaId")
+                        .HasName("pk_infrastructure_media");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_infrastructure_media_media_id");
 
-                    b.ToTable("InfrastructureMedia", "cside");
+                    b.ToTable("infrastructure_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Infrastructure.InfrastructureType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsBridge")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_bridge");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_infrastructure_types");
 
-                    b.ToTable("InfrastructureTypes", "cside");
+                    b.ToTable("infrastructure_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("SecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("secondary_id");
 
                     b.Property<bool>("AllSigned")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("all_signed");
 
                     b.Property<string>("ArchiveReference")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("archive_reference");
 
                     b.Property<LocalDate?>("ChequePaidInDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("cheque_paid_in_date");
 
                     b.Property<string>("ChequeReceiptNumber")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("cheque_receipt_number");
 
                     b.Property<LocalDate?>("DateAcknowledged")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_acknowledged");
 
                     b.Property<LocalDate?>("ElapseDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("elapse_date");
 
                     b.Property<LocalDate?>("EmailNoticeSent")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("email_notice_sent");
 
                     b.Property<bool>("FeePaid")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("fee_paid");
 
                     b.Property<bool>("FormCompleted")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("form_completed");
 
                     b.Property<MultiPolygon>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (multipolygon)");
+                        .HasColumnType("geometry(multipolygon, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<string>("IntendedEffect")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("intended_effect");
 
                     b.Property<string>("Location")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("location");
 
                     b.Property<bool>("MapCorrect")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("map_correct");
 
                     b.Property<LocalDate?>("NoticeDrafted")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("notice_drafted");
 
                     b.Property<LocalDate?>("OnsiteNoticeErected")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("onsite_notice_erected");
 
                     b.Property<string>("PrimaryContact")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("primary_contact");
 
                     b.Property<string>("PrimaryContactUserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("primary_contact_user_id");
 
                     b.Property<LocalDate?>("ReceivedDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("received_date");
 
                     b.Property<LocalDate?>("SentToArchive")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("sent_to_archive");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -815,279 +1015,350 @@ namespace CSIDE.Data.Migrations
                         .HasColumnName("xmin");
 
                     b.Property<LocalDate?>("WebsiteEntryAdded")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("website_entry_added");
 
                     b.Property<LocalDate?>("WebsiteNoticePublished")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("website_notice_published");
 
-                    b.HasKey("Id", "SecondaryId");
+                    b.HasKey("Id", "SecondaryId")
+                        .HasName("pk_landowner_deposits");
 
-                    b.ToTable("LandownerDeposits", "cside");
+                    b.ToTable("landowner_deposits", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositAddress", b =>
                 {
                     b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_id");
 
                     b.Property<int>("LandownerDepositSecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_secondary_id");
 
                     b.Property<long>("UPRN")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("uprn");
 
                     b.Property<string>("Address")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("address");
 
-                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "UPRN");
+                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "UPRN")
+                        .HasName("pk_landowner_deposit_addresses");
 
-                    b.ToTable("LandownerDepositAddresses", "cside");
+                    b.ToTable("landowner_deposit_addresses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositContact", b =>
                 {
                     b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_id");
 
                     b.Property<int>("LandownerDepositSecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_secondary_id");
 
                     b.Property<int>("ContactId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("contact_id");
 
-                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "ContactId");
+                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "ContactId")
+                        .HasName("pk_landowner_deposit_contacts");
 
-                    b.HasIndex("ContactId");
+                    b.HasIndex("ContactId")
+                        .HasDatabaseName("ix_landowner_deposit_contacts_contact_id");
 
-                    b.ToTable("LandownerDepositContacts", "cside");
+                    b.ToTable("landowner_deposit_contacts", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositEvent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_id");
 
                     b.Property<string>("AuthorName")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_name");
 
                     b.Property<Instant>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<LocalDate>("EventDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("event_date");
 
                     b.Property<string>("EventText")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("event_text");
 
                     b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_id");
 
                     b.Property<int>("LandownerDepositSecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_secondary_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_landowner_deposit_events");
 
-                    b.HasIndex("LandownerDepositId", "LandownerDepositSecondaryId");
+                    b.HasIndex("LandownerDepositId", "LandownerDepositSecondaryId")
+                        .HasDatabaseName("ix_landowner_deposit_events_landowner_deposit_id_landowner_dep");
 
-                    b.ToTable("LandownerDepositEvents", "cside");
+                    b.ToTable("landowner_deposit_events", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMedia", b =>
                 {
                     b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_id");
 
                     b.Property<int>("LandownerDepositSecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_secondary_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
                     b.Property<int>("MediaTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_type_id");
 
-                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "MediaId");
+                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "MediaId")
+                        .HasName("pk_landowner_deposit_media");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_landowner_deposit_media_media_id");
 
-                    b.HasIndex("MediaTypeId");
+                    b.HasIndex("MediaTypeId")
+                        .HasDatabaseName("ix_landowner_deposit_media_media_type_id");
 
-                    b.ToTable("LandownerDepositMedia", "cside");
+                    b.ToTable("landowner_deposit_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMediaType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FileTypesLimit")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("file_types_limit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<int>("NumFilesLimit")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_files_limit");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_landowner_deposit_media_types");
 
-                    b.ToTable("LandownerDepositMediaTypes", "cside");
+                    b.ToTable("landowner_deposit_media_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositParish", b =>
                 {
                     b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_id");
 
                     b.Property<int>("LandownerDepositSecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_secondary_id");
 
                     b.Property<int>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
-                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "ParishId");
+                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "ParishId")
+                        .HasName("pk_landowner_deposit_parishes");
 
-                    b.HasIndex("ParishId");
+                    b.HasIndex("ParishId")
+                        .HasDatabaseName("ix_landowner_deposit_parishes_parish_id");
 
-                    b.ToTable("LandownerDepositParishes", "cside");
+                    b.ToTable("landowner_deposit_parishes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositType", b =>
                 {
                     b.Property<int>("LandownerDepositId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_id");
 
                     b.Property<int>("LandownerDepositSecondaryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_secondary_id");
 
                     b.Property<int>("LandownerDepositTypeNameId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("landowner_deposit_type_name_id");
 
-                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "LandownerDepositTypeNameId");
+                    b.HasKey("LandownerDepositId", "LandownerDepositSecondaryId", "LandownerDepositTypeNameId")
+                        .HasName("pk_landowner_deposit_types");
 
-                    b.HasIndex("LandownerDepositTypeNameId");
+                    b.HasIndex("LandownerDepositTypeNameId")
+                        .HasDatabaseName("ix_landowner_deposit_types_landowner_deposit_type_name_id");
 
-                    b.ToTable("LandownerDepositTypes", "cside");
+                    b.ToTable("landowner_deposit_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.LandownerDeposits.LandownerDepositTypeName", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_landowner_deposit_type_names");
 
-                    b.ToTable("LandownerDepositTypeNames", "cside");
+                    b.ToTable("landowner_deposit_type_names", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_id");
 
                     b.Property<string>("AuthorName")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_name");
 
                     b.Property<string>("CommentText")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("comment_text");
 
                     b.Property<Instant>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_public");
 
                     b.Property<int>("JobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_maintenance_comments");
 
-                    b.HasIndex("JobId");
+                    b.HasIndex("JobId")
+                        .HasDatabaseName("ix_maintenance_comments_job_id");
 
-                    b.ToTable("MaintenanceComments", "cside");
+                    b.ToTable("maintenance_comments", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<LocalDate?>("CompletionDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("completion_date");
 
                     b.Property<int?>("DuplicateJobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("duplicate_job_id");
 
                     b.Property<Point>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (point)");
+                        .HasColumnType("geometry(point, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<int>("JobPriorityId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_priority_id");
 
                     b.Property<int>("JobStatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_status_id");
 
                     b.Property<Instant>("LogDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("log_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("LoggedById")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("logged_by_id");
 
                     b.Property<string>("LoggedByName")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("logged_by_name");
 
                     b.Property<int?>("MaintenanceTeamId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("maintenance_team_id");
 
                     b.Property<int?>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
                     b.Property<string>("ProblemDescription")
                         .IsRequired()
                         .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("problem_description");
 
                     b.Property<string>("RedactedProblemDescription")
                         .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("redacted_problem_description");
 
                     b.Property<string>("RouteId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("route_id");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1097,345 +1368,427 @@ namespace CSIDE.Data.Migrations
 
                     b.Property<string>("WorkDone")
                         .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("work_done");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_maintenance_jobs");
 
-                    b.HasIndex("JobPriorityId");
+                    b.HasIndex("JobPriorityId")
+                        .HasDatabaseName("ix_maintenance_jobs_job_priority_id");
 
-                    b.HasIndex("JobStatusId");
+                    b.HasIndex("JobStatusId")
+                        .HasDatabaseName("ix_maintenance_jobs_job_status_id");
 
-                    b.HasIndex("MaintenanceTeamId");
+                    b.HasIndex("MaintenanceTeamId")
+                        .HasDatabaseName("ix_maintenance_jobs_maintenance_team_id");
 
-                    b.HasIndex("ParishId");
+                    b.HasIndex("ParishId")
+                        .HasDatabaseName("ix_maintenance_jobs_parish_id");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("RouteId")
+                        .HasDatabaseName("ix_maintenance_jobs_route_id");
 
-                    b.ToTable("MaintenanceJobs", "cside");
+                    b.ToTable("maintenance_jobs", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobContact", b =>
                 {
                     b.Property<int>("JobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_id");
 
                     b.Property<int>("ContactId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("contact_id");
 
-                    b.HasKey("JobId", "ContactId");
+                    b.HasKey("JobId", "ContactId")
+                        .HasName("pk_maintenance_job_contact");
 
-                    b.HasIndex("ContactId");
+                    b.HasIndex("ContactId")
+                        .HasDatabaseName("ix_maintenance_job_contact_contact_id");
 
-                    b.ToTable("MaintenanceJobContact", "cside");
+                    b.ToTable("maintenance_job_contact", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobInfrastructure", b =>
                 {
                     b.Property<int>("JobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_id");
 
                     b.Property<int>("InfrastructureId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("infrastructure_id");
 
-                    b.HasKey("JobId", "InfrastructureId");
+                    b.HasKey("JobId", "InfrastructureId")
+                        .HasName("pk_maintenance_job_infrastructure");
 
-                    b.HasIndex("InfrastructureId");
+                    b.HasIndex("InfrastructureId")
+                        .HasDatabaseName("ix_maintenance_job_infrastructure_infrastructure_id");
 
-                    b.ToTable("MaintenanceJobInfrastructure", "cside");
+                    b.ToTable("maintenance_job_infrastructure", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobMedia", b =>
                 {
                     b.Property<int>("JobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
-                    b.HasKey("JobId", "MediaId");
+                    b.HasKey("JobId", "MediaId")
+                        .HasName("pk_maintenance_job_media");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_maintenance_job_media_media_id");
 
-                    b.ToTable("MaintenanceJobMedia", "cside");
+                    b.ToTable("maintenance_job_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobPriority", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_maintenance_job_priorities");
 
-                    b.ToTable("MaintenanceJobPriorities", "cside");
+                    b.ToTable("maintenance_job_priorities", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobProblemType", b =>
                 {
                     b.Property<int>("JobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_id");
 
                     b.Property<int>("ProblemTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("problem_type_id");
 
-                    b.HasKey("JobId", "ProblemTypeId");
+                    b.HasKey("JobId", "ProblemTypeId")
+                        .HasName("pk_maintenance_job_problem_types");
 
-                    b.HasIndex("ProblemTypeId");
+                    b.HasIndex("ProblemTypeId")
+                        .HasDatabaseName("ix_maintenance_job_problem_types_problem_type_id");
 
-                    b.ToTable("MaintenanceJobProblemTypes", "cside");
+                    b.ToTable("maintenance_job_problem_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("FriendlyDescription")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("friendly_description");
 
                     b.Property<bool>("IsComplete")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_complete");
 
                     b.Property<bool>("IsDuplicate")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_duplicate");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_maintenance_job_statuses");
 
-                    b.ToTable("MaintenanceJobStatuses", "cside");
+                    b.ToTable("maintenance_job_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.JobSubscriber", b =>
                 {
                     b.Property<int>("JobId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("job_id");
 
                     b.Property<string>("EmailAddress")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("email_address");
 
                     b.Property<Guid>("UnsubscribeToken")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("unsubscribe_token");
 
-                    b.HasKey("JobId", "EmailAddress");
+                    b.HasKey("JobId", "EmailAddress")
+                        .HasName("pk_maintenance_job_subscribers");
 
-                    b.ToTable("MaintenanceJobSubscribers", "cside");
+                    b.ToTable("maintenance_job_subscribers", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.ProblemType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_problem_types");
 
-                    b.ToTable("ProblemTypes", "cside");
+                    b.ToTable("problem_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.Team", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<Polygon>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (polygon)");
+                        .HasColumnType("geometry(polygon, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_maintenance_teams");
 
-                    b.ToTable("MaintenanceTeams", "cside");
+                    b.ToTable("maintenance_teams", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.TeamUser", b =>
                 {
                     b.Property<int>("TeamId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("team_id");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
 
                     b.Property<bool>("IsLead")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_lead");
 
-                    b.HasKey("TeamId", "UserId");
+                    b.HasKey("TeamId", "UserId")
+                        .HasName("pk_maintenance_team_users");
 
-                    b.ToTable("MaintenanceTeamUsers", "cside");
+                    b.ToTable("maintenance_team_users", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationCaseStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsClosed")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_closed");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_application_case_statuses");
 
-                    b.ToTable("PPOApplicationCaseStatuses", "cside");
+                    b.ToTable("ppo_application_case_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationLegislation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_application_legislation");
 
-                    b.ToTable("PPOApplicationLegislation", "cside");
+                    b.ToTable("ppo_application_legislation", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationPriority", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_application_priorities");
 
-                    b.ToTable("PPOApplicationPriorities", "cside");
+                    b.ToTable("ppo_application_priorities", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.ApplicationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_application_types");
 
-                    b.ToTable("PPOApplicationTypes", "cside");
+                    b.ToTable("ppo_application_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOApplication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ApplicationDetails")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("application_details");
 
                     b.Property<string>("BoxNumber")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("box_number");
 
                     b.Property<string>("CaseOfficer")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("case_officer");
 
                     b.Property<string>("CaseOfficerUserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("case_officer_user_id");
 
                     b.Property<int>("CaseStatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("case_status_id");
 
                     b.Property<decimal?>("Charge")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("charge");
 
                     b.Property<bool?>("CouncilLandAffected")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("council_land_affected");
 
                     b.Property<LocalDate?>("DeterminationDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("determination_date");
 
                     b.Property<MultiLineString>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (multilinestring)");
+                        .HasColumnType("geometry(multilinestring, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_public");
 
                     b.Property<int>("LegislationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("legislation_id");
 
                     b.Property<string>("LocationDescription")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("location_description");
 
                     b.Property<int>("PriorityId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("priority_id");
 
                     b.Property<string>("PrivateComments")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("private_comments");
 
                     b.Property<string>("PublicComments")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("public_comments");
 
                     b.Property<LocalDate?>("ReceivedDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("received_date");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1443,276 +1796,351 @@ namespace CSIDE.Data.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_application");
 
-                    b.HasIndex("CaseStatusId");
+                    b.HasIndex("CaseStatusId")
+                        .HasDatabaseName("ix_ppo_application_case_status_id");
 
-                    b.HasIndex("LegislationId");
+                    b.HasIndex("LegislationId")
+                        .HasDatabaseName("ix_ppo_application_legislation_id");
 
-                    b.HasIndex("PriorityId");
+                    b.HasIndex("PriorityId")
+                        .HasDatabaseName("ix_ppo_application_priority_id");
 
-                    b.ToTable("PPOApplication", "cside");
+                    b.ToTable("ppo_application", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOApplicationType", b =>
                 {
                     b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_application_id");
 
                     b.Property<int>("TypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("type_id");
 
-                    b.HasKey("PPOApplicationId", "TypeId");
+                    b.HasKey("PPOApplicationId", "TypeId")
+                        .HasName("pk_ppo_types");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("TypeId")
+                        .HasDatabaseName("ix_ppo_types_type_id");
 
-                    b.ToTable("PPOTypes", "cside");
+                    b.ToTable("ppo_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOContact", b =>
                 {
                     b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_application_id");
 
                     b.Property<int>("ContactId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("contact_id");
 
-                    b.HasKey("PPOApplicationId", "ContactId");
+                    b.HasKey("PPOApplicationId", "ContactId")
+                        .HasName("pk_ppo_contact");
 
-                    b.HasIndex("ContactId");
+                    b.HasIndex("ContactId")
+                        .HasDatabaseName("ix_ppo_contact_contact_id");
 
-                    b.ToTable("PPOContact", "cside");
+                    b.ToTable("ppo_contact", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOEvent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_id");
 
                     b.Property<string>("AuthorName")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("author_name");
 
                     b.Property<Instant>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<LocalDate>("EventDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("event_date");
 
                     b.Property<string>("EventText")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("event_text");
 
                     b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_application_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_events");
 
-                    b.HasIndex("PPOApplicationId");
+                    b.HasIndex("PPOApplicationId")
+                        .HasDatabaseName("ix_ppo_events_ppo_application_id");
 
-                    b.ToTable("PPOEvents", "cside");
+                    b.ToTable("ppo_events", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOMedia", b =>
                 {
                     b.Property<int>("PPOId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
                     b.Property<int>("MediaTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_type_id");
 
                     b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_application_id");
 
-                    b.HasKey("PPOId", "MediaId");
+                    b.HasKey("PPOId", "MediaId")
+                        .HasName("pk_ppo_media");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_ppo_media_media_id");
 
-                    b.HasIndex("MediaTypeId");
+                    b.HasIndex("MediaTypeId")
+                        .HasDatabaseName("ix_ppo_media_media_type_id");
 
-                    b.HasIndex("PPOApplicationId");
+                    b.HasIndex("PPOApplicationId")
+                        .HasDatabaseName("ix_ppo_media_ppo_application_id");
 
-                    b.ToTable("PPOMedia", "cside");
+                    b.ToTable("ppo_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOMediaType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FileTypesLimit")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("file_types_limit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<int>("NumFilesLimit")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_files_limit");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ppo_media_type");
 
-                    b.ToTable("PPOMediaType", "cside");
+                    b.ToTable("ppo_media_type", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOOrder", b =>
                 {
                     b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("order_id");
 
                     b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_application_id");
 
                     b.Property<LocalDate?>("ConfirmationPublishedDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("confirmation_published_date");
 
                     b.Property<LocalDate?>("DateConfirmed")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_confirmed");
 
                     b.Property<LocalDate?>("DatePublished")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_published");
 
                     b.Property<LocalDate?>("DateSealed")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("date_sealed");
 
                     b.Property<int?>("DecisionOfSecStateId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("decision_of_sec_state_id");
 
                     b.Property<int?>("DeterminationProcessId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("determination_process_id");
 
                     b.Property<bool?>("InspectionCertification")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("inspection_certification");
 
                     b.Property<LocalDate?>("InspectionCertificationDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("inspection_certification_date");
 
                     b.Property<LocalDate?>("ObjectionsEndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("objections_end_date");
 
                     b.Property<bool?>("ObjectionsReceived")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("objections_received");
 
                     b.Property<bool?>("ObjectionsWithdrawn")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("objections_withdrawn");
 
                     b.Property<string>("OrderTitle")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("order_title");
 
                     b.Property<bool?>("SubmitToPINS")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("submit_to_pins");
 
-                    b.HasKey("OrderId", "PPOApplicationId");
+                    b.HasKey("OrderId", "PPOApplicationId")
+                        .HasName("pk_ppo_orders");
 
-                    b.HasIndex("DecisionOfSecStateId");
+                    b.HasIndex("DecisionOfSecStateId")
+                        .HasDatabaseName("ix_ppo_orders_decision_of_sec_state_id");
 
-                    b.HasIndex("DeterminationProcessId");
+                    b.HasIndex("DeterminationProcessId")
+                        .HasDatabaseName("ix_ppo_orders_determination_process_id");
 
-                    b.HasIndex("PPOApplicationId");
+                    b.HasIndex("PPOApplicationId")
+                        .HasDatabaseName("ix_ppo_orders_ppo_application_id");
 
-                    b.ToTable("PPOOrders", "cside");
+                    b.ToTable("ppo_orders", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.PPO.PPOParish", b =>
                 {
                     b.Property<int>("PPOApplicationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("ppo_application_id");
 
                     b.Property<int>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
-                    b.HasKey("PPOApplicationId", "ParishId");
+                    b.HasKey("PPOApplicationId", "ParishId")
+                        .HasName("pk_ppo_parishes");
 
-                    b.HasIndex("ParishId");
+                    b.HasIndex("ParishId")
+                        .HasDatabaseName("ix_ppo_parishes_parish_id");
 
-                    b.ToTable("PPOParishes", "cside");
+                    b.ToTable("ppo_parishes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.LegalStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_route_legal_statuses");
 
-                    b.ToTable("RouteLegalStatuses", "cside");
+                    b.ToTable("route_legal_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.OperationalStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsClosed")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_closed");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_route_operational_statuses");
 
-                    b.ToTable("RouteOperationalStatuses", "cside");
+                    b.ToTable("route_operational_statuses", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Route", b =>
                 {
                     b.Property<string>("RouteCode")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("route_code");
 
                     b.Property<LocalDate?>("ClosureEndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("closure_end_date");
 
                     b.Property<bool>("ClosureIsIndefinite")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("closure_is_indefinite");
 
                     b.Property<LocalDate?>("ClosureStartDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("closure_start_date");
 
                     b.Property<MultiLineString>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (multilinestring)");
+                        .HasColumnType("geometry(multilinestring, 27700)")
+                        .HasColumnName("geom");
 
                     b.Property<int>("LegalStatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("legal_status_id");
 
                     b.Property<int?>("MaintenanceTeamId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("maintenance_team_id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<int>("OperationalStatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("operational_status_id");
 
                     b.Property<int?>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
                     b.Property<int>("RouteTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("route_type_id");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1720,211 +2148,258 @@ namespace CSIDE.Data.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
-                    b.HasKey("RouteCode");
+                    b.HasKey("RouteCode")
+                        .HasName("pk_routes");
 
-                    b.HasIndex("LegalStatusId");
+                    b.HasIndex("LegalStatusId")
+                        .HasDatabaseName("ix_routes_legal_status_id");
 
-                    b.HasIndex("MaintenanceTeamId");
+                    b.HasIndex("MaintenanceTeamId")
+                        .HasDatabaseName("ix_routes_maintenance_team_id");
 
-                    b.HasIndex("OperationalStatusId");
+                    b.HasIndex("OperationalStatusId")
+                        .HasDatabaseName("ix_routes_operational_status_id");
 
-                    b.HasIndex("ParishId");
+                    b.HasIndex("ParishId")
+                        .HasDatabaseName("ix_routes_parish_id");
 
-                    b.HasIndex("RouteTypeId");
+                    b.HasIndex("RouteTypeId")
+                        .HasDatabaseName("ix_routes_route_type_id");
 
-                    b.ToTable("Routes", "cside");
+                    b.ToTable("routes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.RouteMedia", b =>
                 {
                     b.Property<string>("RouteId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("route_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
                     b.Property<bool>("IsClosureNotificationDocument")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_closure_notification_document");
 
-                    b.HasKey("RouteId", "MediaId");
+                    b.HasKey("RouteId", "MediaId")
+                        .HasName("pk_route_media");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_route_media_media_id");
 
-                    b.ToTable("RouteMedia", "cside");
+                    b.ToTable("route_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.RouteType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_route_types");
 
-                    b.ToTable("RouteTypes", "cside");
+                    b.ToTable("route_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.RightsOfWay.Statement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<Instant>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("EndGridRef")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("end_grid_ref");
 
                     b.Property<string>("RouteId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("route_id");
 
                     b.Property<string>("StartGridRef")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("start_grid_ref");
 
                     b.Property<string>("StatementText")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("statement_text");
 
                     b.Property<int>("Version")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_statements");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("RouteId")
+                        .HasDatabaseName("ix_statements_route_id");
 
-                    b.ToTable("Statements", "cside");
+                    b.ToTable("statements", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Contact", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ContactTypeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("contact_type_id");
 
                     b.Property<string>("Email")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("email");
 
                     b.Property<string>("Name")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("name");
 
                     b.Property<string>("OrganisationName")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("organisation_name");
 
                     b.Property<string>("PrimaryContactNo")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("primary_contact_no");
 
                     b.Property<string>("SecondaryContactNo")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("secondary_contact_no");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_contacts");
 
-                    b.HasIndex("ContactTypeId");
+                    b.HasIndex("ContactTypeId")
+                        .HasDatabaseName("ix_contacts_contact_type_id");
 
-                    b.ToTable("Contacts", "cside");
+                    b.ToTable("contacts", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.ContactType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_contact_types");
 
-                    b.ToTable("ContactTypes", "cside");
+                    b.ToTable("contact_types", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Media", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Title")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("url");
 
                     b.Property<Instant>("UploadDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("upload_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_media");
 
-                    b.ToTable("Media", "cside");
+                    b.ToTable("media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.OrderDecisionOfSecState", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_order_decisions_of_sec_state");
 
-                    b.ToTable("OrderDecisionsOfSecState", "cside");
+                    b.ToTable("order_decisions_of_sec_state", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.OrderDeterminationProcess", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_order_determination_processes");
 
-                    b.ToTable("OrderDeterminationProcesses", "cside");
+                    b.ToTable("order_determination_processes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Shared.Parish", b =>
@@ -1938,7 +2413,7 @@ namespace CSIDE.Data.Migrations
 
                     b.Property<MultiPolygon>("Geom")
                         .IsRequired()
-                        .HasColumnType("geometry (multipolygon)")
+                        .HasColumnType("geometry(multipolygon, 27700)")
                         .HasColumnName("geom");
 
                     b.Property<string>("Name")
@@ -1946,9 +2421,10 @@ namespace CSIDE.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("ParishId");
+                    b.HasKey("ParishId")
+                        .HasName("pk_parishes");
 
-                    b.ToTable("Parishes", "cside", t =>
+                    b.ToTable("parishes", "cside", t =>
                         {
                             t.ExcludeFromMigrations();
                         });
@@ -1957,58 +2433,69 @@ namespace CSIDE.Data.Migrations
             modelBuilder.Entity("CSIDE.Data.Models.Shared.ParishCode", b =>
                 {
                     b.Property<int>("ParishId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("parish_id");
 
                     b.Property<string>("Code")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
 
-                    b.HasKey("ParishId", "Code");
+                    b.HasKey("ParishId", "Code")
+                        .HasName("pk_parish_codes");
 
-                    b.ToTable("ParishCodes", "cside");
+                    b.ToTable("parish_codes", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Surveys.Condition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_conditions");
 
-                    b.ToTable("Conditions", "cside");
+                    b.ToTable("conditions", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Surveys.Material", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsWood")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_wood");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_materials");
 
-                    b.ToTable("Materials", "cside");
+                    b.ToTable("materials", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Surveys.Survey", b =>
@@ -2016,35 +2503,43 @@ namespace CSIDE.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValueSql("nextval('cside.\"SurveySequence\"')");
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("nextval('cside.survey_sequence')");
 
-                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"), "survey_sequence");
 
                     b.Property<Instant?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_date");
 
                     b.Property<string>("RepairsRequired")
                         .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("repairs_required");
 
                     b.Property<Instant>("StartDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<SurveyStatus>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("cside.survey_status")
-                        .HasDefaultValueSql("'incomplete'::survey_status");
+                        .HasColumnName("status")
+                        .HasDefaultValueSql("'incomplete'::\"cside\".survey_status");
 
                     b.Property<string>("SurveyorId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("surveyor_id");
 
                     b.Property<string>("SurveyorName")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("surveyor_name");
 
                     b.Property<string>("ValidationNotes")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("validation_notes");
 
                     b.HasKey("Id");
 
@@ -2056,16 +2551,20 @@ namespace CSIDE.Data.Migrations
             modelBuilder.Entity("CSIDE.Data.Models.Surveys.SurveyMedia", b =>
                 {
                     b.Property<int>("SurveyId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("survey_id");
 
                     b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("media_id");
 
-                    b.HasKey("SurveyId", "MediaId");
+                    b.HasKey("SurveyId", "MediaId")
+                        .HasName("pk_survey_media");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId")
+                        .HasDatabaseName("ix_survey_media_media_id");
 
-                    b.ToTable("SurveyMedia", "cside");
+                    b.ToTable("survey_media", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Surveys.BridgeSurvey", b =>
@@ -2073,144 +2572,191 @@ namespace CSIDE.Data.Migrations
                     b.HasBaseType("CSIDE.Data.Models.Surveys.Survey");
 
                     b.Property<bool?>("AntiSlipInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("anti_slip_installed");
 
                     b.Property<int?>("BankSeatConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bank_seat_condition_id");
 
                     b.Property<int?>("BankSeatMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bank_seat_material_id");
 
                     b.Property<int?>("BeamConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("beam_condition_id");
 
                     b.Property<int?>("BeamMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("beam_material_id");
 
                     b.Property<string>("BeamTimbersSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("beam_timbers_size");
 
                     b.Property<bool?>("CoverBoardsInPlace")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("cover_boards_in_place");
 
                     b.Property<decimal?>("DeckingBoardsLength")
                         .HasPrecision(3, 1)
-                        .HasColumnType("numeric(3,1)");
+                        .HasColumnType("numeric(3,1)")
+                        .HasColumnName("decking_boards_length");
 
                     b.Property<string>("DeckingBoardsSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("decking_boards_size");
 
                     b.Property<int?>("DeckingConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("decking_condition_id");
 
                     b.Property<int?>("DeckingMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("decking_material_id");
 
                     b.Property<bool?>("GateInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("gate_installed");
 
                     b.Property<int?>("HandrailConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_condition_id");
 
                     b.Property<int?>("HandrailMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_material_id");
 
                     b.Property<int?>("HandrailPostsConditionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_posts_condition_id");
 
                     b.Property<int?>("HandrailPostsMaterialId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("handrail_posts_material_id");
 
                     b.Property<string>("HandrailPostsTimbersSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("handrail_posts_timbers_size");
 
                     b.Property<string>("HandrailTimbersSize")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("handrail_timbers_size");
 
                     b.Property<bool?>("HandrailsInPlace")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("handrails_in_place");
 
                     b.Property<decimal?>("Height")
                         .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("height");
 
                     b.Property<bool?>("HighUsage")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("high_usage");
 
                     b.Property<int>("InfrastructureItemId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("infrastructure_item_id");
 
                     b.Property<decimal?>("Length")
                         .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("length");
 
                     b.Property<int?>("LocationAccuracy")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("location_accuracy");
 
                     b.Property<int?>("NumBeamTimbers")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_beam_timbers");
 
                     b.Property<int?>("NumDeckingBoards")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_decking_boards");
 
                     b.Property<int?>("NumHandrailPostsTimbers")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("num_handrail_posts_timbers");
 
                     b.Property<bool?>("Overgrown")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("overgrown");
 
                     b.Property<bool?>("RampInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("ramp_installed");
 
                     b.Property<bool?>("SeriouslyEroded")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("seriously_eroded");
 
                     b.Property<bool?>("SignsOfBankErosion")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("signs_of_bank_erosion");
 
                     b.Property<bool?>("StepsInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("steps_installed");
 
                     b.Property<bool?>("StileInstalled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("stile_installed");
 
                     b.Property<double?>("UpdatedX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("updated_x");
 
                     b.Property<double?>("UpdatedY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("updated_y");
 
                     b.Property<decimal?>("Width")
                         .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("width");
 
-                    b.HasIndex("BankSeatConditionId");
+                    b.HasIndex("BankSeatConditionId")
+                        .HasDatabaseName("ix_bridge_surveys_bank_seat_condition_id");
 
-                    b.HasIndex("BankSeatMaterialId");
+                    b.HasIndex("BankSeatMaterialId")
+                        .HasDatabaseName("ix_bridge_surveys_bank_seat_material_id");
 
-                    b.HasIndex("BeamConditionId");
+                    b.HasIndex("BeamConditionId")
+                        .HasDatabaseName("ix_bridge_surveys_beam_condition_id");
 
-                    b.HasIndex("BeamMaterialId");
+                    b.HasIndex("BeamMaterialId")
+                        .HasDatabaseName("ix_bridge_surveys_beam_material_id");
 
-                    b.HasIndex("DeckingConditionId");
+                    b.HasIndex("DeckingConditionId")
+                        .HasDatabaseName("ix_bridge_surveys_decking_condition_id");
 
-                    b.HasIndex("DeckingMaterialId");
+                    b.HasIndex("DeckingMaterialId")
+                        .HasDatabaseName("ix_bridge_surveys_decking_material_id");
 
-                    b.HasIndex("HandrailConditionId");
+                    b.HasIndex("HandrailConditionId")
+                        .HasDatabaseName("ix_bridge_surveys_handrail_condition_id");
 
-                    b.HasIndex("HandrailMaterialId");
+                    b.HasIndex("HandrailMaterialId")
+                        .HasDatabaseName("ix_bridge_surveys_handrail_material_id");
 
-                    b.HasIndex("HandrailPostsConditionId");
+                    b.HasIndex("HandrailPostsConditionId")
+                        .HasDatabaseName("ix_bridge_surveys_handrail_posts_condition_id");
 
-                    b.HasIndex("HandrailPostsMaterialId");
+                    b.HasIndex("HandrailPostsMaterialId")
+                        .HasDatabaseName("ix_bridge_surveys_handrail_posts_material_id");
 
-                    b.HasIndex("InfrastructureItemId");
+                    b.HasIndex("InfrastructureItemId")
+                        .HasDatabaseName("ix_bridge_surveys_infrastructure_item_id");
 
-                    b.ToTable("BridgeSurveys", "cside");
+                    b.ToTable("bridge_surveys", "cside");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Authorization.ApplicationUserRole", b =>
@@ -2219,7 +2765,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_application_user_roles_application_roles_application_role_id");
 
                     b.Navigation("Role");
                 });
@@ -2230,7 +2777,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("DMMOAddresses")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_addresses_dmmo_application_dmmo_application_id");
 
                     b.Navigation("DMMOApplication");
                 });
@@ -2241,11 +2789,13 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("CaseStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_application_dmmo_application_case_statuses_case_status");
 
                     b.HasOne("CSIDE.Data.Models.DMMO.ApplicationDirectionOfSecState", "DirectionOfSecState")
                         .WithMany()
-                        .HasForeignKey("DirectionOfSecStateId");
+                        .HasForeignKey("DirectionOfSecStateId")
+                        .HasConstraintName("fk_dmmo_application_dmmo_application_directions_of_sec_state_d");
 
                     b.Navigation("CaseStatus");
 
@@ -2258,13 +2808,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_types_dmmo_application_types_application_type_id");
 
                     b.HasOne("CSIDE.Data.Models.DMMO.DMMOApplication", "DMMOApplication")
                         .WithMany("DMMOApplicationTypes")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_types_dmmo_application_dmmo_application_id");
 
                     b.Navigation("ApplicationType");
 
@@ -2277,13 +2829,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ClaimedStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_claimed_statuses_dmmo_application_claimed_statuses_cla");
 
                     b.HasOne("CSIDE.Data.Models.DMMO.DMMOApplication", "DMMOApplication")
                         .WithMany("DMMOClaimedStatuses")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_claimed_statuses_dmmo_application_dmmo_application_id");
 
                     b.Navigation("ClaimedStatus");
 
@@ -2296,13 +2850,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("DMMOContact")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_contact_contacts_contact_id");
 
                     b.HasOne("CSIDE.Data.Models.DMMO.DMMOApplication", "DMMOApplication")
                         .WithMany("DMMOContacts")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_contact_dmmo_application_dmmo_application_id");
 
                     b.Navigation("Contact");
 
@@ -2315,7 +2871,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("Events")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_events_dmmo_application_dmmo_application_id");
 
                     b.Navigation("DMMOApplication");
                 });
@@ -2326,13 +2883,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("DMMOLinkedRoutes")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_linked_routes_dmmo_application_dmmo_application_id");
 
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_linked_routes_routes_route_id");
 
                     b.Navigation("DMMOApplication");
 
@@ -2345,19 +2904,22 @@ namespace CSIDE.Data.Migrations
                         .WithMany("DMMOMedia")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_media_dmmo_application_dmmo_application_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
                         .WithMany("DMMOMedia")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_media_media_media_id");
 
                     b.HasOne("CSIDE.Data.Models.DMMO.DMMOMediaType", "MediaType")
                         .WithMany()
                         .HasForeignKey("MediaTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_media_dmmo_media_type_media_type_id");
 
                     b.Navigation("DMMOApplication");
 
@@ -2372,15 +2934,18 @@ namespace CSIDE.Data.Migrations
                         .WithMany("Orders")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_orders_dmmo_application_dmmo_application_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.OrderDecisionOfSecState", "DecisionOfSecState")
                         .WithMany()
-                        .HasForeignKey("DecisionOfSecStateId");
+                        .HasForeignKey("DecisionOfSecStateId")
+                        .HasConstraintName("fk_dmmo_orders_order_decisions_of_sec_state_decision_of_sec_st");
 
                     b.HasOne("CSIDE.Data.Models.Shared.OrderDeterminationProcess", "DeterminationProcess")
                         .WithMany()
-                        .HasForeignKey("DeterminationProcessId");
+                        .HasForeignKey("DeterminationProcessId")
+                        .HasConstraintName("fk_dmmo_orders_order_determination_processes_determination_pro");
 
                     b.Navigation("DecisionOfSecState");
 
@@ -2393,13 +2958,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("DMMOParishes")
                         .HasForeignKey("DMMOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_parish_dmmo_application_dmmo_application_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
                         .WithMany()
                         .HasForeignKey("ParishId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dmmo_parish_parishes_parish_id");
 
                     b.Navigation("DMMOApplication");
 
@@ -2410,49 +2977,60 @@ namespace CSIDE.Data.Migrations
                 {
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "BankSeatCondition")
                         .WithMany()
-                        .HasForeignKey("BankSeatConditionId");
+                        .HasForeignKey("BankSeatConditionId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_conditions_bank_seat_conditio");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "BankSeatMaterial")
                         .WithMany()
-                        .HasForeignKey("BankSeatMaterialId");
+                        .HasForeignKey("BankSeatMaterialId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_materials_bank_seat_material_");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "BeamCondition")
                         .WithMany()
-                        .HasForeignKey("BeamConditionId");
+                        .HasForeignKey("BeamConditionId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_conditions_beam_condition_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "BeamMaterial")
                         .WithMany()
-                        .HasForeignKey("BeamMaterialId");
+                        .HasForeignKey("BeamMaterialId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_materials_beam_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "DeckingCondition")
                         .WithMany()
-                        .HasForeignKey("DeckingConditionId");
+                        .HasForeignKey("DeckingConditionId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_conditions_decking_condition_");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "DeckingMaterial")
                         .WithMany()
-                        .HasForeignKey("DeckingMaterialId");
+                        .HasForeignKey("DeckingMaterialId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_materials_decking_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "HandrailCondition")
                         .WithMany()
-                        .HasForeignKey("HandrailConditionId");
+                        .HasForeignKey("HandrailConditionId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_conditions_handrail_condition");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "HandrailMaterial")
                         .WithMany()
-                        .HasForeignKey("HandrailMaterialId");
+                        .HasForeignKey("HandrailMaterialId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_materials_handrail_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "HandrailPostsCondition")
                         .WithMany()
-                        .HasForeignKey("HandrailPostsConditionId");
+                        .HasForeignKey("HandrailPostsConditionId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_conditions_handrail_posts_con");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "HandrailPostsMaterial")
                         .WithMany()
-                        .HasForeignKey("HandrailPostsMaterialId");
+                        .HasForeignKey("HandrailPostsMaterialId")
+                        .HasConstraintName("fk_infrastructure_bridge_details_materials_handrail_posts_mate");
 
                     b.HasOne("CSIDE.Data.Models.Infrastructure.InfrastructureItem", "Infrastructure")
                         .WithOne("BridgeDetails")
                         .HasForeignKey("CSIDE.Data.Models.Infrastructure.InfrastructureBridgeDetails", "InfrastructureId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_infrastructure_bridge_details_infrastructure_infrastructure");
 
                     b.Navigation("BankSeatCondition");
 
@@ -2481,19 +3059,23 @@ namespace CSIDE.Data.Migrations
                 {
                     b.HasOne("CSIDE.Data.Models.Infrastructure.InfrastructureType", "InfrastructureType")
                         .WithMany()
-                        .HasForeignKey("InfrastructureTypeId");
+                        .HasForeignKey("InfrastructureTypeId")
+                        .HasConstraintName("fk_infrastructure_infrastructure_types_infrastructure_type_id");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.Team", "MaintenanceTeam")
                         .WithMany()
-                        .HasForeignKey("MaintenanceTeamId");
+                        .HasForeignKey("MaintenanceTeamId")
+                        .HasConstraintName("fk_infrastructure_maintenance_teams_maintenance_team_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
                         .WithMany()
-                        .HasForeignKey("ParishId");
+                        .HasForeignKey("ParishId")
+                        .HasConstraintName("fk_infrastructure_parishes_parish_id");
 
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
                         .WithMany()
-                        .HasForeignKey("RouteId");
+                        .HasForeignKey("RouteId")
+                        .HasConstraintName("fk_infrastructure_routes_route_id");
 
                     b.Navigation("InfrastructureType");
 
@@ -2510,13 +3092,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("InfrastructureMedia")
                         .HasForeignKey("InfrastructureItemId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_infrastructure_media_infrastructure_infrastructure_item_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
                         .WithMany("InfrastructureMedia")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_infrastructure_media_media_media_id");
 
                     b.Navigation("InfrastructureItem");
 
@@ -2529,7 +3113,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("LandownerDepositAddresses")
                         .HasForeignKey("LandownerDepositId", "LandownerDepositSecondaryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_addresses_landowner_deposits_landowner_de");
 
                     b.Navigation("LandownerDeposit");
                 });
@@ -2540,13 +3125,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("LandownerDepositContact")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_contacts_contacts_contact_id");
 
                     b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
                         .WithMany("LandownerDepositContacts")
                         .HasForeignKey("LandownerDepositId", "LandownerDepositSecondaryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_contacts_landowner_deposits_landowner_dep");
 
                     b.Navigation("Contact");
 
@@ -2559,7 +3146,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("Events")
                         .HasForeignKey("LandownerDepositId", "LandownerDepositSecondaryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_events_landowner_deposits_landowner_depos");
 
                     b.Navigation("LandownerDeposit");
                 });
@@ -2570,19 +3158,22 @@ namespace CSIDE.Data.Migrations
                         .WithMany("LandownerDepositMedia")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_media_media_media_id");
 
                     b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDepositMediaType", "MediaType")
                         .WithMany()
                         .HasForeignKey("MediaTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_media_landowner_deposit_media_types_media");
 
                     b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
                         .WithMany("LandownerDepositMedia")
                         .HasForeignKey("LandownerDepositId", "LandownerDepositSecondaryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_media_landowner_deposits_landowner_deposi");
 
                     b.Navigation("LandownerDeposit");
 
@@ -2597,13 +3188,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ParishId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_parishes_parishes_parish_id");
 
                     b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
                         .WithMany("LandownerDepositParishes")
                         .HasForeignKey("LandownerDepositId", "LandownerDepositSecondaryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_parishes_landowner_deposits_landowner_dep");
 
                     b.Navigation("LandownerDeposit");
 
@@ -2616,13 +3209,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("LandownerDepositTypeNameId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_types_landowner_deposit_type_names_landow");
 
                     b.HasOne("CSIDE.Data.Models.LandownerDeposits.LandownerDeposit", "LandownerDeposit")
                         .WithMany("LandownerDepositTypes")
                         .HasForeignKey("LandownerDepositId", "LandownerDepositSecondaryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_landowner_deposit_types_landowner_deposits_landowner_deposi");
 
                     b.Navigation("LandownerDeposit");
 
@@ -2635,7 +3230,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_comments_maintenance_jobs_job_id");
 
                     b.Navigation("Job");
                 });
@@ -2646,25 +3242,30 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("JobPriorityId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_jobs_maintenance_job_priorities_job_priority_id");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.JobStatus", "JobStatus")
                         .WithMany()
                         .HasForeignKey("JobStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_jobs_maintenance_job_statuses_job_status_id");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.Team", "MaintenanceTeam")
                         .WithMany()
-                        .HasForeignKey("MaintenanceTeamId");
+                        .HasForeignKey("MaintenanceTeamId")
+                        .HasConstraintName("fk_maintenance_jobs_maintenance_teams_maintenance_team_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
                         .WithMany()
-                        .HasForeignKey("ParishId");
+                        .HasForeignKey("ParishId")
+                        .HasConstraintName("fk_maintenance_jobs_parishes_parish_id");
 
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
                         .WithMany()
-                        .HasForeignKey("RouteId");
+                        .HasForeignKey("RouteId")
+                        .HasConstraintName("fk_maintenance_jobs_routes_route_id");
 
                     b.Navigation("JobPriority");
 
@@ -2683,13 +3284,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("JobContact")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_contact_contacts_contact_id");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.Job", "Job")
                         .WithMany("JobContacts")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_contact_maintenance_jobs_job_id");
 
                     b.Navigation("Contact");
 
@@ -2702,13 +3305,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("InfrastructureId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_infrastructure_infrastructure_infrastructur");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.Job", "Job")
                         .WithMany("JobInfrastructure")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_infrastructure_maintenance_jobs_job_id");
 
                     b.Navigation("Infrastructure");
 
@@ -2721,13 +3326,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("JobMedia")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_media_maintenance_jobs_job_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Media", "Media")
                         .WithMany("JobMedia")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_media_media_media_id");
 
                     b.Navigation("Job");
 
@@ -2740,13 +3347,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("ProblemTypes")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_problem_types_maintenance_jobs_job_id");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.ProblemType", "ProblemType")
                         .WithMany()
                         .HasForeignKey("ProblemTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_problem_types_problem_types_problem_type_id");
 
                     b.Navigation("Job");
 
@@ -2759,7 +3368,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("MaintenanceJobSubscribers")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_job_subscribers_maintenance_jobs_job_id");
                 });
 
             modelBuilder.Entity("CSIDE.Data.Models.Maintenance.TeamUser", b =>
@@ -2768,7 +3378,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("TeamUsers")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_team_users_maintenance_teams_team_id");
 
                     b.Navigation("Team");
                 });
@@ -2779,19 +3390,22 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("CaseStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_application_ppo_application_case_statuses_case_status_id");
 
                     b.HasOne("CSIDE.Data.Models.PPO.ApplicationLegislation", "Legislation")
                         .WithMany()
                         .HasForeignKey("LegislationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_application_ppo_application_legislation_legislation_id");
 
                     b.HasOne("CSIDE.Data.Models.PPO.ApplicationPriority", "Priority")
                         .WithMany()
                         .HasForeignKey("PriorityId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_application_ppo_application_priorities_priority_id");
 
                     b.Navigation("CaseStatus");
 
@@ -2806,13 +3420,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("PPOTypes")
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_types_ppo_application_ppo_application_id");
 
                     b.HasOne("CSIDE.Data.Models.PPO.ApplicationType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_types_ppo_application_types_type_id");
 
                     b.Navigation("PPOApplication");
 
@@ -2825,13 +3441,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("PPOContact")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_contact_contacts_contact_id");
 
                     b.HasOne("CSIDE.Data.Models.PPO.PPOApplication", "PPOApplication")
                         .WithMany("PPOContacts")
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_contact_ppo_application_ppo_application_id");
 
                     b.Navigation("Contact");
 
@@ -2844,7 +3462,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("Events")
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_events_ppo_application_ppo_application_id");
 
                     b.Navigation("PPOApplication");
                 });
@@ -2855,19 +3474,22 @@ namespace CSIDE.Data.Migrations
                         .WithMany("PPOMedia")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_media_media_media_id");
 
                     b.HasOne("CSIDE.Data.Models.PPO.PPOMediaType", "MediaType")
                         .WithMany()
                         .HasForeignKey("MediaTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_media_ppo_media_type_media_type_id");
 
                     b.HasOne("CSIDE.Data.Models.PPO.PPOApplication", "PPOApplication")
                         .WithMany("PPOMedia")
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_media_ppo_application_ppo_application_id");
 
                     b.Navigation("Media");
 
@@ -2880,17 +3502,20 @@ namespace CSIDE.Data.Migrations
                 {
                     b.HasOne("CSIDE.Data.Models.Shared.OrderDecisionOfSecState", "DecisionOfSecState")
                         .WithMany()
-                        .HasForeignKey("DecisionOfSecStateId");
+                        .HasForeignKey("DecisionOfSecStateId")
+                        .HasConstraintName("fk_ppo_orders_order_decisions_of_sec_state_decision_of_sec_sta");
 
                     b.HasOne("CSIDE.Data.Models.Shared.OrderDeterminationProcess", "DeterminationProcess")
                         .WithMany()
-                        .HasForeignKey("DeterminationProcessId");
+                        .HasForeignKey("DeterminationProcessId")
+                        .HasConstraintName("fk_ppo_orders_order_determination_processes_determination_proc");
 
                     b.HasOne("CSIDE.Data.Models.PPO.PPOApplication", null)
                         .WithMany("Orders")
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_orders_ppo_application_ppo_application_id");
 
                     b.Navigation("DecisionOfSecState");
 
@@ -2903,13 +3528,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("PPOParishes")
                         .HasForeignKey("PPOApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_parishes_ppo_application_ppo_application_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
                         .WithMany()
                         .HasForeignKey("ParishId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ppo_parishes_parishes_parish_id");
 
                     b.Navigation("PPOApplication");
 
@@ -2922,27 +3549,32 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("LegalStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_routes_route_legal_statuses_legal_status_id");
 
                     b.HasOne("CSIDE.Data.Models.Maintenance.Team", "MaintenanceTeam")
                         .WithMany()
-                        .HasForeignKey("MaintenanceTeamId");
+                        .HasForeignKey("MaintenanceTeamId")
+                        .HasConstraintName("fk_routes_maintenance_teams_maintenance_team_id");
 
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.OperationalStatus", "OperationalStatus")
                         .WithMany()
                         .HasForeignKey("OperationalStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_routes_route_operational_statuses_operational_status_id");
 
                     b.HasOne("CSIDE.Data.Models.Shared.Parish", "Parish")
                         .WithMany()
-                        .HasForeignKey("ParishId");
+                        .HasForeignKey("ParishId")
+                        .HasConstraintName("fk_routes_parishes_parish_id");
 
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.RouteType", "RouteType")
                         .WithMany()
                         .HasForeignKey("RouteTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_routes_route_types_route_type_id");
 
                     b.Navigation("LegalStatus");
 
@@ -2961,13 +3593,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany("RouteMedia")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_route_media_media_media_id");
 
                     b.HasOne("CSIDE.Data.Models.RightsOfWay.Route", "Route")
                         .WithMany("RouteMedia")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_route_media_routes_route_id");
 
                     b.Navigation("Media");
 
@@ -2980,7 +3614,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany("Statements")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_statements_routes_route_id");
 
                     b.Navigation("Route");
                 });
@@ -2989,7 +3624,8 @@ namespace CSIDE.Data.Migrations
                 {
                     b.HasOne("CSIDE.Data.Models.Shared.ContactType", "ContactType")
                         .WithMany()
-                        .HasForeignKey("ContactTypeId");
+                        .HasForeignKey("ContactTypeId")
+                        .HasConstraintName("fk_contacts_contact_types_contact_type_id");
 
                     b.Navigation("ContactType");
                 });
@@ -3000,7 +3636,8 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ParishId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_parish_codes_parishes_parish_id");
 
                     b.Navigation("Parish");
                 });
@@ -3011,13 +3648,15 @@ namespace CSIDE.Data.Migrations
                         .WithMany()
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_survey_media_media_media_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Survey", "Survey")
                         .WithMany("SurveyMedia")
                         .HasForeignKey("SurveyId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_survey_media_survey_survey_id");
 
                     b.Navigation("Media");
 
@@ -3028,49 +3667,60 @@ namespace CSIDE.Data.Migrations
                 {
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "BankSeatCondition")
                         .WithMany()
-                        .HasForeignKey("BankSeatConditionId");
+                        .HasForeignKey("BankSeatConditionId")
+                        .HasConstraintName("fk_bridge_surveys_conditions_bank_seat_condition_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "BankSeatMaterial")
                         .WithMany()
-                        .HasForeignKey("BankSeatMaterialId");
+                        .HasForeignKey("BankSeatMaterialId")
+                        .HasConstraintName("fk_bridge_surveys_materials_bank_seat_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "BeamCondition")
                         .WithMany()
-                        .HasForeignKey("BeamConditionId");
+                        .HasForeignKey("BeamConditionId")
+                        .HasConstraintName("fk_bridge_surveys_conditions_beam_condition_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "BeamMaterial")
                         .WithMany()
-                        .HasForeignKey("BeamMaterialId");
+                        .HasForeignKey("BeamMaterialId")
+                        .HasConstraintName("fk_bridge_surveys_materials_beam_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "DeckingCondition")
                         .WithMany()
-                        .HasForeignKey("DeckingConditionId");
+                        .HasForeignKey("DeckingConditionId")
+                        .HasConstraintName("fk_bridge_surveys_conditions_decking_condition_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "DeckingMaterial")
                         .WithMany()
-                        .HasForeignKey("DeckingMaterialId");
+                        .HasForeignKey("DeckingMaterialId")
+                        .HasConstraintName("fk_bridge_surveys_materials_decking_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "HandrailCondition")
                         .WithMany()
-                        .HasForeignKey("HandrailConditionId");
+                        .HasForeignKey("HandrailConditionId")
+                        .HasConstraintName("fk_bridge_surveys_conditions_handrail_condition_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "HandrailMaterial")
                         .WithMany()
-                        .HasForeignKey("HandrailMaterialId");
+                        .HasForeignKey("HandrailMaterialId")
+                        .HasConstraintName("fk_bridge_surveys_materials_handrail_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Condition", "HandrailPostsCondition")
                         .WithMany()
-                        .HasForeignKey("HandrailPostsConditionId");
+                        .HasForeignKey("HandrailPostsConditionId")
+                        .HasConstraintName("fk_bridge_surveys_conditions_handrail_posts_condition_id");
 
                     b.HasOne("CSIDE.Data.Models.Surveys.Material", "HandrailPostsMaterial")
                         .WithMany()
-                        .HasForeignKey("HandrailPostsMaterialId");
+                        .HasForeignKey("HandrailPostsMaterialId")
+                        .HasConstraintName("fk_bridge_surveys_materials_handrail_posts_material_id");
 
                     b.HasOne("CSIDE.Data.Models.Infrastructure.InfrastructureItem", "Infrastructure")
                         .WithMany()
                         .HasForeignKey("InfrastructureItemId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_bridge_surveys_infrastructure_infrastructure_item_id");
 
                     b.Navigation("BankSeatCondition");
 

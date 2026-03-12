@@ -212,7 +212,9 @@ internal static class WebApplicationBuilderExtension
                 x.UseNetTopologySuite();
                 x.MapEnum<SurveyStatus>("survey_status", databaseOptions?.Schema);
                 x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            });
+            })
+            .UseSnakeCaseNamingConvention();
+
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
         });
 
