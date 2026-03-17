@@ -3769,6 +3769,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Notes.
+        /// </summary>
+        public static string Notes_Label {
+            get {
+                return ResourceManager.GetString("Notes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End date for objections.
         /// </summary>
         public static string Objections_End_Date_Label {

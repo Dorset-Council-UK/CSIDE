@@ -24,6 +24,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             { "Name", x => x.Name ?? string.Empty },
             { "OperationalStatus", x => x.OperationalStatus.Name ?? string.Empty },
             { "RouteType", x => x.RouteType.Name ?? string.Empty },
+            { "Notes", x => x.Notes ?? string.Empty }
 
 
         };
