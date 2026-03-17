@@ -1806,4 +1806,7 @@
   <data name="Filter By My Maintenance Area Only Text" xml:space="preserve">
     <value>Show only my maintenance area</value>
   </data>
+  <data name="Notes Label" xml:space="preserve">
+    <value>Notes</value>
+  </data>
 </root>
