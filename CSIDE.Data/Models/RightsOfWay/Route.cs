@@ -11,6 +11,7 @@ namespace CSIDE.Data.Models.RightsOfWay
         public LocalDate? ClosureStartDate { get; set; }
         public LocalDate? ClosureEndDate { get; set; }
         public bool ClosureIsIndefinite { get; set; }
+        public string? Notes { get; set; }
         public required MultiLineString Geom { get; set; }
 
         //linked properties
