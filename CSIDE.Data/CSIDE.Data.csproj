@@ -31,8 +31,4 @@
     <ProjectReference Include="..\CSIDE.Shared\CSIDE.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AutoMapper\" />
-  </ItemGroup>
-
 </Project>
