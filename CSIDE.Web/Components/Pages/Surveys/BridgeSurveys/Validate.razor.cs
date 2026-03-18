@@ -1,6 +1,5 @@
-using AutoMapper;
 using BlazorBootstrap;
-using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Mapping;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Surveys;
 using CSIDE.Data.Services;
@@ -16,7 +15,6 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         IInfrastructureService infrastructureService,
         NavigationManager navigationManager,
         ILogger<Validate> logger,
-        IMapper mapper,
         ISettingsService settingsService,
         IMaintenanceJobsService maintenanceJobsService,
         ISharedDataService sharedDataService
@@ -111,14 +109,12 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                     {
                         if (infra.BridgeDetails is null)
                         {
-                            // Create a new InfrastructureBridgeDetails instance
-                            var mapped = mapper.Map<InfrastructureBridgeDetails>(Survey);
-                            infra.BridgeDetails = mapped;
+                            infra.BridgeDetails = Survey.MapToInfrastructureBridgeDetails();
                             infra.BridgeDetails.InfrastructureId = infra.Id;
                         }
                         else
                         {
-                            mapper.Map(Survey, infra.BridgeDetails);
+                            Survey.MapTo(infra.BridgeDetails);
                         }
                         infra.Width = Survey.Width.HasValue ? Convert.ToDouble(Survey.Width.Value) : infra.Width;
                         infra.Height = Survey.Height.HasValue ? Convert.ToDouble(Survey.Height.Value) : infra.Height;
