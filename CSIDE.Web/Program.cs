@@ -31,7 +31,6 @@ builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddGovNotify(builder.Configuration);
-builder.Services.AddAutoMapper(typeof(ApplicationDbContext));
 
 // Services from data project
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();

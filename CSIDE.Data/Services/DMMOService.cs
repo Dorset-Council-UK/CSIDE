@@ -332,7 +332,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         {
             DMMOApplication.DMMOMedia.Add(new DMMOMedia
             {
-                DMMOId = DMMOApplication.Id,
+                DMMOApplicationId = DMMOApplication.Id,
                 MediaTypeId = mediaType.Id,
                 Media = media,
             });

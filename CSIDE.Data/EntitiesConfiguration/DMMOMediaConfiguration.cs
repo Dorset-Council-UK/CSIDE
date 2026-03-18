@@ -8,7 +8,7 @@ namespace CSIDE.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<DMMOMedia> builder)
         {
-            builder.HasKey(x => new { x.DMMOId, x.MediaId });
+            builder.HasKey(x => new { x.DMMOApplicationId, x.MediaId });
 
             builder.Navigation(x => x.Media)
                 .AutoInclude();
