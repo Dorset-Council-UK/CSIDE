@@ -54,9 +54,12 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.LandownerDeposits.AsQueryable();
 
-        if (ParishIds is not null && ParishIds.Length != 0)
+        // Filter out any empty/whitespace entries that may have come through
+        var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+
+        if (filteredParishIds is not null && filteredParishIds.Length != 0)
         {
-            var parsedParishIds = ParishIds
+            var parsedParishIds = filteredParishIds
                 .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
                 .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
                 .ToList();
