@@ -155,7 +155,7 @@ namespace CSIDE.Data.Services
         }
         public async Task<PointGeometryResult?> TransformCoordinates(double x, double y, int fromCrs, int toCrs, CancellationToken ct = default)
         {
-            var sql = @"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({0}, {1}), {2}), {3}) AS ""Geom""";
+            var sql = @"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({0}, {1}), {2}), {3}) AS geom";
 
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             return await context.Database
