@@ -76,7 +76,14 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var take = PageSize < 1 ? IMaintenanceJobsService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.MaintenanceJobs.AsQueryable();
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(j => j.JobPriority)
+            .Include(j => j.JobStatus)
+            .Include(j => j.MaintenanceTeam)
+            .Include(j => j.Parish)
+            .AsQueryable();
 
         if (RouteId is not null)
         {

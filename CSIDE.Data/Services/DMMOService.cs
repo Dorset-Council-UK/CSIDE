@@ -54,7 +54,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.DMMOApplication.AsQueryable();
+        var query = context.DMMOApplication
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(d => d.CaseStatus)
+            .Include(d => d.DirectionOfSecState)
+            .Include(d => d.DMMOClaimedStatuses).ThenInclude(c => c.ClaimedStatus)
+            .Include(d => d.DMMOApplicationTypes).ThenInclude(at => at.ApplicationType)
+            .Include(d => d.DMMOParishes).ThenInclude(p => p.Parish)
+            .AsQueryable();
 
         if (ParishIds is not null && ParishIds.Length != 0)
         {

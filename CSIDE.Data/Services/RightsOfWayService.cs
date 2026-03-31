@@ -94,7 +94,14 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.Routes.AsQueryable();
+        var query = context.Routes
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(r => r.Parish)
+            .Include(r => r.MaintenanceTeam)
+            .Include(r => r.OperationalStatus)
+            .Include(r => r.RouteType)
+            .AsQueryable();
 
         if (RouteId is not null)
         {

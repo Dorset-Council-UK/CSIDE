@@ -59,7 +59,14 @@ namespace CSIDE.Data.Services
             var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
             var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            var query = context.PPOApplication.AsQueryable();
+            var query = context.PPOApplication
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
+                .Include(d => d.CaseStatus)
+                .Include(d => d.Priority)
+                .Include(d => d.Legislation)
+                .Include(d => d.PPOParishes).ThenInclude(p => p.Parish)
+                .AsQueryable();
 
             if (ParishIds is not null && ParishIds.Length != 0)
             {

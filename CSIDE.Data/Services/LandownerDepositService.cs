@@ -52,7 +52,12 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.LandownerDeposits.AsQueryable();
+        var query = context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(ld => ld.LandownerDepositTypes).ThenInclude(t => t.LandownerDepositTypeName)
+            .Include(ld => ld.LandownerDepositParishes).ThenInclude(p => p.Parish)
+            .AsQueryable();
 
         // Filter out any empty/whitespace entries that may have come through
         var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
