@@ -42,7 +42,12 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.Infrastructure.AsQueryable();
+        var query = context.Infrastructure
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(i => i.InfrastructureType)
+            .Include(i => i.Parish)
+            .AsQueryable();
 
         if (RouteId is not null)
         {

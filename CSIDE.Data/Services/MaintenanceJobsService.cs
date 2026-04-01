@@ -67,7 +67,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        string? OrderBy = "Id",
+        string OrderBy = "Id",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IMaintenanceJobsService.DefaultPageSize,
@@ -76,12 +76,69 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var take = PageSize < 1 ? IMaintenanceJobsService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.MaintenanceJobs.AsQueryable();
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(j => j.JobPriority)
+            .Include(j => j.JobStatus)
+            .Include(j => j.MaintenanceTeam)
+            .Include(j => j.Parish)
+            .AsQueryable();
 
         if (RouteId is not null)
         {
             query = query.Where(j => j.RouteId == RouteId.ToUpper());
         }
+
+        query = ApplySearchFilters(query, ParishIds, ParishId, AssignedToTeamId, JobPriorityId, IsComplete, JobStatusId, LogDateFrom, LogDateTo, CompletedDateFrom, CompletedDateTo);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<Job>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+    }
+
+    private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
+        }
+
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
+
+    private static IQueryable<Job> ApplySearchFilters(
+        IQueryable<Job> query,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo)
+    {
         if (ParishIds is not null && ParishIds.Length != 0)
         {
             var parsedParishIds = ParishIds
@@ -136,38 +193,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
         }
 
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
-
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<Job>
-        {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
-    }
-
-    private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
-    {
-        // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
-        {
-            return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
-        }
-
-        var sortExpression = SortExpressions[orderBy];
-
-        return orderDirection == ListSortDirection.Descending
-            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
-            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+        return query;
     }
 
     public async Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
@@ -538,31 +564,53 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         int PageSize = IMaintenanceJobsService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var jobs = await GetMaintenanceJobsBySearchParameters(RouteId,
-                                                              ParishIds,
-                                                              ParishId,
-                                                              AssignedToTeamId,
-                                                              JobPriorityId,
-                                                              IsComplete,
-                                                              JobStatusId,
-                                                              LogDateFrom,
-                                                              LogDateTo,
-                                                              CompletedDateFrom,
-                                                              CompletedDateTo,
-                                                              OrderBy,
-                                                              OrderDirection,
-                                                              PageNumber,
-                                                              PageSize,
-                                                              ct).ConfigureAwait(false);
+        var take = PageSize < 1 ? IMaintenanceJobsService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
 
-        List<JobSimplePublicViewModel> results = [.. jobs.Results.Select(j => j.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.Maintenance))];
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
+
+        if (RouteId is not null)
+        {
+            query = query.Where(j => j.RouteId == RouteId.ToUpper());
+        }
+
+        query = ApplySearchFilters(query, ParishIds, ParishId, AssignedToTeamId, JobPriorityId, IsComplete, JobStatusId, LogDateFrom, LogDateTo, CompletedDateFrom, CompletedDateTo);
+
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var maintIdPrefix = csideOptions.Value.IDPrefixes.Maintenance;
+
+        var results = await query
+            .Skip(skip)
+            .Take(take)
+            .Select(j => new JobSimplePublicViewModel
+            {
+                Id = j.Id,
+                ReferenceNo = maintIdPrefix + j.Id,
+                LogDate = j.LogDate != null ? new DateOnly(j.LogDate.Value.ToDateTimeUtc().Year, j.LogDate.Value.ToDateTimeUtc().Month, j.LogDate.Value.ToDateTimeUtc().Day) : null,
+                CompletionDate = j.CompletionDate != null ? new DateOnly(j.CompletionDate.Value.Year, j.CompletionDate.Value.Month, j.CompletionDate.Value.Day) : null,
+                Status = j.JobStatus != null ? j.JobStatus.Description : null,
+                IsComplete = j.JobStatus != null && j.JobStatus.IsComplete,
+                IsDuplicate = j.JobStatus != null && j.JobStatus.IsDuplicate,
+                Priority = j.JobPriority != null ? j.JobPriority.Description : null,
+                Route = j.RouteId,
+                MaintenanceTeam = j.MaintenanceTeam != null ? j.MaintenanceTeam.Name : null,
+                Parish = j.Parish != null ? j.Parish.Name : null
+            })
+            .ToListAsync(cancellationToken: ct);
 
         return new PagedResult<JobSimplePublicViewModel>
         {
             Results = results,
-            TotalResults = jobs.TotalResults,
-            PageSize = jobs.PageSize,
-            PageNumber = jobs.PageNumber
+            TotalResults = totalCount,
+            PageSize = take,
+            PageNumber = PageNumber
         };
 
     }

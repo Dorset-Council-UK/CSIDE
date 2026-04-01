@@ -42,7 +42,7 @@ internal static class ApiEndpointsExtensions
 
         // Search for DMMO applications based on various parameters
         group
-            .MapPost("/search", DMMOApplicationEndpoints.GetDMMOApplicationsBySearchParameters)
+            .MapGet("/search", DMMOApplicationEndpoints.GetDMMOApplicationsBySearchParameters)
             .WithSummary("DMMO Applications - search")
             .WithDescription("Search for DMMO applications based on various parameters");
     }
@@ -69,7 +69,7 @@ internal static class ApiEndpointsExtensions
 
         // Search for PPO applications based on various parameters
         group
-            .MapPost("/search", PPOApplicationEndpoints.GetPPOApplicationsBySearchParameters)
+            .MapGet("/search", PPOApplicationEndpoints.GetPPOApplicationsBySearchParameters)
             .WithSummary("PPO Applications - search")
             .WithDescription("Search for PPO applications based on various parameters");
     }
@@ -96,7 +96,7 @@ internal static class ApiEndpointsExtensions
 
         // Search for Landowner Deposits based on various parameters
         group
-            .MapPost("/search", LandownerDepositEndpoints.GetLandownerDepositsBySearchParameters)
+            .MapGet("/search", LandownerDepositEndpoints.GetLandownerDepositsBySearchParameters)
             .WithSummary("Landowner Deposits - search")
             .WithDescription("Search for Landowner Deposits based on various parameters");
     }
