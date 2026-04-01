@@ -593,7 +593,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             {
                 Id = j.Id,
                 ReferenceNo = maintIdPrefix + j.Id,
-                LogDate = j.LogDate != null ? new DateOnly(j.LogDate.Value.InUtc().Year, j.LogDate.Value.InUtc().Month, j.LogDate.Value.InUtc().Day) : null,
+                LogDate = j.LogDate != null ? new DateOnly(j.LogDate.Value.ToDateTimeUtc().Year, j.LogDate.Value.ToDateTimeUtc().Month, j.LogDate.Value.ToDateTimeUtc().Day) : null,
                 CompletionDate = j.CompletionDate != null ? new DateOnly(j.CompletionDate.Value.Year, j.CompletionDate.Value.Month, j.CompletionDate.Value.Day) : null,
                 Status = j.JobStatus != null ? j.JobStatus.Description : null,
                 IsComplete = j.JobStatus != null && j.JobStatus.IsComplete,
