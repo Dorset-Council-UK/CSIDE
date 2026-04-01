@@ -68,6 +68,55 @@ namespace CSIDE.Data.Services
                 .Include(d => d.PPOParishes).ThenInclude(p => p.Parish)
                 .AsQueryable();
 
+            query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationLegislationId, ApplicationCaseStatusId, ApplicationTypeId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, IsPublic);
+
+            // Get total count before applying skip/take
+            var totalCount = await query.CountAsync(cancellationToken: ct);
+
+            query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+            var results = await query
+                              .Skip(skip)
+                              .Take(take)
+                              .ToListAsync(cancellationToken: ct);
+
+            return new PagedResult<PPOApplication>
+            {
+                TotalResults = totalCount,
+                PageNumber = PageNumber,
+                PageSize = take,
+                Results = results
+            };
+        }
+
+        private static IQueryable<PPOApplication> ApplyOrdering(IQueryable<PPOApplication> query, string orderBy, ListSortDirection orderDirection)
+        {
+            // Default fallback ordering
+            if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+            {
+                return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
+            }
+
+            var sortExpression = SortExpressions[orderBy];
+
+            return orderDirection == ListSortDirection.Descending
+                ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+                : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+        }
+
+        private async Task<IQueryable<PPOApplication>> ApplySearchFilters(
+            IQueryable<PPOApplication> query,
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationLegislationId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationTypeId,
+            string? ApplicationPriorityId,
+            string? Location,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            bool? IsPublic)
+        {
             if (ParishIds is not null && ParishIds.Length != 0)
             {
                 var parsedParishIds = ParishIds
@@ -136,38 +185,7 @@ namespace CSIDE.Data.Services
                 query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
             }
 
-            // Get total count before applying skip/take
-            var totalCount = await query.CountAsync(cancellationToken: ct);
-
-            query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-            var results = await query
-                              .Skip(skip)
-                              .Take(take)
-                              .ToListAsync(cancellationToken: ct);
-
-            return new PagedResult<PPOApplication>
-            {
-                TotalResults = totalCount,
-                PageNumber = PageNumber,
-                PageSize = take,
-                Results = results
-            };
-        }
-
-        private static IQueryable<PPOApplication> ApplyOrdering(IQueryable<PPOApplication> query, string orderBy, ListSortDirection orderDirection)
-        {
-            // Default fallback ordering
-            if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
-            {
-                return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
-            }
-
-            var sortExpression = SortExpressions[orderBy];
-
-            return orderDirection == ListSortDirection.Descending
-                ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
-                : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+            return query;
         }
 
         public async Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default)
@@ -487,29 +505,51 @@ namespace CSIDE.Data.Services
             int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default)
         {
+            var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+            var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
 
-            var applications = await GetPPOApplicationsBySearchParameters(ParishIds,
-                                                                          ParishId,
-                                                                          ApplicationLegislationId,
-                                                                          ApplicationCaseStatusId,
-                                                                          ApplicationTypeId,
-                                                                          ApplicationPriorityId,
-                                                                          Location,
-                                                                          ReceivedDateFrom,
-                                                                          ReceivedDateTo,
-                                                                          IsPublic: true,
-                                                                          PageNumber: PageNumber,
-                                                                          PageSize: PageSize,
-                                                                          ct: ct).ConfigureAwait(false);
+            var query = context.PPOApplication
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
+                .AsQueryable();
 
-            ICollection<PPOApplicationSimplePublicViewModel> results = [.. applications.Results.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.PPO))];
+            query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationLegislationId, ApplicationCaseStatusId, ApplicationTypeId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, IsPublic: true);
+
+            var totalCount = await query.CountAsync(cancellationToken: ct);
+
+            query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+            var ppoIdPrefix = csideOptions.Value.IDPrefixes.PPO;
+
+            var results = await query
+                .Skip(skip)
+                .Take(take)
+                .Select(d => new PPOApplicationSimplePublicViewModel
+                {
+                    Id = d.Id,
+                    ReferenceNo = ppoIdPrefix + d.Id,
+                    ReceivedDate = d.ReceivedDate != null ? new DateOnly(d.ReceivedDate.Value.Year, d.ReceivedDate.Value.Month, d.ReceivedDate.Value.Day) : null,
+                    IsPublic = d.IsPublic,
+                    ApplicationDetails = d.ApplicationDetails,
+                    LocationDescription = d.LocationDescription,
+                    CaseOfficer = d.CaseOfficer,
+                    PublicComments = d.PublicComments,
+                    DeterminationDate = d.DeterminationDate != null ? new DateOnly(d.DeterminationDate.Value.Year, d.DeterminationDate.Value.Month, d.DeterminationDate.Value.Day) : null,
+                    CouncilLandAffected = d.CouncilLandAffected,
+                    Legislation = d.Legislation != null ? d.Legislation.Name : null,
+                    CaseStatus = d.CaseStatus != null ? d.CaseStatus.Name : null,
+                    Priority = d.Priority != null ? d.Priority.Description : null,
+                    Parishes = d.PPOParishes.Select(p => p.Parish.Name).ToList()
+                })
+                .ToListAsync(cancellationToken: ct);
 
             return new PagedResult<PPOApplicationSimplePublicViewModel>
             {
                 Results = results,
-                TotalResults = applications.TotalResults,
-                PageSize = applications.PageSize,
-                PageNumber = applications.PageNumber
+                TotalResults = totalCount,
+                PageSize = take,
+                PageNumber = PageNumber
             };
         }
         #endregion

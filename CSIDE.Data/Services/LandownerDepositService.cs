@@ -62,9 +62,51 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         // Filter out any empty/whitespace entries that may have come through
         var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
 
-        if (filteredParishIds is not null && filteredParishIds.Length != 0)
+        query = await ApplySearchFilters(query, filteredParishIds, ParishId, Location);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<LandownerDeposit>
         {
-            var parsedParishIds = filteredParishIds
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+    }
+
+    private static IQueryable<LandownerDeposit> ApplyOrdering(IQueryable<LandownerDeposit> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        {
+            return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
+        }
+
+        var sortExpression = SortExpressions[orderBy];
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
+
+    private async Task<IQueryable<LandownerDeposit>> ApplySearchFilters(
+        IQueryable<LandownerDeposit> query,
+        string[]? ParishIds,
+        string? ParishId,
+        string? Location)
+    {
+        if (ParishIds is not null && ParishIds.Length != 0)
+        {
+            var parsedParishIds = ParishIds
                 .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
                 .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
                 .ToList();
@@ -101,38 +143,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             }
         }
 
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
-
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<LandownerDeposit>
-        {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
-    }
-
-    private static IQueryable<LandownerDeposit> ApplyOrdering(IQueryable<LandownerDeposit> query, string orderBy, ListSortDirection orderDirection)
-    {
-        // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
-        {
-            return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
-        }
-
-        var sortExpression = SortExpressions[orderBy];
-
-        return orderDirection == ListSortDirection.Descending
-            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
-            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+        return query;
     }
 
     public async Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int landownerDepositSecondaryId, CancellationToken ct = default)
@@ -373,16 +384,48 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         int PageSize = ILandownerDepositService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var allDeposits = await GetLandownerDepositsBySearchParameters(ParishIds, ParishId, Location, OrderBy, OrderDirection, PageNumber, PageSize, ct).ConfigureAwait(false);
-        var totalCount = allDeposits.TotalResults;
-        List<LandownerDepositSimplePublicViewModel> results = [.. allDeposits.Results.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit))];
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        var query = context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
+
+        // Filter out any empty/whitespace entries that may have come through
+        var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+
+        query = await ApplySearchFilters(query, filteredParishIds, ParishId, Location);
+
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var ldIdPrefix = csideOptions.Value.IDPrefixes.LandownerDeposit;
+
+        var results = await query
+            .Skip(skip)
+            .Take(take)
+            .Select(ld => new LandownerDepositSimplePublicViewModel
+            {
+                Id = ld.Id,
+                SecondaryId = ld.SecondaryId,
+                ReferenceNo = ldIdPrefix + ld.Id + "/" + ld.SecondaryId,
+                ReceivedDate = ld.ReceivedDate != null ? new DateOnly(ld.ReceivedDate.Value.Year, ld.ReceivedDate.Value.Month, ld.ReceivedDate.Value.Day) : null,
+                Location = ld.Location,
+                PrimaryContact = ld.PrimaryContact,
+                DepositTypes = ld.LandownerDepositTypes.Select(t => t.LandownerDepositTypeName!.Name).ToList(),
+                Parishes = ld.LandownerDepositParishes.Select(p => p.Parish.Name).ToList()
+            })
+            .ToListAsync(cancellationToken: ct);
 
         return new PagedResult<LandownerDepositSimplePublicViewModel>
         {
             Results = results,
-            TotalResults = allDeposits.TotalResults,
-            PageSize = allDeposits.PageSize,
-            PageNumber = allDeposits.PageNumber
+            TotalResults = totalCount,
+            PageSize = take,
+            PageNumber = PageNumber
         };
     }
 
