@@ -85,7 +85,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         string? MaintenanceTeamId,
         string? OperationalStatusId,
         string? RouteTypeId,
-        string? OrderBy = "RouteId",
+        string OrderBy = "RouteId",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IRightsOfWayService.DefaultPageSize,

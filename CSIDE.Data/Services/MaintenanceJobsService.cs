@@ -67,7 +67,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        string? OrderBy = "Id",
+        string OrderBy = "Id",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IMaintenanceJobsService.DefaultPageSize,
