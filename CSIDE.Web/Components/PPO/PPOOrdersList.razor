@@ -18,24 +18,31 @@
                             <strong>@(order.PPOApplicationId)/@(order.OrderId)</strong>
                         </div>
                         <div class="card-body">
-                            <ul class="list-unstyled">
-                                @if (order.OrderTitle is not null)
-                                {
-                                    <li><strong>@localizer["Order Title Label"]</strong>: @order.OrderTitle</li>
-                                }
-                                @if (order.DateSealed.HasValue)
-                                {
-                                    <li><strong>@localizer["Order Date Sealed Label"]</strong>: @order.DateSealed</li>
-                                }
-                                @if (order.DatePublished.HasValue)
-                                {
-                                    <li><strong>@localizer["Order Date Published Label"]</strong>: @order.DatePublished</li>
-                                }
-                                @if (order.DateConfirmed.HasValue)
-                                {
-                                    <li><strong>@localizer["Order Date Confirmed Label"]</strong>: @order.DateConfirmed</li>
-                                }
-                            </ul>
+                            @if (order.OrderTitle is not null || order.DateSealed.HasValue || order.DatePublished.HasValue || order.DateConfirmed.HasValue)
+                            {
+                                <ul class="list-unstyled">
+                                    @if (order.OrderTitle is not null)
+                                    {
+                                        <li><strong>@localizer["Order Title Label"]</strong>: @order.OrderTitle</li>
+                                    }
+                                    @if (order.DateSealed.HasValue)
+                                    {
+                                        <li><strong>@localizer["Order Date Sealed Label"]</strong>: @order.DateSealed</li>
+                                    }
+                                    @if (order.DatePublished.HasValue)
+                                    {
+                                        <li><strong>@localizer["Order Date Published Label"]</strong>: @order.DatePublished</li>
+                                    }
+                                    @if (order.DateConfirmed.HasValue)
+                                    {
+                                        <li><strong>@localizer["Order Date Confirmed Label"]</strong>: @order.DateConfirmed</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>@localizer["No Order Summary Info Available Message"]</p>
+                            }
                         </div>
                         <div class="card-footer">
                             <button class="btn btn-sm btn-outline-primary me-2" type="button" disabled="@(IsBusy)" @onclick="() => ViewOrder(order.OrderId)">@localizer["View Details Label"]</button>

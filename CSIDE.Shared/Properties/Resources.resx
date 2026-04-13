@@ -1809,4 +1809,7 @@
   <data name="Notes Label" xml:space="preserve">
     <value>Notes</value>
   </data>
+  <data name="No Order Summary Info Available Message" xml:space="preserve">
+    <value>No summary information available. Click 'View details' to view further information about this order</value>
+  </data>
 </root>
