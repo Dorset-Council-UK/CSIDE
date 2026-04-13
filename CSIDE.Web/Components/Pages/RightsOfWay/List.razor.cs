@@ -20,6 +20,8 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
         [SupplyParameterFromQuery]
         private string? OperationalStatusId { get; set; }
         [SupplyParameterFromQuery]
+        private string? LegalStatusId { get; set; }
+        [SupplyParameterFromQuery]
         private string? RouteTypeId { get; set; }
 
         protected override void OnInitialized()

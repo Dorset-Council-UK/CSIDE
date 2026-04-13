@@ -1812,4 +1812,7 @@
   <data name="No Order Summary Info Available Message" xml:space="preserve">
     <value>No summary information available. Click 'View details' to view further information about this order.</value>
   </data>
+  <data name="Inactive Route Warning Text" xml:space="preserve">
+    <value>This route is no longer active</value>
+  </data>
 </root>

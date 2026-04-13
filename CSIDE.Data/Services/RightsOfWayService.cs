@@ -48,22 +48,40 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         return results.Take(1).FirstOrDefault();
     }
 
+    /// <summary>
+    /// Gets the {maxRoutes} nearest active routes within {maxDistance} metres from {geometry}
+    /// </summary>
+    /// <remarks>This only returns routes that have an active legal status. Inactive routes are NOT included</remarks>
+    /// <param name="geometry">The Geometry to use as the source</param>
+    /// <param name="maxDistance">The maximium distance, in metres, that should be checked</param>
+    /// <param name="maxRoutes">The maximum number of routes to return</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A collection of routes</returns>
     public async Task<ICollection<Route>> GetNearestRoutes(Geometry geometry, int maxDistance = 50, int maxRoutes = 50, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Routes
                 .Where(i => i.Geom.IsWithinDistance(geometry, maxDistance))
+                .Where(i => i.LegalStatus!.IsActive)
                 .OrderBy(i => i.Geom.Distance(geometry))
                 .Take(maxRoutes)
                 .ToListAsync(cancellationToken: ct)
                 .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<Geometry>> GetRoutesIntersecting(Polygon bboxPolygon, CancellationToken ct = default)
+    /// <summary>
+    /// Gets all active routes within {polygon}
+    /// </summary>
+    /// <remarks>This only returns routes that have an active legal status. Inactive routes are NOT included</remarks>
+    /// <param name="polygon">The Polygon geometry to find routes within</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A collection of routes</returns>
+    public async Task<ICollection<Geometry>> GetRoutesIntersecting(Polygon polygon, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Routes
-                .Where(i => i.Geom.Intersects(bboxPolygon))
+                .Where(i => i.Geom.Intersects(polygon))
+                .Where(i => i.LegalStatus!.IsActive)
                 .Select(r => r.Geom)
                 .ToArrayAsync(cancellationToken: ct)
                 .ConfigureAwait(false);
@@ -84,6 +102,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         string? ParishId,
         string? MaintenanceTeamId,
         string? OperationalStatusId,
+        string? LegalStatusId,
         string? RouteTypeId,
         string OrderBy = "RouteId",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
@@ -100,6 +119,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             .Include(r => r.Parish)
             .Include(r => r.MaintenanceTeam)
             .Include(r => r.OperationalStatus)
+            .Include(r => r.LegalStatus)
             .Include(r => r.RouteType)
             .AsQueryable();
 
@@ -133,6 +153,10 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         if (OperationalStatusId is not null && int.TryParse(OperationalStatusId, CultureInfo.InvariantCulture, out int parsedOperationalStatusId))
         {
             query = query.Where(j => j.OperationalStatusId == parsedOperationalStatusId);
+        }
+        if (LegalStatusId is not null && int.TryParse(LegalStatusId, CultureInfo.InvariantCulture, out int parsedLegalStatusId))
+        {
+            query = query.Where(j => j.LegalStatusId == parsedLegalStatusId);
         }
         if (RouteTypeId is not null && int.TryParse(RouteTypeId, CultureInfo.InvariantCulture, out int parsedRouteTypeId))
         {
