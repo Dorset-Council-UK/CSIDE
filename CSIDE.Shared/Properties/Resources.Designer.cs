@@ -3598,7 +3598,7 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No summary information available. Click &apos;View details&apos; to view further information about this order.
+        ///   Looks up a localized string similar to No summary information available. Click &apos;View details&apos; to view further information about this order..
         /// </summary>
         public static string No_Order_Summary_Info_Available_Message {
             get {
