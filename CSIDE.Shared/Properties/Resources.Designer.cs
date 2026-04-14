@@ -2464,6 +2464,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This route is no longer active.
+        /// </summary>
+        public static string Inactive_Route_Warning_Text {
+            get {
+                return ResourceManager.GetString("Inactive Route Warning Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Incomplete surveys.
         /// </summary>
         public static string Incomplete_Surveys_Title {

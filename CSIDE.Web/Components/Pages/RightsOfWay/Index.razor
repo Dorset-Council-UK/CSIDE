@@ -101,6 +101,21 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label" for="route-legal-status-search">@localizer["Legal Status Label"]</label>
+                    <InputSelect id="route-legal-status-search" class="form-select" @bind-Value="SearchParams.LegalStatusId">
+                        @if (LegalStatuses is not null)
+                        {
+                            <option value=""></option>
+                            @foreach (var status in LegalStatuses.OrderBy(s => s.Id))
+                            {
+                                <option value="@status.Id">@status.Name</option>
+                            }
+                        }
+
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label" for="route-type-search">@localizer["Path Type Label"]</label>
                     <InputSelect id="route-type-search" class="form-select" @bind-Value="SearchParams.RouteTypeId">
                         @if (RouteTypes is not null)

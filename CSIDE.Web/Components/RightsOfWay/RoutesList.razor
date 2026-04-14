@@ -36,6 +36,9 @@
         <GridColumn TItem="Route" HeaderText="@localizer["Operational Status Label"]" PropertyName="OperationalStatus" SortKeySelector="item => item.OperationalStatus != null ? item.OperationalStatus.Name : string.Empty" SortString="OperationalStatus">
             @context.OperationalStatus?.Name
         </GridColumn>
+        <GridColumn TItem="Route" HeaderText="@localizer["Legal Status Label"]" PropertyName="LegalStatus" SortKeySelector="item => item.LegalStatus != null ? item.LegalStatus.Name : string.Empty" SortString="LegalStatus">
+            @context.LegalStatus?.Name
+        </GridColumn>
         <GridColumn TItem="Route" HeaderText="@localizer["Path Type Label"]" PropertyName="RouteType" SortKeySelector="item => item.RouteType != null ? item.RouteType.Name : string.Empty" SortString="RouteType">
             @context.RouteType?.Name
         </GridColumn>
@@ -69,6 +72,8 @@
     [Parameter]
     public string? OperationalStatusId { get; set; }
     [Parameter]
+    public string? LegalStatusId { get; set; }
+    [Parameter]
     public string? RouteTypeId { get; set; }
 
     public async Task<GridDataProviderResult<Route>> RoutesDataProvider(GridDataProviderRequest<Route> request)
@@ -90,6 +95,7 @@
             ParishId,
             MaintenanceTeamId,
             OperationalStatusId,
+            LegalStatusId,
             RouteTypeId,
             sortString,
             sortDirection,
