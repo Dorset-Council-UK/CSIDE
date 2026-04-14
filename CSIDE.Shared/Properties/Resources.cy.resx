@@ -1826,4 +1826,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Inactive Route Warning Text" xml:space="preserve">
     <value>Nid yw'r llwybr hwn yn weithredol mwyach</value>
   </data>
+  <data name="Maintenance Attach Photo On Completion Reminder Text" xml:space="preserve">
+    <value>Cofiwch atodi llun o'r gwaith gorffenedig os nad ydych chi wedi gwneud hynny eisoes.</value>
+  </data>
 </root>

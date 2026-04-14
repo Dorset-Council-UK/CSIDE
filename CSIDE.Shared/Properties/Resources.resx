@@ -1815,4 +1815,7 @@
   <data name="Inactive Route Warning Text" xml:space="preserve">
     <value>This route is no longer active</value>
   </data>
+  <data name="Maintenance Attach Photo On Completion Reminder Text" xml:space="preserve">
+    <value>Remember to attach a photo of the finished job if you haven't already.</value>
+  </data>
 </root>
