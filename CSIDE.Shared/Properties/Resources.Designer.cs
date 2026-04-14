@@ -3139,6 +3139,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remember to attach a photo of the finished job if you haven&apos;t already..
+        /// </summary>
+        public static string Maintenance_Attach_Photo_On_Completion_Reminder_Text {
+            get {
+                return ResourceManager.GetString("Maintenance Attach Photo On Completion Reminder Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new maintenance job.
         /// </summary>
         public static string Maintenance_Create_Title {
