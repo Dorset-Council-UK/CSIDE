@@ -50,6 +50,11 @@ else
             }
         }
 
+        if(Route.LegalStatus is not null && !Route.LegalStatus.IsActive)
+        {
+            <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> @localizer["Inactive Route Warning Text"]</div>
+        }
+
         <AuthorizeView Roles="Administrator, RoW Officer, Ranger">
             <a href="rights-of-way/Edit/@(Uri.EscapeDataString(Route.RouteCode))" class="btn btn-primary my-2">@localizer["Edit Label"]</a>
         </AuthorizeView> 

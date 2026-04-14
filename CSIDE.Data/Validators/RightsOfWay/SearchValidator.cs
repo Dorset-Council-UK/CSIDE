@@ -18,6 +18,7 @@ namespace CSIDE.Data.Validators.RightsOfWay
                 s.ParishIds?.Length != 0 ||
                 s.RouteTypeId.HasValue ||
                 s.OperationalStatusId.HasValue ||
+                s.LegalStatusId.HasValue ||
                 s.MaintenanceTeamId.HasValue)
                 .WithMessage(_localizer["Search Validation At Least One Message"]);
 

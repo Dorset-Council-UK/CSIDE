@@ -19,6 +19,7 @@ namespace CSIDE.Data.Services
             string? ParishId,
             string? MaintenanceTeamId,
             string? OperationalStatusId,
+            string? LegalStatusId,
             string? RouteTypeId,
             string OrderBy = "RouteId",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
