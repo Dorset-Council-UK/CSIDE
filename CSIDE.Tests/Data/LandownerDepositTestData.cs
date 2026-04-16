@@ -6,30 +6,71 @@ namespace CSIDE.Tests.Data;
 
 public static class LandownerDepositTestData
 {
+    public static Contact LandownerContact => new()
+    {
+        Name = "John Doe",
+        ContactType = new ContactType() { Name = "Landowner" },
+    };
+    public static Contact AgentContact => new()
+    {
+        Name = "Jane Smith",
+        ContactType = new ContactType() { Name = "Agent" },
+    };
+    public static Contact ApplicantContact => new()
+    {
+        Name = "Bob Johnson",
+        ContactType = new ContactType() { Name = "Applicant" },
+    };
     public static LandownerDeposit LandownerDeposit_1 => new()
     {
         Id = 1,
         SecondaryId = 1,
         Geom = new MultiPolygon(null!),
     };
-    public static LandownerDeposit LandownerDeposit_2 => new()
+    public static LandownerDeposit LandownerDeposit_2
     {
-        Id = 2,
-        SecondaryId = 3,
-        Geom = new MultiPolygon(null!),
-    };
-    public static LandownerDeposit LandownerDeposit_3 => new()
+        get
+        {
+            var deposit = new LandownerDeposit
+            {
+                Id = 2,
+                SecondaryId = 3,
+                Geom = new MultiPolygon(null!),
+            };
+            deposit.LandownerDepositContacts.Add(new() { Contact = LandownerContact });
+            return deposit;
+        }
+    }
+    public static LandownerDeposit LandownerDeposit_3
     {
-        Id = 4,
-        SecondaryId = 2,
-        Geom = new MultiPolygon(null!),
-    };
-    public static LandownerDeposit LandownerDeposit_4 => new()
+        get
+        {
+            var deposit = new LandownerDeposit
+            {
+                Id = 4,
+                SecondaryId = 2,
+                Geom = new MultiPolygon(null!),
+            };
+            deposit.LandownerDepositContacts.Add(new() { Contact = AgentContact });
+            deposit.LandownerDepositContacts.Add(new() { Contact = LandownerContact });
+            return deposit;
+        }
+    }
+    public static LandownerDeposit LandownerDeposit_4
     {
-        Id = 20,
-        SecondaryId = 4,
-        Geom = new MultiPolygon(null!),
-    };
+        get
+        {
+            var deposit = new LandownerDeposit
+            {
+                Id = 20,
+                SecondaryId = 4,
+                Geom = new MultiPolygon(null!),
+            };
+            deposit.LandownerDepositContacts.Add(new() { Contact = LandownerContact });
+            deposit.LandownerDepositContacts.Add(new() { Contact = ApplicantContact });
+            return deposit;
+        }
+    }
 
     public static IEnumerable<TheoryDataRow<PagedResult<LandownerDepositSimplePublicViewModel>>> PagedResults_SimpleViewModel_4 => [
         new PagedResult<LandownerDepositSimplePublicViewModel>()
