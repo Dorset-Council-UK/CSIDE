@@ -7,7 +7,7 @@ internal class CurrentUserService(IHttpContextAccessor httpContextAccessor) : IC
 {
     public bool IsAuthenticated => httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
-    public string UserId => httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "Unknown";
+    public string UserId => httpContextAccessor.HttpContext?.User.UserId ?? "<unknown>";
 
-    public string UserName => httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown";
+    public string UserName => httpContextAccessor.HttpContext?.User.DisplayName ?? "Unknown";
 }

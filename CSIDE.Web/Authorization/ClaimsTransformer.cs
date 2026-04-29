@@ -10,8 +10,8 @@ public class ClaimsTransformer(IUserService userService) : IClaimsTransformation
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
         var claimsIdentity = (ClaimsIdentity)principal.Identity!;
-        var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = userIdClaim!.Value;
+        
+        var userId = principal.UserId;
 
         //get users roles
         var roles = await _userService.GetUserRoles(userId).ConfigureAwait(false);

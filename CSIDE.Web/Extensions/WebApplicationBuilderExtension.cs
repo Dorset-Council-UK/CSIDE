@@ -149,7 +149,7 @@ internal static class WebApplicationBuilderExtension
     /// </summary>
     internal static WebApplicationBuilder AddCountrysideAuthentication(this WebApplicationBuilder builder)
     {
-        const string b2cClientName = "B2CResilient";
+        const string openIdConnectClientName = "OpenIDConnectResilient";
 
         var azureAdSection = builder.Configuration
             .GetSection(CSIDEOptions.SectionName)
@@ -157,7 +157,7 @@ internal static class WebApplicationBuilderExtension
 
         // Register a named HttpClient for B2C with resilience
         builder.Services
-            .AddHttpClient(b2cClientName)
+            .AddHttpClient(openIdConnectClientName)
             .AddStandardResilienceHandler();
 
         // Add microsoft identity web app authentication
@@ -178,7 +178,7 @@ internal static class WebApplicationBuilderExtension
             .AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
             .Configure<IHttpClientFactory>((options, httpClientFactory) =>
             {
-                options.Backchannel = httpClientFactory.CreateClient(b2cClientName);
+                options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
                 options.SignedOutRedirectUri = "/account/signedout";
                 options.AccessDeniedPath = "/account/accessdenied";
             });

@@ -3,6 +3,7 @@ using CSIDE.Data.Models.Surveys;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Components.Pages.Surveys
 {
@@ -41,7 +42,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
                         {
                             Surveys = await infrastructureService.GetAllBridgeSurveys();
 
-                            var userId = authState.GetUserId();
+                            var userId = authState.User.UserId;
                             if (userId is not null)
                             {
                                 var teams = await maintenanceJobsService.GetMaintenanceTeamForUser(userId);
@@ -54,7 +55,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
                         else
                         {
                             //load only surveys for the user
-                            var userId = authState.GetUserId();
+                            var userId = authState.User.UserId;
                             if (userId is not null)
                             {
                                 Surveys = await infrastructureService.GetBridgeSurveysForUser(userId);
