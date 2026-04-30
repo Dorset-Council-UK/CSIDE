@@ -3,7 +3,7 @@ CSIDE - Countryside Management System
 
 CSIDE is a [.NET Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) based Countryside Management System designed and developed by the Dorset Council GIS team.
 
-CSIDE is used by Dorset Council to manage the Rights of Way network in Dorset and related information.
+CSIDE is used by Dorset Council to manage the Rights of Way network in Dorset and related information including maintenance jobs, infrastructure, surveys, DMMOs, Landowner Deposits and PPOs.
 
 CSIDE is Open Source software and is licenced under the MIT licence.
 
@@ -40,14 +40,14 @@ CSIDE is a .NET Blazor web application for managing all aspects of Countryside A
   - Generate lists of affected addresses
   - Add documents and supporting evidence
 - User management
-  - Uses Azure AD B2C for user authentication
+  - Uses Microsoft Entra External ID or other compatible OpenID connect provider for user authentication
   - Users can be assigned roles and assigned to maintenance teams
   - Super users can be given permission to assign roles and maintenance teams to others
 - Audit logs keep track of changes to every part of the system
 - Customisable to your own branding
 - Mobile friendly
 - Nothing for your users to install, they just need a web browser
-- Uses modern tech, including .NET 9, Blazor, PostGIS, OpenLayers, Azure Storage and Azure AD B2C
+- Uses modern tech, including .NET, Blazor, PostGIS, OpenLayers, Azure Storage and Entra External ID
 
 ## Bugs
 Please use the issue tracker for all bugs and feature requests. Before creating a new issue, do a quick search to see if the problem has been reported already.
@@ -60,7 +60,7 @@ To run CSIDE with minimal modification, you will need:
 - A web server capable of running .NET applications, such as IIS, Kestrel or Azure
 - PostgreSQL 13+ with PostGIS extension
 - An Azure subscription with access to Azure Blob Storage
-- An Azure AD B2C Tenant
+- An Entra External ID tenant
 - Gov.UK Notify
 - An OS DataHub subscription
 
