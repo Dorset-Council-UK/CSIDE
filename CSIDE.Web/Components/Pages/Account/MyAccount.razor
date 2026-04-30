@@ -78,10 +78,10 @@
         {
             var authState = await AuthenticationStateTask;
 
-            UserID = authState.GetUserId();
-            UserDisplayName = authState.GetUserName();
-            UserPrimaryEmailAddress = authState.GetUserEmail();
-            UserIdentityProvider = authState.GetUserIdentityProvider();
+            UserID = authState.User.UserId;
+            UserDisplayName = authState.User.DisplayName;
+            UserPrimaryEmailAddress = authState.User.Email;
+            UserIdentityProvider = authState.User.IdentityProvider;
             UserClaims = authState.User.Claims;
 
             if(UserID is not null)

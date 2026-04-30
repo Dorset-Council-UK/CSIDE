@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using CSIDE.Data.Models.PPO;
 using NodaTime;
 using CSIDE.Data.Services;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Components.PPO
 {
@@ -51,8 +52,8 @@ namespace CSIDE.Web.Components.PPO
                         if (AuthenticationStateTask != null)
                         {
                             var authState = await AuthenticationStateTask;
-                            NewEvent.AuthorId = authState.GetUserId();
-                            NewEvent.AuthorName = authState.GetUserName();
+                            NewEvent.AuthorId = authState.User.UserId;
+                            NewEvent.AuthorName = authState.User.DisplayName;
                         }
 
                         await ppoService.AddEventToPPO(NewEvent);

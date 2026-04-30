@@ -49,7 +49,7 @@
                         @context.DisplayName
                     </GridColumn>
                     <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
-                        @(context.OtherMails is not null ? string.Join(',', context.OtherMails) : "")
+                        @(!string.IsNullOrEmpty(context.Mail) ?  context.Mail : (context.OtherMails is not null ? string.Join(',', context.OtherMails) : "") )
                     </GridColumn>
 
                 </GridColumns>
@@ -90,7 +90,7 @@
                         @context.DisplayName
                     </GridColumn>
                     <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
-                        @(context.OtherMails is not null ? string.Join(',', context.OtherMails) : "")
+                        @(!string.IsNullOrEmpty(context.Mail) ? context.Mail : (context.OtherMails is not null ? string.Join(',', context.OtherMails) : ""))
                     </GridColumn>
 
                 </GridColumns>

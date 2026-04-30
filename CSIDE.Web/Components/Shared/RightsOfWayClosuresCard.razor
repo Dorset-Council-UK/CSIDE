@@ -61,7 +61,7 @@
                 if (AuthenticationStateTask != null)
                 {
                     var authState = await AuthenticationStateTask;
-                    UserID = authState.GetUserId();
+                    UserID = authState.User.UserId;
                 }
 
                 if (UserID != null)

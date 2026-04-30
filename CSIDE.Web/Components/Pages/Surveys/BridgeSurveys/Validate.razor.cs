@@ -8,6 +8,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using ProjNet.CoordinateSystems;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
@@ -156,8 +157,8 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                         if (AuthenticationState != null)
                         {
                             var authState = await AuthenticationState;
-                            maintJob.LoggedById = authState.GetUserId();
-                            maintJob.LoggedByName = authState.GetUserName();
+                            maintJob.LoggedById = authState.User.UserId;
+                            maintJob.LoggedByName = authState.User.DisplayName;
                         }
                         
                         createdMaintJob = await maintenanceJobsService.CreateMaintenanceJob(maintJob, []);

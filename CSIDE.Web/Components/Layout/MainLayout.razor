@@ -15,10 +15,10 @@
                     <ul class="navbar-nav ps-3">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle"></i> @context.GetUserName()
+                                <i class="bi bi-person-circle"></i> @context.User.DisplayName
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
-                                <li><h6 class="dropdown-header">@(context.GetUserEmail() ?? "")</h6></li>
+                                <li><h6 class="dropdown-header">@(context.User.Email ?? "")</h6></li>
                                 <AuthorizeView Policy="CanAccessApp" Context="InnerAccountBox">
                                     <li><a class="dropdown-item" href="Account/MyAccount">@localizer["My Account Label"]</a></li>
                                     @if (InnerAccountBox.User.IsInRole("Administrator"))

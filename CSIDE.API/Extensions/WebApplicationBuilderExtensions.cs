@@ -21,12 +21,21 @@ internal static class WebApplicationBuilderExtensions
     /// </summary>
     internal static WebApplicationBuilder AddCountrysideNetworking(this WebApplicationBuilder builder)
     {
+        const string graphClientName = "MicrosoftGraphResilient";
+
         //add reslience handlers to http client
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
             // Turn on resilience by default
             http.AddStandardResilienceHandler();
         });
+
+        builder.Services
+            .AddHttpClient(graphClientName, httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("https://graph.microsoft.com/");
+            })
+            .AddStandardResilienceHandler();
 
         //add optional forwarded headers middleware handler
         var section = builder.Configuration
