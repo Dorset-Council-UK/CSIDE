@@ -150,14 +150,22 @@ internal static class WebApplicationBuilderExtension
     internal static WebApplicationBuilder AddCountrysideAuthentication(this WebApplicationBuilder builder)
     {
         const string openIdConnectClientName = "OpenIDConnectResilient";
+        const string graphClientName = "MicrosoftGraphResilient";
 
         var azureAdSection = builder.Configuration
             .GetSection(CSIDEOptions.SectionName)
             .GetSection(AzureAdOptions.SectionName);
 
-        // Register a named HttpClient for B2C with resilience
+        // Register named HttpClients for external auth calls with resilience
         builder.Services
             .AddHttpClient(openIdConnectClientName)
+            .AddStandardResilienceHandler();
+
+        builder.Services
+            .AddHttpClient(graphClientName, httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("https://graph.microsoft.com/");
+            })
             .AddStandardResilienceHandler();
 
         // Add microsoft identity web app authentication
