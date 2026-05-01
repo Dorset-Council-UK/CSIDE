@@ -13,7 +13,6 @@ namespace CSIDE.Data.Services
     public class UserService(IDbContextFactory<ApplicationDbContext> contextFactory,
                              IMemoryCache memoryCache,
                              IOptions<CSIDEOptions> csideOptions,
-                             IHttpClientFactory httpClientFactory,
                              ILogger<UserService> logger) : IUserService
     {
         public async Task<List<Microsoft.Graph.Beta.Models.User>> GetUsers()
