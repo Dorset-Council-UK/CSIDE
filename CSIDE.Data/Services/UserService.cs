@@ -13,7 +13,6 @@ namespace CSIDE.Data.Services
     public class UserService(IDbContextFactory<ApplicationDbContext> contextFactory,
                              IMemoryCache memoryCache,
                              IOptions<CSIDEOptions> csideOptions,
-                             IHttpClientFactory httpClientFactory,
                              ILogger<UserService> logger) : IUserService
     {
         public async Task<List<Microsoft.Graph.Beta.Models.User>> GetUsers()
@@ -108,8 +107,6 @@ namespace CSIDE.Data.Services
 
         private GraphServiceClient? GetGraphClient()
         {
-            const string graphClientName = "MicrosoftGraphResilient";
-
             AzureAdOptions AzureAdOptions = csideOptions.Value.AzureAd;
             if (!string.IsNullOrEmpty(AzureAdOptions.ClientId))
             {
@@ -128,8 +125,7 @@ namespace CSIDE.Data.Services
                 var clientSecretCredential = new ClientSecretCredential(
                     tenantId, clientId, clientSecret, options);
 
-                var httpClient = httpClientFactory.CreateClient(graphClientName);
-                var graphClient = new GraphServiceClient(httpClient, clientSecretCredential, scopes);
+                var graphClient = new GraphServiceClient(clientSecretCredential, scopes);
 
                 return graphClient;
             }
