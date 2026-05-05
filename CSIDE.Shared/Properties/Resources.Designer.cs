@@ -2428,6 +2428,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Help_Link_Label {
+            get {
+                return ResourceManager.GetString("Help Link Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide previous statements.
         /// </summary>
         public static string Hide_Previous_Statements_Label {

@@ -1818,4 +1818,7 @@
   <data name="Maintenance Attach Photo On Completion Reminder Text" xml:space="preserve">
     <value>Remember to attach a photo of the finished job if you haven't already.</value>
   </data>
+  <data name="Help Link Label" xml:space="preserve">
+    <value>Help</value>
+  </data>
 </root>

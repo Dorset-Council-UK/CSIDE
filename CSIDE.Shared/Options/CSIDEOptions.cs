@@ -24,4 +24,6 @@ public record CSIDEOptions
     public string LandownerDepositsPublicRegisterURL { get; init; } = "";
     public string PublicMaintenanceJobURL { get; init; } = "";
     public string PublicUnsubscribeURL { get; init; } = "";
+    public string HelpDocsURL { get; init; } = "";
+    public bool ShowLanguageSwitcher { get; init; }
 }
