@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject IHostEnvironment HostEnvironment
+@inject IOptions<CSIDEOptions> csideOptions
 
 <div class="page flex-row">
     <div class="sidebar">
@@ -8,14 +9,20 @@
 
     <main class="flex-grow-1">
         <div class="top-row px-4">
-            <CultureSelector></CultureSelector>
-            <ThemeSwitcher Position="DropdownMenuPosition.End" Class="ms-2" />
+            @if (csideOptions.Value.ShowLanguageSwitcher)
+            {
+                <div class="ms-3">
+                    <CultureSelector></CultureSelector>
+                </div>
+            }
+            <HelpLink></HelpLink>
+            <ThemeSwitcher Position="DropdownMenuPosition.End" Class="ms-3" />
             <AuthorizeView Policy="AuthenticatedOnly">
                 <Authorized>
-                    <ul class="navbar-nav ps-3">
+                    <ul class="navbar-nav ms-3">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle"></i> @context.User.DisplayName
+                                <i class="bi bi-person-circle"></i> <span class="d-sm-none d-md-inline d-none">@context.User.DisplayName</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
                                 <li><h6 class="dropdown-header">@(context.User.Email ?? "")</h6></li>
