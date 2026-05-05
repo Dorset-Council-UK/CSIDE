@@ -2,7 +2,7 @@
 
 @if (!string.IsNullOrEmpty(HelpLinkUrl))
 {
-    <a href="@HelpLinkUrl" target="_blank" class="nav-link ms-3" title="@localizer["Help Link Label"]">
+    <a href="@HelpLinkUrl" target="_blank" rel="noopener noreferrer" class="nav-link ms-3" title="@localizer["Help Link Label"]" aria-label="@localizer["Help Link Label"]">
         <i class="bi bi-question-circle"></i> <span class="d-sm-none d-md-inline d-none">@localizer["Help Link Label"]</span>
     </a>
 }
