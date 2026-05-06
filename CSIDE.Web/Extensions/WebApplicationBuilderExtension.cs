@@ -189,6 +189,14 @@ internal static class WebApplicationBuilderExtension
                 options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
                 options.SignedOutRedirectUri = "/account/signedout";
                 options.AccessDeniedPath = "/account/accessdenied";
+                options.Events ??= new OpenIdConnectEvents();
+                var existingRedirectHandler = options.Events.OnRedirectToIdentityProvider;
+                options.Events.OnRedirectToIdentityProvider = async context =>
+                {
+                    context.ProtocolMessage.Prompt = "select_account";
+                    if (existingRedirectHandler != null)
+                        await existingRedirectHandler(context);
+                };
             });
 
         builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
