@@ -174,6 +174,12 @@ internal static class WebApplicationBuilderExtension
             .AddMicrosoftIdentityWebApp(options =>
             {
                 azureAdSection.Bind(options);
+
+                if (string.IsNullOrWhiteSpace(options.SignedOutCallbackPath))
+                {
+                    options.SignedOutCallbackPath = "/signout-callback-oidc";
+                }
+
                 options.ErrorPath = "/Error";
                 options.SignedOutRedirectUri = "/account/signedout";
                 options.AccessDeniedPath = "/account/accessdenied";
