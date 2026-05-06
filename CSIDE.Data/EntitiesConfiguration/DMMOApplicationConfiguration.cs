@@ -57,6 +57,10 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder
                 .Navigation(x => x.DMMOApplicationTypes)
                 .AutoInclude();
+
+            builder
+                .Navigation(x => x.DMMOCouncilDecisions)
+                .AutoInclude();
         }
     }
 }
