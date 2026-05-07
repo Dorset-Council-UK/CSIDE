@@ -203,6 +203,33 @@ internal static class WebApplicationBuilderExtension
                     if (existingRedirectHandler != null)
                         await existingRedirectHandler(context);
                 };
+                // Workaround for Entra External ID stale session errors on first login of the day.
+                // When a user's Entra session expires overnight, the first authentication attempt can fail
+                // with AADSTS50133 (session invalid due to expiry) or AADSTS165000 (session context missing).
+                // This handler retries authentication once to obtain a fresh session. If the retry also fails
+                // (indicating a genuine issue like a required password change), the user is redirected to an
+                // error page to avoid an infinite redirect loop.
+                options.Events.OnRemoteFailure = context =>
+                {
+                    if (context.Failure?.Message?.Contains("AADSTS50133") == true ||
+                        context.Failure?.Message?.Contains("AADSTS165000") == true)
+                    {
+                        var hasRetried = context.Request.Query.ContainsKey("authretry");
+
+                        if (!hasRetried)
+                        {
+                            context.Response.Redirect("/?authretry=1");
+                            context.HandleResponse();
+                        }
+                        else
+                        {
+                            context.Response.Redirect("/account/login-failed");
+                            context.HandleResponse();
+                        }
+                    }
+
+                    return Task.CompletedTask;
+                };
             });
 
         builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
