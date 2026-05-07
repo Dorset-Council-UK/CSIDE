@@ -1,8 +1,9 @@
 ﻿@attribute [AllowAnonymous]
 @page "/account/login-failed"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<LoginFailed> localizer
 
-<PageTitle>Login failed</PageTitle>
+<PageTitle>@localizer["Login failed"]</PageTitle>
 
-<h3>Login failed</h3>
+<h3>@localizer["Login failed"]</h3>
 
-<p>We couldn't sign you in. Please try again, and if the issue continues contact an administrator or reset your password.</p>
+<p>@localizer["We couldn't sign you in. Please try again, and if the issue continues contact an administrator or reset your password."]</p>

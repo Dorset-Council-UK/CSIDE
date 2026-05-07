@@ -211,18 +211,29 @@ internal static class WebApplicationBuilderExtension
                 // error page to avoid an infinite redirect loop.
                 options.Events.OnRemoteFailure = context =>
                 {
-                    if (context.Failure?.Message?.Contains("AADSTS50133") == true ||
-                        context.Failure?.Message?.Contains("AADSTS165000") == true)
+                    if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
+                        context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
                     {
-                        var hasRetried = context.Request.Query.ContainsKey("authretry");
+                        const string authRetryCookieName = "authretry";
+                        var hasRetried = context.Request.Cookies.ContainsKey(authRetryCookieName);
 
                         if (!hasRetried)
                         {
-                            context.Response.Redirect("/?authretry=1");
+                            context.Response.Cookies.Append(authRetryCookieName, "1", new CookieOptions
+                            {
+                                HttpOnly = true,
+                                IsEssential = true,
+                                Secure = context.Request.IsHttps,
+                                SameSite = SameSiteMode.Lax,
+                                MaxAge = TimeSpan.FromMinutes(5)
+                            });
+
+                            context.Response.Redirect("/MicrosoftIdentity/Account/SignIn?returnUrl=%2F");
                             context.HandleResponse();
                         }
                         else
                         {
+                            context.Response.Cookies.Delete(authRetryCookieName);
                             context.Response.Redirect("/account/login-failed");
                             context.HandleResponse();
                         }
