@@ -197,6 +197,8 @@ internal static class WebApplicationBuilderExtension
                 options.AccessDeniedPath = "/account/accessdenied";
                 options.Events ??= new OpenIdConnectEvents();
                 var existingRedirectHandler = options.Events.OnRedirectToIdentityProvider;
+                var existingOnRemoteFailureHandler = options.Events.OnRemoteFailure;
+
                 options.Events.OnRedirectToIdentityProvider = async context =>
                 {
                     context.ProtocolMessage.Prompt = "select_account";
@@ -209,7 +211,7 @@ internal static class WebApplicationBuilderExtension
                 // This handler retries authentication once to obtain a fresh session. If the retry also fails
                 // (indicating a genuine issue like a required password change), the user is redirected to an
                 // error page to avoid an infinite redirect loop.
-                options.Events.OnRemoteFailure = context =>
+                options.Events.OnRemoteFailure = async context =>
                 {
                     if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
                         context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
@@ -223,7 +225,7 @@ internal static class WebApplicationBuilderExtension
                             {
                                 HttpOnly = true,
                                 IsEssential = true,
-                                Secure = context.Request.IsHttps,
+                                Secure = true,
                                 SameSite = SameSiteMode.Lax,
                                 MaxAge = TimeSpan.FromMinutes(5)
                             });
@@ -234,12 +236,16 @@ internal static class WebApplicationBuilderExtension
                         else
                         {
                             context.Response.Cookies.Delete(authRetryCookieName);
-                            context.Response.Redirect("/account/login-failed");
+                            context.Response.Redirect("/account/loginfailed");
                             context.HandleResponse();
                         }
                     }
+                    else
+                    {
 
-                    return Task.CompletedTask;
+                        if (existingOnRemoteFailureHandler != null)
+                            await existingOnRemoteFailureHandler(context);
+                    }
                 };
             });
 
