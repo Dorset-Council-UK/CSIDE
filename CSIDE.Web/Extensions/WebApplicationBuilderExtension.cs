@@ -197,11 +197,55 @@ internal static class WebApplicationBuilderExtension
                 options.AccessDeniedPath = "/account/accessdenied";
                 options.Events ??= new OpenIdConnectEvents();
                 var existingRedirectHandler = options.Events.OnRedirectToIdentityProvider;
+                var existingOnRemoteFailureHandler = options.Events.OnRemoteFailure;
+
                 options.Events.OnRedirectToIdentityProvider = async context =>
                 {
                     context.ProtocolMessage.Prompt = "select_account";
                     if (existingRedirectHandler != null)
                         await existingRedirectHandler(context);
+                };
+                // Workaround for Entra External ID stale session errors on first login of the day.
+                // When a user's Entra session expires overnight, the first authentication attempt can fail
+                // with AADSTS50133 (session invalid due to expiry) or AADSTS165000 (session context missing).
+                // This handler retries authentication once to obtain a fresh session. If the retry also fails
+                // (indicating a genuine issue like a required password change), the user is redirected to an
+                // error page to avoid an infinite redirect loop.
+                options.Events.OnRemoteFailure = async context =>
+                {
+                    if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
+                        context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
+                    {
+                        const string authRetryCookieName = "authretry";
+                        var hasRetried = context.Request.Cookies.ContainsKey(authRetryCookieName);
+
+                        if (!hasRetried)
+                        {
+                            context.Response.Cookies.Append(authRetryCookieName, "1", new CookieOptions
+                            {
+                                HttpOnly = true,
+                                IsEssential = true,
+                                Secure = true,
+                                SameSite = SameSiteMode.Lax,
+                                MaxAge = TimeSpan.FromMinutes(5)
+                            });
+
+                            context.Response.Redirect("/MicrosoftIdentity/Account/SignIn?returnUrl=%2F");
+                            context.HandleResponse();
+                        }
+                        else
+                        {
+                            context.Response.Cookies.Delete(authRetryCookieName);
+                            context.Response.Redirect("/account/loginfailed");
+                            context.HandleResponse();
+                        }
+                    }
+                    else
+                    {
+
+                        if (existingOnRemoteFailureHandler != null)
+                            await existingOnRemoteFailureHandler(context);
+                    }
                 };
             });
 

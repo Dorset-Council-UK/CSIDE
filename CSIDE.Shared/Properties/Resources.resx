@@ -1821,4 +1821,10 @@
   <data name="Help Link Label" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Login Failed Title" xml:space="preserve">
+    <value>Login failed</value>
+  </data>
+  <data name="Login Failed Text" xml:space="preserve">
+    <value>We couldn't sign you in. Please try again, and if the issue continues contact an administrator.</value>
+  </data>
 </root>
