@@ -3148,6 +3148,24 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t sign you in. Please try again, and if the issue continues contact an administrator..
+        /// </summary>
+        public static string Login_Failed_Text {
+            get {
+                return ResourceManager.GetString("Login Failed Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login failed.
+        /// </summary>
+        public static string Login_Failed_Title {
+            get {
+                return ResourceManager.GetString("Login Failed Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logout.
         /// </summary>
         public static string Logout_Label {
