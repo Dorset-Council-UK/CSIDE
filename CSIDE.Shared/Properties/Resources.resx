@@ -1818,4 +1818,28 @@
   <data name="Maintenance Attach Photo On Completion Reminder Text" xml:space="preserve">
     <value>Remember to attach a photo of the finished job if you haven't already.</value>
   </data>
+  <data name="Council Decisions Label" xml:space="preserve">
+    <value>Council decisions ({0})</value>
+  </data>
+  <data name="Council Decision Date Label" xml:space="preserve">
+    <value>Decision date</value>
+  </data>
+  <data name="Council Decision Type Label" xml:space="preserve">
+    <value>Decision type</value>
+  </data>
+  <data name="Council Decision Notes Label" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Add Council Decision Label" xml:space="preserve">
+    <value>Add council decision</value>
+  </data>
+  <data name="No Council Decision Summary Info Available Message" xml:space="preserve">
+    <value>No summary information available</value>
+  </data>
+  <data name="Delete Council Decision Confirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this council decision?</value>
+  </data>
+  <data name="No Council Decisions Message" xml:space="preserve">
+    <value>No council decisions</value>
+  </data>
 </root>

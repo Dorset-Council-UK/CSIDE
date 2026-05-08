@@ -1829,4 +1829,28 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Maintenance Attach Photo On Completion Reminder Text" xml:space="preserve">
     <value>Cofiwch atodi llun o'r gwaith gorffenedig os nad ydych chi wedi gwneud hynny eisoes.</value>
   </data>
+  <data name="Council Decisions Label" xml:space="preserve">
+    <value>Penderfyniadau'r cyngor ({0})</value>
+  </data>
+  <data name="Council Decision Date Label" xml:space="preserve">
+    <value>Dyddiad y penderfyniad</value>
+  </data>
+  <data name="Council Decision Type Label" xml:space="preserve">
+    <value>Math o benderfyniad</value>
+  </data>
+  <data name="Council Decision Notes Label" xml:space="preserve">
+    <value>Nodiadau</value>
+  </data>
+  <data name="Add Council Decision Label" xml:space="preserve">
+    <value>Ychwanegu penderfyniad cyngor</value>
+  </data>
+  <data name="No Council Decision Summary Info Available Message" xml:space="preserve">
+    <value>Dim gwybodaeth grynodeb ar gael</value>
+  </data>
+  <data name="Delete Council Decision Confirmation" xml:space="preserve">
+    <value>Ydych chi'n siŵr eich bod chi am ddileu'r penderfyniad cyngor hwn?</value>
+  </data>
+  <data name="No Council Decisions Message" xml:space="preserve">
+    <value>Dim penderfyniadau cyngor</value>
+  </data>
 </root>

@@ -205,6 +205,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add council decision.
+        /// </summary>
+        public static string Add_Council_Decision_Label {
+            get {
+                return ResourceManager.GetString("Add Council Decision Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add event.
         /// </summary>
         public static string Add_Event_Label {
@@ -1699,6 +1708,42 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Decision date.
+        /// </summary>
+        public static string Council_Decision_Date_Label {
+            get {
+                return ResourceManager.GetString("Council Decision Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notes.
+        /// </summary>
+        public static string Council_Decision_Notes_Label {
+            get {
+                return ResourceManager.GetString("Council Decision Notes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision type.
+        /// </summary>
+        public static string Council_Decision_Type_Label {
+            get {
+                return ResourceManager.GetString("Council Decision Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Council decisions ({0}).
+        /// </summary>
+        public static string Council_Decisions_Label {
+            get {
+                return ResourceManager.GetString("Council Decisions Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Council-owned land affected?.
         /// </summary>
         public static string Council_Land_Affected_Label {
@@ -1902,6 +1947,15 @@ namespace CSIDE.Shared.Properties {
         public static string Delete_Contact_Confirmation {
             get {
                 return ResourceManager.GetString("Delete Contact Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this council decision?.
+        /// </summary>
+        public static string Delete_Council_Decision_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Council Decision Confirmation", resourceCulture);
             }
         }
         
@@ -3495,6 +3549,24 @@ namespace CSIDE.Shared.Properties {
         public static string No_Contacts_Message {
             get {
                 return ResourceManager.GetString("No Contacts Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No summary information available.
+        /// </summary>
+        public static string No_Council_Decision_Summary_Info_Available_Message {
+            get {
+                return ResourceManager.GetString("No Council Decision Summary Info Available Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No council decisions.
+        /// </summary>
+        public static string No_Council_Decisions_Message {
+            get {
+                return ResourceManager.GetString("No Council Decisions Message", resourceCulture);
             }
         }
         
