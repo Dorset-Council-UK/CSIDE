@@ -15,8 +15,6 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter]
         public EventCallback<(DMMOCouncilDecision CouncilDecision, bool IsEdit)> OnSubmit { get; set; }
         [Parameter]
-        public EventCallback OnRefresh { get; set; }
-        [Parameter]
         public bool IsEditable { get; set; } = false;
 
         private DMMOCouncilDecision? NewCouncilDecision { get; set; }
