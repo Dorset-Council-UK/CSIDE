@@ -1,7 +1,4 @@
-﻿using CSIDE.Data.Models.DMMO;
-using NodaTime;
-
-namespace CSIDE.Data.Models.Shared
+﻿namespace CSIDE.Data.Models.Shared
 {
     public class CouncilDecisionPublicViewModel
     {

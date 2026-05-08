@@ -46,7 +46,7 @@ public static class DMMOApplicationExtensions
                 })
             ],
             Orders = [.. application.Orders.Select(o => new OrderPublicViewModel{
-                ReferenceNo = $"{dmmoIdPrefix}{application.Id}/{o.OrderId}",
+                ReferenceNo = $"{application.Id}/{o.OrderId}",
                 ObjectionsEndDate = o.ObjectionsEndDate?.ToDateOnly(),
                 ObjectionsReceived = o.ObjectionsReceived,
                 ObjectionsWithdrawn = o.ObjectionsWithdrawn,
@@ -60,7 +60,7 @@ public static class DMMOApplicationExtensions
             })],
             CouncilDecisions = [.. application.DMMOCouncilDecisions.Select(cd => new CouncilDecisionPublicViewModel
             {
-                ReferenceNo = $"{cd.DMMOApplicationId}/{cd.CouncilDecisionId}",
+                ReferenceNo = $"{application.Id}/{cd.CouncilDecisionId}",
                 CouncilDecision = cd.CouncilDecisionType?.Type,
                 Date = cd.Date?.ToDateOnly(),
                 Notes = cd.Notes,
