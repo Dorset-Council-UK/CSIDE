@@ -230,13 +230,15 @@ internal static class WebApplicationBuilderExtension
                                 MaxAge = TimeSpan.FromMinutes(5)
                             });
 
-                            context.Response.Redirect("/MicrosoftIdentity/Account/SignIn?returnUrl=%2F");
+                            var signInPath = context.Request.PathBase.Add("/MicrosoftIdentity/Account/SignIn");
+                            context.Response.Redirect($"{signInPath}?returnUrl=%2F");
                             context.HandleResponse();
                         }
                         else
                         {
                             context.Response.Cookies.Delete(authRetryCookieName);
-                            context.Response.Redirect("/account/loginfailed");
+                            var loginFailedPath = context.Request.PathBase.Add("/Account/LoginFailed");
+                            context.Response.Redirect(loginFailedPath);
                             context.HandleResponse();
                         }
                     }
