@@ -16,7 +16,6 @@ namespace CSIDE.Data.Models.DMMO
         public string? CaseOfficerUserId { get; set; }
         public string? PrivateComments { get; set; }
         public string? PublicComments { get; set; }
-        public LocalDate? DeterminationDate { get; set; }
         public bool? Appeal { get; set; }
         public LocalDate? AppealDate { get; set; }
         public LocalDate? DateOfDirectionOfSecState { get; set; }

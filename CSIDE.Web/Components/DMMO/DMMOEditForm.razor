@@ -120,21 +120,6 @@
             <ValidationMessage For="() => DMMOApplication.ReceivedDate" />
         </div>
 
-        <div class="mb-3 row">
-            <label class="form-label" for="dir-ss-date">@localizer["Determination Date Label"]</label>
-            <div class=" col-sm-4 col-md-6 col-lg-4">
-                @{
-                    string DeterminationDateStringRepresentation = "";
-                    if (DMMOApplication.DeterminationDate.HasValue)
-                    {
-                        DeterminationDateStringRepresentation = DMMOApplication.DeterminationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
-                    }
-                }
-                <input id="dir-ss-date" type="date" class="form-control" value="@DeterminationDateStringRepresentation" @onchange="UpdateDeterminationDateProperty" />
-            </div>
-            <ValidationMessage For="() => DMMOApplication.DeterminationDate" />
-        </div>
-
         <YesNoBoolean @bind-Value="DMMOApplication.Appeal" Label="@localizer["Appeal Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
 
         <div class="mb-3 row">

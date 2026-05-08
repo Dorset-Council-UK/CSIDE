@@ -65,12 +65,6 @@ namespace CSIDE.Web.Components.DMMO
         {
             UpdateDateProperty(eventArgs, date => DMMOApplication!.DateOfDirectionOfSecState = date);
         }
-
-        private void UpdateDeterminationDateProperty(ChangeEventArgs eventArgs)
-        {
-            UpdateDateProperty(eventArgs, date => DMMOApplication!.DeterminationDate = date);
-        }
-
         private void UpdateAppealDateProperty(ChangeEventArgs eventArgs)
         {
             UpdateDateProperty(eventArgs, date => DMMOApplication!.AppealDate = date);

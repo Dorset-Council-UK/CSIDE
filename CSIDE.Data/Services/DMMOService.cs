@@ -29,6 +29,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.DMMOApplication
             .Include(a => a.DMMOParishes)
             .Include(a => a.DMMOAddresses)
+            .Include(a => a.DMMOCouncilDecisions)
             .FirstOrDefaultAsync(a => a.Id == ApplicationId, cancellationToken: ct)
             .ConfigureAwait(false);
     }
@@ -707,7 +708,6 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
                 LocationDescription = d.LocationDescription,
                 CaseOfficer = d.CaseOfficer,
                 PublicComments = d.PublicComments,
-                DeterminationDate = d.DeterminationDate != null ? new DateOnly(d.DeterminationDate.Value.Year, d.DeterminationDate.Value.Month, d.DeterminationDate.Value.Day) : null,
                 Appeal = d.Appeal,
                 AppealDate = d.AppealDate != null ? new DateOnly(d.AppealDate.Value.Year, d.AppealDate.Value.Month, d.AppealDate.Value.Day) : null,
                 DateOfDirectionOfSecState = d.DateOfDirectionOfSecState != null ? new DateOnly(d.DateOfDirectionOfSecState.Value.Year, d.DateOfDirectionOfSecState.Value.Month, d.DateOfDirectionOfSecState.Value.Day) : null,

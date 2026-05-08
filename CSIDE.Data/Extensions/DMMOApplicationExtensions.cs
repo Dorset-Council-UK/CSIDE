@@ -18,7 +18,6 @@ public static class DMMOApplicationExtensions
             LocationDescription = application.LocationDescription,
             CaseOfficer = application.CaseOfficer,
             PublicComments = application.PublicComments,
-            DeterminationDate = application.DeterminationDate?.ToDateOnly(),
             Appeal = application.Appeal,
             AppealDate = application.AppealDate?.ToDateOnly(),
             DateOfDirectionOfSecState = application.DateOfDirectionOfSecState?.ToDateOnly(),
@@ -47,7 +46,7 @@ public static class DMMOApplicationExtensions
                 })
             ],
             Orders = [.. application.Orders.Select(o => new OrderPublicViewModel{
-                ReferenceNo = $"{dmmoIdPrefix}{application.Id}/{o.OrderId}",
+                ReferenceNo = $"{application.Id}/{o.OrderId}",
                 ObjectionsEndDate = o.ObjectionsEndDate?.ToDateOnly(),
                 ObjectionsReceived = o.ObjectionsReceived,
                 ObjectionsWithdrawn = o.ObjectionsWithdrawn,
@@ -58,7 +57,15 @@ public static class DMMOApplicationExtensions
                 DateConfirmed = o.DateConfirmed?.ToDateOnly(),
                 DateSealed = o.DateSealed?.ToDateOnly(),
                 DatePublished = o.DatePublished?.ToDateOnly()
-            })]
+            })],
+            CouncilDecisions = [.. application.DMMOCouncilDecisions.Select(cd => new CouncilDecisionPublicViewModel
+            {
+                ReferenceNo = $"{application.Id}/{cd.CouncilDecisionId}",
+                CouncilDecision = cd.CouncilDecisionType?.Type,
+                Date = cd.Date?.ToDateOnly(),
+                Notes = cd.Notes,
+             })]
+
         };
     }
 
@@ -74,7 +81,6 @@ public static class DMMOApplicationExtensions
             LocationDescription = application.LocationDescription,
             CaseOfficer = application.CaseOfficer,
             PublicComments = application.PublicComments,
-            DeterminationDate = application.DeterminationDate?.ToDateOnly(),
             Appeal = application.Appeal,
             AppealDate = application.AppealDate?.ToDateOnly(),
             DateOfDirectionOfSecState = application.DateOfDirectionOfSecState?.ToDateOnly(),
