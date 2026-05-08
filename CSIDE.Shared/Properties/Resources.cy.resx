@@ -1853,4 +1853,13 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="No Council Decisions Message" xml:space="preserve">
     <value>Dim penderfyniadau cyngor</value>
   </data>
+  <data name="Help Link Label" xml:space="preserve">
+    <value>Cymorth</value>
+  </data>
+  <data name="Login Failed Title" xml:space="preserve">
+    <value>Methodd mewngofnodi</value>
+  </data>
+  <data name="Login Failed Text" xml:space="preserve">
+    <value>Ni allem eich mewngofnodi. Rhowch gynnig arall arni, ac os yw'r broblem yn parhau cysylltwch â gweinyddwr.</value>
+  </data>
 </root>

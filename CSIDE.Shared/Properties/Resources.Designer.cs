@@ -2482,6 +2482,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Help_Link_Label {
+            get {
+                return ResourceManager.GetString("Help Link Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide previous statements.
         /// </summary>
         public static string Hide_Previous_Statements_Label {
@@ -3189,6 +3198,24 @@ namespace CSIDE.Shared.Properties {
         public static string Logged_By_Label {
             get {
                 return ResourceManager.GetString("Logged By Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t sign you in. Please try again, and if the issue continues contact an administrator..
+        /// </summary>
+        public static string Login_Failed_Text {
+            get {
+                return ResourceManager.GetString("Login Failed Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login failed.
+        /// </summary>
+        public static string Login_Failed_Title {
+            get {
+                return ResourceManager.GetString("Login Failed Title", resourceCulture);
             }
         }
         

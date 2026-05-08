@@ -174,6 +174,12 @@ internal static class WebApplicationBuilderExtension
             .AddMicrosoftIdentityWebApp(options =>
             {
                 azureAdSection.Bind(options);
+
+                if (string.IsNullOrWhiteSpace(options.SignedOutCallbackPath))
+                {
+                    options.SignedOutCallbackPath = "/signout-callback-oidc";
+                }
+
                 options.ErrorPath = "/Error";
                 options.SignedOutRedirectUri = "/account/signedout";
                 options.AccessDeniedPath = "/account/accessdenied";
@@ -189,6 +195,60 @@ internal static class WebApplicationBuilderExtension
                 options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
                 options.SignedOutRedirectUri = "/account/signedout";
                 options.AccessDeniedPath = "/account/accessdenied";
+                options.Events ??= new OpenIdConnectEvents();
+                var existingRedirectHandler = options.Events.OnRedirectToIdentityProvider;
+                var existingOnRemoteFailureHandler = options.Events.OnRemoteFailure;
+
+                options.Events.OnRedirectToIdentityProvider = async context =>
+                {
+                    context.ProtocolMessage.Prompt = "select_account";
+                    if (existingRedirectHandler != null)
+                        await existingRedirectHandler(context);
+                };
+                // Workaround for Entra External ID stale session errors on first login of the day.
+                // When a user's Entra session expires overnight, the first authentication attempt can fail
+                // with AADSTS50133 (session invalid due to expiry) or AADSTS165000 (session context missing).
+                // This handler retries authentication once to obtain a fresh session. If the retry also fails
+                // (indicating a genuine issue like a required password change), the user is redirected to an
+                // error page to avoid an infinite redirect loop.
+                options.Events.OnRemoteFailure = async context =>
+                {
+                    if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
+                        context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
+                    {
+                        const string authRetryCookieName = "authretry";
+                        var hasRetried = context.Request.Cookies.ContainsKey(authRetryCookieName);
+
+                        if (!hasRetried)
+                        {
+                            context.Response.Cookies.Append(authRetryCookieName, "1", new CookieOptions
+                            {
+                                HttpOnly = true,
+                                IsEssential = true,
+                                Secure = true,
+                                SameSite = SameSiteMode.Lax,
+                                MaxAge = TimeSpan.FromMinutes(5)
+                            });
+
+                            var signInPath = context.Request.PathBase.Add("/MicrosoftIdentity/Account/SignIn");
+                            context.Response.Redirect($"{signInPath}?returnUrl=%2F");
+                            context.HandleResponse();
+                        }
+                        else
+                        {
+                            context.Response.Cookies.Delete(authRetryCookieName);
+                            var loginFailedPath = context.Request.PathBase.Add("/Account/LoginFailed");
+                            context.Response.Redirect(loginFailedPath);
+                            context.HandleResponse();
+                        }
+                    }
+                    else
+                    {
+
+                        if (existingOnRemoteFailureHandler != null)
+                            await existingOnRemoteFailureHandler(context);
+                    }
+                };
             });
 
         builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
