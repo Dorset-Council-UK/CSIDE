@@ -13,7 +13,7 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter]
         public int DMMOApplicationId { get; set; }
         [Parameter]
-        public EventCallback<DMMOCouncilDecision> OnSubmit { get; set; }
+        public EventCallback<(DMMOCouncilDecision CouncilDecision, bool IsEdit)> OnSubmit { get; set; }
         [Parameter]
         public EventCallback OnRefresh { get; set; }
         [Parameter]
@@ -46,7 +46,7 @@ namespace CSIDE.Web.Components.DMMO
                 IsBusy = true;
                 if (OnSubmit.HasDelegate)
                 {
-                    await OnSubmit.InvokeAsync(NewCouncilDecision);
+                    await OnSubmit.InvokeAsync((NewCouncilDecision!, IsEdit));
                 }
                 IsBusy = false;
                 await HideAddCouncilDecisionModal();

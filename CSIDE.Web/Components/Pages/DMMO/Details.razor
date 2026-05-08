@@ -190,7 +190,7 @@ else
                                 <DMMOCouncilDecisionsList CouncilDecisions="DMMOApplication.DMMOCouncilDecisions"
                                                 IsEditable="UserCanEdit"
                                                 DMMOApplicationId="DMMOApplication.Id"
-                                                OnSubmit="SaveCouncilDecision">
+                                                OnSubmit="@(args => SaveCouncilDecision(args.CouncilDecision, args.IsEdit))">
                                 </DMMOCouncilDecisionsList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
@@ -333,8 +333,6 @@ else
     private DMMOApplication? DMMOApplication { get; set; }
 
     private bool IsBusy { get; set; }
-    [Parameter]
-    public bool IsEdit { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
@@ -409,13 +407,13 @@ else
         StateHasChanged();
     }
 
-    private async Task SaveCouncilDecision(DMMOCouncilDecision councilDecision)
+    private async Task SaveCouncilDecision(DMMOCouncilDecision councilDecision, bool isEdit)
     {
         if (councilDecision is not null && DMMOApplication is not null)
         {
             councilDecision.DMMOApplicationId = DMMOApplication.Id;
 
-            if (IsEdit == false)
+            if (isEdit == false)
             {
                 await dmmoService.AddCouncilDecisionToDMMO(councilDecision);
             }
