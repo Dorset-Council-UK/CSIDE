@@ -1,6 +1,5 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
-using CSIDE.Data.Models.Shared;
 using Microsoft.AspNetCore.Components;
 using NodaTime;
 
@@ -17,26 +16,22 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter]
         public bool IsEdit { get; set; }
         [Parameter, EditorRequired]
-        public EventCallback OnSubmit { get; set; }
+        public EventCallback<DMMOCouncilDecision> OnSubmit { get; set; }
         [Parameter, EditorRequired]
         public EventCallback OnCancel { get; set; }
 
         private FluentValidationValidator? fluentValidationValidator;
 
-        private async Task SubmitFormAsync()
+        private async Task HandleSubmit()
         {
             if (OnSubmit.HasDelegate)
             {
-                await OnSubmit.InvokeAsync();
+                await OnSubmit.InvokeAsync(CouncilDecision);
             }
         }
 
         public async Task<bool> ValidateAsync()
         {
-            if (!IsEdit)
-            {
-                return await fluentValidationValidator!.ValidateAsync(opts => opts.IncludeAllRuleSets());
-            }
             return await fluentValidationValidator!.ValidateAsync();
         }
 

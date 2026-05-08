@@ -10,9 +10,6 @@ namespace CSIDE.Data.Validators.DMMO
         public CouncilDecisionValidator(IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer)
         {
             _localizer = localizer;
-            RuleFor(dmmoCouncilDecision => dmmoCouncilDecision.CouncilDecisionType)
-                .NotEmpty()
-                .WithName(_localizer["Council Decision Type Label"]);
 
             RuleFor(dmmoCouncilDecision => dmmoCouncilDecision.Date)
                 .NotEmpty()

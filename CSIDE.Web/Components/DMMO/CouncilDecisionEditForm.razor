@@ -2,7 +2,7 @@
 
 @if (CouncilDecision is not null)
 {
-    <EditForm Model="CouncilDecision" OnSubmit="@SubmitFormAsync">
+    <EditForm Model="CouncilDecision" OnSubmit="@HandleSubmit">
 
         <FluentValidationValidator @ref="fluentValidationValidator" />
         <ValidationSummary />
@@ -46,16 +46,8 @@
             <ValidationMessage For="() => CouncilDecision.Notes" />
         </div>
 
-        @if (IsEdit)
-        {
-            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Update Label"]</button>
-        }
-        else
-        {
-            <button type="submit" class="btn btn-primary" disabled="@IsBusy">@localizer["Create Label"]</button>
-        }
+        <button type="submit" class="btn btn-outline-primary" disabled="@IsBusy">@localizer["Save Label"]</button>
         <button type="button" class="btn btn-link ms-2" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
-
 
     </EditForm>
 
