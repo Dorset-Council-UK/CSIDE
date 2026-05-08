@@ -29,6 +29,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.DMMOApplication
             .Include(a => a.DMMOParishes)
             .Include(a => a.DMMOAddresses)
+            .Include(a => a.DMMOCouncilDecisions)
             .FirstOrDefaultAsync(a => a.Id == ApplicationId, cancellationToken: ct)
             .ConfigureAwait(false);
     }

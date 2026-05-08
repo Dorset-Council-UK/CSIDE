@@ -57,7 +57,15 @@ public static class DMMOApplicationExtensions
                 DateConfirmed = o.DateConfirmed?.ToDateOnly(),
                 DateSealed = o.DateSealed?.ToDateOnly(),
                 DatePublished = o.DatePublished?.ToDateOnly()
-            })]
+            })],
+            CouncilDecisions = [.. application.DMMOCouncilDecisions.Select(cd => new CouncilDecisionPublicViewModel
+            {
+                ReferenceNo = $"{cd.DMMOApplicationId}/{cd.CouncilDecisionId}",
+                CouncilDecision = cd.CouncilDecisionType?.Type,
+                Date = cd.Date?.ToDateOnly(),
+                Notes = cd.Notes,
+             })]
+
         };
     }
 
