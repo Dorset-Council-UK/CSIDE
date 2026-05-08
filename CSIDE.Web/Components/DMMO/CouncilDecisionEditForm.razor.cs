@@ -35,7 +35,7 @@ namespace CSIDE.Web.Components.DMMO
             return await fluentValidationValidator!.ValidateAsync();
         }
 
-        private void UpdateDateSealedProperty(ChangeEventArgs eventArgs)
+        private void UpdateDecisionDateProperty(ChangeEventArgs eventArgs)
         {
             UpdateDateProperty(eventArgs, date => CouncilDecision!.Date = date);
         }

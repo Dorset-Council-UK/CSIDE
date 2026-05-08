@@ -17,7 +17,7 @@
                         DateStringRepresentation = CouncilDecision.Date.Value.ToDateOnly().ToString("yyyy-MM-dd");
                     }
                 }
-                <input id="council-decision-date" type="date" class="form-control" value="@DateStringRepresentation" @onchange="UpdateDateSealedProperty" />
+                <input id="council-decision-date" type="date" class="form-control" value="@DateStringRepresentation" @onchange="UpdateDecisionDateProperty" />
             </div>
             <ValidationMessage For="() => CouncilDecision.Date" />
         </div>
