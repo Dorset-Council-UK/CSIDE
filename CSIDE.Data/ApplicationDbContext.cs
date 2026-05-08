@@ -46,6 +46,7 @@ namespace CSIDE.Data
         public DbSet<Models.DMMO.ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
         public DbSet<Models.DMMO.ApplicationType> DMMOApplicationTypes { get; set; }
         public DbSet<Models.DMMO.ApplicationDirectionOfSecState> DMMOApplicationDirectionsOfSecState { get; set; }
+        public DbSet<CouncilDecisionType> DMMOCouncilDecisionTypes { get; set; }
 
         public DbSet<DMMOMedia> DMMOMedia { get; set; }
         public DbSet<DMMOClaimedStatus> DMMOClaimedStatuses { get; set; }
@@ -55,6 +56,7 @@ namespace CSIDE.Data
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
         public DbSet<DMMOOrder> DMMOOrders { get; set; }
         public DbSet<Models.DMMO.DMMOEvent> DMMOEvents { get; set; }
+        public DbSet<DMMOCouncilDecision> DMMOCouncilDecisions { get; set; }
 
         public DbSet<PPOApplication> PPOApplication { get; set; }
         public DbSet<Models.PPO.ApplicationCaseStatus> PPOApplicationCaseStatuses { get; set; }

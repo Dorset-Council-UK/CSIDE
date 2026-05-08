@@ -32,6 +32,10 @@ internal class DMMOInterceptor : ISaveChangesInterceptor
                 {
                     dmmoOrder.OrderId = await NextOrderId(context, dmmoOrder.DMMOApplicationId, cancellationToken);
                 }
+                else if (entry.Entity is DMMOCouncilDecision dmmoCouncilDecision && entry.State is EntityState.Added)
+                {
+                    dmmoCouncilDecision.CouncilDecisionId = await NextCouncilDecisionId(context, dmmoCouncilDecision.DMMOApplicationId, cancellationToken);
+                }
             }
         }
     }
@@ -78,5 +82,18 @@ internal class DMMOInterceptor : ISaveChangesInterceptor
             .ConfigureAwait(false) ?? 0;
 
         return highestOrderNumber + 1;
+    }
+
+    private static async Task<int> NextCouncilDecisionId(ApplicationDbContext context, int applicationId, CancellationToken cancellationToken)
+    {
+        var highestCouncilDecisionNumber = await context.DMMOCouncilDecisions
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Where(d => d.DMMOApplicationId == applicationId)
+            .Select(d => (int?)d.CouncilDecisionId)
+            .MaxAsync(cancellationToken)
+            .ConfigureAwait(false) ?? 0;
+
+        return highestCouncilDecisionNumber + 1;
     }
 }

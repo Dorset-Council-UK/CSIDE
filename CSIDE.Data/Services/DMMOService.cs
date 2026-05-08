@@ -199,6 +199,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .FirstOrDefaultAsync(p => p.OrderId == OrderId && p.DMMOApplicationId == ApplicationId, cancellationToken: ct);
     }
 
+    public async Task<DMMOCouncilDecision?> GetCouncilDecisionById(int CouncilDecisionId, int ApplicationId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOCouncilDecisions
+            .AsNoTracking()
+            .Include(p => p.CouncilDecisionType)
+            .FirstOrDefaultAsync(p => p.CouncilDecisionId == CouncilDecisionId && p.DMMOApplicationId == ApplicationId, cancellationToken: ct);
+    }
+
     public async Task<ICollection<DMMOLinkedRoute>> GetDMMOLinkedRoutesByApplicationId(int ApplicationId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -264,6 +273,16 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
+
+    public async Task<ICollection<DMMOCouncilDecision>> GetCouncilDecisionsByApplicationId(int ApplicationId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOCouncilDecisions
+            .Where(o => o.DMMOApplicationId == ApplicationId)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task<ICollection<DMMOMediaType>> GetDMMOMediaTypes(CancellationToken ct = default)
     {
         //TODO - Cache this
@@ -291,6 +310,16 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.OrderDeterminationProcesses
                 .AsNoTracking()
                 .OrderBy(p => p.Name)
+                .ToArrayAsync(cancellationToken: ct);
+    }
+
+    public async Task<ICollection<CouncilDecisionType>> GetCouncilDecisionTypeOptions(CancellationToken ct = default)
+    {
+        //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOCouncilDecisionTypes
+                .AsNoTracking()
+                .OrderBy(p => p.Id)
                 .ToArrayAsync(cancellationToken: ct);
     }
 
@@ -352,6 +381,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await context.SaveChangesAsync(ct);
         return dmmoOrder;
     }
+
+    public async Task<DMMOCouncilDecision> AddCouncilDecisionToDMMO(DMMOCouncilDecision dmmoCouncilDecision, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        context.Add(dmmoCouncilDecision);
+        await context.SaveChangesAsync(ct);
+        return dmmoCouncilDecision;
+    }
+
     public async Task<DMMOApplication> AddMediaToDMMO(DMMOApplication DMMOApplication, DMMOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -487,6 +525,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return dmmoOrder;
     }
 
+    public async Task<DMMOCouncilDecision> UpdateDMMOCouncilDecision(int CouncilDecisionId, DMMOCouncilDecision dmmoCouncilDecision, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingCouncilDecision = await context.DMMOCouncilDecisions.FindAsync([CouncilDecisionId, dmmoCouncilDecision.DMMOApplicationId], cancellationToken: ct) ?? throw new Exception($"DMMO Council Decision being edited (ID: {CouncilDecisionId}) was not found prior to updating");
+        context.Entry(existingCouncilDecision).CurrentValues.SetValues(dmmoCouncilDecision);
+        await context.SaveChangesAsync(ct).ConfigureAwait(false);
+        return dmmoCouncilDecision;
+    }
+
     public async Task<bool> DeleteDMMOAddress(int ApplicationId, long UPRN, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -518,6 +565,18 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         if (DMMOOrderToDelete is not null)
         {
             context.Remove(DMMOOrderToDelete);
+            await context.SaveChangesAsync(ct).ConfigureAwait(false);
+        }
+        return true;
+    }
+
+    public async Task<bool> DeleteDMMOCouncilDecision(int ApplicationId, int CouncilDecisionId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var DMMOCouncilDecisionToDelete = await context.DMMOCouncilDecisions.FindAsync([CouncilDecisionId, ApplicationId], ct);
+        if (DMMOCouncilDecisionToDelete is not null)
+        {
+            context.Remove(DMMOCouncilDecisionToDelete);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
         }
         return true;
