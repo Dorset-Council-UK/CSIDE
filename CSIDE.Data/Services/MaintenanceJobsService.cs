@@ -655,7 +655,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var jobStatuses = await GetMaintenanceJobStatuses(ct);
         var jobPriorities = await GetMaintenanceJobPriorities(ct);
 
-        //Some services HTML encode, so decode at this point as a defensive measure
+        // Some clients send HTML-encoded text, so decode it here as a defensive measure.
         var decodedProblemDescription = WebUtility.HtmlDecode(model.ProblemDescription);
 
         return new Job
