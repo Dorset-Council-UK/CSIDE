@@ -15,6 +15,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace CSIDE.Data.Services;
 
@@ -654,10 +655,13 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var jobStatuses = await GetMaintenanceJobStatuses(ct);
         var jobPriorities = await GetMaintenanceJobPriorities(ct);
 
+        //Some services HTML encode, so decode at this point as a defensive measure
+        var decodedProblemDescription = WebUtility.HtmlDecode(model.ProblemDescription);
+
         return new Job
         {
             RouteId = nearestRoute?.RouteCode,
-            ProblemDescription = model.ProblemDescription,
+            ProblemDescription = decodedProblemDescription,
             LoggedByName = "Public",
             JobStatusId = jobStatuses?.FirstOrDefault()?.Id,
             JobPriorityId = jobPriorities?.FirstOrDefault()?.Id,
