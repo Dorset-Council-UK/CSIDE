@@ -78,6 +78,8 @@ Responsive="true">
     [Parameter]
     public string? JobStatusId { get; set; }
     [Parameter]
+    public string[]? ProblemTypeIds { get; set; }
+    [Parameter]
     public DateOnly? LogDateFrom { get; set; }
     [Parameter]
     public DateOnly? LogDateTo { get; set; }
@@ -108,6 +110,7 @@ Responsive="true">
             JobPriorityId,
             IsComplete,
             JobStatusId,
+            ProblemTypeIds,
             LogDateFrom,
             LogDateTo,
             CompletedDateFrom,

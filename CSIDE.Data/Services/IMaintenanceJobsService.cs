@@ -22,6 +22,7 @@ public interface IMaintenanceJobsService
         string? JobPriorityId,
         bool? IsComplete,
         string? JobStatusId,
+        string[]? ProblemTypeIds,
         DateOnly? LogDateFrom,
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
