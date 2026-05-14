@@ -20,6 +20,8 @@ namespace CSIDE.Web.Components.Pages.Maintenance
         [SupplyParameterFromQuery]
         private string? JobStatusId { get; set; }
         [SupplyParameterFromQuery]
+        private string[]? ProblemTypeIds { get; set; }
+        [SupplyParameterFromQuery]
         private DateOnly? LogDateFrom { get; set; }
         [SupplyParameterFromQuery]
         private DateOnly? LogDateTo { get; set; }

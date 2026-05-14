@@ -138,6 +138,25 @@
                     </InputSelect>
                 </div>
 
+                @if (ProblemTypes is not null && ProblemTypes.Length != 0)
+                {
+                    <div class="mb-3">
+                        <fieldset>
+                            <legend class="form-label fs-6">@localizer["Problem Types Label"]</legend>
+
+                            @foreach (var ProblemType in ProblemTypes)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@ProblemType.Id" id="ProblemType__@ProblemType.Id" @onchange="(e) => { ProblemTypeChanged(ProblemType, e); }">
+                                    <label class="form-check-label" for="ProblemType__@ProblemType.Id">
+                                        @ProblemType.Name
+                                    </label>
+                                </div>
+                            }
+                        </fieldset>
+                    </div>
+                }
+
                 <div class="mb-3">
                     <div class="row">
                         <div class="col-md-6">
@@ -167,6 +186,8 @@
                         </div>
                     </div>
                 </div>
+
+                <ValidationSummary />
 
                 <button class="btn btn-lg btn-outline-secondary" type="submit" id="search-job-button" disabled="@IsBusy"><span class="bi bi-search"></span> @localizer["Search Label"]</button>
 

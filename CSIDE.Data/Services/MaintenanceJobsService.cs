@@ -64,6 +64,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         string? JobPriorityId,
         bool? IsComplete,
         string? JobStatusId,
+        string[]? ProblemTypeIds,
         DateOnly? LogDateFrom,
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
@@ -91,7 +92,18 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             query = query.Where(j => j.RouteId == RouteId.ToUpper());
         }
 
-        query = ApplySearchFilters(query, ParishIds, ParishId, AssignedToTeamId, JobPriorityId, IsComplete, JobStatusId, LogDateFrom, LogDateTo, CompletedDateFrom, CompletedDateTo);
+        query = ApplySearchFilters(query,
+                                   ParishIds,
+                                   ParishId,
+                                   AssignedToTeamId,
+                                   JobPriorityId,
+                                   IsComplete,
+                                   JobStatusId,
+                                   ProblemTypeIds,
+                                   LogDateFrom,
+                                   LogDateTo,
+                                   CompletedDateFrom,
+                                   CompletedDateTo);
 
         // Get total count before applying skip/take
         var totalCount = await query.CountAsync(cancellationToken: ct);
@@ -135,6 +147,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         string? JobPriorityId,
         bool? IsComplete,
         string? JobStatusId,
+        string[]? ProblemTypeIds,
         DateOnly? LogDateFrom,
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
@@ -163,6 +176,18 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         if (JobPriorityId is not null && int.TryParse(JobPriorityId, CultureInfo.InvariantCulture, out int parsedPriorityId))
         {
             query = query.Where(j => j.JobPriorityId == parsedPriorityId);
+        }
+        if (ProblemTypeIds is not null && ProblemTypeIds.Length != 0)
+        {
+            var parsedProblemTypeIds = ProblemTypeIds
+                .Select(id => (Parsed: int.TryParse(id, CultureInfo.InvariantCulture, out int value), Value: value))
+                .Where(result => result.Parsed)
+                .Select(result => result.Value)
+                .ToList();
+            if (parsedProblemTypeIds.Count != 0)
+            {
+                query = query.Where(j => j.ProblemTypes.Any(pt => parsedProblemTypeIds.Contains(pt.ProblemTypeId)));
+            }
         }
         if (IsComplete.HasValue)
         {
@@ -579,7 +604,18 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             query = query.Where(j => j.RouteId == RouteId.ToUpper());
         }
 
-        query = ApplySearchFilters(query, ParishIds, ParishId, AssignedToTeamId, JobPriorityId, IsComplete, JobStatusId, LogDateFrom, LogDateTo, CompletedDateFrom, CompletedDateTo);
+        query = ApplySearchFilters(query,
+                                   ParishIds,
+                                   ParishId,
+                                   AssignedToTeamId,
+                                   JobPriorityId,
+                                   IsComplete,
+                                   JobStatusId,
+                                   [],
+                                   LogDateFrom,
+                                   LogDateTo,
+                                   CompletedDateFrom,
+                                   CompletedDateTo);
 
         var totalCount = await query.CountAsync(cancellationToken: ct);
 
