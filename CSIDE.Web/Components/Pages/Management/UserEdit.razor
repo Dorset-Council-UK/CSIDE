@@ -32,14 +32,7 @@
                             <tr><th>@localizer["Name Label"]</th><td>@User.DisplayName</td></tr>
                             <tr>
                                 <th>@localizer["Email Label"]</th>
-                                <td>
-                                    @if(User.OtherMails is not null){
-                                        @foreach (var mail in User.OtherMails)
-                                        {
-                                            @mail
-                                            <br />
-                                        }
-                                    }
+                                <td>@(!string.IsNullOrEmpty(User.Mail) ?  User.Mail : (User.OtherMails is not null ? string.Join(',', User.OtherMails) : ""))
                                 </td>
                             </tr>
                         </tbody>

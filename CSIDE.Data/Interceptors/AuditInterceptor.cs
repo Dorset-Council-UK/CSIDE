@@ -266,9 +266,15 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             secondaryId = primaryId;
             primaryId = ppoEvent.PPOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
+        if(entry.Entity is JobSubscriber)
+        {
+            secondaryId = ObscureEmailAddress(secondaryId);
+        }
 
         return (primaryId, secondaryId);
     }
+
+
 
     /// <summary>
     /// Default values for EntityId and SecondaryEntityId
@@ -327,7 +333,7 @@ internal class AuditInterceptor : ISaveChangesInterceptor
                     StringComparer.Ordinal
                 );
         }
-
+        properties = ObscureSensitiveAuditProperties(entry, properties);
         return JsonSerializer.SerializeToDocument(properties, _jsonSerializerOptions);
     }
 
@@ -359,47 +365,8 @@ internal class AuditInterceptor : ISaveChangesInterceptor
                     StringComparer.Ordinal
                 );
         }
-
+        properties = ObscureSensitiveAuditProperties(entry, properties);
         return JsonSerializer.SerializeToDocument(properties, _jsonSerializerOptions);
-    }
-
-    private static ICollection<EntityEntry> GetChildEntities(ApplicationDbContext context, EntityEntry parentEntry)
-    {
-        ICollection<EntityEntry> childEntries = [];
-        var entityType = parentEntry.Metadata;
-
-        foreach (var navigation in entityType.GetNavigations())
-        {
-            if (navigation.IsCollection)
-            {
-                var relatedEntities = context.Entry(parentEntry.Entity).Collection(navigation.Name).CurrentValue;
-                if (relatedEntities != null)
-                {
-                    foreach (var relatedEntity in relatedEntities)
-                    {
-                        var relatedEntry = context.Entry(relatedEntity);
-                        if (relatedEntry.State != EntityState.Detached)
-                        {
-                            childEntries.Add(relatedEntry);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var relatedEntity = context.Entry(parentEntry.Entity).Reference(navigation.Name).CurrentValue;
-                if (relatedEntity != null)
-                {
-                    var relatedEntry = context.Entry(relatedEntity);
-                    if (relatedEntry.State != EntityState.Detached)
-                    {
-                        childEntries.Add(relatedEntry);
-                    }
-                }
-            }
-        }
-
-        return childEntries;
     }
 
     private static object ConvertGeometryToSerializableFormat(object value)
@@ -410,5 +377,42 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             return wktWriter.Write(geometry);
         }
         return value;
+    }
+
+    private static string ObscureEmailAddress(string emailAddress)
+    {
+        if (string.IsNullOrWhiteSpace(emailAddress))
+        {
+            return emailAddress;
+        }
+
+        var atIndex = emailAddress.IndexOf('@');
+        if (atIndex <= 0 || atIndex == emailAddress.Length - 1)
+        {
+            // Invalid email format, return as is
+            return emailAddress;
+        }
+
+        var localPart = emailAddress.AsSpan(0, atIndex);
+        var domainPart = emailAddress.AsSpan(atIndex);
+
+        if (localPart.Length <= 2)
+        {
+            // If local part is too short, obscure it completely
+            return $"{new string('*', localPart.Length)}{domainPart}";
+        }
+
+        // Show first and last character, obscure the middle
+        var obscuredLength = localPart.Length - 2;
+        return $"{localPart[0]}{new string('*', obscuredLength)}{localPart[^1]}{domainPart}";
+    }
+
+    private static IDictionary<string, object> ObscureSensitiveAuditProperties(EntityEntry entry, IDictionary<string, object> properties)
+    {
+        if (entry.Entity is JobSubscriber && properties.TryGetValue(nameof(JobSubscriber.EmailAddress), out object? value))
+        {
+            properties[nameof(JobSubscriber.EmailAddress)] = ObscureEmailAddress(value?.ToString() ?? string.Empty);
+        }
+        return properties;
     }
 }
