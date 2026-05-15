@@ -266,9 +266,15 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             secondaryId = primaryId;
             primaryId = ppoEvent.PPOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
+        if(entry.Entity is JobSubscriber jobSubscriber)
+        {
+            secondaryId = ObscureEmailAddress(secondaryId);
+        }
 
         return (primaryId, secondaryId);
     }
+
+
 
     /// <summary>
     /// Default values for EntityId and SecondaryEntityId
@@ -410,5 +416,33 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             return wktWriter.Write(geometry);
         }
         return value;
+    }
+
+    private static string ObscureEmailAddress(string emailAddress)
+    {
+        if (string.IsNullOrWhiteSpace(emailAddress))
+        {
+            return emailAddress;
+        }
+
+        var atIndex = emailAddress.IndexOf('@');
+        if (atIndex <= 0 || atIndex == emailAddress.Length - 1)
+        {
+            // Invalid email format, return as is
+            return emailAddress;
+        }
+
+        var localPart = emailAddress.AsSpan(0, atIndex);
+        var domainPart = emailAddress.AsSpan(atIndex);
+
+        if (localPart.Length <= 2)
+        {
+            // If local part is too short, obscure it completely
+            return new string('*', localPart.Length) + domainPart.ToString();
+        }
+
+        // Show first and last character, obscure the middle
+        var obscuredLength = localPart.Length - 2;
+        return $"{localPart[0]}{new string('*', obscuredLength)}{localPart[^1]}{domainPart}";
     }
 }
