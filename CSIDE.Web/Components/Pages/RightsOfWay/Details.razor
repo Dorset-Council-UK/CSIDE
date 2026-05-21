@@ -168,7 +168,7 @@ else
                     <ChildContent>
                         <ErrorBoundary>
                             <ChildContent>
-                                <MediaList Route="@Route" IsEditable="UserCanEdit"></MediaList>
+                                <MediaList Route="@Route" IsEditable="UserCanEditMedia"></MediaList>
                             </ChildContent>
                             <ErrorContent Context="Exception">
                                 <GenericErrorAlert Exception="Exception"></GenericErrorAlert>
@@ -236,6 +236,7 @@ else
 
     private bool UserCanEdit { get; set; } = false;
     private bool UserCanEditStatements { get; set; } = false;
+    private bool UserCanEditMedia { get; set; } = false;
 
     private string[] AuditLogSectionNames => new string[] {
         nameof(Data.Models.RightsOfWay.Route),
@@ -271,6 +272,7 @@ else
             {
                 UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
                 UserCanEditStatements = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("RoW Statement Editor");
+                UserCanEditMedia = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("Ranger");
             }
         }
     }
