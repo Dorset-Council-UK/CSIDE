@@ -234,7 +234,6 @@ else
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
 
-    private bool UserCanEdit { get; set; } = false;
     private bool UserCanEditStatements { get; set; } = false;
     private bool UserCanEditMedia { get; set; } = false;
 
@@ -270,7 +269,6 @@ else
             var user = authState?.User;
             if (user is not null)
             {
-                UserCanEdit = user.IsInRole("Administrator") || user.IsInRole("RoW Officer");
                 UserCanEditStatements = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("RoW Statement Editor");
                 UserCanEditMedia = user.IsInRole("Administrator") || user.IsInRole("RoW Officer") || user.IsInRole("Ranger");
             }
