@@ -40,13 +40,17 @@ internal class MaintenanceJobInterceptor : ISaveChangesInterceptor
     {
         if (geom == null) return null;
 
-        return await context.Parishes
+        var parishId = await context.Parishes
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(p => p.Geom.Contains(geom))
             .Select(p => p.ParishId)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        if (parishId == 0) return null;
+
+        return parishId;
     }
 
     /// <summary>
@@ -56,12 +60,16 @@ internal class MaintenanceJobInterceptor : ISaveChangesInterceptor
     {
         if (geom == null) return null;
 
-        return await context.MaintenanceTeams
+        var maintenanceTeamId = await context.MaintenanceTeams
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(t => t.Geom.Contains(geom))
             .Select(t => t.Id)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        if (maintenanceTeamId == 0) return null;
+
+        return maintenanceTeamId;
     }
 }
