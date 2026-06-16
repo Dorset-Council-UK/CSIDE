@@ -8,9 +8,9 @@
 
 <h1>@localizer["Landowner Deposits Title"]</h1>
 
-@if (CsideOptions.LandownerDepositsPublicRegisterURL != "")
+@if (!string.IsNullOrWhiteSpace(CsideOptions.LandownerDepositsPublicRegisterURL))
 {
-    <a href="@CsideOptions.LandownerDepositsPublicRegisterURL" target="_blank" class="btn btn-secondary">
+    <a href="@CsideOptions.LandownerDepositsPublicRegisterURL" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
         @localizer["Landowner Deposits Public Register Label"]</a>
     <hr />
 }
