@@ -1,5 +1,6 @@
 ﻿@page "/DMMO"
-
+@using Microsoft.Extensions.Options
+@inject IOptions<CSIDEOptions> CsideOptions
 <PageTitle>@localizer["DMMO Full Text"]</PageTitle>
 
 
@@ -8,6 +9,14 @@
 </div>
 
 <h1>@localizer["DMMO Full Text"]</h1>
+
+@if (CsideOptions.Value.DMMOPublicRegisterURL != "")
+{
+    <a href="@CsideOptions.Value.DMMOPublicRegisterURL" target="_blank" class="btn btn-secondary">
+        @localizer["DMMO Public Register Label"]
+    </a>
+    <hr />
+}
 
 <AuthorizeView Roles="Administrator, RoW Officer">
     <p>@localizer["Create New DMMO Text"]</p>

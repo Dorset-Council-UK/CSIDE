@@ -1851,4 +1851,7 @@
   <data name="Login Failed Text" xml:space="preserve">
     <value>We couldn't sign you in. Please try again, and if the issue continues contact an administrator.</value>
   </data>
+  <data name="DMMO Public Register Label" xml:space="preserve">
+    <value>View the public register</value>
+  </data>
 </root>

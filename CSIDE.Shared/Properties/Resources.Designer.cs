@@ -2167,6 +2167,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View the public register.
+        /// </summary>
+        public static string DMMO_Public_Register_Label {
+            get {
+                return ResourceManager.GetString("DMMO Public Register Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do another survey.
         /// </summary>
         public static string Do_Another_Survey_Button_Text {

@@ -22,6 +22,7 @@ public record CSIDEOptions
     public string PathBase { get; init; } = "";
     public bool UseHttpsRedirection { get; init; }
     public string LandownerDepositsPublicRegisterURL { get; init; } = "";
+    public string DMMOPublicRegisterURL { get; init; } = "";
     public string PublicMaintenanceJobURL { get; init; } = "";
     public string PublicUnsubscribeURL { get; init; } = "";
     public string HelpDocsURL { get; init; } = "";

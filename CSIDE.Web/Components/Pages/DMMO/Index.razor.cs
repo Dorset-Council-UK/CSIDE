@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
-using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
@@ -9,7 +8,9 @@ using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.DMMO
 {
-    public partial class Index(IDMMOService dmmoService, ISharedDataService sharedDataService, NavigationManager navigationManager)
+    public partial class Index(IDMMOService dmmoService,
+                               ISharedDataService sharedDataService,
+                               NavigationManager navigationManager)
     {
         private List<BreadcrumbItem>? NavItems;
         private DMMOSearch? SearchParams;

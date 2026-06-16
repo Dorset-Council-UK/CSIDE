@@ -1862,4 +1862,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Login Failed Text" xml:space="preserve">
     <value>Ni allem eich mewngofnodi. Rhowch gynnig arall arni, ac os yw'r broblem yn parhau cysylltwch â gweinyddwr.</value>
   </data>
+  <data name="DMMO Public Register Label" xml:space="preserve">
+    <value>Gweld y gofrestr gyhoeddus</value>
+  </data>
 </root>
