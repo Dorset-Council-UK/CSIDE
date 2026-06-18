@@ -1657,7 +1657,7 @@
     <value>No affected addresses have been added</value>
   </data>
   <data name="Date Confirmation Published Label" xml:space="preserve">
-    <value>Date confirmation published</value>
+    <value>Date confirmed order published</value>
   </data>
   <data name="Comment Date Label" xml:space="preserve">
     <value>Comment date</value>

@@ -56,7 +56,8 @@ public static class DMMOApplicationExtensions
                 DecisionOfSecState = o.DecisionOfSecState?.Name,
                 DateConfirmed = o.DateConfirmed?.ToDateOnly(),
                 DateSealed = o.DateSealed?.ToDateOnly(),
-                DatePublished = o.DatePublished?.ToDateOnly()
+                DatePublished = o.DatePublished?.ToDateOnly(),
+                ConfirmationPublishedDate = o.ConfirmationPublishedDate?.ToDateOnly(),
             })],
             CouncilDecisions = [.. application.DMMOCouncilDecisions.Select(cd => new CouncilDecisionPublicViewModel
             {

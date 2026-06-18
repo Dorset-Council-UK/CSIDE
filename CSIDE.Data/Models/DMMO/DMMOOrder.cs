@@ -18,6 +18,7 @@ namespace CSIDE.Data.Models.DMMO
         public LocalDate? DateConfirmed { get; set; }
         public LocalDate? DateSealed { get; set; }
         public LocalDate? DatePublished { get; set; }
+        public LocalDate? ConfirmationPublishedDate { get; set; }
         public bool? SubmitToPINS { get; set; }
     }
 }

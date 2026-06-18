@@ -1888,7 +1888,7 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Date confirmation published.
+        ///   Looks up a localized string similar to Date confirmed order published.
         /// </summary>
         public static string Date_Confirmation_Published_Label {
             get {

@@ -53,7 +53,7 @@ namespace CSIDE.Data.Models.PPO
                     DecisionOfSecState = o.DecisionOfSecState?.Name,
                     DateConfirmed = o.DateConfirmed?.ToDateOnly(),
                     DateSealed = o.DateSealed?.ToDateOnly(),
-                    DatePublished = o.DatePublished?.ToDateOnly()
+                    DatePublished = o.DatePublished?.ToDateOnly(),
                 })]
             };
         }
