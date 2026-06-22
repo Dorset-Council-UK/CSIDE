@@ -18,7 +18,7 @@
                             <strong>@(order.DMMOApplicationId)/@(order.OrderId)</strong>
                         </div>
                         <div class="card-body">
-                            @if (order.DateSealed.HasValue || order.DatePublished.HasValue || order.DateConfirmed.HasValue)
+                            @if (order.DateSealed.HasValue || order.DatePublished.HasValue || order.DateConfirmed.HasValue || order.ConfirmationPublishedDate.HasValue)
                             {
                                 <ul class="list-unstyled">
                                     @if (order.DateSealed.HasValue)
@@ -32,6 +32,10 @@
                                     @if (order.DateConfirmed.HasValue)
                                     {
                                         <li><strong>@localizer["Order Date Confirmed Label"]</strong>: @order.DateConfirmed</li>
+                                    }
+                                    @if (order.ConfirmationPublishedDate.HasValue)
+                                    {
+                                        <li><strong>@localizer["Date Confirmation Published Label"]</strong>: @order.ConfirmationPublishedDate</li>
                                     }
                                 </ul>
                             }
@@ -96,6 +100,10 @@
                             <tr>
                                 <th>@localizer["Order Confirmed Date Label"]</th>
                                 <td>@SelectedOrder.DateConfirmed</td>
+                            </tr>
+                            <tr>
+                                <th>@localizer["Date Confirmation Published Label"]</th>
+                                <td>@SelectedOrder.ConfirmationPublishedDate</td>
                             </tr>
                             <tr>
                                 <th>@localizer["Submit To PINS Label"]</th>
