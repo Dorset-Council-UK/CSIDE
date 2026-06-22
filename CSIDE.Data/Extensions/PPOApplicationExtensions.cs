@@ -54,6 +54,7 @@ namespace CSIDE.Data.Models.PPO
                     DateConfirmed = o.DateConfirmed?.ToDateOnly(),
                     DateSealed = o.DateSealed?.ToDateOnly(),
                     DatePublished = o.DatePublished?.ToDateOnly(),
+                    ConfirmationPublishedDate = o.ConfirmationPublishedDate?.ToDateOnly(),
                 })]
             };
         }

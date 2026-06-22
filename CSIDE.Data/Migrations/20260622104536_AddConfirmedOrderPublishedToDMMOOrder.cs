@@ -6,7 +6,7 @@ using NodaTime;
 namespace CSIDE.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddConfirmedOredrPublishedToDMMOOrder : Migration
+    public partial class AddConfirmedOrderPublishedToDMMOOrder : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -16,8 +16,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260622093310_AddConfirmedOredrPublishedToDMMOOrder")]
-    partial class AddConfirmedOredrPublishedToDMMOOrder
+    [Migration("20260622104536_AddConfirmedOrderPublishedToDMMOOrder")]
+    partial class AddConfirmedOrderPublishedToDMMOOrder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
