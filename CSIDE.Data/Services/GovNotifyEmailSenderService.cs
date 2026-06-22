@@ -194,7 +194,7 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
         List<string> sanitiseContentFor = ["comment"];
 
         // Send the email
-        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl, sanitiseContentFor: sanitiseContentFor).ConfigureAwait(false);
         return true;
     }
 
