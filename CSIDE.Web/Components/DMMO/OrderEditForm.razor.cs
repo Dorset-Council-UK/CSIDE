@@ -60,7 +60,10 @@ namespace CSIDE.Web.Components.DMMO
         {
             UpdateDateProperty(eventArgs, date => Order!.DateConfirmed = date);
         }
-
+        private void UpdateConfirmationPublishedDateProperty(ChangeEventArgs eventArgs)
+        {
+            UpdateDateProperty(eventArgs, date => Order!.ConfirmationPublishedDate = date);
+        }
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate?> updateProperty)
         {
             if (Order is not null && eventArgs.Value is not null)

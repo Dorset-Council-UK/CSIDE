@@ -108,6 +108,21 @@
             <ValidationMessage For="() => Order.DateConfirmed" />
         </div>
 
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="confirmation-published-date">@localizer["Date Confirmation Published Label"]</label>
+                @{
+                    string DateConfirmationPublishedStringRepresentation = "";
+                    if (Order.ConfirmationPublishedDate.HasValue)
+                    {
+                        DateConfirmationPublishedStringRepresentation = Order.ConfirmationPublishedDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="confirmation-published-date" type="date" class="form-control" value="@DateConfirmationPublishedStringRepresentation" @onchange="UpdateConfirmationPublishedDateProperty" />
+            </div>
+            <ValidationMessage For="() => Order.ConfirmationPublishedDate" />
+        </div>
+
         <YesNoBoolean @bind-Value="Order.SubmitToPINS" Label="@localizer["Submit To PINS Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
 
         @if (IsEdit)

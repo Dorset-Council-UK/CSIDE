@@ -18,15 +18,15 @@
   "dependencies": {
     "ol": "10.9.0",
     "ol-ext": "4.0.38",
-    "proj4": "2.20.8"
+    "proj4": "2.20.9"
   },
   "devDependencies": {
     "@types/ol-ext": "npm:@siedlerchr/types-ol-ext@3.6.8",
-    "eslint": "10.3.0",
-    "ts-loader": "9.5.7",
+    "eslint": "10.5.0",
+    "ts-loader": "9.6.2",
     "typescript": "6.0.3",
-    "webpack": "5.106.2",
-    "webpack-cli": "7.0.2",
+    "webpack": "5.107.2",
+    "webpack-cli": "7.0.3",
     "webpack-merge": "6.0.1"
   },
   "-vs-binding": {
