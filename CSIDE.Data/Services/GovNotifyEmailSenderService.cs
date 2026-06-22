@@ -131,8 +131,11 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 { "unsubscribeURL", publicUnsubscribeUrl },
             };
 
+        // Sanitise
+        List<string> sanitiseContentFor = ["workDone"];
+
         // Send the email
-        await SendEmail(email, _templates.MaintenanceJobCompleted, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        await SendEmail(email, _templates.MaintenanceJobCompleted, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl, sanitiseContentFor: sanitiseContentFor).ConfigureAwait(false);
         return true;
     }
 
@@ -187,8 +190,11 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 { "unsubscribeURL", publicUnsubscribeUrl },
             };
 
+        // Sanitise
+        List<string> sanitiseContentFor = ["comment"];
+
         // Send the email
-        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl, sanitiseContentFor: sanitiseContentFor).ConfigureAwait(false);
         return true;
     }
 
@@ -200,10 +206,10 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
     /// <remarks>
     /// Error codes are documented at <see href="https://docs.notifications.service.gov.uk/net.html#send-an-email-error-codes">Error Codes</see>
     /// </remarks>
-    private async Task<string> SendEmail(string emailAddress, string templateId, Dictionary<string, dynamic>? personalisation, string? clientReference = null, string? emailReplyToId = null, string? oneClickUnsubscribeURL = null)
+    private async Task<string> SendEmail(string emailAddress, string templateId, Dictionary<string, dynamic>? personalisation, string? clientReference = null, string? emailReplyToId = null, string? oneClickUnsubscribeURL = null, List<string>? sanitiseContentFor = null)
     {
         var response = await notificationClient
-            .SendEmailAsync(emailAddress, templateId, personalisation, clientReference, emailReplyToId, oneClickUnsubscribeURL)
+            .SendEmailAsync(emailAddress, templateId, personalisation, clientReference, emailReplyToId, oneClickUnsubscribeURL, sanitiseContentFor)
             .ConfigureAwait(false);
 
         logger.LogDebug("Email sent to user with GovNotify response ID {ResponseId}", response.id);
