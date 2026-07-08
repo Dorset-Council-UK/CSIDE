@@ -123,15 +123,18 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
 
         if (!string.IsNullOrWhiteSpace(Location))
         {
-            var place = await placesSearchService.GetPlaceByName(Location);
+            var locationSearch = Location.Trim();
+
+            // location could mean an actual on the ground location OR part of the location string.
+            var place = await placesSearchService.GetPlaceByName(locationSearch);
             if (place is not null)
             {
                 Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
-                query = query.Where(d => d.Geom.Intersects(bboxPolygon));
+                query = query.Where(d => d.Geom.Intersects(bboxPolygon) || EF.Functions.ILike(d.Location!, $"%{locationSearch}%"));
             }
             else
             {
-                query = query.Where(d => false);
+                query = query.Where(d => EF.Functions.ILike(d.Location!, $"%{locationSearch}%"));
             }
         }
 
