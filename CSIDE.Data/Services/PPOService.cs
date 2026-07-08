@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.PPO;
+﻿using CSIDE.Data.Helpers;
+using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
@@ -158,7 +159,7 @@ namespace CSIDE.Data.Services
                 var place = await placesSearchService.GetPlaceByName(Location);
                 if (place is not null)
                 {
-                    Polygon bboxPolygon = PlacesSearchService.CreateBBOXPolygonFromPlaceGeometry(place);
+                    Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
                     query = query.Where(d => d.Geom.Intersects(bboxPolygon));
                 }
                 else

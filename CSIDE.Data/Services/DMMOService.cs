@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.DMMO;
+﻿using CSIDE.Data.Helpers;
+using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
@@ -134,7 +135,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             var place = await placesSearchService.GetPlaceByName(Location);
             if (place is not null)
             {
-                Polygon bboxPolygon = PlacesSearchService.CreateBBOXPolygonFromPlaceGeometry(place);
+                Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
                 query = query.Where(d => d.Geom.Intersects(bboxPolygon));
             }
             else

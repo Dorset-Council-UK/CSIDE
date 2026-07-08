@@ -105,33 +105,7 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
         }
         return null;
     }
-    public static Polygon CreateBBOXPolygonFromPlaceGeometry(GazetteerEntry place)
-    {
-        if (place.LocalType == "Postcode" || (place.MbrXMin == 0 && place.MbrXMax == 0 && place.MbrYMin == 0 && place.MbrYMax == 0))
-        {
-            //postcodes don't come with MBRs, so apporximate by putting a 500m radius round the point. Not perfect but acceptable
-            //For safety, also do this if the MBRs are returned as 0 (in case localtype name changes for example)
-            place.MbrXMin = place.GeometryX - 500;
-            place.MbrXMax = place.GeometryX + 500;
-            place.MbrYMin = place.GeometryY - 500;
-            place.MbrYMax = place.GeometryY + 500;
-        }
-        var bboxPolygon = new Polygon(
-            new LinearRing(
-                [
-                    new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMax), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                ]
-            )
-        )
-        {
-            SRID = 27700,
-        };
-        return bboxPolygon;
-    }
+
     [GeneratedRegex("^(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$")]
     private static partial Regex PostcodeRegex();
 }

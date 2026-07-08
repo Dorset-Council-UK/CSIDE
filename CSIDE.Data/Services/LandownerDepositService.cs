@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.LandownerDeposits;
+﻿using CSIDE.Data.Helpers;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
@@ -125,7 +126,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             var place = await placesSearchService.GetPlaceByName(Location);
             if (place is not null)
             {
-                Polygon bboxPolygon = PlacesSearchService.CreateBBOXPolygonFromPlaceGeometry(place);
+                Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
                 query = query.Where(d => d.Geom.Intersects(bboxPolygon));
             }
             else
