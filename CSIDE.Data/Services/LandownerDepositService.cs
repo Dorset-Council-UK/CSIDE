@@ -122,23 +122,11 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
 
         if (Location is not null)
         {
+            
             var place = await placesSearchService.GetPlaceByName(Location);
             if (place is not null)
             {
-                var bboxPolygon = new Polygon(
-                    new LinearRing(
-                        [
-                            new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMax), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                        ]
-                    )
-                )
-                {
-                    SRID = 27700,
-                };
+                Polygon bboxPolygon = PlacesSearchService.CreateBBOXPolygonFromPlaceGeometry(place);
                 query = query.Where(l => l.Geom.Intersects(bboxPolygon));
             }
         }

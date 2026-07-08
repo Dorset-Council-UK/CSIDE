@@ -1,4 +1,5 @@
 ﻿using CSIDE.Data.Models.Shared;
+using NetTopologySuite.Geometries;
 
 namespace CSIDE.Data.Services
 {
