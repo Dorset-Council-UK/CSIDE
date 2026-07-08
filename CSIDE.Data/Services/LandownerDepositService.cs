@@ -366,7 +366,14 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         {
             return null;
         }
-        return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit);
+        var publicViewModel = application.ToPublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit);
+        // append the place name to the public view model
+        var place = await placesSearchService.GetNearestPlace((decimal)application.Geom.Centroid.X, (decimal)application.Geom.Centroid.Y);
+        if (place is not null)
+        {
+            publicViewModel.NearestPlace = place.Name1 ?? "";
+        }
+        return publicViewModel;
     }
 
     public async Task<PagedResult<LandownerDepositSimplePublicViewModel>> GetPublicLandownerDepositsBySearchParameters(

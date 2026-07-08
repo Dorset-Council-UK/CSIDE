@@ -7,5 +7,6 @@ namespace CSIDE.Data.Services
         Task<List<SimpleAddress>> GetAddresses(string searchInput);
         Task<List<SimpleAddress>> GetAddressesByGeometry(string geojson);
         Task<GazetteerEntry?> GetPlaceByName(string searchInput);
+        Task<GazetteerEntry?> GetNearestPlace(decimal x, decimal y);
     }
 }

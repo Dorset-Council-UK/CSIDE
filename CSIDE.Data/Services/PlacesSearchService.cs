@@ -1,5 +1,6 @@
 ﻿using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using System.Globalization;
@@ -8,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace CSIDE.Data.Services;
 
-public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, IOptions<MappingOptions> MappingOptions) : IPlacesSearchService
+public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, IOptions<MappingOptions> MappingOptions, ILogger<PlacesSearchService> logger) : IPlacesSearchService
 {
     private readonly string apiKey = MappingOptions.Value.OSMapsAPIKey;
 
@@ -102,6 +103,35 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
         if (places is not null && places.Results is not null)
         {
             return places.Results.FirstOrDefault()?.GazetteerEntry;
+        }
+        return null;
+    }
+
+    public async Task<GazetteerEntry?> GetNearestPlace(decimal x, decimal y)
+    {
+        try
+        {
+            using var httpClient = httpClientFactory.CreateClient();
+
+            var baseAddress = "https://api.os.uk/search/names/v1/nearest";
+
+            var url = baseAddress;
+            string typeFilters = "&fq=LOCAL_TYPE:City LOCAL_TYPE:Hamlet LOCAL_TYPE:Other_Settlement LOCAL_TYPE:Town LOCAL_TYPE:Village";
+            string bboxFilter = $"&fq=BBOX:{MappingOptions.Value.StartBounds.MinX},{MappingOptions.Value.StartBounds.MinY},{MappingOptions.Value.StartBounds.MaxX},{MappingOptions.Value.StartBounds.MaxY}";
+            url += $"?point={decimal.Round(x,2)},{decimal.Round(y,2)}&radius=1000{typeFilters}";
+
+            httpClient.DefaultRequestHeaders.Add("key", apiKey);
+            var response = await httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            var places = JsonSerializer.Deserialize<OSNamesAPIResult>(responseString);
+            if (places is not null && places.Results is not null)
+            {
+                return places.Results.FirstOrDefault()?.GazetteerEntry;
+            }
+        } catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred fetching the nearest place from the OS Names API");
         }
         return null;
     }
