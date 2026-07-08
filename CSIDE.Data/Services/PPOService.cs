@@ -153,13 +153,17 @@ namespace CSIDE.Data.Services
             {
                 query = query.Where(d => d.IsPublic == IsPublic);
             }
-            if (Location is not null)
+            if (!string.IsNullOrWhiteSpace(Location))
             {
                 var place = await placesSearchService.GetPlaceByName(Location);
                 if (place is not null)
                 {
                     Polygon bboxPolygon = PlacesSearchService.CreateBBOXPolygonFromPlaceGeometry(place);
                     query = query.Where(d => d.Geom.Intersects(bboxPolygon));
+                }
+                else
+                {
+                    query = query.Where(d => false);
                 }
             }
 

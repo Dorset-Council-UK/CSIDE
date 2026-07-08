@@ -129,13 +129,17 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         {
             query = query.Where(d => d.DMMOClaimedStatuses.Any(c => c.ClaimedStatusId == parsedApplicationClaimedStatusId));
         }
-        if (Location is not null)
+        if (!string.IsNullOrWhiteSpace(Location))
         {
             var place = await placesSearchService.GetPlaceByName(Location);
             if (place is not null)
             {
                 Polygon bboxPolygon = PlacesSearchService.CreateBBOXPolygonFromPlaceGeometry(place);
                 query = query.Where(d => d.Geom.Intersects(bboxPolygon));
+            }
+            else
+            {
+                query = query.Where(d => false);
             }
         }
 
