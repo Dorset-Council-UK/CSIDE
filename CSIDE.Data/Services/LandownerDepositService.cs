@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.LandownerDeposits;
+﻿using CSIDE.Data.Helpers;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
@@ -120,26 +121,20 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             query = query.Where(d => d.LandownerDepositParishes.Any(p => p.ParishId == parsedParishId));
         }
 
-        if (Location is not null)
+        if (!string.IsNullOrWhiteSpace(Location))
         {
-            var place = await placesSearchService.GetPlaceByName(Location);
+            var locationSearch = Location.Trim();
+
+            // location could mean an actual on the ground location OR part of the location string.
+            var place = await placesSearchService.GetPlaceByName(locationSearch);
             if (place is not null)
             {
-                var bboxPolygon = new Polygon(
-                    new LinearRing(
-                        [
-                            new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMax), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                        ]
-                    )
-                )
-                {
-                    SRID = 27700,
-                };
-                query = query.Where(l => l.Geom.Intersects(bboxPolygon));
+                Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
+                query = query.Where(d => d.Geom.Intersects(bboxPolygon) || EF.Functions.ILike(d.Location!, $"%{locationSearch}%"));
+            }
+            else
+            {
+                query = query.Where(d => EF.Functions.ILike(d.Location!, $"%{locationSearch}%"));
             }
         }
 
