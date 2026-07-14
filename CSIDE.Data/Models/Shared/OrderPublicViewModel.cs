@@ -14,6 +14,7 @@
         public DateOnly? DateSealed { get; set; }
         public DateOnly? DatePublished { get; set; }
         public DateOnly? ConfirmationPublishedDate { get; set; }
+        public bool? SubmitToPINS { get; set; }
 
     }
 }
