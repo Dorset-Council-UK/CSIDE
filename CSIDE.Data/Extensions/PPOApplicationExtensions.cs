@@ -55,6 +55,7 @@ namespace CSIDE.Data.Models.PPO
                     DateSealed = o.DateSealed?.ToDateOnly(),
                     DatePublished = o.DatePublished?.ToDateOnly(),
                     ConfirmationPublishedDate = o.ConfirmationPublishedDate?.ToDateOnly(),
+                    SubmitToPINS = o.SubmitToPINS,
                 })]
             };
         }
