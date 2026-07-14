@@ -1,5 +1,6 @@
 ﻿using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using System.Globalization;
@@ -8,11 +9,11 @@ using System.Text.RegularExpressions;
 
 namespace CSIDE.Data.Services;
 
-public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, IOptions<MappingOptions> MappingOptions) : IPlacesSearchService
+public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, IOptions<MappingOptions> MappingOptions, ILogger<PlacesSearchService> logger) : IPlacesSearchService
 {
     private readonly string apiKey = MappingOptions.Value.OSMapsAPIKey;
 
-    public async Task<List<SimpleAddress>> GetAddresses(string searchInput)
+    public async Task<List<SimpleAddress>> GetAddresses(string searchInput, CancellationToken ct = default)
     {
         //figure out what we are searching for (UPRN, Postcode or Free Text)
 
@@ -36,9 +37,9 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
                 break;
         }
         httpClient.DefaultRequestHeaders.Add("key", apiKey);
-        var response = await httpClient.GetAsync(url);
+        var response = await httpClient.GetAsync(url, ct);
         response.EnsureSuccessStatusCode();
-        var responseString = await response.Content.ReadAsStringAsync();
+        var responseString = await response.Content.ReadAsStringAsync(ct);
         var addresses = JsonSerializer.Deserialize<OSPlacesAPIResult>(responseString);
         if (addresses is not null && addresses.Results is not null)
         {
@@ -47,7 +48,7 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
         return [];
     }
 
-    public async Task<List<SimpleAddress>> GetAddressesByGeometry(string geojson)
+    public async Task<List<SimpleAddress>> GetAddressesByGeometry(string geojson, CancellationToken ct = default)
     {
         using var httpClient = httpClientFactory.CreateClient();
 
@@ -57,9 +58,9 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
         httpClient.DefaultRequestHeaders.Add("key", MappingOptions.Value.OSMapsAPIKey);
 
         var content = new StringContent(geojson, System.Text.Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync(url, content);
+        var response = await httpClient.PostAsync(url, content, ct);
         response.EnsureSuccessStatusCode();
-        var responseString = await response.Content.ReadAsStringAsync();
+        var responseString = await response.Content.ReadAsStringAsync(ct);
         var addresses = JsonSerializer.Deserialize<OSPlacesAPIResult>(responseString);
         if (addresses is not null && addresses.Results is not null)
         {
@@ -83,25 +84,65 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
         return AddressSearchType.FreeText;
     }
 
-    public async Task<GazetteerEntry?> GetPlaceByName(string searchInput)
+    public async Task<GazetteerEntry?> GetPlaceByName(string searchInput, CancellationToken ct = default)
     {
         using var httpClient = httpClientFactory.CreateClient();
 
         var baseAddress = "https://api.os.uk/search/names/v1/find";
 
         var url = baseAddress;
-        string typeFilters = "&fq=LOCAL_TYPE:City LOCAL_TYPE:Hamlet LOCAL_TYPE:Other_Settlement LOCAL_TYPE:Town LOCAL_TYPE:Village LOCAL_TYPE:Postcode";
-        string bboxFilter = $"&fq=BBOX:{MappingOptions.Value.StartBounds.MinX},{MappingOptions.Value.StartBounds.MinY},{MappingOptions.Value.StartBounds.MaxX},{MappingOptions.Value.StartBounds.MaxY}";
-        url += $"?query={searchInput}&maxResults=1{typeFilters}{bboxFilter}";
+        string typeFilterValue = "LOCAL_TYPE:City LOCAL_TYPE:Hamlet LOCAL_TYPE:Other_Settlement LOCAL_TYPE:Town LOCAL_TYPE:Village LOCAL_TYPE:Postcode";
+        string typeFilters = $"&fq={Uri.EscapeDataString(typeFilterValue)}";
+        string bboxFilterValue = $"BBOX:{MappingOptions.Value.StartBounds.MinX},{MappingOptions.Value.StartBounds.MinY},{MappingOptions.Value.StartBounds.MaxX},{MappingOptions.Value.StartBounds.MaxY}";
+        string bboxFilter = $"&fq={Uri.EscapeDataString(bboxFilterValue)}";
+        url += $"?query={Uri.EscapeDataString(searchInput)}&maxResults=1{typeFilters}{bboxFilter}";
 
         httpClient.DefaultRequestHeaders.Add("key", apiKey);
-        var response = await httpClient.GetAsync(url);
+        var response = await httpClient.GetAsync(url, ct);
         response.EnsureSuccessStatusCode();
-        var responseString = await response.Content.ReadAsStringAsync();
+        var responseString = await response.Content.ReadAsStringAsync(ct);
         var places = JsonSerializer.Deserialize<OSNamesAPIResult>(responseString);
         if (places is not null && places.Results is not null)
         {
             return places.Results.FirstOrDefault()?.GazetteerEntry;
+        }
+        return null;
+    }
+
+    public async Task<GazetteerEntry?> GetNearestPlace(decimal x, decimal y, CancellationToken ct = default)
+    {
+        try
+        {
+            using var httpClient = httpClientFactory.CreateClient();
+
+            var baseAddress = "https://api.os.uk/search/names/v1/nearest";
+
+            var url = baseAddress;
+            string typeFilterValue = "LOCAL_TYPE:City LOCAL_TYPE:Hamlet LOCAL_TYPE:Other_Settlement LOCAL_TYPE:Town LOCAL_TYPE:Village";
+            string typeFilters = $"&fq={Uri.EscapeDataString(typeFilterValue)}";
+            url += $"?point={decimal.Round(x,2)},{decimal.Round(y,2)}&radius=1000{typeFilters}";
+
+            httpClient.DefaultRequestHeaders.Add("key", apiKey);
+            var response = await httpClient.GetAsync(url, ct);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync(ct);
+            var places = JsonSerializer.Deserialize<OSNamesAPIResult>(responseString);
+            if (places is not null && places.Results is not null)
+            {
+                return places.Results.FirstOrDefault()?.GazetteerEntry;
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "An HTTP error occurred fetching the nearest place from the OS Names API");
+        }
+        catch (TaskCanceledException ex)
+        {
+            logger.LogError(ex, "The request timed out fetching the nearest place from the OS Names API");
+        }
+        catch (JsonException ex)
+        {
+            logger.LogError(ex, "Failed to deserialize nearest place response from the OS Names API");
         }
         return null;
     }
