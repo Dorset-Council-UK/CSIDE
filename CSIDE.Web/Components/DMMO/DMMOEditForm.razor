@@ -178,6 +178,22 @@
             <ValidationMessage For="() => DMMOApplication.CaseOfficer" />
         </div>
 
+        <div class="mb-3 row">
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="internal-archive-reference">@localizer["Internal Archive Reference No Label"]</label>
+                <InputText id="internal-archive-reference" class="form-control" @bind-Value="DMMOApplication.InternalArchiveReferenceNo"></InputText>
+                <ValidationMessage For="() => DMMOApplication.InternalArchiveReferenceNo" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="external-archive-reference">@localizer["External Archive Reference No Label"]</label>
+                <InputText id="external-archive-reference" class="form-control" @bind-Value="DMMOApplication.ExternalArchiveReferenceNo"></InputText>
+                <ValidationMessage For="() => DMMOApplication.ExternalArchiveReferenceNo" />
+            </div>
+        </div>
+
         <div class="mb-3">
             <label class="form-label" for="private-comments">@localizer["Private Comments Label"]</label>
             <InputTextArea id="private-comments" class="form-control" @bind-Value="DMMOApplication.PrivateComments"></InputTextArea>

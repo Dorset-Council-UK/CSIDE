@@ -28,6 +28,12 @@ namespace CSIDE.Data.Validators.DMMO
             RuleFor(app => app.CaseStatusId)
                 .NotEmpty()
                 .WithName(_localizer["Case Status Label"]);
+            RuleFor(app => app.InternalArchiveReferenceNo)
+                .MaximumLength(50)
+                .WithName(_localizer["Internal Archive Reference No Label"]);
+            RuleFor(app => app.ExternalArchiveReferenceNo)
+                .MaximumLength(50)
+                .WithName(_localizer["External Archive Reference No Label"]);
 
             RuleFor(app => app.ApplicationDate)
                 .LessThanOrEqualTo(LocalDate.FromDateTime(DateTime.Now));

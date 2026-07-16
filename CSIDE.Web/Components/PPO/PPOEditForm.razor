@@ -148,11 +148,19 @@
         </div>
 
         <div class="mb-3 row">
-            <label class="form-label" for="box-number">@localizer["Box Number Label"]</label>
+            <label class="form-label" for="internal-archive-reference">@localizer["Internal Archive Reference No Label"]</label>
             <div class="col-sm-4 col-md-6 col-lg-4">
-                <InputText id="box-number" class="form-control" @bind-Value="PPOApplication.InternalArchiveReferenceNo"></InputText>
+                <InputText id="internal-archive-reference" class="form-control" @bind-Value="PPOApplication.InternalArchiveReferenceNo"></InputText>
             </div>
             <ValidationMessage For="() => PPOApplication.InternalArchiveReferenceNo" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="external-archive-reference">@localizer["External Archive Reference No Label"]</label>
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <InputText id="external-archive-reference" class="form-control" @bind-Value="PPOApplication.ExternalArchiveReferenceNo"></InputText>
+            </div>
+            <ValidationMessage For="() => PPOApplication.ExternalArchiveReferenceNo" />
         </div>
 
         <div class="mb-3 row">

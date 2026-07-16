@@ -592,15 +592,6 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Box number.
-        /// </summary>
-        public static string Box_Number_Label {
-            get {
-                return ResourceManager.GetString("Box Number Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Bridge details.
         /// </summary>
         public static string Bridge_Details_Label {
@@ -2374,6 +2365,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to External archive reference number.
+        /// </summary>
+        public static string External_Archive_Reference_No_Label {
+            get {
+                return ResourceManager.GetString("External Archive Reference No Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Max file size of {0}MB exceeded for file &apos;{1}&apos;.
         /// </summary>
         public static string File_Too_Large_Upload_Error {
@@ -2734,6 +2734,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal archive reference number.
+        /// </summary>
+        public static string Internal_Archive_Reference_No_Label {
+            get {
+                return ResourceManager.GetString("Internal Archive Reference No Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Closure end date must be after start date.
         /// </summary>
         public static string Invalid_Closure_Dates_Validation_Message {
@@ -2802,15 +2811,6 @@ namespace CSIDE.Shared.Properties {
         public static string Landowner_Deposit_Archive_Date_Label {
             get {
                 return ResourceManager.GetString("Landowner Deposit Archive Date Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Archive reference.
-        /// </summary>
-        public static string Landowner_Deposit_Archive_Reference_Label {
-            get {
-                return ResourceManager.GetString("Landowner Deposit Archive Reference Label", resourceCulture);
             }
         }
         
