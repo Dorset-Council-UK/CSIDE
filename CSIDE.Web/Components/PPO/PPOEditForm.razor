@@ -150,9 +150,9 @@
         <div class="mb-3 row">
             <label class="form-label" for="box-number">@localizer["Box Number Label"]</label>
             <div class="col-sm-4 col-md-6 col-lg-4">
-                <InputText id="box-number" class="form-control" @bind-Value="PPOApplication.BoxNumber"></InputText>
+                <InputText id="box-number" class="form-control" @bind-Value="PPOApplication.InternalArchiveReferenceNo"></InputText>
             </div>
-            <ValidationMessage For="() => PPOApplication.BoxNumber" />
+            <ValidationMessage For="() => PPOApplication.InternalArchiveReferenceNo" />
         </div>
 
         <div class="mb-3 row">

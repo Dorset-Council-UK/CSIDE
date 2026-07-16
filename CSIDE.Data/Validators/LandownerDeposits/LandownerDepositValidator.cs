@@ -29,7 +29,7 @@ namespace CSIDE.Data.Validators.LandownerDeposits
             RuleFor(ld => ld.ChequeReceiptNumber)
                 .MaximumLength(50)
                 .WithName(_localizer["Landowner Deposit Cheque Receipt Label"]);
-            RuleFor(ld => ld.ArchiveReference)
+            RuleFor(ld => ld.ExternalArchiveReferenceNo)
                 .MaximumLength(50)
                 .WithName(_localizer["Landowner Deposit Archive Reference Label"]);
 
