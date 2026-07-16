@@ -23,6 +23,7 @@ namespace CSIDE.Data.Models.LandownerDeposits
         public LocalDate? ChequePaidInDate { get; set; }
         public LocalDate? NoticeDrafted { get; set; }
         public LocalDate? SentToArchive { get; set; }
+        public string? InternalArchiveReferenceNo { get; set; }
         public string? ArchiveReference { get; set; }
         public LocalDate? WebsiteEntryAdded { get; set; }
         public string? PrimaryContact { get; set; }

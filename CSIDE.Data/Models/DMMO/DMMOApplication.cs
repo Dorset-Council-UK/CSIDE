@@ -19,6 +19,8 @@ namespace CSIDE.Data.Models.DMMO
         public bool? Appeal { get; set; }
         public LocalDate? AppealDate { get; set; }
         public LocalDate? DateOfDirectionOfSecState { get; set; }
+        public string? InternalArchiveReferenceNo { get; set; }
+        public string? ExternalArchiveReferenceNo { get; set; }
 
         public required MultiLineString Geom { get; set; }
 

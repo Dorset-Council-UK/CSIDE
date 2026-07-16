@@ -17,6 +17,7 @@ namespace CSIDE.Data.Models.PPO
         public bool? CouncilLandAffected { get; set; }
         public decimal? Charge { get; set; }
         public string? BoxNumber { get; set; }
+        public string? ExternalArchiveReferenceNo { get; set; }
         public string? PrivateComments { get; set; }
         public string? PublicComments { get; set; }
 
