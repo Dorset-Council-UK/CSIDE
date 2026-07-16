@@ -103,11 +103,11 @@
 		</div>
 
 		<div class="mb-3 row">
-			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="cheque-receipt">@localizer["Landowner Deposit Cheque Receipt Label"]</label>
+			<label class="form-label" for="cheque-receipt">@localizer["Landowner Deposit Cheque Receipt Label"]</label>
+			<div class="col-sm-4 col-md-6 col-lg-4">	
 				<InputText id="cheque-receipt" class="form-control" @bind-Value="LandownerDeposit.ChequeReceiptNumber"></InputText>
-				<ValidationMessage For="() => LandownerDeposit.ChequeReceiptNumber" />
 			</div>
+			<ValidationMessage For="() => LandownerDeposit.ChequeReceiptNumber" />
 		</div>
 		
 		<div class="mb-3 row">
@@ -216,27 +216,27 @@
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="internal-archive-reference">@localizer["Internal Archive Reference No Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="internal-archive-reference">@localizer["Internal Archive Reference No Label"]</label>
 				<InputText id="internal-archive-reference" class="form-control" @bind-Value="LandownerDeposit.InternalArchiveReferenceNo"></InputText>
-				<ValidationMessage For="() => LandownerDeposit.InternalArchiveReferenceNo" />
 			</div>
+			<ValidationMessage For="() => LandownerDeposit.InternalArchiveReferenceNo" />
 		</div>
 
 		<div class="mb-3 row">
+			<label class="form-label" for="external-archive-reference">@localizer["External Archive Reference No Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="external-archive-reference">@localizer["External Archive Reference No Label"]</label>
 				<InputText id="external-archive-reference" class="form-control" @bind-Value="LandownerDeposit.ExternalArchiveReferenceNo"></InputText>
-				<ValidationMessage For="() => LandownerDeposit.ExternalArchiveReferenceNo" />
 			</div>
+			<ValidationMessage For="() => LandownerDeposit.ExternalArchiveReferenceNo" />
 		</div>
 		
 		<div class="mb-3 row">
+			<label class="form-label" for="primary-contact-landowner-deposit">@localizer["Primary Contact Label"]</label>
 			<div class="col-sm-4 col-md-6 col-lg-4">
-				<label class="form-label" for="primary-contact-landowner-deposit">@localizer["Primary Contact Label"]</label>
 				<InputText id="primary-contact-landowner-deposit" class="form-control" list="landownerdeposit-case-officers" @bind-Value="LandownerDeposit.PrimaryContact"></InputText>
-				<ValidationMessage For="() => LandownerDeposit.PrimaryContact" />
 			</div>
+			<ValidationMessage For="() => LandownerDeposit.PrimaryContact" />
 		</div>	
 
 		@if (IsEdit)
