@@ -5,6 +5,7 @@ using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -15,9 +16,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CSIDE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716074445_AddNewArchiveReferences")]
+    partial class AddNewArchiveReferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -990,6 +993,10 @@ namespace CSIDE.Data.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("all_signed");
 
+                    b.Property<string>("ArchiveReference")
+                        .HasColumnType("text")
+                        .HasColumnName("archive_reference");
+
                     b.Property<LocalDate?>("ChequePaidInDate")
                         .HasColumnType("date")
                         .HasColumnName("cheque_paid_in_date");
@@ -1009,10 +1016,6 @@ namespace CSIDE.Data.Migrations
                     b.Property<LocalDate?>("EmailNoticeSent")
                         .HasColumnType("date")
                         .HasColumnName("email_notice_sent");
-
-                    b.Property<string>("ExternalArchiveReferenceNo")
-                        .HasColumnType("text")
-                        .HasColumnName("external_archive_reference_no");
 
                     b.Property<bool>("FeePaid")
                         .HasColumnType("boolean")
@@ -1788,6 +1791,10 @@ namespace CSIDE.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("application_details");
 
+                    b.Property<string>("BoxNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("box_number");
+
                     b.Property<string>("CaseOfficer")
                         .HasColumnType("text")
                         .HasColumnName("case_officer");
@@ -1820,10 +1827,6 @@ namespace CSIDE.Data.Migrations
                         .IsRequired()
                         .HasColumnType("geometry(multilinestring, 27700)")
                         .HasColumnName("geom");
-
-                    b.Property<string>("InternalArchiveReferenceNo")
-                        .HasColumnType("text")
-                        .HasColumnName("internal_archive_reference_no");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean")

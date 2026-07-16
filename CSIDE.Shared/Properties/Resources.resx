@@ -936,9 +936,6 @@
   <data name="Landowner Deposit Archive Date Label" xml:space="preserve">
     <value>Date sent to archive</value>
   </data>
-  <data name="Landowner Deposit Archive Reference Label" xml:space="preserve">
-    <value>Archive reference</value>
-  </data>
   <data name="Landowner Deposit ID Label" xml:space="preserve">
     <value>Landowner Deposit ID</value>
   </data>
@@ -1635,9 +1632,6 @@
   <data name="Charge Label" xml:space="preserve">
     <value>Charge</value>
   </data>
-  <data name="Box Number Label" xml:space="preserve">
-    <value>Box number</value>
-  </data>
   <data name="Priority Label" xml:space="preserve">
     <value>Priority</value>
   </data>
@@ -1853,5 +1847,11 @@
   </data>
   <data name="DMMO Public Register Label" xml:space="preserve">
     <value>View the public register</value>
+  </data>
+  <data name="Internal Archive Reference No Label" xml:space="preserve">
+    <value>Internal archive reference number</value>
+  </data>
+  <data name="External Archive Reference No Label" xml:space="preserve">
+    <value>External archive reference number</value>
   </data>
 </root>

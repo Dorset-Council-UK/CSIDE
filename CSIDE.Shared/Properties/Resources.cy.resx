@@ -947,9 +947,6 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Landowner Deposit Archive Date Label" xml:space="preserve">
     <value>Dyddiad anfon i'r archif</value>
   </data>
-  <data name="Landowner Deposit Archive Reference Label" xml:space="preserve">
-    <value>Cyfeirnod archif</value>
-  </data>
   <data name="Landowner Deposit ID Label" xml:space="preserve">
     <value>ID Blaendal Perchennog Tir</value>
   </data>
@@ -1646,9 +1643,6 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Charge Label" xml:space="preserve">
     <value>Tâl</value>
   </data>
-  <data name="Box Number Label" xml:space="preserve">
-    <value>Rhif blwch</value>
-  </data>
   <data name="Priority Label" xml:space="preserve">
     <value>Blaenoriaeth</value>
   </data>
@@ -1864,5 +1858,11 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   </data>
   <data name="DMMO Public Register Label" xml:space="preserve">
     <value>Gweld y gofrestr gyhoeddus</value>
+  </data>
+  <data name="Internal Archive Reference No Label" xml:space="preserve">
+    <value>Rhif cyfeirnod archif mewnol</value>
+  </data>
+  <data name="External Archive Reference No Label" xml:space="preserve">
+    <value>Rhif cyfeirnod archif allanol</value>
   </data>
 </root>
