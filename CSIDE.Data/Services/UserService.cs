@@ -18,12 +18,9 @@ namespace CSIDE.Data.Services
         public async Task<List<Microsoft.Graph.Beta.Models.User>> GetUsers()
         {
             string cachekey = "AllGraphUsers";
-            if (memoryCache.TryGetValue(cachekey, out List<Microsoft.Graph.Beta.Models.User>? cachedUsers))
+            if (memoryCache.TryGetValue(cachekey, out List<Microsoft.Graph.Beta.Models.User>? cachedUsers) && cachedUsers is not null)
             {
-                if (cachedUsers != null)
-                {
-                    return cachedUsers;
-                }
+                return cachedUsers;
             }
             List<Microsoft.Graph.Beta.Models.User> allUsers = [];
             var graphClient = GetGraphClient();
@@ -168,12 +165,10 @@ namespace CSIDE.Data.Services
             string cacheKey = $"UserRole/{userId}";
             if (!avoidCache)
             {
-                if (memoryCache.TryGetValue(cacheKey, out List<ApplicationUserRole>? cacheValue))
+                if (memoryCache.TryGetValue(cacheKey, out List<ApplicationUserRole>? cacheValue) && 
+                    cacheValue is not null)
                 {
-                    if (cacheValue is not null)
-                    {
-                        return cacheValue;
-                    }
+                    return cacheValue;
                 }
             }
 
@@ -195,12 +190,10 @@ namespace CSIDE.Data.Services
         public async Task<IReadOnlyCollection<TeamUser>> GetUserTeams(string userId, CancellationToken ct = default)
         {
             string teamCacheKey = $"UserTeam/{userId}";
-            if (memoryCache.TryGetValue(teamCacheKey, out List<TeamUser>? cacheValue))
+            if (memoryCache.TryGetValue(teamCacheKey, out List<TeamUser>? cacheValue) && 
+                cacheValue is not null)
             {
-                if (cacheValue is not null)
-                {
-                    return cacheValue;
-                }
+                return cacheValue;
             }
 
             await using var context = await contextFactory.CreateDbContextAsync(ct);

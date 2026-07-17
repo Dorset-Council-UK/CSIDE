@@ -54,19 +54,17 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                 navigationManager.NavigateTo($"surveys/bridge/{Survey.Id}/summary");
                 return;
             }
-            if (Survey.Status is SurveyStatus.Completed)
+            if (Survey.Status is SurveyStatus.Completed &&
+                AuthenticationState is not null)
             {
                 //check if user is validator
-                if (AuthenticationState is not null)
+                var authState = await AuthenticationState;
+                var user = authState?.User;
+                if (user is not null && user.IsInRole("Survey Validator"))
                 {
-                    var authState = await AuthenticationState;
-                    var user = authState?.User;
-                    if (user is not null && user.IsInRole("Survey Validator"))
-                    {
-                        navigationManager.NavigateTo($"surveys/bridge/{Survey.Id}/validate");
-                    }
-
+                    navigationManager.NavigateTo($"surveys/bridge/{Survey.Id}/validate");
                 }
+
             }
         }
         protected override async Task OnAfterRenderAsync(bool firstRender)

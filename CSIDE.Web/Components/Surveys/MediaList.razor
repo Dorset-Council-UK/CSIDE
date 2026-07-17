@@ -11,69 +11,66 @@
     </UploadFile>
 }
 
-@if (Survey is not null)
+@if (Survey is not null &&
+    Survey.SurveyMedia is not null && 
+    Survey.SurveyMedia.Count != 0)
 {
+    var images = from m in Survey.SurveyMedia where m.Media.Format == MediaType.Image select m;
+    var videos = from m in Survey.SurveyMedia where m.Media.Format == MediaType.Video select m;
+    var docs =
+        from m in Survey.SurveyMedia
+        where
+            (m.Media.Format == MediaType.PDF_Document ||
+            m.Media.Format == MediaType.Word_Document ||
+            m.Media.Format == MediaType.Excel_Spreadsheet ||
+            m.Media.Format == MediaType.Unknown)
+        select m;
 
-    @if (Survey.SurveyMedia is not null && Survey.SurveyMedia.Count != 0)
+    if (docs.Count() != 0)
     {
-
-        var images = from m in Survey.SurveyMedia where m.Media.Format == MediaType.Image select m;
-        var videos = from m in Survey.SurveyMedia where m.Media.Format == MediaType.Video select m;
-        var docs =
-            from m in Survey.SurveyMedia
-            where
-                (m.Media.Format == MediaType.PDF_Document ||
-                m.Media.Format == MediaType.Word_Document ||
-                m.Media.Format == MediaType.Excel_Spreadsheet ||
-                m.Media.Format == MediaType.Unknown)
-            select m;
-
-        if (docs.Count() != 0)
-        {
-            <div class="row my-4">
-                <h4>@localizer["Documents Label"]</h4>
-                <div class="col">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <tbody>
-                                @foreach (SurveyMedia surveyMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
-                                {
-                                    <MediaItem Media="@surveyMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+        <div class="row my-4">
+            <h4>@localizer["Documents Label"]</h4>
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tbody>
+                            @foreach (SurveyMedia surveyMediaItem in docs.OrderByDescending(i => i.Media.UploadDate))
+                            {
+                                <MediaItem Media="@surveyMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        }
+        </div>
+    }
 
-        if (images.Count() != 0)
-        {
-            <div class="row my-4">
-                <h4>@localizer["Images Label"]</h4>
-                <div id="media-gallery">
-                    @foreach (SurveyMedia surveyMediaItem in images.OrderByDescending(i => i.Media.UploadDate))
-                    {
-                        <MediaItem Media="@surveyMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
-                    }
-                </div>
-
-            </div>
-            <hr />
-        }
-        if (videos.Count() != 0)
-        {
-            <div class="row my-4">
-                <h4>@localizer["Videos Label"]</h4>
-                @foreach (SurveyMedia surveyMediaItem in videos.OrderByDescending(i => i.Media.UploadDate))
+    if (images.Count() != 0)
+    {
+        <div class="row my-4">
+            <h4>@localizer["Images Label"]</h4>
+            <div id="media-gallery">
+                @foreach (SurveyMedia surveyMediaItem in images.OrderByDescending(i => i.Media.UploadDate))
                 {
-                    <div class="col-12">
-                        <MediaItem Media="@surveyMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
-                    </div>
+                    <MediaItem Media="@surveyMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
                 }
             </div>
-            <hr />
-        }
+
+        </div>
+        <hr />
+    }
+    if (videos.Count() != 0)
+    {
+        <div class="row my-4">
+            <h4>@localizer["Videos Label"]</h4>
+            @foreach (SurveyMedia surveyMediaItem in videos.OrderByDescending(i => i.Media.UploadDate))
+            {
+                <div class="col-12">
+                    <MediaItem Media="@surveyMediaItem.Media" IsEditable="@IsEditable" OnRefreshComponent="RefreshComponent"></MediaItem>
+                </div>
+            }
+        </div>
+        <hr />
     }
 }
 
