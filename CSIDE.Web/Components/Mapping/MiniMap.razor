@@ -19,7 +19,7 @@
     [Parameter]
     public int? GeometrySRID { get; set; } = 27700;
 
-    private string MapId = $"mini-map-{new Random().Next()}";
+    private readonly string MapId = $"mini-map-{new Random().Next()}";
 
     private IJSObjectReference? _jsModule;
     private MappingOptions _mappingOptions => MappingOptions.Value;

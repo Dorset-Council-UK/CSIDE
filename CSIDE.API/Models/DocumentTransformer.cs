@@ -6,8 +6,8 @@ namespace CSIDE.API.Models;
 
 internal class DocumentTransformer(ApiVersion version) : IOpenApiDocumentTransformer
 {
-    private static string ApiKeyHeaderName = "X-API-Key";
-    private static string ApiKeyQueryName = "api-key";
+    private static readonly string ApiKeyHeaderName = "X-API-Key";
+    private static readonly string ApiKeyQueryName = "api-key";
     
     public Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
     {

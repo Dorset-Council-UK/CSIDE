@@ -23,7 +23,7 @@
     [Parameter]
     public Func<double[], Task<string>>? OnGetRouteMethod { get; set; }
 
-    private string MapId = $"create-map-{new Random().Next()}";
+    private readonly string MapId = $"create-map-{new Random().Next()}";
 
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<CreateMap>? self;

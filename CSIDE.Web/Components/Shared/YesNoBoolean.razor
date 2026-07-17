@@ -70,7 +70,7 @@
     [Parameter]
     public string? HintText { get; set; }
 
-    private Guid _id = Guid.NewGuid();
+    private readonly Guid _id = Guid.NewGuid();
 
     private void HandleValueChanged(string value)
     {

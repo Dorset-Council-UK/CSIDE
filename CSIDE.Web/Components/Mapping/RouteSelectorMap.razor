@@ -21,7 +21,7 @@
     [Parameter]
     public Func<double[], Task<Data.Models.RightsOfWay.Route[]>>? OnAddOrRemoveRouteMethod { get; set; }
 
-    private string MapId = $"route-selector-map-{new Random().Next()}";
+    private readonly string MapId = $"route-selector-map-{new Random().Next()}";
 
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<RouteSelectorMap>? self;
