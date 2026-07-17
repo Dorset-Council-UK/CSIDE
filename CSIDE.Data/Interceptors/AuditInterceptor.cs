@@ -60,12 +60,9 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             var userName = currentUserService.UserName;
 
             // Loop through the changes
-            foreach (var entry in context.ChangeTracker.Entries())
+            foreach (var entry in context.ChangeTracker.Entries()
+                .Where(entry => !DontAudit(entry) && !(entry.Entity is Media && entry.State is EntityState.Modified)))
             {
-                if (DontAudit(entry)) continue;
-                if (entry.Entity is Media && entry.State is EntityState.Modified) continue;
-
-
                 //add the modification logs first
                 if (entry.State == EntityState.Added)
                 {

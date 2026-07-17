@@ -311,12 +311,13 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             .ExecuteDeleteAsync();
 
         //add new landowner deposit types
-        foreach (int landownerDepositType in selectedLandownerDepositTypes)
+        foreach (int landownerDepositType in selectedLandownerDepositTypes.Where(landownerDepositType =>
+            !context.LandownerDepositTypes.Any(c =>
+                c.LandownerDepositId == landownerDeposit.Id &&
+                c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId &&
+                c.LandownerDepositTypeNameId == landownerDepositType)))
         {
-            if (!context.LandownerDepositTypes.Any(c => (c.LandownerDepositId == landownerDeposit.Id && c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId) && c.LandownerDepositTypeNameId == landownerDepositType))
-            {
-                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = landownerDeposit.Id, LandownerDepositSecondaryId = landownerDeposit.SecondaryId });
-            }
+            context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = landownerDeposit.Id, LandownerDepositSecondaryId = landownerDeposit.SecondaryId });
         }
         return;
     }

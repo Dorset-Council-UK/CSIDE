@@ -1,7 +1,6 @@
 ﻿using CSIDE.Data.Models.DMMO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using System.ComponentModel.DataAnnotations;
 
 namespace CSIDE.Data.Interceptors;
 
@@ -20,22 +19,20 @@ internal class DMMOInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries())
+        foreach (var entry in context.ChangeTracker.Entries()
+                     .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
+            if (entry.Entity is DMMOApplication dmmoApplication)
             {
-                if (entry.Entity is DMMOApplication dmmoApplication)
-                {
-                    await UpdateDMMOParishIds(context, dmmoApplication, cancellationToken);
-                }
-                else if (entry.Entity is DMMOOrder dmmoOrder && entry.State is EntityState.Added)
-                {
-                    dmmoOrder.OrderId = await NextOrderId(context, dmmoOrder.DMMOApplicationId, cancellationToken);
-                }
-                else if (entry.Entity is DMMOCouncilDecision dmmoCouncilDecision && entry.State is EntityState.Added)
-                {
-                    dmmoCouncilDecision.CouncilDecisionId = await NextCouncilDecisionId(context, dmmoCouncilDecision.DMMOApplicationId, cancellationToken);
-                }
+                await UpdateDMMOParishIds(context, dmmoApplication, cancellationToken);
+            }
+            else if (entry.Entity is DMMOOrder dmmoOrder && entry.State is EntityState.Added)
+            {
+                dmmoOrder.OrderId = await NextOrderId(context, dmmoOrder.DMMOApplicationId, cancellationToken);
+            }
+            else if (entry.Entity is DMMOCouncilDecision dmmoCouncilDecision && entry.State is EntityState.Added)
+            {
+                dmmoCouncilDecision.CouncilDecisionId = await NextCouncilDecisionId(context, dmmoCouncilDecision.DMMOApplicationId, cancellationToken);
             }
         }
     }

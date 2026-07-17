@@ -379,12 +379,9 @@ namespace CSIDE.Data.Services
             context.PPOTypes.AddRange(typesToAdd);
 
             // Mark entities as unchanged if they haven't actually changed
-            foreach (var existingType in existingTypes)
+            foreach (var existingType in existingTypes.Where(existingType => SelectedTypes.Contains(existingType.TypeId)))
             {
-                if (SelectedTypes.Contains(existingType.TypeId))
-                {
-                    context.Entry(existingType).State = EntityState.Unchanged;
-                }
+                context.Entry(existingType).State = EntityState.Unchanged;
             }
         }
 

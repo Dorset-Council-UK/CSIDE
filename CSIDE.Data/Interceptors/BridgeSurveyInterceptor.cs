@@ -32,13 +32,11 @@ internal class BridgeSurveyInterceptor : ISaveChangesInterceptor
         var userId = currentUserService.UserId;
         var userName = currentUserService.UserName;
 
-        foreach (var entry in context.ChangeTracker.Entries<BridgeSurvey>())
+        foreach (var entry in context.ChangeTracker.Entries<BridgeSurvey>()
+            .Where(entry => entry.State is EntityState.Added))
         {
-            if (entry.State is EntityState.Added)
-            {
-                entry.Entity.SurveyorId = userId;
-                entry.Entity.SurveyorName = userName;
-            }
+            entry.Entity.SurveyorId = userId;
+            entry.Entity.SurveyorName = userName;
         }
     }
 }

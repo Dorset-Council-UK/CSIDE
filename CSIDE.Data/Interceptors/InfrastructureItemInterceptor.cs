@@ -20,15 +20,12 @@ internal class InfrastructureItemInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<InfrastructureItem>())
+        foreach (var entry in context.ChangeTracker.Entries<InfrastructureItem>()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
-                var infrastructureItem = entry.Entity;
-
-                infrastructureItem.ParishId = await GetParishIdForGeom(context, infrastructureItem.Geom, cancellationToken);
-                infrastructureItem.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, infrastructureItem.Geom, cancellationToken);
-            }
+            var infrastructureItem = entry.Entity;
+            infrastructureItem.ParishId = await GetParishIdForGeom(context, infrastructureItem.Geom, cancellationToken);
+            infrastructureItem.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, infrastructureItem.Geom, cancellationToken);
         }
     }
 

@@ -454,12 +454,9 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.DMMOClaimedStatuses.AddRange(statusesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingStatus in existingStatuses)
+        foreach (var existingStatus in existingStatuses.Where(existingStatus => SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId)))
         {
-            if (SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId))
-            {
-                context.Entry(existingStatus).State = EntityState.Unchanged;
-            }
+            context.Entry(existingStatus).State = EntityState.Unchanged;
         }
     }
 
@@ -490,12 +487,9 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.DMMOTypes.AddRange(typesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingType in existingTypes)
+        foreach (var existingType in existingTypes.Where(existingType => SelectedApplicationTypes.Contains(existingType.ApplicationTypeId)))
         {
-            if (SelectedApplicationTypes.Contains(existingType.ApplicationTypeId))
-            {
-                context.Entry(existingType).State = EntityState.Unchanged;
-            }
+            context.Entry(existingType).State = EntityState.Unchanged;
         }
     }
 

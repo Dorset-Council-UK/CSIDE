@@ -526,12 +526,9 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         context.MaintenanceJobProblemTypes.AddRange(problemTypesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingProblemType in existingProblemTypes)
+        foreach (var existingProblemType in existingProblemTypes.Where(existingProblemType => selectedProblemTypes.Contains(existingProblemType.ProblemTypeId)))
         {
-            if (selectedProblemTypes.Contains(existingProblemType.ProblemTypeId))
-            {
-                context.Entry(existingProblemType).State = EntityState.Unchanged;
-            }
+            context.Entry(existingProblemType).State = EntityState.Unchanged;
         }
     }
 

@@ -236,12 +236,9 @@ namespace CSIDE.Data.Services
             context.ApplicationUserRoles.AddRange(userRolesToAdd);
 
             // Mark entities as unchanged if they haven't actually changed
-            foreach (var existingUserRole in existingUserRoles)
+            foreach (var existingUserRole in existingUserRoles.Where(existingUserRole => SelectedUserRoleIds.Contains(existingUserRole.ApplicationRoleId)))
             {
-                if (SelectedUserRoleIds.Contains(existingUserRole.ApplicationRoleId))
-                {
-                    context.Entry(existingUserRole).State = EntityState.Unchanged;
-                }
+                context.Entry(existingUserRole).State = EntityState.Unchanged;
             }
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
             return true;
