@@ -221,18 +221,19 @@ else
                         @if (Job.Geom is not null)
                         {
                             <MiniMap Geometry="@Job.Geom"></MiniMap>
+                        
+                            <table class="table table-striped table-sm">
+                                <tbody>
+                                    <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(Job.Geom.X)</td></tr>
+                                    <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(Job.Geom.Y)</td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <MapLink Template="@mappingOptions.Value.MaintJobMapLinkTemplateURL" Geometry="@Job.Geom" IncludeIcon="true"></MapLink>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         }
-                        <table class="table table-striped table-sm">
-                            <tbody>
-                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(Job.Geom?.X)</td></tr>
-                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(Job.Geom?.Y)</td></tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <MapLink Template="@mappingOptions.Value.MaintJobMapLinkTemplateURL" Geometry="@Job.Geom" IncludeIcon="true"></MapLink>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </ChildContent>
                     <ErrorContent Context="Exception">
                         <GenericErrorAlert Exception="Exception"></GenericErrorAlert>

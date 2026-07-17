@@ -39,7 +39,7 @@
         <GridColumn TItem="LandownerDeposit" Filterable="false" Class="comment-field" Sortable="false" HeaderText="@localizer["Landowner Deposit Location Label"]" PropertyName="Location">
             @if (context.Location?.Length > 200)
             {
-                @context.Location?.Substring(0, 200)
+                @context.Location.Substring(0, 200)
             
                 <text>&hellip;</text>
             }

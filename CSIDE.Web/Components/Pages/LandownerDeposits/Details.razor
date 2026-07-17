@@ -288,18 +288,19 @@ else
                         @if (LandownerDeposit.Geom is not null)
                         {
                             <MiniMap Geometry="@LandownerDeposit.Geom"></MiniMap>
+                        
+                            <table class="table table-striped table-sm">
+                                <tbody>
+                                    <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(LandownerDeposit.Geom.Centroid.X)</td></tr>
+                                    <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(LandownerDeposit.Geom.Centroid.Y)</td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <MapLink Template="@mappingOptions.Value.LandownerDepositMapLinkTemplateURL" Geometry="@LandownerDeposit.Geom" IncludeIcon="true"></MapLink>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         }
-                        <table class="table table-striped table-sm">
-                            <tbody>
-                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(LandownerDeposit.Geom?.Centroid.X)</td></tr>
-                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(LandownerDeposit.Geom?.Centroid.Y)</td></tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <MapLink Template="@mappingOptions.Value.LandownerDepositMapLinkTemplateURL" Geometry="@LandownerDeposit.Geom" IncludeIcon="true"></MapLink>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </ChildContent>
                     <ErrorContent Context="Exception">
                         <GenericErrorAlert Exception="Exception"></GenericErrorAlert>

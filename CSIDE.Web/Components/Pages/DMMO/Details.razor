@@ -307,18 +307,19 @@ else
                         @if (DMMOApplication.Geom is not null)
                         {
                             <MiniMap Geometry="@DMMOApplication.Geom"></MiniMap>
+                        
+                            <table class="table table-striped table-sm">
+                                <tbody>
+                                    <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(DMMOApplication.Geom.Centroid.X)</td></tr>
+                                    <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(DMMOApplication.Geom.Centroid.Y)</td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <MapLink Template="@mappingOptions.Value.DMMOMapLinkTemplateURL" Geometry="@DMMOApplication.Geom" IncludeIcon="true"></MapLink>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         }
-                        <table class="table table-striped table-sm">
-                            <tbody>
-                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(DMMOApplication.Geom?.Centroid.X)</td></tr>
-                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(DMMOApplication.Geom?.Centroid.Y)</td></tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <MapLink Template="@mappingOptions.Value.DMMOMapLinkTemplateURL" Geometry="@DMMOApplication.Geom" IncludeIcon="true"></MapLink>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </ChildContent>
                     <ErrorContent Context="Exception">
                         <GenericErrorAlert Exception="Exception"></GenericErrorAlert>

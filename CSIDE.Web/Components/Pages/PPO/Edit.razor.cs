@@ -75,12 +75,9 @@ namespace CSIDE.Web.Components.Pages.PPO
                 StateHasChanged();
                 try
                 {
-                    if (PPOApplication is not null)
-                    {
-                        await ppoService.UpdatePPO(PPOApplication, SelectedTypes);
-                        //redirect
-                        navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
-                    }
+                    await ppoService.UpdatePPO(PPOApplication, SelectedTypes);
+                    //redirect
+                    navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

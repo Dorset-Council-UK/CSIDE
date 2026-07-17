@@ -76,12 +76,9 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 StateHasChanged();
                 try
                 {
-                    if (Route is not null)
-                    {
-                        await rightsOfWayService.UpdateRoute(Route);
-                        //redirect
-                        NavigateBackToRouteDetailsPage();
-                    }
+                    await rightsOfWayService.UpdateRoute(Route);
+                    //redirect
+                    NavigateBackToRouteDetailsPage();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

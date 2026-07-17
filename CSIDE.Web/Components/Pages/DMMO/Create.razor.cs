@@ -76,12 +76,9 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 StateHasChanged();
                 try
                 {
-                    if (DMMOApplication is not null)
-                    {
-                        await dmmoService.CreateDMMO(DMMOApplication, SelectedClaimedStatuses, SelectedApplicationTypes);
-                        //redirect
-                        navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
-                    }
+                    await dmmoService.CreateDMMO(DMMOApplication, SelectedClaimedStatuses, SelectedApplicationTypes);
+                    //redirect
+                    navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

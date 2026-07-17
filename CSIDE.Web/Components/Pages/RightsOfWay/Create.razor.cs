@@ -80,12 +80,9 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 StateHasChanged();
                 try
                 {
-                    if (Route is not null)
-                    {
-                        await rightsOfWayService.CreateRoute(Route);
-                        //redirect
-                        navigationManager.NavigateTo($"rights-of-way/Details/{Route.RouteCode}");
-                    }
+                    await rightsOfWayService.CreateRoute(Route);
+                    //redirect
+                    navigationManager.NavigateTo($"rights-of-way/Details/{Route.RouteCode}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

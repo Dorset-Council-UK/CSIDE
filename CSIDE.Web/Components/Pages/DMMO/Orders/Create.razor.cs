@@ -56,12 +56,9 @@ namespace CSIDE.Web.Components.Pages.DMMO.Orders
                 StateHasChanged();
                 try
                 {
-                    if (Order is not null)
-                    {
-                        await dmmoService.AddOrderToDMMO(Order);
-                        //redirect
-                        navigationManager.NavigateTo($"DMMO/Details/{Order.DMMOApplicationId}");
-                    }
+                    await dmmoService.AddOrderToDMMO(Order);
+                    //redirect
+                    navigationManager.NavigateTo($"DMMO/Details/{Order.DMMOApplicationId}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

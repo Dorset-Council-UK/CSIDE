@@ -37,7 +37,7 @@ Responsive="true">
         </GridColumn>
         <GridColumn TItem="Job" Filterable="false" Class="comment-field" Sortable="false" HeaderText="@localizer["Problem Description Label"]" PropertyName="ProblemDescription" SortKeySelector="item => item.ProblemDescription">
             @if(context.ProblemDescription?.Length > 200){
-                @context.ProblemDescription?.Substring(0, 200)<text>&hellip;</text>
+                @context.ProblemDescription.Substring(0, 200)<text>&hellip;</text>
             }else{
                 @context.ProblemDescription
             }
