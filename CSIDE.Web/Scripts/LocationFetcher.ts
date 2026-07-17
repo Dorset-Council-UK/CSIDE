@@ -14,7 +14,7 @@ export function getLocation(component: any) {
     console.info('After 30 seconds the best accuracy we could achieve was ' + Math.round((bestAccuracy ? bestAccuracy : 0) * 100) / 100 + 'm');
     if (bestAccuracy && bestAccuracy <= 150) {
       //good enough?
-      const returnValue = [bestLat ? bestLat : 0, bestLon ? bestLon : 0, bestAccuracy ? bestAccuracy : 0];
+      const returnValue = [bestLat ? bestLat : 0, bestLon ? bestLon : 0, bestAccuracy];
       component.invokeMethodAsync('OnLocationSuccess', returnValue);
     } else {
       //not good enough
