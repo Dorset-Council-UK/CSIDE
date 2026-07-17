@@ -277,14 +277,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         if (!string.IsNullOrEmpty(job.ProblemDescription))
         {
             var containsHarmfulContent = await sharedDataService.DoesTextContainHarmfulContent(job.ProblemDescription, ct);
-            if (containsHarmfulContent)
-            {
-                job.RedactedProblemDescription = "[Hidden due to potentially inappropriate content]";
-            }
-            else
-            {
-                job.RedactedProblemDescription = await sharedDataService.RedactPII(job.ProblemDescription, ct);
-            }
+            job.RedactedProblemDescription = containsHarmfulContent ? "[Hidden due to potentially inappropriate content]" : await sharedDataService.RedactPII(job.ProblemDescription, ct);
         }
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobs.Add(job);
