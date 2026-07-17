@@ -26,7 +26,7 @@
             m.Media.Format == MediaType.Unknown)
         select m;
 
-    if (docs.Count() != 0)
+    if (docs.Any())
     {
         <div class="row my-4">
             <h4>@localizer["Documents Label"]</h4>
@@ -45,7 +45,7 @@
         </div>
     }
 
-    if (images.Count() != 0)
+    if (images.Any())
     {
         <div class="row my-4">
             <h4>@localizer["Images Label"]</h4>
@@ -59,7 +59,7 @@
         </div>
         <hr />
     }
-    if (videos.Count() != 0)
+    if (videos.Any())
     {
         <div class="row my-4">
             <h4>@localizer["Videos Label"]</h4>

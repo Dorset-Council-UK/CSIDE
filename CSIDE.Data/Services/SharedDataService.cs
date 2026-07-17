@@ -36,12 +36,11 @@ namespace CSIDE.Data.Services
 
         public async Task<IReadOnlyCollection<Parish>> GetParishes(CancellationToken ct = default)
         {
-            if(memoryCache.TryGetValue("Parishes", out IReadOnlyCollection<Parish>? cachedParishes))
+            if(memoryCache.TryGetValue("Parishes", out IReadOnlyCollection<Parish>? cachedParishes)
+                && cachedParishes is not null
+                && cachedParishes.Count > 0)
             {
-                if(cachedParishes is not null && cachedParishes.Count > 0)
-                {
-                    return cachedParishes;
-                }
+                return cachedParishes;
             }
 
             await using var context = await contextFactory.CreateDbContextAsync(ct);

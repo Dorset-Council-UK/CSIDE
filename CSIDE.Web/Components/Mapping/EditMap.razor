@@ -25,7 +25,7 @@
     [Parameter]
     public Func<double[], Task<string>>? OnGetRouteMethod { get; set; }
 
-    private readonly string MapId = $"edit-map-{new Random().Next()}";
+    private readonly string MapId = $"edit-map-{System.Guid.NewGuid():N}";
 
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<EditMap>? self;
