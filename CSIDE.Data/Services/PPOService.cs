@@ -436,13 +436,13 @@ namespace CSIDE.Data.Services
             await using var context = await contextFactory.CreateDbContextAsync(ct);
 
             var totalCount = await context.PPOApplication
-           .Where(d => d.IsPublic == true)
+           .Where(d => d.IsPublic)
            .AsNoTracking()
            .IgnoreAutoIncludes()
            .CountAsync(ct)
            .ConfigureAwait(false);
             var publicApplications = await context.PPOApplication
-                .Where(d => d.IsPublic == true)
+                .Where(d => d.IsPublic)
                 .AsNoTracking()
                 .IgnoreAutoIncludes()
                 .Include(d => d.CaseStatus)
@@ -469,7 +469,7 @@ namespace CSIDE.Data.Services
         public async Task<PPOApplicationPublicViewModel?> GetPublicPPOApplicationById(int id, CancellationToken ct = default)
         {
             var application = await GetPPOApplicationById(id, ct).ConfigureAwait(false);
-            if (application is null || application.IsPublic == false)
+            if (application is null || !application.IsPublic)
             {
                 return null;
             }

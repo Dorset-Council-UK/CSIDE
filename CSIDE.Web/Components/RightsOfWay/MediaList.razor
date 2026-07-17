@@ -5,16 +5,16 @@
 {
     @if (Route.RouteMedia is not null && Route.RouteMedia.Count != 0)
     {
-        var images = from m in Route.RouteMedia where m.Media.Format == MediaType.Image && m.IsClosureNotificationDocument == false select m;
+        var images = from m in Route.RouteMedia where m.Media.Format == MediaType.Image && !m.IsClosureNotificationDocument select m;
         var videos = from m in Route.RouteMedia where m.Media.Format == MediaType.Video select m;
-        var routeClosureDocs = from m in Route.RouteMedia where m.IsClosureNotificationDocument == true select m;
+        var routeClosureDocs = from m in Route.RouteMedia where m.IsClosureNotificationDocument select m;
         var docs = 
             from m in Route.RouteMedia
             where (
                 (m.Media.Format == MediaType.PDF_Document || 
                 m.Media.Format == MediaType.Word_Document ||
                 m.Media.Format == MediaType.Excel_Spreadsheet ||
-                m.Media.Format == MediaType.Unknown) && m.IsClosureNotificationDocument == false)
+                m.Media.Format == MediaType.Unknown) && !m.IsClosureNotificationDocument)
             select m;
 
         if (routeClosureDocs.Count() != 0 || (Route.OperationalStatus is not null && Route.OperationalStatus.IsClosed))

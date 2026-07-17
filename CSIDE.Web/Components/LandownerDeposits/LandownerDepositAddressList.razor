@@ -59,7 +59,7 @@ else
                 <div class="list-group">
                     @foreach (var address in AddressSearchAddresses)
                     {
-                        bool exists = Addresses is not null ? Addresses.Any(a => a.UPRN == address.UPRN) : false;
+                        bool exists = Addresses is not null && Addresses.Any(a => a.UPRN == address.UPRN);
                         <button type="button"
                                 class="list-group-item list-group-item-action"
                                 @onclick="async () => await AddSingleAddress(address)"

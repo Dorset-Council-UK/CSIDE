@@ -256,7 +256,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         var cutoff = today.PlusDays(7);
 
         return await context.Routes
-            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => !r.ClosureIsIndefinite)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
             .Select(r => new ClosedRoutesViewModel
@@ -278,7 +278,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
         return await context.Routes
             .Where(r => r.MaintenanceTeamId != null && teamId.Contains(r.MaintenanceTeamId.Value))
-            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => !r.ClosureIsIndefinite)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
             .Select(r => new ClosedRoutesViewModel

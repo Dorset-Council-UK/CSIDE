@@ -7,7 +7,7 @@
 @if (!string.IsNullOrEmpty(Url))
 {
     <a href="@Url" target="_blank">
-        @if (IncludeIcon == true)
+        @if (IncludeIcon)
         {
             <Icon Name="IconName.Map" Class="me-2" />
         }

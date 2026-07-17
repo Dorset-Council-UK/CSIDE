@@ -185,7 +185,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         return await context.Infrastructure
             .IgnoreAutoIncludes()
             .Include(i => i.InfrastructureType)
-            .Where(i => (i.InfrastructureType != null && i.InfrastructureType.IsBridge == true) && i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
+            .Where(i => (i.InfrastructureType != null && i.InfrastructureType.IsBridge) && i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
             .OrderBy(i => i.Geom!.Distance(transformedPoint.Geom))
             .Select(i => new BridgeWithDistance(i, i.Geom!.Distance(transformedPoint.Geom)))
             .ToArrayAsync(ct)

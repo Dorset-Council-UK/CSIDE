@@ -238,7 +238,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(j => j.MaintenanceTeamId != null && teamId.Contains(j.MaintenanceTeamId.Value))
-            .Where(job => job.JobStatus!.IsComplete == false)
+            .Where(job => job.JobStatus != null && !job.JobStatus.IsComplete)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
             .Select(j => new RecentJobViewModel
@@ -257,7 +257,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return await context.MaintenanceJobs
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Where(job => job.JobStatus!.IsComplete == false)
+            .Where(job => job.JobStatus != null && !job.JobStatus.IsComplete)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
             .Select(j => new RecentJobViewModel

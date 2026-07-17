@@ -416,13 +416,13 @@ else
         {
             councilDecision.DMMOApplicationId = DMMOApplication.Id;
 
-            if (isEdit == false)
+            if (isEdit)
             {
-                await dmmoService.AddCouncilDecisionToDMMO(councilDecision);
+                await dmmoService.UpdateDMMOCouncilDecision(councilDecision.CouncilDecisionId, councilDecision);
             }
             else
             {
-                await dmmoService.UpdateDMMOCouncilDecision(councilDecision.CouncilDecisionId, councilDecision);
+                await dmmoService.AddCouncilDecisionToDMMO(councilDecision);
             }
 
             DMMOApplication = await dmmoService.GetDMMOApplicationById(Id);

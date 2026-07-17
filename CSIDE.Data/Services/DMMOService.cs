@@ -605,13 +605,13 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
         var totalCount = await context.DMMOApplication
-            .Where(d => d.IsPublic == true)
+            .Where(d => d.IsPublic)
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .CountAsync(ct)
             .ConfigureAwait(false);
         var publicApplications = await context.DMMOApplication
-            .Where(d => d.IsPublic == true)
+            .Where(d => d.IsPublic)
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Include(d => d.CaseStatus)
@@ -639,7 +639,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     public async Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default)
     {
         var application = await GetDMMOApplicationById(id, ct).ConfigureAwait(false);
-        if (application is null || application.IsPublic == false)
+        if (application is null || !application.IsPublic)
         {
             return null;
         }
