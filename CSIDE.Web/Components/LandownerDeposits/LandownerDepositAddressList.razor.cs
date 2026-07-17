@@ -35,13 +35,13 @@ public partial class LandownerDepositAddressList(ILandownerDepositService landow
         await AddAddressModal.ShowAsync();
     }
 
-    private async Task DeleteLandownerDepositAddress(int LandownerDepositId, long UPRN)
+    private async Task DeleteLandownerDepositAddress(int LandownerDepositIdToUnlink, int LandownerDepositSecondaryIdToUnlink, long UPRN)
     {
         IsBusy = true;
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Landowner Deposit Address Confirmation"].Value);
         if (ConfirmDelete)
         {
-            await landownerDepositService.DeleteAddressFromLandownerDeposit(LandownerDepositId, LandownerDepositSecondaryId, UPRN);
+            await landownerDepositService.DeleteAddressFromLandownerDeposit(LandownerDepositIdToUnlink, LandownerDepositSecondaryIdToUnlink, UPRN);
             await RefreshComponent();
         }
         IsBusy = false;

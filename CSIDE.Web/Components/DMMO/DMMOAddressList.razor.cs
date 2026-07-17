@@ -33,13 +33,13 @@ public partial class DMMOAddressList(IPlacesSearchService addressSearchService, 
         await AddAddressModal.ShowAsync();
     }
 
-    private async Task DeleteDMMOAddress(int ApplicationId, long UPRN)
+    private async Task DeleteDMMOAddress(int ApplicationIdToUnlink, long UPRN)
     {
         IsBusy = true;
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete DMMO Address Confirmation"].Value);
         if (ConfirmDelete)
         {
-            await dmmoService.DeleteDMMOAddress(ApplicationId, UPRN);
+            await dmmoService.DeleteDMMOAddress(ApplicationIdToUnlink, UPRN);
             await RefreshComponent();
             
         }

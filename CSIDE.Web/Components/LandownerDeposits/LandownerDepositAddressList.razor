@@ -27,7 +27,7 @@
                     @if (IsEditable)
                     {
                         <td>
-                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteLandownerDepositAddress(address.LandownerDepositId, address.UPRN)">@localizer["Delete Label"]</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsBusy)" @onclick="() => DeleteLandownerDepositAddress(address.LandownerDepositId, address.LandownerDepositSecondaryId, address.UPRN)">@localizer["Delete Label"]</button>
                         </td>
                     }
                 </tr>
