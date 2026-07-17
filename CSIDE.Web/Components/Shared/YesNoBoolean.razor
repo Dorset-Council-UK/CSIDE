@@ -8,8 +8,8 @@
     }
     <InputRadioGroup Name="@_id.ToString()" TValue="string" Value="@CurrentValueAsString" ValueChanged="@HandleValueChanged" ValueExpression="@(() => CurrentValueAsString)">
         @{
-            var true_id = $"{_id.ToString()}-true";
-            var false_id = $"{_id.ToString()}-false";
+            var true_id = $"{_id}-true";
+            var false_id = $"{_id}-false";
            
         }
         <div class="form-check form-check-inline">
@@ -42,7 +42,7 @@
 
         @if (HasNullOption)
         {
-            var null_id = $"{_id.ToString()}-null";
+            var null_id = $"{_id}-null";
             <div class="form-check form-check-inline">
 
                 <InputRadio TValue="string"

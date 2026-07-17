@@ -338,7 +338,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        CompositeKey = $"{ItemId.ToString()}/{SecondaryId.ToString()}";
+        CompositeKey = $"{ItemId}/{SecondaryId}";
         NavItems = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = localizer["Home Title"], Href = "" },
