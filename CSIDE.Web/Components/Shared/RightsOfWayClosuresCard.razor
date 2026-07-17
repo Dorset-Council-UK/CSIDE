@@ -40,8 +40,8 @@
 
 @code {
     [PersistentState]
-    public IReadOnlyCollection<ClosedRoutesViewModel> Routes { get; set; } = [];
-    private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
+    public IReadOnlyCollection<ClosedRoutesViewModel>? Routes { get; set; }
+    private IReadOnlyCollection<Team?> MaintenanceTeam { get; set; } = [];
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
     private string? UserID { get; set; }
@@ -71,7 +71,7 @@
 
                 if (MaintenanceTeam.Count >= 1)
                 {
-                    var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
+                    var teamIds = MaintenanceTeam.Where(t => t != null).Select(t => t!.Id).ToList();
                     Routes = await rightsOfWayService.GetClosedRoutesForTeam(teamIds);
                 }
                 else

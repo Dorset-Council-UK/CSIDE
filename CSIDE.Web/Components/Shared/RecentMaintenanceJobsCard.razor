@@ -1,9 +1,7 @@
 ﻿@using CSIDE.Data.Models.Maintenance
 @using CSIDE.Data.Services
 @using CSIDE.Shared.Options
-@using NodaTime
 @using Humanizer
-@using System.Globalization
 
 @inject IMaintenanceJobsService maintenanceJobsService
 @inject ILogger<RecentMaintenanceJobsCard> logger
@@ -50,7 +48,7 @@ public IReadOnlyCollection<RecentJobViewModel>? Jobs { get; set; }
 [CascadingParameter]
 private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 private string? UserID { get; set; }
-private IReadOnlyCollection<Team> MaintenanceTeam { get; set; }
+private IReadOnlyCollection<Team?> MaintenanceTeam { get; set; } = [];
 private bool IsBusy { get; set; }
 private string? ErrorMessage { get; set; } = null;
 [PersistentState]
@@ -82,7 +80,7 @@ public string? MaintenanceCardTitle { get; set; }
 
                 if (MaintenanceTeam.Count >= 1)
                 {
-                    var teamIds = MaintenanceTeam.Select(t => t.Id).ToList();
+                    var teamIds = MaintenanceTeam.Where(t => t != null).Select(t => t!.Id).ToList();
                     Jobs = await maintenanceJobsService.GetRecentIncompleteJobsForTeam(teamIds, 5);
                 }
                 else

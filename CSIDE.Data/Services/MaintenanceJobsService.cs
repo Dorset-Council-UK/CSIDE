@@ -32,11 +32,11 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     private static readonly Dictionary<string, Expression<Func<Job, object>>> SortExpressions = new()
     {
         { "Id", x => x.Id },
-        { "RouteId", x => x.RouteId },
+        { "RouteId", x => x.RouteId ?? string.Empty },
         { "LogDate", x => x.LogDate ?? Instant.MinValue },
-        { "Parish", x => x.Parish.Name ?? string.Empty },
-        { "JobPriority", x => x.JobPriority.SortOrder },
-        { "JobStatus", x=> x.JobStatus.Description }
+        { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
+        { "JobPriority", x => x.JobPriority == null ? int.MaxValue : x.JobPriority.SortOrder },
+        { "JobStatus", x=> x.JobStatus == null ? string.Empty : x.JobStatus.Description }
     };
 
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default)

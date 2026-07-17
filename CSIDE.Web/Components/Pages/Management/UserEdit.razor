@@ -7,12 +7,12 @@
     </NotAuthorized>
 
     <Authorized>
-        <PageTitle>@localizer["User Edit Title", User?.DisplayName]</PageTitle>
+        <PageTitle>@localizer["User Edit Title", User?.DisplayName ?? ""]</PageTitle>
         <div>
             <Breadcrumb Items="NavItems"></Breadcrumb>
         </div>
 
-        <h1>@localizer["User Edit Title", User?.DisplayName]</h1>
+        <h1>@localizer["User Edit Title", User?.DisplayName ?? ""]</h1>
 
         @if (IsBusy)
         {

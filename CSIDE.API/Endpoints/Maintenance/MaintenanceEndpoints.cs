@@ -134,7 +134,7 @@ namespace CSIDE.API.Endpoints.Maintenance
             var mediaItem = await sharedDataService.UploadMedia(fileRequest);
             if(mediaItem is not null)
             {
-                job = await maintService.AddMediaToJob(job, [mediaItem]);
+                await maintService.AddMediaToJob(job, [mediaItem]);
                 return TypedResults.Created();
             }
 

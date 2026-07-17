@@ -44,7 +44,6 @@ public partial class DMMOLinkedRoutesList(IDMMOService dmmoService,
         if (application?.Geom is not null)
         {
             //get nearest 10 routes that intersect or are close to application
-            var existingRoutes = LinkedRoutes?.Select(l => l.RouteId);
             NearbyRoutes = await rightsOfWayHelperService.GetNearestRoutes(application.Geom, 50, 10);
         }
     }

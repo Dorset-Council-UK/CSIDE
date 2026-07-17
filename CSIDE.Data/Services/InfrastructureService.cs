@@ -16,9 +16,9 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     private static readonly Dictionary<string, Expression<Func<InfrastructureItem, object>>> SortExpressions = new()
     {
         { "Id", x => x.Id },
-        { "Parish", x => x.Parish.Name ?? string.Empty },
+        { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
         { "RouteId", x => x.RouteId ?? string.Empty },
-        { "InfrastructureType", x => x.InfrastructureType.Name ?? string.Empty },
+        { "InfrastructureType", x => x.InfrastructureType == null ? string.Empty : x.InfrastructureType.Name },
     };
     public async Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default)
     {

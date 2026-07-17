@@ -42,7 +42,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
                         {
                             Surveys = await infrastructureService.GetAllBridgeSurveys();
 
-                            var userId = authState.User.UserId;
+                            var userId = user.UserId;
                             if (userId is not null)
                             {
                                 var teams = await maintenanceJobsService.GetMaintenanceTeamForUser(userId);
@@ -55,7 +55,7 @@ namespace CSIDE.Web.Components.Pages.Surveys
                         else
                         {
                             //load only surveys for the user
-                            var userId = authState.User.UserId;
+                            var userId = user.UserId;
                             if (userId is not null)
                             {
                                 Surveys = await infrastructureService.GetBridgeSurveysForUser(userId);

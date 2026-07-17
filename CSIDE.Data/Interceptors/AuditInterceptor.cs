@@ -47,7 +47,6 @@ internal class AuditInterceptor : ISaveChangesInterceptor
         {
 
             var currentUserService = context.GetService<ICurrentUserService>();
-            var jsonSerializerOpts = new JsonSerializerOptions().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
             // Build the audit logs to add at the end
             List<AuditLog> auditLogs = [];
