@@ -98,17 +98,20 @@ public partial class AddressesFromMap(ILandownerDepositService landownerDepositS
         try
         {
             var FullAddresses = await landownerDepositService.GetLandownerDepositAddressesByDepositId(Id, SecondaryId);
-            ExistingAddresses = FullAddresses.Select(x => new SimpleAddress(x.UPRN, x.Address)).ToList();
-            foreach (var address in addresses.Where(a => ExistingAddresses is not null && !ExistingAddresses.Any(e => e.UPRN == a.UPRN)))
-            {
-                var LandownerDepositAddressToAdd = new LandownerDepositAddress()
+            ExistingAddresses = [.. FullAddresses.Select(x => new SimpleAddress(x.UPRN, x.Address))];
+
+
+            foreach (var landownerDepositAddressToAdd in addresses
+                .Where(a => ExistingAddresses is not null && !ExistingAddresses.Any(e => e.UPRN == a.UPRN))
+                .Select(address => new LandownerDepositAddress
                 {
                     LandownerDepositId = Id,
                     LandownerDepositSecondaryId = SecondaryId,
                     UPRN = address.UPRN,
                     Address = address.Address,
-                };
-                await landownerDepositService.AddAddressToLandownerDeposit(LandownerDepositAddressToAdd);
+                }))
+            {
+                await landownerDepositService.AddAddressToLandownerDeposit(landownerDepositAddressToAdd);
             }
             if (finished)
             {
