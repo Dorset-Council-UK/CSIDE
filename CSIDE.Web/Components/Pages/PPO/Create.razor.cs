@@ -153,7 +153,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
             {
-                var attributes = new AttributesTable();
+                var attributes = new AttributesTable(StringComparer.Ordinal);
                 var feature = new Feature(route, attributes);
                 featureCollection.Add(feature);
             }
