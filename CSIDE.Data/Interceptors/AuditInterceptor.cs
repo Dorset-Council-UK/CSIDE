@@ -318,7 +318,7 @@ internal class AuditInterceptor : ISaveChangesInterceptor
 
         properties = q.ToDictionary(
                 p => p.Metadata.Name,
-                p => ConvertGeometryToSerializableFormat(p.OriginalValue!),
+                p => ConvertGeometryToSerializableFormat(p.CurrentValue!),
                 StringComparer.Ordinal
             );
         properties = ObscureSensitiveAuditProperties(entry, properties);
