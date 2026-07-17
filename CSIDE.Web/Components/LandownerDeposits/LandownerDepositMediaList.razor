@@ -19,9 +19,9 @@
                 var docs =
                     from m in mediaOfType
                     where (
-                        m.Media.Format == MediaType.PDF_Document |
-                        m.Media.Format == MediaType.Word_Document |
-                        m.Media.Format == MediaType.Excel_Spreadsheet |
+                        m.Media.Format == MediaType.PDF_Document ||
+                        m.Media.Format == MediaType.Word_Document ||
+                        m.Media.Format == MediaType.Excel_Spreadsheet ||
                         m.Media.Format == MediaType.Unknown)
                     select m;
 

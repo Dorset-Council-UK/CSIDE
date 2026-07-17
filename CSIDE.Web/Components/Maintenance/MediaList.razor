@@ -12,9 +12,9 @@
         var videos = from m in Job.JobMedia where m.Media.Format == MediaType.Video select m;
         var docs = 
             from m in Job.JobMedia where (
-                m.Media.Format == MediaType.PDF_Document | 
-                m.Media.Format == MediaType.Word_Document |
-                m.Media.Format == MediaType.Excel_Spreadsheet |
+                m.Media.Format == MediaType.PDF_Document || 
+                m.Media.Format == MediaType.Word_Document ||
+                m.Media.Format == MediaType.Excel_Spreadsheet ||
                 m.Media.Format == MediaType.Unknown)
             select m;
 
