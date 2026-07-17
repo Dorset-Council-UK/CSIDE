@@ -112,7 +112,7 @@ Responsive="true">
                 request.PageNumber,
                 request.PageSize, request.CancellationToken);
 
-        return await Task.FromResult(new GridDataProviderResult<PPOApplication> { Data = result?.Results, TotalCount = result?.TotalResults ?? 0 });
+        return await Task.FromResult(new GridDataProviderResult<PPOApplication> { Data = result?.Results ?? [], TotalCount = result?.TotalResults ?? 0 });
     }
 
     private void OnRowClick(GridRowEventArgs<PPOApplication> args) => navigationManager.NavigateTo($"PPO/Details/{args.Item.Id}");

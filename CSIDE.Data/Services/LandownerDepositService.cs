@@ -270,7 +270,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         // Restore original version to ensure concurrency check works
         context.Entry(existingDeposit).Property(j => j.Version).OriginalValue = originalVersion;
 
-        await UpdateLandownerDepositTypes(landownerDeposit, SelectedLandownerDepositTypes, context);
+        await UpdateLandownerDepositTypes(landownerDeposit, SelectedLandownerDepositTypes, context, ct);
         await context.SaveChangesAsync(ct);
         return landownerDeposit;
 
@@ -293,7 +293,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         }
         return;
     }
-    private static async Task UpdateLandownerDepositTypes(LandownerDeposit landownerDeposit, List<int> selectedLandownerDepositTypes, ApplicationDbContext context)
+    private static async Task UpdateLandownerDepositTypes(LandownerDeposit landownerDeposit, List<int> selectedLandownerDepositTypes, ApplicationDbContext context, CancellationToken ct = default)
     {
         if (landownerDeposit is null) return;
         if (selectedLandownerDepositTypes == null)
@@ -310,14 +310,19 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             .Contains(c.LandownerDepositTypeNameId))
             .ExecuteDeleteAsync();
 
+        var existingLandownerDepositTypeIds = await context.LandownerDepositTypes
+            .AsNoTracking()
+            .Where(c => c.LandownerDepositId == landownerDeposit.Id && c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId)
+            .Select(c => c.LandownerDepositTypeNameId)
+            .ToHashSetAsync(cancellationToken: ct);
+
         //add new landowner deposit types
-        foreach (int landownerDepositType in selectedLandownerDepositTypes.Where(landownerDepositType =>
-            !context.LandownerDepositTypes.Any(c =>
-                c.LandownerDepositId == landownerDeposit.Id &&
-                c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId &&
-                c.LandownerDepositTypeNameId == landownerDepositType)))
+        foreach (int landownerDepositType in selectedLandownerDepositTypes)
         {
-            context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = landownerDeposit.Id, LandownerDepositSecondaryId = landownerDeposit.SecondaryId });
+            if (existingLandownerDepositTypeIds.Add(landownerDepositType))
+            {
+                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = landownerDeposit.Id, LandownerDepositSecondaryId = landownerDeposit.SecondaryId });
+            }
         }
         return;
     }

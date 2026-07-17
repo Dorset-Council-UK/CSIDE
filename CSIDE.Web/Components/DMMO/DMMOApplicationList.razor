@@ -114,7 +114,7 @@ Responsive="true">
                 request.PageNumber,
                 request.PageSize, request.CancellationToken);
 
-        return await Task.FromResult(new GridDataProviderResult<DMMOApplication> { Data = result?.Results, TotalCount = result?.TotalResults ?? 0 });
+        return await Task.FromResult(new GridDataProviderResult<DMMOApplication> { Data = result?.Results ?? [], TotalCount = result?.TotalResults ?? 0 });
     }
 
     private void OnRowClick(GridRowEventArgs<DMMOApplication> args) => navigationManager.NavigateTo($"DMMO/Details/{args.Item.Id}");
