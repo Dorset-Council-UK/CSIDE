@@ -305,7 +305,7 @@ else
         if (Job is not null)
         {
             //add to recent work store
-            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Maintenance}{Job.Id}", "Maintenance", Job.ProblemDescription.Truncate(50), $"Maintenance/Details/{Job.Id}");
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.Maintenance}{Job.Id}", "Maintenance", Job.ProblemDescription?.Truncate(50) ?? string.Empty, $"Maintenance/Details/{Job.Id}");
         }
         await base.OnAfterRenderAsync(firstRender);
     }

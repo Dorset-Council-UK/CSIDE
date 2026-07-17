@@ -19,12 +19,12 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     private static readonly Dictionary<string, Expression<Func<Route, object>>> SortExpressions = new()
         {
             { "RouteId", x => x.RouteCode },
-            { "Parish", x => x.Parish.Name ?? string.Empty },
-            { "MaintenanceTeam", x => x.MaintenanceTeam.Name ?? string.Empty },
+            { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
+            { "MaintenanceTeam", x => x.MaintenanceTeam == null ? string.Empty : x.MaintenanceTeam.Name },
             { "Name", x => x.Name ?? string.Empty },
-            { "OperationalStatus", x => x.OperationalStatus.Name ?? string.Empty },
-            { "LegalStatus", x=> x.LegalStatus.Name ?? string.Empty  },
-            { "RouteType", x => x.RouteType.Name ?? string.Empty },
+            { "OperationalStatus", x => x.OperationalStatus == null ? string.Empty : x.OperationalStatus.Name },
+            { "LegalStatus", x=> x.LegalStatus == null ? string.Empty : x.LegalStatus.Name  },
+            { "RouteType", x => x.RouteType == null ? string.Empty : x.RouteType.Name },
             { "Notes", x => x.Notes ?? string.Empty }
 
 
@@ -264,7 +264,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             .Select(r => new ClosedRoutesViewModel
             {
                 RouteCode = r.RouteCode,
-                ClosureEndDate = r.ClosureEndDate.Value.ToDateOnly(),
+                ClosureEndDate = r.ClosureEndDate!.Value.ToDateOnly(),
             })
             .ToArrayAsync(cancellationToken: ct)
             .ConfigureAwait(false);

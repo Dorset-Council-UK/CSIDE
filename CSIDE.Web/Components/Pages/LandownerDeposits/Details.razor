@@ -378,7 +378,7 @@ else
         if (LandownerDeposit is not null)
         {
             //add to recent work store
-            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}", "LandownerDeposit", LandownerDeposit.Location.Truncate(50), $"landowner-deposits/Details/{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}");
+            await settingsService.AddRecentWork($"{IDPrefixOptions.Value.LandownerDeposit}{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}", "LandownerDeposit", LandownerDeposit.Location?.Truncate(50) ?? string.Empty, $"landowner-deposits/Details/{LandownerDeposit.Id}/{LandownerDeposit.SecondaryId}");
         }
         await base.OnAfterRenderAsync(firstRender);
     }

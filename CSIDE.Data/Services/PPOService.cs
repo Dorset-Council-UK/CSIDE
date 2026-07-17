@@ -20,9 +20,9 @@ namespace CSIDE.Data.Services
         private static readonly Dictionary<string, Expression<Func<PPOApplication, object>>> SortExpressions = new()
         {
             { "Id", x => x.Id },
-            { "Legislation", x => x.Legislation.Name ?? string.Empty },
+            { "Legislation", x => x.Legislation == null ? string.Empty : x.Legislation.Name },
             { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
-            { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
+            { "CaseStatus", x => x.CaseStatus == null ? string.Empty : x.CaseStatus.Name },
         };
         public async Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default)
         {
