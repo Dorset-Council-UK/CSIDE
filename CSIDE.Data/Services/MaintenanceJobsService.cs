@@ -127,12 +127,10 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Job, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)

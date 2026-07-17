@@ -184,12 +184,10 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     private static IQueryable<Route> ApplyOrdering(IQueryable<Route> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Route, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.RouteCode);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.RouteCode)

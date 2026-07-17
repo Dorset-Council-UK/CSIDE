@@ -87,12 +87,10 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
     private static IQueryable<LandownerDeposit> ApplyOrdering(IQueryable<LandownerDeposit> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<LandownerDeposit, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
