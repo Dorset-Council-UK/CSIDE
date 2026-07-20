@@ -91,14 +91,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             IsBusy = true;
             try
             {
-                if (ApproveSurvey.HasValue && ApproveSurvey.Value)
-                {
-                    Survey.Status = SurveyStatus.Verified;
-                }
-                else
-                {
-                    Survey.Status = SurveyStatus.Rejected;
-                }
+                Survey.Status = ApproveSurvey.HasValue && ApproveSurvey.Value ? SurveyStatus.Verified : SurveyStatus.Rejected;
                 
                 await infrastructureService.UpdateBridgeSurvey(SurveyId, Survey);
 

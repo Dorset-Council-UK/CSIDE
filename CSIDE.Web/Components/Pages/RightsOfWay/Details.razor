@@ -37,17 +37,14 @@ else
         <PageTitle>@localizer["Rights of Way Details Title", Route.RouteCode]</PageTitle>
         <h1>@localizer["Rights of Way Details Title", Route.RouteCode]</h1>
 
-        @if (Route.OperationalStatus is not null && Route.OperationalStatus.IsClosed && !Route.ClosureIsIndefinite)
+        @if (IsClosureOverdue)
         {
-            @if (Route.ClosureEndDate.HasValue && LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)) > Route.ClosureEndDate)
-            {
-                var daysOverdue = Period.DaysBetween(Route.ClosureEndDate.Value, LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)));
-                var friendlyTimeSpan = localizer["X Days Ago Label", daysOverdue];
-                if(daysOverdue == 1){
-                    friendlyTimeSpan = localizer["Yesterday Label"];
-                }
-                <div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> @localizer["Closure End Date Passed Warning Text", friendlyTimeSpan]</div>
+            var daysOverdue = Period.DaysBetween(Route!.ClosureEndDate!.Value, LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)));
+            var friendlyTimeSpan = localizer["X Days Ago Label", daysOverdue];
+            if(daysOverdue == 1){
+                friendlyTimeSpan = localizer["Yesterday Label"];
             }
+            <div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> @localizer["Closure End Date Passed Warning Text", friendlyTimeSpan]</div>
         }
 
         if(Route.LegalStatus is not null && !Route.LegalStatus.IsActive)
@@ -111,7 +108,7 @@ else
                                                         @localizer["Indefinite Closure Text"]
                                                     }else{
                                                         @(Route.ClosureEndDate.HasValue ? Route.ClosureEndDate.Value.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : "Unknown")
-                                                        @if (Route.ClosureEndDate.HasValue && LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)) > Route.ClosureEndDate)
+                                                        @if (IsClosureOverdue)
                                                         {
                                                             <br/>
                                                             <span class="text-danger"><i class="bi bi-exclamation-circle"></i> @localizer["Closure End Date Passed Short Warning Text"]</span>
@@ -200,11 +197,11 @@ else
 
                             <table class="table table-striped table-sm">
                                 <tbody>
-                                    <tr><th>@localizer["Start Easting Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.First().X)</td></tr>
-                                    <tr><th>@localizer["Start Northing Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.First().Y)</td></tr>
-                                    <tr><th>@localizer["End Easting Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.Last().X)</td></tr>
-                                    <tr><th>@localizer["End Northing Label"]</th><td>@Convert.ToInt32(Route.Geom?.Coordinates.Last().Y)</td></tr>
-                                    <tr><th>@localizer["Approximate Length Label"]</th><td>@Convert.ToInt32(Route.Geom?.Length)m</td></tr>
+                                    <tr><th>@localizer["Start Easting Label"]</th><td>@Convert.ToInt32(Route.Geom.Coordinates.First().X)</td></tr>
+                                    <tr><th>@localizer["Start Northing Label"]</th><td>@Convert.ToInt32(Route.Geom.Coordinates.First().Y)</td></tr>
+                                    <tr><th>@localizer["End Easting Label"]</th><td>@Convert.ToInt32(Route.Geom.Coordinates.Last().X)</td></tr>
+                                    <tr><th>@localizer["End Northing Label"]</th><td>@Convert.ToInt32(Route.Geom.Coordinates.Last().Y)</td></tr>
+                                    <tr><th>@localizer["Approximate Length Label"]</th><td>@Convert.ToInt32(Route.Geom.Length)m</td></tr>
                                     <tr>
                                         <td colspan="2">
                                             <MapLink Template="@mappingOptions.Value.RouteMapLinkTemplateURL" Geometry="@Route.Geom" IncludeIcon="true"></MapLink>
@@ -284,6 +281,14 @@ else
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    private bool IsClosureOverdue =>
+        Route is not null &&
+        Route.OperationalStatus is not null &&
+        Route.OperationalStatus.IsClosed &&
+        !Route.ClosureIsIndefinite &&
+        Route.ClosureEndDate.HasValue &&
+        LocalDate.FromDateOnly(DateOnly.FromDateTime(DateTime.Now)) > Route.ClosureEndDate;
 
     private bool IsPlannedClosure =>
         Route?.OperationalStatus is not null &&

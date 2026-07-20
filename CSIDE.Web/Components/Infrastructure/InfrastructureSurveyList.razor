@@ -17,7 +17,6 @@ else
         <div class="row">
             @foreach (var survey in Surveys.OrderByDescending(s => s.EndDate))
             {
-                string url = $"surveys/bridge/{survey.Id}/details";
                 <div class="col-lg-6">
                     <Card class="card bg-light-subtle h-100">
                         <CardBody>

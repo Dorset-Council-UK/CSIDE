@@ -19,12 +19,12 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     private static readonly Dictionary<string, Expression<Func<Route, object>>> SortExpressions = new()
         {
             { "RouteId", x => x.RouteCode },
-            { "Parish", x => x.Parish.Name ?? string.Empty },
-            { "MaintenanceTeam", x => x.MaintenanceTeam.Name ?? string.Empty },
+            { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
+            { "MaintenanceTeam", x => x.MaintenanceTeam == null ? string.Empty : x.MaintenanceTeam.Name },
             { "Name", x => x.Name ?? string.Empty },
-            { "OperationalStatus", x => x.OperationalStatus.Name ?? string.Empty },
-            { "LegalStatus", x=> x.LegalStatus.Name ?? string.Empty  },
-            { "RouteType", x => x.RouteType.Name ?? string.Empty },
+            { "OperationalStatus", x => x.OperationalStatus == null ? string.Empty : x.OperationalStatus.Name },
+            { "LegalStatus", x=> x.LegalStatus == null ? string.Empty : x.LegalStatus.Name  },
+            { "RouteType", x => x.RouteType == null ? string.Empty : x.RouteType.Name },
             { "Notes", x => x.Notes ?? string.Empty }
 
 
@@ -184,12 +184,10 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     private static IQueryable<Route> ApplyOrdering(IQueryable<Route> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Route, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.RouteCode);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.RouteCode)
@@ -258,13 +256,13 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         var cutoff = today.PlusDays(7);
 
         return await context.Routes
-            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => !r.ClosureIsIndefinite)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
             .Select(r => new ClosedRoutesViewModel
             {
                 RouteCode = r.RouteCode,
-                ClosureEndDate = r.ClosureEndDate.Value.ToDateOnly(),
+                ClosureEndDate = r.ClosureEndDate!.Value.ToDateOnly(),
             })
             .ToArrayAsync(cancellationToken: ct)
             .ConfigureAwait(false);
@@ -280,7 +278,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
         return await context.Routes
             .Where(r => r.MaintenanceTeamId != null && teamId.Contains(r.MaintenanceTeamId.Value))
-            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => !r.ClosureIsIndefinite)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
             .Select(r => new ClosedRoutesViewModel

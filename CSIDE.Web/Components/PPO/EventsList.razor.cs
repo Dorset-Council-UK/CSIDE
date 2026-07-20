@@ -16,7 +16,7 @@ namespace CSIDE.Web.Components.PPO
         public bool IsEditable { get; set; }
 
         [CascadingParameter]
-        private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+        private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
         private FluentValidationValidator? newEventValidator;
 
         private bool IsBusy { get; set; }

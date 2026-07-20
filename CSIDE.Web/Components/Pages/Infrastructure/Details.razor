@@ -4,7 +4,6 @@
 @using CSIDE.Web.Components.Infrastructure
 @using CSIDE.Web.Components.Mapping
 @using CSIDE.Web.Components.Layout
-@using System.Globalization
 @using CSIDE.Shared.Options
 @using CSIDE.Web.Services
 @using Microsoft.Extensions.Options
@@ -306,18 +305,19 @@ else
                         @if (InfrastructureItem.Geom is not null)
                         {
                             <MiniMap Geometry="@InfrastructureItem.Geom"></MiniMap>
+                        
+                            <table class="table table-striped table-sm">
+                                <tbody>
+                                    <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom.X)</td></tr>
+                                    <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom.Y)</td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <MapLink Template="@mappingOptions.Value.InfraItemMapLinkTemplateURL" Geometry="@InfrastructureItem.Geom" IncludeIcon="true"></MapLink>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         }
-                        <table class="table table-striped table-sm">
-                            <tbody>
-                                <tr><th>@localizer["Easting Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom?.X)</td></tr>
-                                <tr><th>@localizer["Northing Label"]</th><td>@Convert.ToInt32(InfrastructureItem.Geom?.Y)</td></tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <MapLink Template="@mappingOptions.Value.InfraItemMapLinkTemplateURL" Geometry="@InfrastructureItem.Geom" IncludeIcon="true"></MapLink>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </ChildContent>
                     <ErrorContent Context="Exception">
                         <GenericErrorAlert Exception="Exception"></GenericErrorAlert>

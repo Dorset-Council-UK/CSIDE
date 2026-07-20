@@ -57,8 +57,8 @@ public partial class PlacesSearchService(IHttpClientFactory httpClientFactory, I
 
         httpClient.DefaultRequestHeaders.Add("key", MappingOptions.Value.OSMapsAPIKey);
 
-        var content = new StringContent(geojson, System.Text.Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync(url, content, ct);
+        using var content = new StringContent(geojson, System.Text.Encoding.UTF8, "application/json");
+        using var response = await httpClient.PostAsync(url, content, ct);
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync(ct);
         var addresses = JsonSerializer.Deserialize<OSPlacesAPIResult>(responseString);

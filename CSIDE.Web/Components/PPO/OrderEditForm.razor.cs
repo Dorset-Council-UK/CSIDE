@@ -80,7 +80,10 @@ namespace CSIDE.Web.Components.PPO
                 {
                     var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
                     var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
-                    updateProperty(parseResult.Value);
+                    if (parseResult.Success)
+                    {
+                        updateProperty(parseResult.Value);
+                    }
                 }
                 catch (Exception)
                 {

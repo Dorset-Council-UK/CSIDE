@@ -42,28 +42,20 @@ namespace CSIDE.Web.Components.Pages.Surveys
                         {
                             Surveys = await infrastructureService.GetAllBridgeSurveys();
 
-                            var userId = authState.User.UserId;
+                            var userId = user.UserId;
                             if (userId is not null)
                             {
                                 var teams = await maintenanceJobsService.GetMaintenanceTeamForUser(userId);
-                                UserMaintenanceTeamIds = teams
+                                UserMaintenanceTeamIds = [.. teams
                                     .Where(t => t is not null)
-                                    .Select(t => t!.Id)
-                                    .ToHashSet();
+                                    .Select(t => t!.Id)];
                             }
                         }
                         else
                         {
                             //load only surveys for the user
-                            var userId = authState.User.UserId;
-                            if (userId is not null)
-                            {
-                                Surveys = await infrastructureService.GetBridgeSurveysForUser(userId);
-                            }
-                            else
-                            {
-                                Surveys = [];
-                            }
+                            var userId = user.UserId;
+                            Surveys = userId is not null ? await infrastructureService.GetBridgeSurveysForUser(userId) : [];
                         }
                     }
                 }

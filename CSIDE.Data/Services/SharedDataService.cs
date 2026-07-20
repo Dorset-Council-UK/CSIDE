@@ -36,13 +36,25 @@ namespace CSIDE.Data.Services
 
         public async Task<IReadOnlyCollection<Parish>> GetParishes(CancellationToken ct = default)
         {
-            //TODO - Cache
+            if(memoryCache.TryGetValue("Parishes", out IReadOnlyCollection<Parish>? cachedParishes)
+                && cachedParishes is not null
+                && cachedParishes.Count > 0)
+            {
+                return cachedParishes;
+            }
+
             await using var context = await contextFactory.CreateDbContextAsync(ct);
-            return await context.Parishes
+            var parishes = await context.Parishes
                 .AsNoTracking()
                 .OrderBy(p => p.Name)
                 .ToArrayAsync(ct)
                 .ConfigureAwait(false);
+
+            if (parishes.Length > 0)
+            {
+                memoryCache.Set("Parishes", parishes, TimeSpan.FromHours(1));
+            }
+            return parishes;
         }
 
         public async Task<IReadOnlyCollection<Parish>> GetParishesIntersecting(Geometry geometry, CancellationToken ct = default)
@@ -199,11 +211,10 @@ namespace CSIDE.Data.Services
 
                 // Upload the rotated image back to blob storage (this will overwrite the existing image)
                 var uri = new Uri(mediaItem.URL);
-                var fileName = uri.PathAndQuery.Replace($"/{blobStorageService.GetType().Name}/", "", StringComparison.OrdinalIgnoreCase);
                 
                 // Extract just the filename from the URL
                 var segments = uri.Segments;
-                fileName = segments[^1]; // Get the last segment (filename)
+                var fileName = segments[^1]; // Get the last segment (filename)
 
                 await blobStorageService.UploadFileToBlobAsync(fileName, "image/jpeg", rotatedStream);
 

@@ -32,11 +32,11 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     private static readonly Dictionary<string, Expression<Func<Job, object>>> SortExpressions = new()
     {
         { "Id", x => x.Id },
-        { "RouteId", x => x.RouteId },
+        { "RouteId", x => x.RouteId ?? string.Empty },
         { "LogDate", x => x.LogDate ?? Instant.MinValue },
-        { "Parish", x => x.Parish.Name ?? string.Empty },
-        { "JobPriority", x => x.JobPriority.SortOrder },
-        { "JobStatus", x=> x.JobStatus.Description }
+        { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
+        { "JobPriority", x => x.JobPriority == null ? int.MaxValue : x.JobPriority.SortOrder },
+        { "JobStatus", x=> x.JobStatus == null ? string.Empty : x.JobStatus.Description }
     };
 
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default)
@@ -127,12 +127,10 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Job, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
@@ -240,7 +238,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(j => j.MaintenanceTeamId != null && teamId.Contains(j.MaintenanceTeamId.Value))
-            .Where(job => job.JobStatus!.IsComplete == false)
+            .Where(job => job.JobStatus != null && !job.JobStatus.IsComplete)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
             .Select(j => new RecentJobViewModel
@@ -259,7 +257,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return await context.MaintenanceJobs
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Where(job => job.JobStatus!.IsComplete == false)
+            .Where(job => job.JobStatus != null && !job.JobStatus.IsComplete)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
             .Select(j => new RecentJobViewModel
@@ -277,14 +275,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         if (!string.IsNullOrEmpty(job.ProblemDescription))
         {
             var containsHarmfulContent = await sharedDataService.DoesTextContainHarmfulContent(job.ProblemDescription, ct);
-            if (containsHarmfulContent)
-            {
-                job.RedactedProblemDescription = "[Hidden due to potentially inappropriate content]";
-            }
-            else
-            {
-                job.RedactedProblemDescription = await sharedDataService.RedactPII(job.ProblemDescription, ct);
-            }
+            job.RedactedProblemDescription = containsHarmfulContent ? "[Hidden due to potentially inappropriate content]" : await sharedDataService.RedactPII(job.ProblemDescription, ct);
         }
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobs.Add(job);
@@ -535,12 +526,9 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         context.MaintenanceJobProblemTypes.AddRange(problemTypesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingProblemType in existingProblemTypes)
+        foreach (var existingProblemType in existingProblemTypes.Where(existingProblemType => selectedProblemTypes.Contains(existingProblemType.ProblemTypeId)))
         {
-            if (selectedProblemTypes.Contains(existingProblemType.ProblemTypeId))
-            {
-                context.Entry(existingProblemType).State = EntityState.Unchanged;
-            }
+            context.Entry(existingProblemType).State = EntityState.Unchanged;
         }
     }
 

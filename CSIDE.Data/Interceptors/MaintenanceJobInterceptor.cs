@@ -20,15 +20,13 @@ internal class MaintenanceJobInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<Job>())
+        foreach (var entry in context.ChangeTracker.Entries<Job>()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
+            entry.Entity.ParishId = await GetParishIdForGeom(context, entry.Entity.Geom, cancellationToken);
+            if (entry.State is EntityState.Added)
             {
-                entry.Entity.ParishId = await GetParishIdForGeom(context, entry.Entity.Geom, cancellationToken);
-                if (entry.State is EntityState.Added)
-                {
-                    entry.Entity.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, entry.Entity.Geom, cancellationToken);
-                }
+                entry.Entity.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, entry.Entity.Geom, cancellationToken);
             }
         }
     }

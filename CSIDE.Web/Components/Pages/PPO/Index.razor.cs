@@ -49,13 +49,11 @@ namespace CSIDE.Web.Components.Pages.PPO
                 PPOSearchErrorMessage = null;
                 try
                 {
-                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.PPO))
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.PPO) &&
+                        PPOIDSearch.StartsWith(IDPrefixOptions.Value.PPO, StringComparison.OrdinalIgnoreCase))
                     {
                         //remove any left in place prefixes
-                        if (PPOIDSearch.StartsWith(IDPrefixOptions.Value.PPO, StringComparison.OrdinalIgnoreCase))
-                        {
-                            PPOIDSearch = PPOIDSearch[IDPrefixOptions.Value.PPO.Length..].Trim();
-                        }
+                        PPOIDSearch = PPOIDSearch[IDPrefixOptions.Value.PPO.Length..].Trim();
                     }
                     if (int.TryParse(PPOIDSearch, CultureInfo.InvariantCulture, out int PPOIDSearchInt))
                     {

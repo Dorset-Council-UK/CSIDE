@@ -23,7 +23,6 @@ namespace CSIDE.Web.Components.Pages.Management
         protected override async Task OnParametersSetAsync()
         {
             IsBusy = true;
-            List<string> activeUserIds = await userService.GetActiveUserIds();
             User = await userService.GetUser(Id);
             if(User is not null)
             {

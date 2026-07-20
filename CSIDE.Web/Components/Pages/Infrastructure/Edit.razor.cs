@@ -63,13 +63,9 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 StateHasChanged();
                 try
                 {
-                    if (InfrastructureItem is not null)
-                    {
-
-                        await infrastructureService.UpdateInfrastructureItem(InfrastructureItem);
-                        //redirect
-                        NavigateBackToInfrastructureDetailsPage();
-                    }
+                    await infrastructureService.UpdateInfrastructureItem(InfrastructureItem);
+                    //redirect
+                    NavigateBackToInfrastructureDetailsPage();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

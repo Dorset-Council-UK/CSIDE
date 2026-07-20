@@ -46,13 +46,11 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             {
                 IsBusy = true;
                 JobIDSearchErrorMessage = null;
-                if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance))
+                if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance) &&
+                    JobIDSearch.StartsWith(IDPrefixOptions.Value.Maintenance, StringComparison.OrdinalIgnoreCase))
                 {
                     //remove any left in place prefixes
-                    if (JobIDSearch.StartsWith(IDPrefixOptions.Value.Maintenance, StringComparison.OrdinalIgnoreCase))
-                    {
-                        JobIDSearch = JobIDSearch[IDPrefixOptions.Value.Maintenance.Length..].Trim();
-                    }
+                    JobIDSearch = JobIDSearch[IDPrefixOptions.Value.Maintenance.Length..].Trim();
                 }
                 try
                 {

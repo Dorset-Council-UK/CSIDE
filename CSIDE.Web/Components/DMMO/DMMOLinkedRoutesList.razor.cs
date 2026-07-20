@@ -44,7 +44,6 @@ public partial class DMMOLinkedRoutesList(IDMMOService dmmoService,
         if (application?.Geom is not null)
         {
             //get nearest 10 routes that intersect or are close to application
-            var existingRoutes = LinkedRoutes?.Select(l => l.RouteId);
             NearbyRoutes = await rightsOfWayHelperService.GetNearestRoutes(application.Geom, 50, 10);
         }
     }
@@ -80,13 +79,13 @@ public partial class DMMOLinkedRoutesList(IDMMOService dmmoService,
         }
     }
 
-    private async Task DeleteLinkedRoute(int ApplicationId, string RouteId)
+    private async Task DeleteLinkedRoute(int ApplicationIdToUnlink, string RouteId)
     {
         IsBusy = true;
         bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete DMMO Linked Route Confirmation"].Value);
         if (ConfirmDelete)
         {
-            await dmmoService.DeleteDMMOLinkedRoute(ApplicationId, RouteId);
+            await dmmoService.DeleteDMMOLinkedRoute(ApplicationIdToUnlink, RouteId);
             await RefreshComponent();
             
         }

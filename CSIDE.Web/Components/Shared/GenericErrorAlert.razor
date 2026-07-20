@@ -4,8 +4,8 @@
     @(Message is not null ? Message : localizer["General Component Error Message"])
     @if (!HostEnvironment.IsProduction() && Exception is not null)
     {
-        <hr/><pre>@Exception?.Message</pre>
-        <pre>@Exception?.StackTrace</pre>
+        <hr/><pre>@Exception.Message</pre>
+        <pre>@Exception.StackTrace</pre>
     }
 </Alert>
 

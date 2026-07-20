@@ -50,13 +50,11 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
                 InfrastructureIDSearchErrorMessage = null;
                 try
                 {
-                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Infrastructure))
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Infrastructure) &&
+                        InfrastructureIDSearch.StartsWith(IDPrefixOptions.Value.Infrastructure, StringComparison.OrdinalIgnoreCase))
                     {
                         //remove any left in place prefixes
-                        if (InfrastructureIDSearch.StartsWith(IDPrefixOptions.Value.Infrastructure, StringComparison.OrdinalIgnoreCase))
-                        {
-                            InfrastructureIDSearch = InfrastructureIDSearch[IDPrefixOptions.Value.Infrastructure.Length..].Trim();
-                        }
+                        InfrastructureIDSearch = InfrastructureIDSearch[IDPrefixOptions.Value.Infrastructure.Length..].Trim();
                     }
                     if (int.TryParse(InfrastructureIDSearch, CultureInfo.InvariantCulture, out int InfrastructureIDSearchInt))
                     {

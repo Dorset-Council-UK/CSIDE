@@ -47,7 +47,6 @@ internal class AuditInterceptor : ISaveChangesInterceptor
         {
 
             var currentUserService = context.GetService<ICurrentUserService>();
-            var jsonSerializerOpts = new JsonSerializerOptions().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
             // Build the audit logs to add at the end
             List<AuditLog> auditLogs = [];
@@ -61,12 +60,9 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             var userName = currentUserService.UserName;
 
             // Loop through the changes
-            foreach (var entry in context.ChangeTracker.Entries())
+            foreach (var entry in context.ChangeTracker.Entries()
+                .Where(entry => !DontAudit(entry) && !(entry.Entity is Media && entry.State is EntityState.Modified)))
             {
-                if (DontAudit(entry)) continue;
-                if (entry.Entity is Media && entry.State is EntityState.Modified) continue;
-
-
                 //add the modification logs first
                 if (entry.State == EntityState.Added)
                 {
@@ -313,26 +309,18 @@ internal class AuditInterceptor : ISaveChangesInterceptor
     {
         IDictionary<string, object> properties;
 
-        if (entityState == EntityState.Added)
+        var q = entry.Properties.AsQueryable();
+
+        if (entityState != EntityState.Added)
         {
-            // On add, get new/current properties
-            properties = entry.Properties.ToDictionary(
+            q = q.Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue));
+        }
+
+        properties = q.ToDictionary(
                 p => p.Metadata.Name,
                 p => ConvertGeometryToSerializableFormat(p.CurrentValue!),
                 StringComparer.Ordinal
             );
-        }
-        else
-        {
-            // Get changed new/current properties
-            properties = entry.Properties
-                .Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue))
-                .ToDictionary(
-                    p => p.Metadata.Name,
-                    p => ConvertGeometryToSerializableFormat(p.CurrentValue!),
-                    StringComparer.Ordinal
-                );
-        }
         properties = ObscureSensitiveAuditProperties(entry, properties);
         return JsonSerializer.SerializeToDocument(properties, _jsonSerializerOptions);
     }
@@ -345,26 +333,18 @@ internal class AuditInterceptor : ISaveChangesInterceptor
     {
         IDictionary<string, object> properties;
 
-        if (entityState == EntityState.Deleted)
+        var q = entry.Properties.AsQueryable();
+
+        if(entityState != EntityState.Deleted)
         {
-            // On delete, get original/old values
-            properties = entry.Properties.ToDictionary(
+            q = q.Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue));
+        }
+
+        properties = q.ToDictionary(
                 p => p.Metadata.Name,
                 p => ConvertGeometryToSerializableFormat(p.OriginalValue!),
                 StringComparer.Ordinal
             );
-        }
-        else
-        {
-            // Get changed original/old values
-            properties = entry.Properties
-                .Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue))
-                .ToDictionary(
-                    p => p.Metadata.Name,
-                    p => ConvertGeometryToSerializableFormat(p.OriginalValue!),
-                    StringComparer.Ordinal
-                );
-        }
         properties = ObscureSensitiveAuditProperties(entry, properties);
         return JsonSerializer.SerializeToDocument(properties, _jsonSerializerOptions);
     }

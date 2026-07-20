@@ -20,9 +20,9 @@ namespace CSIDE.Data.Services
         private static readonly Dictionary<string, Expression<Func<PPOApplication, object>>> SortExpressions = new()
         {
             { "Id", x => x.Id },
-            { "Legislation", x => x.Legislation.Name ?? string.Empty },
+            { "Legislation", x => x.Legislation == null ? string.Empty : x.Legislation.Name },
             { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
-            { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
+            { "CaseStatus", x => x.CaseStatus == null ? string.Empty : x.CaseStatus.Name },
         };
         public async Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default)
         {
@@ -93,12 +93,10 @@ namespace CSIDE.Data.Services
         private static IQueryable<PPOApplication> ApplyOrdering(IQueryable<PPOApplication> query, string orderBy, ListSortDirection orderDirection)
         {
             // Default fallback ordering
-            if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+            if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<PPOApplication, object>>? sortExpression))
             {
                 return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
             }
-
-            var sortExpression = SortExpressions[orderBy];
 
             return orderDirection == ListSortDirection.Descending
                 ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
@@ -381,12 +379,9 @@ namespace CSIDE.Data.Services
             context.PPOTypes.AddRange(typesToAdd);
 
             // Mark entities as unchanged if they haven't actually changed
-            foreach (var existingType in existingTypes)
+            foreach (var existingType in existingTypes.Where(existingType => SelectedTypes.Contains(existingType.TypeId)))
             {
-                if (SelectedTypes.Contains(existingType.TypeId))
-                {
-                    context.Entry(existingType).State = EntityState.Unchanged;
-                }
+                context.Entry(existingType).State = EntityState.Unchanged;
             }
         }
 
@@ -441,13 +436,13 @@ namespace CSIDE.Data.Services
             await using var context = await contextFactory.CreateDbContextAsync(ct);
 
             var totalCount = await context.PPOApplication
-           .Where(d => d.IsPublic == true)
+           .Where(d => d.IsPublic)
            .AsNoTracking()
            .IgnoreAutoIncludes()
            .CountAsync(ct)
            .ConfigureAwait(false);
             var publicApplications = await context.PPOApplication
-                .Where(d => d.IsPublic == true)
+                .Where(d => d.IsPublic)
                 .AsNoTracking()
                 .IgnoreAutoIncludes()
                 .Include(d => d.CaseStatus)
@@ -474,7 +469,7 @@ namespace CSIDE.Data.Services
         public async Task<PPOApplicationPublicViewModel?> GetPublicPPOApplicationById(int id, CancellationToken ct = default)
         {
             var application = await GetPPOApplicationById(id, ct).ConfigureAwait(false);
-            if (application is null || application.IsPublic == false)
+            if (application is null || !application.IsPublic)
             {
                 return null;
             }

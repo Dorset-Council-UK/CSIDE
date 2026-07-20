@@ -19,12 +19,10 @@ internal class LandownerDepositInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<LandownerDeposit>())
+        foreach (var entry in context.ChangeTracker.Entries<LandownerDeposit>()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
-                await AddLandownerDepositParishes(context, entry.Entity, cancellationToken);
-            }
+            await AddLandownerDepositParishes(context, entry.Entity, cancellationToken);
         }
     }
 

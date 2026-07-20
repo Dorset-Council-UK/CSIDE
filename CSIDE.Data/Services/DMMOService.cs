@@ -22,7 +22,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         { "Id", x => x.Id },
         { "ApplicationDate", x => x.ApplicationDate ?? LocalDate.MinIsoValue },
         { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
-        { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
+        { "CaseStatus", x => x.CaseStatus == null ? string.Empty : x.CaseStatus.Name },
+
     };
     public async Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default)
     {
@@ -171,12 +172,10 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     private static IQueryable<DMMOApplication> ApplyOrdering(IQueryable<DMMOApplication> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<DMMOApplication, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
@@ -455,12 +454,9 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.DMMOClaimedStatuses.AddRange(statusesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingStatus in existingStatuses)
+        foreach (var existingStatus in existingStatuses.Where(existingStatus => SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId)))
         {
-            if (SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId))
-            {
-                context.Entry(existingStatus).State = EntityState.Unchanged;
-            }
+            context.Entry(existingStatus).State = EntityState.Unchanged;
         }
     }
 
@@ -491,12 +487,9 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.DMMOTypes.AddRange(typesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingType in existingTypes)
+        foreach (var existingType in existingTypes.Where(existingType => SelectedApplicationTypes.Contains(existingType.ApplicationTypeId)))
         {
-            if (SelectedApplicationTypes.Contains(existingType.ApplicationTypeId))
-            {
-                context.Entry(existingType).State = EntityState.Unchanged;
-            }
+            context.Entry(existingType).State = EntityState.Unchanged;
         }
     }
 
@@ -612,13 +605,13 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
         var totalCount = await context.DMMOApplication
-            .Where(d => d.IsPublic == true)
+            .Where(d => d.IsPublic)
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .CountAsync(ct)
             .ConfigureAwait(false);
         var publicApplications = await context.DMMOApplication
-            .Where(d => d.IsPublic == true)
+            .Where(d => d.IsPublic)
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Include(d => d.CaseStatus)
@@ -646,7 +639,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     public async Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default)
     {
         var application = await GetDMMOApplicationById(id, ct).ConfigureAwait(false);
-        if (application is null || application.IsPublic == false)
+        if (application is null || !application.IsPublic)
         {
             return null;
         }
@@ -706,7 +699,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
                 ApplicationTypes = d.DMMOApplicationTypes.Select(at => at.ApplicationType.Name).ToList(),
                 CaseStatus = d.CaseStatus != null ? d.CaseStatus.Name : null,
                 DirectionOfSecState = d.DirectionOfSecState != null ? d.DirectionOfSecState.Name : null,
-                ClaimedStatuses = d.DMMOClaimedStatuses.Select(c => c.ClaimedStatus.Name).ToList(),
+                ClaimedStatuses = d.DMMOClaimedStatuses.Select(c => c.ClaimedStatus.Name).ToArray(),
                 Parishes = d.DMMOParishes.Select(p => p.Parish.Name).ToList()
             })
             .ToListAsync(cancellationToken: ct);

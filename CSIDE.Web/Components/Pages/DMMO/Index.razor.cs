@@ -49,13 +49,11 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 DMMOSearchErrorMessage = null;
                 try
                 {
-                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.DMMO))
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.DMMO) &&
+                        DMMOIDSearch.StartsWith(IDPrefixOptions.Value.DMMO, StringComparison.OrdinalIgnoreCase))
                     {
                         //remove any left in place prefixes
-                        if (DMMOIDSearch.StartsWith(IDPrefixOptions.Value.DMMO, StringComparison.OrdinalIgnoreCase))
-                        {
-                            DMMOIDSearch = DMMOIDSearch[IDPrefixOptions.Value.DMMO.Length..].Trim();
-                        }
+                        DMMOIDSearch = DMMOIDSearch[IDPrefixOptions.Value.DMMO.Length..].Trim();
                     }
                     if (int.TryParse(DMMOIDSearch, CultureInfo.InvariantCulture, out int DMMOIDSearchInt))
                     {

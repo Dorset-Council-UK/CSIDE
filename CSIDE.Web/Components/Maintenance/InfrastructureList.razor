@@ -51,7 +51,7 @@
                 <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
             }
             <h4>@localizer["Add Nearby Infrastructure Title"]</h4>
-            @if (NearbyInfra is not null && NearbyInfra.Count != 0 && NearbyInfra.Any(i => i.AlreadyLinked == false))
+            @if (NearbyInfra is not null && NearbyInfra.Count != 0 && NearbyInfra.Any(i => !i.AlreadyLinked))
             {
                 <div class="list-group">
                     @foreach (var infra in NearbyInfra)

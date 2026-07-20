@@ -19,7 +19,17 @@ public class ClaimsTransformer(IUserService userService) : IClaimsTransformation
         {
             foreach (var role in roles)
             {
-                Claim customRoleClaim = new(claimsIdentity.RoleClaimType, role.Role.RoleName);
+                var roleName = role.Role?.RoleName;
+
+                if (string.IsNullOrWhiteSpace(roleName))
+                {
+                    continue;
+                }
+
+                var customRoleClaim = new Claim(
+                    claimsIdentity.RoleClaimType,
+                    roleName);
+
                 claimsIdentity.AddClaim(customRoleClaim);
             }
         }

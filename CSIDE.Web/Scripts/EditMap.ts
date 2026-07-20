@@ -164,7 +164,7 @@ function initEditing(geomType: string, component: any) {
         //convert to GeoJSON
         const geoJson = new GeoJSON().writeFeatures([e.feature]);
         component.invokeMethodAsync('OnDrawEnd', geoJson);
-      })
+      });
       map.getViewport().style.cursor = 'crosshair';
 
       break;
@@ -205,7 +205,7 @@ function initEditing(geomType: string, component: any) {
         //convert to GeoJSON
         const geoJson = new GeoJSON().writeFeature(e.feature);
         component.invokeMethodAsync('OnDrawEnd', geoJson);
-      })
+      });
       map.getViewport().style.cursor = 'crosshair';
 
       break;

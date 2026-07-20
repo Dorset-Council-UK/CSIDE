@@ -17,14 +17,14 @@
                             <strong>@(councilDecision.DMMOApplicationId)/@(councilDecision.CouncilDecisionId)</strong>
                         </div>
                         <div class="card-body">
-                            @if (councilDecision.Date.HasValue || councilDecision.CouncilDecisionType.Type is not null || councilDecision.Notes is not null)
+                            @if (councilDecision.Date.HasValue || councilDecision.CouncilDecisionType?.Type is not null || councilDecision.Notes is not null)
                             {
                                 <ul class="list-unstyled">
                                     @if (councilDecision.Date.HasValue)
                                     {
                                         <li><strong>@localizer["Council Decision Date Label"]</strong>: @councilDecision.Date</li>
                                     }
-                                    @if (councilDecision.CouncilDecisionType.Type is not null)
+                                    @if (councilDecision.CouncilDecisionType?.Type is not null)
                                     {
                                         <li><strong>@localizer["Council Decision Type Label"]</strong>: @councilDecision.CouncilDecisionType.Type</li>
                                     }

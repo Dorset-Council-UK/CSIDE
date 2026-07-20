@@ -69,13 +69,9 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
                 StateHasChanged();
                 try
                 {
-                    if (LandownerDeposit is not null)
-                    {
-                        await landownerDepositService.UpdateLandownerDeposit(LandownerDeposit, SelectedLandownerDepositTypes);
-
-                        //redirect
-                        NavigateBackToLandownerDepositDetailsPage();
-                    }
+                    await landownerDepositService.UpdateLandownerDeposit(LandownerDeposit, SelectedLandownerDepositTypes);
+                    //redirect
+                    NavigateBackToLandownerDepositDetailsPage();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

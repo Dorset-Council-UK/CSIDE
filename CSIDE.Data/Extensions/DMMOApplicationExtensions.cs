@@ -46,7 +46,7 @@ public static class DMMOApplicationExtensions
                 })
             ],
             Orders = [.. application.Orders.Select(o => new OrderPublicViewModel{
-                ReferenceNo = $"{application.Id}/{o.OrderId}",
+                ReferenceNo = $"{dmmoIdPrefix}{application.Id}/{o.OrderId}",
                 ObjectionsEndDate = o.ObjectionsEndDate?.ToDateOnly(),
                 ObjectionsReceived = o.ObjectionsReceived,
                 ObjectionsWithdrawn = o.ObjectionsWithdrawn,
