@@ -9,7 +9,6 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CSIDE.Data.Services;
 
@@ -300,7 +299,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         {
             await context.LandownerDepositTypes
                 .Where(c => c.LandownerDepositId == landownerDeposit.Id)
-                .ExecuteDeleteAsync();
+                .ExecuteDeleteAsync(cancellationToken: ct);
             return;
         }
 
@@ -308,7 +307,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         await context.LandownerDepositTypes
             .Where(c => (c.LandownerDepositId == landownerDeposit.Id && c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId) && !selectedLandownerDepositTypes
             .Contains(c.LandownerDepositTypeNameId))
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken: ct);
 
         var existingLandownerDepositTypeIds = await context.LandownerDepositTypes
             .AsNoTracking()
@@ -316,13 +315,17 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
             .Select(c => c.LandownerDepositTypeNameId)
             .ToHashSetAsync(cancellationToken: ct);
 
-        //add new landowner deposit types
-        foreach (int landownerDepositType in selectedLandownerDepositTypes)
+        // add new landowner deposit types
+        // Use HashSet to avoid duplicates and only add new types that don't already exist
+        // using the Add method of HashSet to check for existence and add in one step
+        foreach (int landownerDepositType in selectedLandownerDepositTypes.Where(existingLandownerDepositTypeIds.Add))
         {
-            if (existingLandownerDepositTypeIds.Add(landownerDepositType))
+            context.LandownerDepositTypes.Add(new LandownerDepositType
             {
-                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = landownerDeposit.Id, LandownerDepositSecondaryId = landownerDeposit.SecondaryId });
-            }
+                LandownerDepositTypeNameId = landownerDepositType,
+                LandownerDepositId = landownerDeposit.Id,
+                LandownerDepositSecondaryId = landownerDeposit.SecondaryId
+            });
         }
         return;
     }
