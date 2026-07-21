@@ -35,7 +35,7 @@ namespace CSIDE.Web.Components.Infrastructure
         {
             BridgeMaterials = await infrastructureService.GetBridgeSurveyMaterialOptions();
             BridgeConditions = await infrastructureService.GetBridgeSurveyConditionOptions();
-            OnRadioChange();
+            OnSelectChange();
         }
 
         private async Task SubmitFormAsync()
@@ -61,11 +61,13 @@ namespace CSIDE.Web.Components.Infrastructure
             }
         }
 
-        public void OnRadioChange()
+        public void OnSelectChange()
         {
-            if (InfrastructureItem is not null)
+            if (InfrastructureItem is not null && InfrastructureItem.InfrastructureTypeId.HasValue)
             {
-                var infraType = InfrastructureTypes?.First(i => i.Id == InfrastructureItem.InfrastructureTypeId);
+                ShowBridgeDetailsEditingSection = false;
+
+                var infraType = InfrastructureTypes?.FirstOrDefault(i => i.Id == InfrastructureItem.InfrastructureTypeId);
                 if (infraType is not null && infraType.IsBridge)
                 {
                     ShowBridgeDetailsEditingSection = true;
@@ -97,10 +99,6 @@ namespace CSIDE.Web.Components.Infrastructure
                             InfrastructureItem.BridgeDetails.NumHandrailPostsTimbers = null;
                         }
                     }
-                }
-                else
-                {
-                    ShowBridgeDetailsEditingSection = false;
                 }
             }
         }
