@@ -199,22 +199,22 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             }
         }
 
-        if (LogDateFrom is not null)
+        if (LogDateFrom.HasValue)
         {
-            query = query.Where(j => j.LogDate >= ConvertDateToInstant(LogDateFrom.Value));
+            query = query.Where(j => j.LogDate >= ConvertDateToInstant(LogDateFrom!.Value));
         }
-        if (LogDateTo is not null)
+        if (LogDateTo.HasValue)
         {
-            query = query.Where(j => j.LogDate < ConvertDateToInstant(LogDateTo.Value).Plus(Duration.FromDays(1)));
+            query = query.Where(j => j.LogDate < ConvertDateToInstant(LogDateTo!.Value).Plus(Duration.FromDays(1)));
         }
-        if (CompletedDateFrom is not null)
+        if (CompletedDateFrom.HasValue)
         {
-            query = query.Where(j => j.CompletionDate >= NodaTime.LocalDate.FromDateOnly(CompletedDateFrom.Value));
+            query = query.Where(j => j.CompletionDate >= NodaTime.LocalDate.FromDateOnly(CompletedDateFrom!.Value));
         }
 
-        if (CompletedDateTo is not null)
+        if (CompletedDateTo.HasValue)
         {
-            query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
+            query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo!.Value).PlusDays(1));
         }
 
         return query;
