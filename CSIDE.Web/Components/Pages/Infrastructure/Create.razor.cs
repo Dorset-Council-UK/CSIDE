@@ -36,10 +36,10 @@ namespace CSIDE.Web.Components.Pages.Infrastructure
             ];
 
             InfrastructureTypes = await infrastructureService.GetInfrastructureTypeOptions();
-            InfrastructureItem = new()
-            {
-                InfrastructureTypeId = InfrastructureTypes.FirstOrDefault()?.Id,
-            };
+            InfrastructureItem = new();
+            //{
+            //    InfrastructureTypeId = InfrastructureTypes.FirstOrDefault()?.Id,
+            //};
 
         }
 

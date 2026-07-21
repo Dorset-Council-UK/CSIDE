@@ -32,6 +32,7 @@
 			<div class="col-sm-8 col-lg-6">
 				<label class="form-label" for="infrastructure-type">@localizer["Infrastructure Type Label"]</label>
 				<InputSelect id="infrastructure-type" class="form-select" @bind-Value="InfrastructureItem.InfrastructureTypeId" @bind-Value:after="OnRadioChange">
+					<option value=""></option>
 					@if (InfrastructureTypes is not null)
 					{
 						@foreach (var type in InfrastructureTypes.OrderBy(s => s.Name))
@@ -98,10 +99,7 @@
 			<ValidationMessage For="() => InfrastructureItem.InstallationDate" />
 		</div>
 
-		@if (InfrastructureItem.InfrastructureType is not null 
-			&& InfrastructureItem.InfrastructureType.IsBridge
-			&& BridgeMaterials is not null
-			&& BridgeConditions is not null)
+		@if (ShowBridgeDetailsEditingSection)
 		{
 			if(InfrastructureItem.BridgeDetails is null)
 			{
