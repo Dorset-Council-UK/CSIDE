@@ -23,7 +23,7 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter, EditorRequired]
         public EventCallback OnCancel { get; set; }
 
-        private FluentValidationValidator? fluentValidationValidator;
+        private FluentValidationValidator? formValidator;
 
         private async Task SubmitFormAsync()
         {
@@ -37,9 +37,9 @@ namespace CSIDE.Web.Components.DMMO
         {
             if (!IsEdit)
             {
-                return await fluentValidationValidator!.ValidateAsync(opts => opts.IncludeAllRuleSets());
+                return await formValidator!.ValidateAsync(opts => opts.IncludeAllRuleSets());
             }
-            return await fluentValidationValidator!.ValidateAsync();
+            return await formValidator!.ValidateAsync();
         }
 
         private void UpdateDateSealedProperty(ChangeEventArgs eventArgs)
@@ -72,7 +72,10 @@ namespace CSIDE.Web.Components.DMMO
                 {
                     var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
                     var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
-                    updateProperty(parseResult.Value);
+                    if (parseResult.Success)
+                    {
+                        updateProperty(parseResult.Value);
+                    }
                 }
                 catch (Exception)
                 {
