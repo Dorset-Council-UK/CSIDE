@@ -143,7 +143,7 @@
                 <InputSelect id="dir-ss" class="form-select" @bind-Value="DMMOApplication.DirectionOfSecStateId">
                     @if (DirectionsOfSecState is not null)
                     {
-                        <option value=""></option>
+                        <option value="">@localizer["None Label"]</option>
                         @foreach (var direction in DirectionsOfSecState.OrderBy(r => r.Name))
                         {
                             <option value="@direction.Id">@direction.Name</option>
@@ -205,6 +205,8 @@
             <InputTextArea id="public-comments" class="form-control" @bind-Value="DMMOApplication.PublicComments"></InputTextArea>
             <ValidationMessage For="() => DMMOApplication.PublicComments" />
         </div>
+
+        <ValidationSummary />
 
         @if (IsEdit)
         {

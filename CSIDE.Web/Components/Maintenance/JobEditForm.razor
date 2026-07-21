@@ -132,6 +132,8 @@
             <ValidationMessage For="() => Job.WorkDone" />
         </div>
 
+        <ValidationSummary />
+
         @if (IsEdit)
         {
             @if (CompleteDateShown && !DuplicateOfShown)

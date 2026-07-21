@@ -1865,4 +1865,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="External Archive Reference No Label" xml:space="preserve">
     <value>Rhif cyfeirnod archif allanol</value>
   </data>
+  <data name="None Label" xml:space="preserve">
+    <value>Dim</value>
+  </data>
 </root>
