@@ -163,13 +163,11 @@ namespace CSIDE.Data.Services
         public async Task<IReadOnlyCollection<ApplicationUserRole>> GetUserRoles(string userId, bool avoidCache = false, CancellationToken ct = default)
         {
             string cacheKey = $"UserRole/{userId}";
-            if (!avoidCache)
+            if (!avoidCache && 
+                memoryCache.TryGetValue(cacheKey, out List<ApplicationUserRole>? cacheValue) && 
+                cacheValue is not null)
             {
-                if (memoryCache.TryGetValue(cacheKey, out List<ApplicationUserRole>? cacheValue) && 
-                    cacheValue is not null)
-                {
-                    return cacheValue;
-                }
+                return cacheValue;
             }
 
             await using var context = await contextFactory.CreateDbContextAsync(ct);
