@@ -3877,6 +3877,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string None_Label {
+            get {
+                return ResourceManager.GetString("None Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Northing.
         /// </summary>
         public static string Northing_Label {
