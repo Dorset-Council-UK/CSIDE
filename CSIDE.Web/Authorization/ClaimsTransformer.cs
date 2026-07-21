@@ -1,6 +1,5 @@
 ﻿using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Graph.Beta.Drives.Item.Items.Item.Workbook.Functions.Var_S;
 using System.Security.Claims;
 
 namespace CSIDE.Web.Authorization;
@@ -32,7 +31,6 @@ public class ClaimsTransformer(IUserService userService) : IClaimsTransformation
         }
 
         //get users team
-        //get users team
         var teams = await _userService.GetUserTeams(userId).ConfigureAwait(false);
         if (teams is not null)
         {
@@ -40,9 +38,13 @@ public class ClaimsTransformer(IUserService userService) : IClaimsTransformation
             {
                 var teamId = team.TeamId.ToString();
 
-                claimsIdentity.AddClaim(new Claim("member_of_team", teamId));
+                // Avoid duplicate claims if transformation runs multiple times
+                if (!claimsIdentity.HasClaim("member_of_team", teamId))
+                {
+                    claimsIdentity.AddClaim(new Claim("member_of_team", teamId));
+                }
 
-                if (team.IsLead)
+                if (team.IsLead && !claimsIdentity.HasClaim("leader_of_team", teamId))
                 {
                     claimsIdentity.AddClaim(new Claim("leader_of_team", teamId));
                 }
