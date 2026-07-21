@@ -53,7 +53,6 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 {
                     Geom = MultiLineString.Empty,
                     ApplicationDetails = "",
-                    CaseStatusId = CaseStatuses.Select(o => o.Id).FirstOrDefault(),
                 };
                 GeometryIsValid = true;
             }
