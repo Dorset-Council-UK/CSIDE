@@ -35,7 +35,7 @@ namespace CSIDE.Web.Components.Infrastructure
         {
             BridgeMaterials = await infrastructureService.GetBridgeSurveyMaterialOptions();
             BridgeConditions = await infrastructureService.GetBridgeSurveyConditionOptions();
-            OnRadioChange();
+            OnSelectChange();
         }
 
         private async Task SubmitFormAsync()
@@ -61,7 +61,7 @@ namespace CSIDE.Web.Components.Infrastructure
             }
         }
 
-        public void OnRadioChange()
+        public void OnSelectChange()
         {
             if (InfrastructureItem is not null && InfrastructureItem.InfrastructureTypeId.HasValue)
             {
