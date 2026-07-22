@@ -76,13 +76,13 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         {
             query = query.Where(i => i.InfrastructureTypeId == parsedStatusId);
         }
-        if (InstallationDateFrom is not null)
+        if (InstallationDateFrom.HasValue)
         {
-            query = query.Where(i => i.InstallationDate >= LocalDate.FromDateOnly(InstallationDateFrom.Value));
+            query = query.Where(i => i.InstallationDate >= LocalDate.FromDateOnly(InstallationDateFrom!.Value));
         }
-        if (InstallationDateTo is not null)
+        if (InstallationDateTo.HasValue)
         {
-            query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo.Value).PlusDays(1));
+            query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo!.Value).PlusDays(1));
         }
 
         // Get total count before applying skip/take

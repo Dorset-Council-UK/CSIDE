@@ -166,13 +166,13 @@ namespace CSIDE.Data.Services
                 }
             }
 
-            if (ReceivedDateFrom is not null)
+            if (ReceivedDateFrom.HasValue)
             {
-                query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateFrom.Value));
+                query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateFrom!.Value));
             }
-            if (ReceivedDateTo is not null)
+            if (ReceivedDateTo.HasValue)
             {
-                query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
+                query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo!.Value));
             }
 
             return query;

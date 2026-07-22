@@ -1,5 +1,6 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
+using CSIDE.Web.Helpers;
 using Microsoft.AspNetCore.Components;
 using NodaTime;
 
@@ -42,19 +43,11 @@ namespace CSIDE.Web.Components.DMMO
 
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate?> updateProperty)
         {
-            if (CouncilDecision is not null && eventArgs.Value is not null)
+            if (CouncilDecision is null)
             {
-                try
-                {
-                    var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
-                    var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
-                    updateProperty(parseResult.Value);
-                }
-                catch (Exception)
-                {
-                    // Problem parsing date, don't update
-                }
+                return;
             }
+            DateInputHelper.UpdateDateProperty(eventArgs, updateProperty);
         }
 
         private async Task HandleCancel()

@@ -145,21 +145,21 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             }
         }
 
-        if (ApplicationDateFrom is not null)
+        if (ApplicationDateFrom.HasValue)
         {
-            query = query.Where(d => d.ApplicationDate >= NodaTime.LocalDate.FromDateOnly(ApplicationDateFrom.Value));
+            query = query.Where(d => d.ApplicationDate >= NodaTime.LocalDate.FromDateOnly(ApplicationDateFrom!.Value));
         }
-        if (ApplicationDateTo is not null)
+        if (ApplicationDateTo.HasValue)
         {
-            query = query.Where(d => d.ApplicationDate <= NodaTime.LocalDate.FromDateOnly(ApplicationDateTo.Value));
+            query = query.Where(d => d.ApplicationDate <= NodaTime.LocalDate.FromDateOnly(ApplicationDateTo!.Value));
         }
-        if (ReceivedDateFrom is not null)
+        if (ReceivedDateFrom.HasValue)
         {
-            query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateFrom.Value));
+            query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateFrom!.Value));
         }
-        if (ReceivedDateTo is not null)
+        if (ReceivedDateTo.HasValue)
         {
-            query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
+            query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo!.Value));
         }
         if (IsPublic.HasValue)
         {

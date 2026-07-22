@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Web;
 
-namespace CSIDE.Helpers
+namespace CSIDE.Web.Helpers
 {
     public static class QueryStringHelper
     {
