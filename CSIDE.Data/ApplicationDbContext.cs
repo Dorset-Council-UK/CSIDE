@@ -82,6 +82,7 @@ namespace CSIDE.Data
         public DbSet<InfrastructureMedia> InfrastructureMedia { get; set; }
         public DbSet<InfrastructureBridgeDetails> InfrastructureBridgeDetails { get; set; }
         public DbSet<ProblemType> ProblemTypes { get; set; }
+        public DbSet<Organisation> Organisations { get; set; }
 
         public DbSet<LandownerDeposit> LandownerDeposits { get; set; }
         public DbSet<LandownerDepositTypeName> LandownerDepositTypeNames { get; set; }
