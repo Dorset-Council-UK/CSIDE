@@ -48,14 +48,15 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
         {
             if (RouteIDSearch is not null)
             {
+                var trimmedSearchTerm = RouteIDSearch.Trim();
                 IsBusy = true;
                 RouteIDSearchErrorMessage = null;
                 try
                 {
-                    var routeExists = await rightsOfWayService.RouteExists(RouteIDSearch.Trim());
+                    var routeExists = await rightsOfWayService.RouteExists(trimmedSearchTerm);
                     if (routeExists)
                     {
-                        navigationManager.NavigateTo($"rights-of-way/Details/{RouteIDSearch.Trim()}");
+                        navigationManager.NavigateTo($"rights-of-way/Details/{trimmedSearchTerm}");
                         return;
                     }
 
