@@ -52,10 +52,10 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 RouteIDSearchErrorMessage = null;
                 try
                 {
-                    var routeExists = await rightsOfWayService.RouteExists(RouteIDSearch);
+                    var routeExists = await rightsOfWayService.RouteExists(RouteIDSearch.Trim());
                     if (routeExists)
                     {
-                        navigationManager.NavigateTo($"rights-of-way/Details/{RouteIDSearch}");
+                        navigationManager.NavigateTo($"rights-of-way/Details/{RouteIDSearch.Trim()}");
                         return;
                     }
 
