@@ -1857,4 +1857,7 @@
   <data name="None Label" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="No Route Closure Documents Message" xml:space="preserve">
+    <value>There are no route closure notices</value>
+  </data>
 </root>

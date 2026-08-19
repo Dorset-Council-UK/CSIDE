@@ -1868,4 +1868,7 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="None Label" xml:space="preserve">
     <value>Dim</value>
   </data>
+  <data name="No Route Closure Documents Message" xml:space="preserve">
+    <value>Does dim hysbysiadau am gau llwybrau</value>
+  </data>
 </root>
