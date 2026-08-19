@@ -3814,6 +3814,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no route closure notices.
+        /// </summary>
+        public static string No_Route_Closure_Documents_Message {
+            get {
+                return ResourceManager.GetString("No Route Closure Documents Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No infrastructure has been recorded on this route.
         /// </summary>
         public static string No_Route_Infra_Message {
