@@ -100,6 +100,16 @@ namespace CSIDE.Data.Services
                 .ConfigureAwait(false);
         }
 
+        public async Task<IReadOnlyCollection<Organisation>> GetOrganisations(CancellationToken ct = default)
+        {
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+            return await context.Organisations
+                .AsNoTracking()
+                .OrderBy(o => o.OrganisationName)
+                .ToArrayAsync(ct)
+                .ConfigureAwait(false);
+        }
+
         public async Task<Media?> UploadMedia(FileUploadRequest fileRequest, CancellationToken ct = default)
         {
             var trustedFileNameForFileStorage = $"{Guid.NewGuid()}{System.IO.Path.GetExtension(fileRequest.FileName)}";
