@@ -10,11 +10,11 @@ namespace CSIDE.Data.Validators.BridgeSurveys
         public BridgeSurveyValidator(IStringLocalizer<CSIDE.Shared.Properties.Resources> localizer) {
             _localizer = localizer;
             RuleFor(b => b.NumBeamTimbers)
-                .LessThanOrEqualTo(100);
+                .LessThanOrEqualTo(1000);
             RuleFor(b => b.NumDeckingBoards)
-                .LessThanOrEqualTo(100);
+                .LessThanOrEqualTo(1000);
             RuleFor(b => b.NumHandrailPostsTimbers)
-                .LessThanOrEqualTo(100);
+                .LessThanOrEqualTo(1000);
             RuleFor(b => b.BeamTimbersSize)
                     .MaximumLength(20);
             RuleFor(b => b.DeckingBoardsSize)
