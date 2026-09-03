@@ -182,6 +182,39 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             : query.OrderBy(sortExpression).ThenBy(l => l.Id);
     }
 
+    public async Task<IList<DMMOApplication>> GetDownloadableDMMOApplicationsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? ApplicationTypeId,
+        string? ApplicationCaseStatusId,
+        string? ApplicationClaimedStatusId,
+        string? Location,
+        DateOnly? ApplicationDateFrom,
+        DateOnly? ApplicationDateTo,
+        DateOnly? ReceivedDateFrom,
+        DateOnly? ReceivedDateTo,
+        bool? IsPublic,
+        CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.DMMOApplication
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(d => d.CaseStatus)
+            .Include(d => d.DirectionOfSecState)
+            .Include(d => d.DMMOClaimedStatuses).ThenInclude(c => c.ClaimedStatus)
+            .Include(d => d.DMMOApplicationTypes).ThenInclude(at => at.ApplicationType)
+            .Include(d => d.DMMOParishes).ThenInclude(p => p.Parish)
+            .AsQueryable();
+
+        query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationClaimedStatusId, Location, ApplicationDateFrom, ApplicationDateTo, ReceivedDateFrom, ReceivedDateTo, IsPublic);
+
+        var results = await query.OrderBy(d => d.Id).ToListAsync(cancellationToken: ct);
+
+        return results;
+
+    }
+
     public async Task<DMMOOrder?> GetDMMOOrderById(int OrderId, int ApplicationId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);

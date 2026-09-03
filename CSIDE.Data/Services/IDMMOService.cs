@@ -25,6 +25,19 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default);
+        Task<IList<DMMOApplication>> GetDownloadableDMMOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationTypeId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationClaimedStatusId,
+            string? Location,
+            DateOnly? ApplicationDateFrom,
+            DateOnly? ApplicationDateTo,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            bool? IsPublic,
+            CancellationToken ct = default);
         Task<DMMOOrder?> GetDMMOOrderById(int OrderId, int ApplicationId, CancellationToken ct = default);
         Task<DMMOCouncilDecision?> GetCouncilDecisionById(int CouncilDecisionId, int ApplicationId, CancellationToken ct = default);
         Task<ICollection<DMMOAddress>> GetDMMOAddressesByApplicationId(int ApplicationId, CancellationToken ct = default);

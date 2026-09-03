@@ -1,12 +1,28 @@
 ﻿@rendermode InteractiveServer
+@using System.ComponentModel
+@using System.Globalization
 @using CSIDE.Data.Models.DMMO
 @using CSIDE.Data.Services
-@using System.Globalization
-@using System.ComponentModel
+@using ClosedXML.Excel
 @inject NavigationManager navigationManager
 @inject IDMMOService dmmoService
+@inject IJSRuntime JS
 
-<a href="DMMO#search-form">@localizer["Search Again Label"]</a>
+@implements IAsyncDisposable
+
+<p><a href="DMMO#search-form">@localizer["Search Again Label"]</a></p>
+
+ <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+    @if (IsExporting)
+    {
+        <Spinner Size="SpinnerSize.Small" class="me-3"/>
+    }
+    else
+    {
+        <Icon Name="IconName.Download" class="me-3" />
+    }
+    @localizer["Download Label"]
+</button>
 
 <Grid TItem="DMMOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
@@ -86,6 +102,9 @@ Responsive="true">
     [Parameter]
     public bool? IsPublic { get; set; }
 
+    private IJSObjectReference? _jsModule;
+    private bool IsExporting;
+
     public async Task<GridDataProviderResult<DMMOApplication>> DMMOApplicationDataProvider(GridDataProviderRequest<DMMOApplication> request)
     {
         //handle sorting
@@ -118,4 +137,152 @@ Responsive="true">
     }
 
     private void OnRowClick(GridRowEventArgs<DMMOApplication> args) => navigationManager.NavigateTo($"DMMO/Details/{args.Item.Id}");
+
+    private async Task OnExport()
+    {
+        IsExporting = true;
+
+        try
+        {
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+
+            var result = await dmmoService.GetDownloadableDMMOApplicationsBySearchParameters(
+                ParishIds,
+                ParishId,
+                ApplicationTypeId,
+                ApplicationCaseStatusId, 
+                ApplicationClaimedStatusId, 
+                Location, ApplicationDateFrom, 
+                ApplicationDateTo, 
+                ReceivedDateFrom,
+                ReceivedDateTo, 
+                IsPublic
+                );
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("DMMO Applications Export");
+
+            string[] headers =
+            [
+                localizer["Reference Number Label"],
+                localizer["Application Date Label"],
+                localizer["Received Date Label"],
+                localizer["Application Details Label"],
+                localizer["Location Description Label"],
+                localizer["Parish Label"],
+                localizer["Case Status Label"],
+                localizer["Application Type Label"],
+                localizer["Claimed Status Label"],
+                localizer["Case Officer Label"],
+                localizer["Appeal Label"],
+                localizer["Appeal Date Label"],
+                localizer["Direction Of Secretary Of State Label"],
+                localizer["Date Direction Of Secretary Of State Label"],
+                localizer["Internal Archive Reference No Label"],
+                localizer["External Archive Reference No Label"],
+                localizer["Private Comments Label"],
+                localizer["Public Comments Label"],
+            ];
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
+            }
+
+            int row = 2;
+            foreach (var application in result)
+            {
+                worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.DMMO}{application.Id}";
+                var applicationDateCell = worksheet.Cell(row, 2);
+                if (application.ApplicationDate.HasValue)
+                {
+                    applicationDateCell.Value = application.ApplicationDate.Value.ToDateTimeUnspecified();
+                    applicationDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    applicationDateCell.Clear();
+                }
+                var receivedDateCell = worksheet.Cell(row, 3);
+                if (application.ReceivedDate.HasValue)
+                {
+                    receivedDateCell.Value = application.ReceivedDate.Value.ToDateTimeUnspecified();
+                    receivedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    receivedDateCell.Clear();
+                }
+                worksheet.Cell(row, 4).Value = application.ApplicationDetails;
+                worksheet.Cell(row, 5).Value = application.LocationDescription;
+                worksheet.Cell(row, 6).Value = string.Join(", ", application.DMMOParishes.Select(dp => dp.Parish.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 7).Value = application.CaseStatus?.Name;
+                worksheet.Cell(row, 8).Value = string.Join(", ", application.DMMOApplicationTypes.Select(da => da.ApplicationType.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 9).Value = string.Join(", ", application.DMMOClaimedStatuses.Select(dc => dc.ClaimedStatus.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 10).Value = application.CaseOfficer;
+                worksheet.Cell(row, 11).Value = (application.Appeal.HasValue ? (application.Appeal.Value == true ? localizer["Yes Label"] : localizer["No Label"]) : localizer["Not Provided Label"]).ToString();
+                var appealDateCell = worksheet.Cell(row, 12);
+                if (application.AppealDate.HasValue)
+                {
+                    appealDateCell.Value = application.AppealDate.Value.ToDateTimeUnspecified();
+                    appealDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    appealDateCell.Clear();
+                }
+                worksheet.Cell(row, 13).Value = application.DirectionOfSecState?.Name;
+                var dateOfDirectionOfSecStateCell = worksheet.Cell(row, 14);
+                if (application.DateOfDirectionOfSecState.HasValue)
+                {
+                    dateOfDirectionOfSecStateCell.Value = application.DateOfDirectionOfSecState.Value.ToDateTimeUnspecified();
+                    dateOfDirectionOfSecStateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    dateOfDirectionOfSecStateCell.Clear();
+                }
+                worksheet.Cell(row, 15).Value = application.InternalArchiveReferenceNo;
+                worksheet.Cell(row, 16).Value = application.ExternalArchiveReferenceNo;
+                worksheet.Cell(row, 17).Value = application.PrivateComments;
+                worksheet.Cell(row, 18).Value = application.PublicComments;
+                row++;
+            }
+            
+            var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
+            usedRange.CreateTable();
+            worksheet.Columns().AdjustToContents(10.0,200.0);
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"dmmo-applications-{DateTime.UtcNow:yyyyMMdd-HHmmss}.xlsx";
+            using var streamReference = new DotNetStreamReference(stream);
+            await _jsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
 }
