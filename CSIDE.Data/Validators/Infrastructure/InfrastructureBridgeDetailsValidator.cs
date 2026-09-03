@@ -8,11 +8,14 @@ namespace CSIDE.Data.Validators.Infrastructure
         public InfrastructureBridgeDetailsValidator()
         {
             RuleFor(b => b!.NumBeamTimbers)
-                .LessThanOrEqualTo(100);
+                .LessThanOrEqualTo(1000)
+                .GreaterThanOrEqualTo(0);
             RuleFor(b => b!.NumDeckingBoards)
-                .LessThanOrEqualTo(100);
+                .LessThanOrEqualTo(1000)
+                .GreaterThanOrEqualTo(0);
             RuleFor(b => b!.NumHandrailPostsTimbers)
-                .LessThanOrEqualTo(100);
+                .LessThanOrEqualTo(1000)
+                .GreaterThanOrEqualTo(0);
             RuleFor(b => b!.BeamTimbersSize)
                     .MaximumLength(20);
             RuleFor(b => b!.DeckingBoardsSize)
@@ -23,6 +26,7 @@ namespace CSIDE.Data.Validators.Infrastructure
                     .MaximumLength(20);
             RuleFor(b => b!.DeckingBoardsLength)
                 .LessThan(100)
+                .GreaterThanOrEqualTo(0)
                 .When(b => b!.DeckingBoardsLength.HasValue);
         }
     }

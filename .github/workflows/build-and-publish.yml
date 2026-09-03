@@ -62,7 +62,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --configuration Release
+        run: dotnet test --solution CSIDE.sln --no-build --configuration Release
 
       # --- Publish & attach Release assets (only on Release publish) ---
 
