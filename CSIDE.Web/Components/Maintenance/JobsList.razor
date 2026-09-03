@@ -1,13 +1,30 @@
 ﻿@rendermode InteractiveServer
+@using System.ComponentModel
+@using System.Globalization
 @using CSIDE.Data.Models.Maintenance
 @using CSIDE.Data.Services
+@using ClosedXML.Excel
+@using Microsoft.JSInterop
 @using NodaTime
-@using System.Globalization
-@using System.ComponentModel
 @inject NavigationManager navigationManager
 @inject IMaintenanceJobsService maintenanceJobsService
+@inject IJSRuntime JS
 
-<a href="Maintenance#search-form">@localizer["Search Again Label"]</a>
+@implements IAsyncDisposable
+
+<p><a href="Maintenance#search-form">@localizer["Search Again Label"]</a></p>
+
+<button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+    @if (IsExporting)
+    {
+        <Spinner Size="SpinnerSize.Small" class="me-3"/>
+    }
+    else
+    {
+        <Icon Name="IconName.Download" class="me-3" />
+    }
+    @localizer["Download Label"]
+</button>
 
 <Grid TItem="Job"
 Class="table table-hover table-bordered table-striped mt-2"
@@ -63,7 +80,6 @@ Responsive="true">
     </GridTemplates>
 </Grid>
 
-
 @code {
     [Parameter]
     public string? RouteId { get; set; }
@@ -89,6 +105,14 @@ Responsive="true">
     public DateOnly? CompletedDateTo { get; set; }
     [Parameter]
     public bool? IsComplete { get; set; }
+
+    private IJSObjectReference? _jsModule;
+    private bool IsExporting;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     public async Task<GridDataProviderResult<Job>> JobsDataProvider(GridDataProviderRequest<Job> request)
     {
@@ -126,4 +150,132 @@ Responsive="true">
     }
 
     private void OnRowClick(GridRowEventArgs<Job> args) => navigationManager.NavigateTo($"Maintenance/Details/{args.Item.Id}");
+
+    private async Task OnExport()
+    {
+        IsExporting = true;
+
+        try
+        {
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+
+            var result = await maintenanceJobsService.GetDownloadableMaintenanceJobsBySearchParameters(
+                RouteId,
+                ParishIds,
+                ParishId,
+                AssignedToTeamId,
+                JobPriorityId,
+                IsComplete,
+                JobStatusId,
+                ProblemTypeIds,
+                LogDateFrom,
+                LogDateTo,
+                CompletedDateFrom,
+                CompletedDateTo
+                );
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Maintenance Jobs Export");
+
+            string[] headers =
+            [
+                localizer["Job ID Label"],
+                localizer["Log Date Label"],
+                localizer["Problem Description Label"],
+                localizer["Completion Date Label"],
+                localizer["Work Done Label"],
+                localizer["Logged By Label"],
+                localizer["Job Priority Label"],
+                localizer["Easting Label"],
+                localizer["Northing Label"],
+                localizer["Job Status Label"],
+                localizer["Duplicate Job ID Label"],
+                localizer["Route ID Label"],
+                localizer["Assigned To Team Label"],
+                localizer["Parish Label"],
+                localizer["Problem Types Label"],
+            ];
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
+            }
+
+            int row = 2;
+            foreach (var job in result)
+            {
+                worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.Maintenance}{job.Id}";
+                var loggedCell = worksheet.Cell(row, 2);
+                if (job.LogDate.HasValue)
+                {
+                    loggedCell.Value = job.LogDate.Value
+                        .InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault())
+                        .ToDateTimeUnspecified();
+                    loggedCell.Style.DateFormat.Format = "dd/MM/yyyy HH:mm";
+                }
+                else
+                {
+                    loggedCell.Clear();
+                }
+                worksheet.Cell(row, 3).Value = job.ProblemDescription ?? string.Empty;
+                var completionCell = worksheet.Cell(row, 4);
+                if (job.CompletionDate.HasValue)
+                {
+                    completionCell.Value = job.CompletionDate.Value.ToDateTimeUnspecified();
+                    completionCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    completionCell.Clear();
+                }
+                worksheet.Cell(row, 5).Value = job.WorkDone;
+                worksheet.Cell(row, 6).Value = job.LoggedByName;
+                worksheet.Cell(row, 7).Value = job.JobPriority?.Description;
+                worksheet.Cell(row, 8).Value = job.Geom?.X.ToString("F2");
+                worksheet.Cell(row, 9).Value = job.Geom?.Y.ToString("F2");
+                worksheet.Cell(row, 10).Value = job.JobStatus?.Description;
+                worksheet.Cell(row, 11).Value = job.DuplicateJobId.HasValue ? $"{IDPrefixOptions.Value.Maintenance}{job.DuplicateJobId}" : string.Empty;
+                worksheet.Cell(row, 12).Value = job.RouteId;
+                worksheet.Cell(row, 13).Value = job.MaintenanceTeam?.Name;
+                worksheet.Cell(row, 14).Value = job.Parish?.Name;
+                worksheet.Cell(row, 15).Value = string.Join(", ", job.ProblemTypes.Select(problem => problem.ProblemType?.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                row++;
+            }
+            
+            var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
+            usedRange.CreateTable();
+            worksheet.Columns().AdjustToContents(10.0,200.0);
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"maintenance-jobs-{DateTime.UtcNow:yyyyMMdd-HHmmss}.xlsx";
+            using var streamReference = new DotNetStreamReference(stream);
+            await _jsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
 }

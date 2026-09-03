@@ -220,6 +220,56 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return query;
     }
 
+    public async Task<IList<Job>> GetDownloadableMaintenanceJobsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        string[]? ProblemTypeIds,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo,
+        CancellationToken ct = default)
+    { 
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(j => j.JobPriority)
+            .Include(j => j.JobStatus)
+            .Include(j => j.MaintenanceTeam)
+            .Include(j => j.Parish)
+            .Include(j => j.ProblemTypes)
+                .ThenInclude(p => p.ProblemType)
+            .AsQueryable();
+
+        if (RouteId is not null)
+        {
+            query = query.Where(j => j.RouteId == RouteId.ToUpper());
+        }
+
+        query = ApplySearchFilters(query,
+                                   ParishIds,
+                                   ParishId,
+                                   AssignedToTeamId,
+                                   JobPriorityId,
+                                   IsComplete,
+                                   JobStatusId,
+                                   ProblemTypeIds,
+                                   LogDateFrom,
+                                   LogDateTo,
+                                   CompletedDateFrom,
+                                   CompletedDateTo);
+
+        var results = await query.OrderByDescending(r => r.LogDate).ToListAsync(cancellationToken: ct);
+
+        return results;
+    }
+
     public async Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
