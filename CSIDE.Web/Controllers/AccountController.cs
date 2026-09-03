@@ -34,11 +34,22 @@ public class AccountController : Controller
     [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
+        var authResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        string? authenticatedScheme = null;
+        if (authResult?.Ticket?.Properties?.Items is not null)
+        {
+            authResult.Ticket.Properties.Items.TryGetValue(".AuthScheme", out authenticatedScheme);
+        }
+
+        if (!string.Equals(authenticatedScheme, "AzureAdMFA", StringComparison.Ordinal))
+        {
+            authenticatedScheme = "AzureAd";
+        }
+
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         return SignOut(
             new AuthenticationProperties { RedirectUri = "/account/signedout" },
-            "AzureAd",
-            "AzureAdMFA");
+            authenticatedScheme);
     }
 }

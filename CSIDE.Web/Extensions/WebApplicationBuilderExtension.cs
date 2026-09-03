@@ -181,6 +181,7 @@ internal static class WebApplicationBuilderExtension
                 options.Authority = $"{azureAdSection["Instance"]}{azureAdSection["TenantId"]}/v2.0/";
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.CallbackPath = "/signin-oidc";
+                options.SignedOutCallbackPath = "/signout-callback-oidc";
                 options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.Scope.Add("profile");
@@ -238,6 +239,7 @@ internal static class WebApplicationBuilderExtension
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.CallbackPath = "/signin-oidc2";
+                options.SignedOutCallbackPath = "/signout-callback-oidc2";
                 options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.Scope.Add("profile");
