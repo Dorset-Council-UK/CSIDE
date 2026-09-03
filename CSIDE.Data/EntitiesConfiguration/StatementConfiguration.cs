@@ -12,8 +12,8 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.StatementText).IsRequired();
             builder.Property(x => x.Version).IsRequired();
             builder.Property(x => x.CreatedDate).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
-            builder.Property(x => x.StartGridRef).HasMaxLength(20);
-            builder.Property(x => x.EndGridRef).HasMaxLength(20);
+            builder.Property(x => x.StartGridRef).HasMaxLength(50);
+            builder.Property(x => x.EndGridRef).HasMaxLength(50);
         }
     }
 }

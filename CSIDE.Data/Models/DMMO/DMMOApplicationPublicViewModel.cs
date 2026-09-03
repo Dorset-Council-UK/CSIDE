@@ -14,5 +14,6 @@ namespace CSIDE.Data.Models.DMMO
         public ICollection<MediaPublicViewModel> Media { get; set; } = [];
         public ICollection<string> LinkedRoutes { get; set; } = [];
         public ICollection<OrderPublicViewModel> Orders { get; set; } = [];
+        public ICollection<CouncilDecisionPublicViewModel> CouncilDecisions { get; set; } = [];
     }
 }

@@ -63,7 +63,7 @@ public partial class JobEditForm()
             try
             {
                 var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
-                var parseResult = pattern.Parse(eventArgs.Value.ToString());
+                var parseResult = pattern.Parse(eventArgs.Value.ToString() ?? "");
                 Job.CompletionDate = parseResult.Value;
             }
             catch (Exception)

@@ -16,10 +16,10 @@ namespace CSIDE.Data.Validators.RightsOfWay
                 .WithName(_localizer["Statement Text Label"]);
 
             RuleFor(statement => statement.StartGridRef)
-                .MaximumLength(20);
+                .MaximumLength(50);
 
             RuleFor(statement => statement.EndGridRef)
-                .MaximumLength(20);
+                .MaximumLength(50);
         }
     }
 }

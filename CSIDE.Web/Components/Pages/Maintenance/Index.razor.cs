@@ -17,6 +17,8 @@ namespace CSIDE.Web.Components.Pages.Maintenance
         private JobPriority[]? JobPriorities { get; set; }
         private IReadOnlyCollection<Team> MaintenanceTeams { get; set; } = [];
         private IReadOnlyCollection<Parish>? Parishes { get; set; }
+        private ProblemType[]? ProblemTypes { get; set; }
+
         private string? JobIDSearchErrorMessage { get; set; }
         private FluentValidationValidator? _fluentValidationValidator;
 
@@ -34,6 +36,7 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             JobPriorities = await maintenanceJobsService.GetMaintenanceJobPriorities();
             MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
             Parishes = await sharedDataService.GetParishes();
+            ProblemTypes = await maintenanceJobsService.GetMaintenanceProblemTypes();
             SearchParams = new();
         }
 
@@ -43,13 +46,11 @@ namespace CSIDE.Web.Components.Pages.Maintenance
             {
                 IsBusy = true;
                 JobIDSearchErrorMessage = null;
-                if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance))
+                if (!string.IsNullOrEmpty(IDPrefixOptions.Value.Maintenance) &&
+                    JobIDSearch.StartsWith(IDPrefixOptions.Value.Maintenance, StringComparison.OrdinalIgnoreCase))
                 {
                     //remove any left in place prefixes
-                    if (JobIDSearch.StartsWith(IDPrefixOptions.Value.Maintenance, StringComparison.OrdinalIgnoreCase))
-                    {
-                        JobIDSearch = JobIDSearch[IDPrefixOptions.Value.Maintenance.Length..].Trim();
-                    }
+                    JobIDSearch = JobIDSearch[IDPrefixOptions.Value.Maintenance.Length..].Trim();
                 }
                 try
                 {
@@ -100,6 +101,32 @@ namespace CSIDE.Web.Components.Pages.Maintenance
                 finally
                 {
                     IsBusy = false;
+                }
+            }
+        }
+
+        private void ProblemTypeChanged(ProblemType ProblemType, ChangeEventArgs eventArgs)
+        {
+            if (SearchParams is null)
+            {
+                return;
+            }
+
+            var problemTypeId = ProblemType.Id.ToString(CultureInfo.InvariantCulture);
+            var selectedProblemTypeIds = SearchParams.ProblemTypeIds ?? [];
+
+            if (Convert.ToBoolean(eventArgs.Value))
+            {
+                if (Array.IndexOf(selectedProblemTypeIds, problemTypeId) < 0)
+                {
+                    SearchParams.ProblemTypeIds = [.. selectedProblemTypeIds, problemTypeId];
+                }
+            }
+            else
+            {
+                if (Array.IndexOf(selectedProblemTypeIds, problemTypeId) >= 0)
+                {
+                    SearchParams.ProblemTypeIds = [.. selectedProblemTypeIds.Where(id => !string.Equals(id, problemTypeId, StringComparison.Ordinal))];
                 }
             }
         }

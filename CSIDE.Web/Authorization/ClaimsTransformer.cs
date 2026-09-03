@@ -10,17 +10,23 @@ public class ClaimsTransformer(IUserService userService) : IClaimsTransformation
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
         var claimsIdentity = (ClaimsIdentity)principal.Identity!;
-        var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = userIdClaim!.Value;
+        
+        var userId = principal.UserId;
 
         //get users roles
         var roles = await _userService.GetUserRoles(userId).ConfigureAwait(false);
         if (roles is not null)
         {
-            foreach (var role in roles)
+            foreach (var roleName in roles
+                .Select(r => r.Role?.RoleName)
+                .Where(static rn => !string.IsNullOrWhiteSpace(rn))
+                .Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                Claim customRoleClaim = new(claimsIdentity.RoleClaimType, role.Role.RoleName);
-                claimsIdentity.AddClaim(customRoleClaim);
+                // Avoid duplicate claims if transformation runs multiple times
+                if (!claimsIdentity.HasClaim(claimsIdentity.RoleClaimType, roleName!))
+                {
+                    claimsIdentity.AddClaim(new Claim(claimsIdentity.RoleClaimType, roleName!));
+                }
             }
         }
 
@@ -30,12 +36,17 @@ public class ClaimsTransformer(IUserService userService) : IClaimsTransformation
         {
             foreach (var team in teams)
             {
-                Claim customRoleClaim = new("member_of_team", team.TeamId.ToString());
-                claimsIdentity.AddClaim(customRoleClaim);
-                if(team.IsLead)
+                var teamId = team.TeamId.ToString();
+
+                // Avoid duplicate claims if transformation runs multiple times
+                if (!claimsIdentity.HasClaim("member_of_team", teamId))
                 {
-                    Claim customRoleClaimLead = new("leader_of_team", team.TeamId.ToString());
-                    claimsIdentity.AddClaim(customRoleClaimLead);
+                    claimsIdentity.AddClaim(new Claim("member_of_team", teamId));
+                }
+
+                if (team.IsLead && !claimsIdentity.HasClaim("leader_of_team", teamId))
+                {
+                    claimsIdentity.AddClaim(new Claim("leader_of_team", teamId));
                 }
             }
         }

@@ -4,7 +4,7 @@ using CSIDE.Data.Models.Surveys;
 
 namespace CSIDE.Data.EntitiesConfiguration
 {
-    internal sealed class BridgeSurveyConfiguration : IEntityTypeConfiguration<BridgeSurvey>
+    internal sealed class BridgeSurveyConfiguration(string? schema = null) : IEntityTypeConfiguration<BridgeSurvey>
     {
         public void Configure(EntityTypeBuilder<BridgeSurvey> builder)
         {
@@ -13,10 +13,11 @@ namespace CSIDE.Data.EntitiesConfiguration
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+            var schemaPrefix = string.IsNullOrWhiteSpace(schema) ? "" : $"\"{schema}\".";
             builder.Property(x => x.Status)
                 .IsRequired()
                 // Use the PostgreSQL enum label as the default value
-                .HasDefaultValueSql("'incomplete'::survey_status");
+                .HasDefaultValueSql($"'incomplete'::{schemaPrefix}survey_status");
 
             builder.Property(x => x.BeamTimbersSize)
                 .HasMaxLength(20);

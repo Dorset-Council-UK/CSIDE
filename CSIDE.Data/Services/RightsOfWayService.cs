@@ -19,11 +19,13 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     private static readonly Dictionary<string, Expression<Func<Route, object>>> SortExpressions = new()
         {
             { "RouteId", x => x.RouteCode },
-            { "Parish", x => x.Parish.Name ?? string.Empty },
-            { "MaintenanceTeam", x => x.MaintenanceTeam.Name ?? string.Empty },
+            { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
+            { "MaintenanceTeam", x => x.MaintenanceTeam == null ? string.Empty : x.MaintenanceTeam.Name },
             { "Name", x => x.Name ?? string.Empty },
-            { "OperationalStatus", x => x.OperationalStatus.Name ?? string.Empty },
-            { "RouteType", x => x.RouteType.Name ?? string.Empty },
+            { "OperationalStatus", x => x.OperationalStatus == null ? string.Empty : x.OperationalStatus.Name },
+            { "LegalStatus", x=> x.LegalStatus == null ? string.Empty : x.LegalStatus.Name  },
+            { "RouteType", x => x.RouteType == null ? string.Empty : x.RouteType.Name },
+            { "Notes", x => x.Notes ?? string.Empty }
 
 
         };
@@ -47,22 +49,40 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         return results.Take(1).FirstOrDefault();
     }
 
+    /// <summary>
+    /// Gets the {maxRoutes} nearest active routes within {maxDistance} metres from {geometry}
+    /// </summary>
+    /// <remarks>This only returns routes that have an active legal status. Inactive routes are NOT included</remarks>
+    /// <param name="geometry">The Geometry to use as the source</param>
+    /// <param name="maxDistance">The maximium distance, in metres, that should be checked</param>
+    /// <param name="maxRoutes">The maximum number of routes to return</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A collection of routes</returns>
     public async Task<ICollection<Route>> GetNearestRoutes(Geometry geometry, int maxDistance = 50, int maxRoutes = 50, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Routes
                 .Where(i => i.Geom.IsWithinDistance(geometry, maxDistance))
+                .Where(i => i.LegalStatus!.IsActive)
                 .OrderBy(i => i.Geom.Distance(geometry))
                 .Take(maxRoutes)
                 .ToListAsync(cancellationToken: ct)
                 .ConfigureAwait(false);
     }
 
-    public async Task<ICollection<Geometry>> GetRoutesIntersecting(Polygon bboxPolygon, CancellationToken ct = default)
+    /// <summary>
+    /// Gets all active routes within {polygon}
+    /// </summary>
+    /// <remarks>This only returns routes that have an active legal status. Inactive routes are NOT included</remarks>
+    /// <param name="polygon">The Polygon geometry to find routes within</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A collection of routes</returns>
+    public async Task<ICollection<Geometry>> GetRoutesIntersecting(Polygon polygon, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         return await context.Routes
-                .Where(i => i.Geom.Intersects(bboxPolygon))
+                .Where(i => i.Geom.Intersects(polygon))
+                .Where(i => i.LegalStatus!.IsActive)
                 .Select(r => r.Geom)
                 .ToArrayAsync(cancellationToken: ct)
                 .ConfigureAwait(false);
@@ -83,8 +103,9 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         string? ParishId,
         string? MaintenanceTeamId,
         string? OperationalStatusId,
+        string? LegalStatusId,
         string? RouteTypeId,
-        string? OrderBy = "RouteId",
+        string OrderBy = "RouteId",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IRightsOfWayService.DefaultPageSize,
@@ -93,7 +114,15 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.Routes.AsQueryable();
+        var query = context.Routes
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(r => r.Parish)
+            .Include(r => r.MaintenanceTeam)
+            .Include(r => r.OperationalStatus)
+            .Include(r => r.LegalStatus)
+            .Include(r => r.RouteType)
+            .AsQueryable();
 
         if (RouteId is not null)
         {
@@ -126,6 +155,10 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         {
             query = query.Where(j => j.OperationalStatusId == parsedOperationalStatusId);
         }
+        if (LegalStatusId is not null && int.TryParse(LegalStatusId, CultureInfo.InvariantCulture, out int parsedLegalStatusId))
+        {
+            query = query.Where(j => j.LegalStatusId == parsedLegalStatusId);
+        }
         if (RouteTypeId is not null && int.TryParse(RouteTypeId, CultureInfo.InvariantCulture, out int parsedRouteTypeId))
         {
             query = query.Where(j => j.RouteTypeId == parsedRouteTypeId);
@@ -151,12 +184,10 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
     private static IQueryable<Route> ApplyOrdering(IQueryable<Route> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Route, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.RouteCode);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.RouteCode)
@@ -225,13 +256,13 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         var cutoff = today.PlusDays(7);
 
         return await context.Routes
-            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => !r.ClosureIsIndefinite)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
             .Select(r => new ClosedRoutesViewModel
             {
                 RouteCode = r.RouteCode,
-                ClosureEndDate = r.ClosureEndDate.Value.ToDateOnly(),
+                ClosureEndDate = r.ClosureEndDate!.Value.ToDateOnly(),
             })
             .ToArrayAsync(cancellationToken: ct)
             .ConfigureAwait(false);
@@ -247,7 +278,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
         return await context.Routes
             .Where(r => r.MaintenanceTeamId != null && teamId.Contains(r.MaintenanceTeamId.Value))
-            .Where(r => r.ClosureIsIndefinite == false)
+            .Where(r => !r.ClosureIsIndefinite)
             .Where(r => r.ClosureEndDate != null)
             .Where(r => r.ClosureEndDate < cutoff)
             .Select(r => new ClosedRoutesViewModel

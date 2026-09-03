@@ -26,7 +26,7 @@ namespace CSIDE.Data.Models.LandownerDeposits;
                     URL = m.Media.URL,
                 })],
                 Contacts = [.. landownerDeposit.LandownerDepositContacts
-                    .Where(c => c.Contact.ContactType != null && (c.Contact.ContactType.Name == "Applicant" || c.Contact.ContactType.Name == "Landowner"))
+                    .Where(c => c.Contact.ContactType != null && (c.Contact.ContactType.Name == "Applicant" || c.Contact.ContactType.Name == "Landowner" || c.Contact.ContactType.Name == "Agent"))
                     .Select(c => new ContactPublicViewModel
                     {
                         Name = c.Contact.Name,

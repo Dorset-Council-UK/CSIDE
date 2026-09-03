@@ -14,7 +14,6 @@ namespace CSIDE.Data.Models.DMMO
         public string? LocationDescription { get; set; }
         public string? CaseOfficer { get; set; }
         public string? PublicComments { get; set; }
-        public DateOnly? DeterminationDate { get; set; }
         public bool? Appeal { get; set; }
         public DateOnly? AppealDate { get; set; }
         public DateOnly? DateOfDirectionOfSecState { get; set; }

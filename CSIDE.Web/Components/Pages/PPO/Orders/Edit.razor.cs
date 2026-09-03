@@ -57,12 +57,9 @@ namespace CSIDE.Web.Components.Pages.PPO.Orders
                 StateHasChanged();
                 try
                 {
-                    if (Order is not null)
-                    {
-                        await ppoService.UpdatePPOOrder(OrderId, Order);
-                        //redirect
-                        navigationManager.NavigateTo($"PPO/Details/{Order.PPOApplicationId}");
-                    }
+                    await ppoService.UpdatePPOOrder(OrderId, Order);
+                    //redirect
+                    navigationManager.NavigateTo($"PPO/Details/{Order.PPOApplicationId}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

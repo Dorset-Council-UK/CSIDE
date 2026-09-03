@@ -12,7 +12,7 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.OperationalStatusId).IsRequired();
             builder.Property(x => x.LegalStatusId).IsRequired();
             builder.Property(x => x.RouteTypeId).IsRequired();
-            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (multilinestring)");
+            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry(multilinestring, 27700)");
             builder.Property(x => x.Version).IsRowVersion();
 
             builder

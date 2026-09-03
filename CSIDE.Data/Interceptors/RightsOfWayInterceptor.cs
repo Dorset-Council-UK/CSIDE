@@ -20,20 +20,18 @@ internal class RightsOfWayInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries())
+        foreach (var entry in context.ChangeTracker.Entries()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
+            if (entry.Entity is Route route)
             {
-                if (entry.Entity is Route route)
-                {
-                    route.ParishId = await GetParishIdForGeom(context, route.Geom, cancellationToken);
-                    route.MaintenanceTeamId = await GetTeamIdForRouteForGeom(context, route.Geom, cancellationToken);
-                    await FixClosureData(context, route, cancellationToken);
-                }
-                else if (entry.Entity is Statement statement)
-                {
-                    statement.Version = await NextVersionNumber(context, statement.RouteId, cancellationToken);
-                }
+                route.ParishId = await GetParishIdForGeom(context, route.Geom, cancellationToken);
+                route.MaintenanceTeamId = await GetTeamIdForRouteForGeom(context, route.Geom, cancellationToken);
+                await FixClosureData(context, route, cancellationToken);
+            }
+            else if (entry.Entity is Statement statement)
+            {
+                statement.Version = await NextVersionNumber(context, statement.RouteId, cancellationToken);
             }
         }
     }

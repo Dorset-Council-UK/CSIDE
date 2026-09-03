@@ -1,6 +1,7 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
+using CSIDE.Web.Helpers;
 using Microsoft.AspNetCore.Components;
 using NodaTime;
 
@@ -23,7 +24,7 @@ namespace CSIDE.Web.Components.DMMO
         [Parameter, EditorRequired]
         public EventCallback OnCancel { get; set; }
 
-        private FluentValidationValidator? fluentValidationValidator;
+        private FluentValidationValidator? formValidator;
 
         private async Task SubmitFormAsync()
         {
@@ -37,9 +38,9 @@ namespace CSIDE.Web.Components.DMMO
         {
             if (!IsEdit)
             {
-                return await fluentValidationValidator!.ValidateAsync(opts => opts.IncludeAllRuleSets());
+                return await formValidator!.ValidateAsync(opts => opts.IncludeAllRuleSets());
             }
-            return await fluentValidationValidator!.ValidateAsync();
+            return await formValidator!.ValidateAsync();
         }
 
         private void UpdateDateSealedProperty(ChangeEventArgs eventArgs)
@@ -60,24 +61,19 @@ namespace CSIDE.Web.Components.DMMO
         {
             UpdateDateProperty(eventArgs, date => Order!.DateConfirmed = date);
         }
-
+        private void UpdateConfirmationPublishedDateProperty(ChangeEventArgs eventArgs)
+        {
+            UpdateDateProperty(eventArgs, date => Order!.ConfirmationPublishedDate = date);
+        }
         private void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate?> updateProperty)
         {
-            if (Order is not null && eventArgs.Value is not null)
+            if (Order is null)
             {
-                try
-                {
-                    var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
-                    var parseResult = pattern.Parse(eventArgs.Value.ToString()!);
-                    updateProperty(parseResult.Value);
-                }
-                catch (Exception)
-                {
-                    // Problem parsing date, don't update
-                }
+                return;
             }
-        }
 
+            DateInputHelper.UpdateDateProperty(eventArgs, updateProperty);
+        }
 
         private async Task HandleCancel()
         {

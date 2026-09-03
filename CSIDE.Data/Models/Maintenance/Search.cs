@@ -10,6 +10,7 @@
         public DateOnly? LogDateTo { get; set; }
         public int? JobStatusId { get; set; }
         public int? JobPriorityId { get; set; }
+        public string[]? ProblemTypeIds { get; set; } = [];
         public DateOnly? CompletedDateFrom { get; set; }
         public DateOnly? CompletedDateTo { get; set; }
     }

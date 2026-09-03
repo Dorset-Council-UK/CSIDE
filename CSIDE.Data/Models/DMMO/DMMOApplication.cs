@@ -16,10 +16,11 @@ namespace CSIDE.Data.Models.DMMO
         public string? CaseOfficerUserId { get; set; }
         public string? PrivateComments { get; set; }
         public string? PublicComments { get; set; }
-        public LocalDate? DeterminationDate { get; set; }
         public bool? Appeal { get; set; }
         public LocalDate? AppealDate { get; set; }
         public LocalDate? DateOfDirectionOfSecState { get; set; }
+        public string? InternalArchiveReferenceNo { get; set; }
+        public string? ExternalArchiveReferenceNo { get; set; }
 
         public required MultiLineString Geom { get; set; }
 
@@ -41,7 +42,8 @@ namespace CSIDE.Data.Models.DMMO
         public ICollection<DMMOMedia> DMMOMedia { get; } = [];
         public ICollection<DMMOLinkedRoute> DMMOLinkedRoutes { get; } = [];
         public ICollection<DMMOEvent> Events { get; } = [];
-        
+        public ICollection<DMMOCouncilDecision> DMMOCouncilDecisions { get; } = [];
+
         //Concurrency token
         public uint Version { get; set; }
 

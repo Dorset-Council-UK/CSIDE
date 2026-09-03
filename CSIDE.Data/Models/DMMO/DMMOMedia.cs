@@ -4,7 +4,7 @@ namespace CSIDE.Data.Models.DMMO;
 
 public class DMMOMedia
 {
-    public int DMMOId { get; set; }
+    public int DMMOApplicationId { get; set; }
     public int MediaId { get; set; }
     public int MediaTypeId { get; set; }
     public DMMOApplication DMMOApplication { get; set; } = null!;

@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.LandownerDeposits;
+﻿using CSIDE.Data.Helpers;
+using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,6 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CSIDE.Data.Services;
 
@@ -52,46 +52,17 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.LandownerDeposits.AsQueryable();
+        var query = context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(ld => ld.LandownerDepositTypes).ThenInclude(t => t.LandownerDepositTypeName)
+            .Include(ld => ld.LandownerDepositParishes).ThenInclude(p => p.Parish)
+            .AsQueryable();
 
-        if (ParishIds is not null && ParishIds.Length != 0)
-        {
-            var parsedParishIds = ParishIds
-                .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
-                .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
-                .ToList();
-            if (parsedParishIds.Count != 0)
-            {
-                query = query.Where(l => l.LandownerDepositParishes.Any(p => parsedParishIds.Contains(p.ParishId)));
-            }
-        }
-        else if (ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
-        {
-            query = query.Where(d => d.LandownerDepositParishes.Any(p => p.ParishId == parsedParishId));
-        }
+        // Filter out any empty/whitespace entries that may have come through
+        var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
 
-        if (Location is not null)
-        {
-            var place = await placesSearchService.GetPlaceByName(Location);
-            if (place is not null)
-            {
-                var bboxPolygon = new Polygon(
-                    new LinearRing(
-                        [
-                            new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMax), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                        ]
-                    )
-                )
-                {
-                    SRID = 27700,
-                };
-                query = query.Where(l => l.Geom.Intersects(bboxPolygon));
-            }
-        }
+        query = await ApplySearchFilters(query, filteredParishIds, ParishId, Location);
 
         // Get total count before applying skip/take
         var totalCount = await query.CountAsync(cancellationToken: ct);
@@ -115,16 +86,56 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
     private static IQueryable<LandownerDeposit> ApplyOrdering(IQueryable<LandownerDeposit> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<LandownerDeposit, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
         }
 
-        var sortExpression = SortExpressions[orderBy];
-
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
             : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
+
+    private async Task<IQueryable<LandownerDeposit>> ApplySearchFilters(
+        IQueryable<LandownerDeposit> query,
+        string[]? ParishIds,
+        string? ParishId,
+        string? Location)
+    {
+        if (ParishIds is not null && ParishIds.Length != 0)
+        {
+            var parsedParishIds = ParishIds
+                .Where(id => int.TryParse(id, CultureInfo.InvariantCulture, out _))
+                .Select(id => int.Parse(id, CultureInfo.InvariantCulture))
+                .ToList();
+            if (parsedParishIds.Count != 0)
+            {
+                query = query.Where(l => l.LandownerDepositParishes.Any(p => parsedParishIds.Contains(p.ParishId)));
+            }
+        }
+        else if (ParishId is not null && int.TryParse(ParishId, CultureInfo.InvariantCulture, out int parsedParishId))
+        {
+            query = query.Where(d => d.LandownerDepositParishes.Any(p => p.ParishId == parsedParishId));
+        }
+
+        if (!string.IsNullOrWhiteSpace(Location))
+        {
+            var locationSearch = Location.Trim();
+
+            // location could mean an actual on the ground location OR part of the location string.
+            var place = await placesSearchService.GetPlaceByName(locationSearch);
+            if (place is not null)
+            {
+                Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
+                query = query.Where(d => d.Geom.Intersects(bboxPolygon) || EF.Functions.ILike(d.Location!, $"%{locationSearch}%"));
+            }
+            else
+            {
+                query = query.Where(d => EF.Functions.ILike(d.Location!, $"%{locationSearch}%"));
+            }
+        }
+
+        return query;
     }
 
     public async Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int landownerDepositSecondaryId, CancellationToken ct = default)
@@ -258,7 +269,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         // Restore original version to ensure concurrency check works
         context.Entry(existingDeposit).Property(j => j.Version).OriginalValue = originalVersion;
 
-        await UpdateLandownerDepositTypes(landownerDeposit, SelectedLandownerDepositTypes, context);
+        await UpdateLandownerDepositTypes(landownerDeposit, SelectedLandownerDepositTypes, context, ct);
         await context.SaveChangesAsync(ct);
         return landownerDeposit;
 
@@ -281,14 +292,14 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         }
         return;
     }
-    private static async Task UpdateLandownerDepositTypes(LandownerDeposit landownerDeposit, List<int> selectedLandownerDepositTypes, ApplicationDbContext context)
+    private static async Task UpdateLandownerDepositTypes(LandownerDeposit landownerDeposit, List<int> selectedLandownerDepositTypes, ApplicationDbContext context, CancellationToken ct = default)
     {
         if (landownerDeposit is null) return;
         if (selectedLandownerDepositTypes == null)
         {
             await context.LandownerDepositTypes
                 .Where(c => c.LandownerDepositId == landownerDeposit.Id)
-                .ExecuteDeleteAsync();
+                .ExecuteDeleteAsync(cancellationToken: ct);
             return;
         }
 
@@ -296,15 +307,25 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         await context.LandownerDepositTypes
             .Where(c => (c.LandownerDepositId == landownerDeposit.Id && c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId) && !selectedLandownerDepositTypes
             .Contains(c.LandownerDepositTypeNameId))
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken: ct);
 
-        //add new landowner deposit types
-        foreach (int landownerDepositType in selectedLandownerDepositTypes)
+        var existingLandownerDepositTypeIds = await context.LandownerDepositTypes
+            .AsNoTracking()
+            .Where(c => c.LandownerDepositId == landownerDeposit.Id && c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId)
+            .Select(c => c.LandownerDepositTypeNameId)
+            .ToHashSetAsync(cancellationToken: ct);
+
+        // add new landowner deposit types
+        // Use HashSet to avoid duplicates and only add new types that don't already exist
+        // using the Add method of HashSet to check for existence and add in one step
+        foreach (int landownerDepositType in selectedLandownerDepositTypes.Where(existingLandownerDepositTypeIds.Add))
         {
-            if (!context.LandownerDepositTypes.Any(c => (c.LandownerDepositId == landownerDeposit.Id && c.LandownerDepositSecondaryId == landownerDeposit.SecondaryId) && c.LandownerDepositTypeNameId == landownerDepositType))
+            context.LandownerDepositTypes.Add(new LandownerDepositType
             {
-                context.LandownerDepositTypes.Add(new LandownerDepositType { LandownerDepositTypeNameId = landownerDepositType, LandownerDepositId = landownerDeposit.Id, LandownerDepositSecondaryId = landownerDeposit.SecondaryId });
-            }
+                LandownerDepositTypeNameId = landownerDepositType,
+                LandownerDepositId = landownerDeposit.Id,
+                LandownerDepositSecondaryId = landownerDeposit.SecondaryId
+            });
         }
         return;
     }
@@ -352,7 +373,14 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         {
             return null;
         }
-        return application.ToPublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit);
+        var publicViewModel = application.ToPublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit);
+        // append the place name to the public view model
+        var place = await placesSearchService.GetNearestPlace((decimal)application.Geom.Centroid.X, (decimal)application.Geom.Centroid.Y, ct);
+        if (place is not null)
+        {
+            publicViewModel.NearestPlace = place.Name1 ?? "";
+        }
+        return publicViewModel;
     }
 
     public async Task<PagedResult<LandownerDepositSimplePublicViewModel>> GetPublicLandownerDepositsBySearchParameters(
@@ -365,16 +393,48 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         int PageSize = ILandownerDepositService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var allDeposits = await GetLandownerDepositsBySearchParameters(ParishIds, ParishId, Location, OrderBy, OrderDirection, PageNumber, PageSize, ct).ConfigureAwait(false);
-        var totalCount = allDeposits.TotalResults;
-        List<LandownerDepositSimplePublicViewModel> results = [.. allDeposits.Results.Select(ld => ld.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.LandownerDeposit))];
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+        var query = context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
+
+        // Filter out any empty/whitespace entries that may have come through
+        var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+
+        query = await ApplySearchFilters(query, filteredParishIds, ParishId, Location);
+
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var ldIdPrefix = csideOptions.Value.IDPrefixes.LandownerDeposit;
+
+        var results = await query
+            .Skip(skip)
+            .Take(take)
+            .Select(ld => new LandownerDepositSimplePublicViewModel
+            {
+                Id = ld.Id,
+                SecondaryId = ld.SecondaryId,
+                ReferenceNo = ldIdPrefix + ld.Id + "/" + ld.SecondaryId,
+                ReceivedDate = ld.ReceivedDate != null ? new DateOnly(ld.ReceivedDate.Value.Year, ld.ReceivedDate.Value.Month, ld.ReceivedDate.Value.Day) : null,
+                Location = ld.Location,
+                PrimaryContact = ld.PrimaryContact,
+                DepositTypes = ld.LandownerDepositTypes.Select(t => t.LandownerDepositTypeName!.Name).ToList(),
+                Parishes = ld.LandownerDepositParishes.Select(p => p.Parish.Name).ToList()
+            })
+            .ToListAsync(cancellationToken: ct);
 
         return new PagedResult<LandownerDepositSimplePublicViewModel>
         {
             Results = results,
-            TotalResults = allDeposits.TotalResults,
-            PageSize = allDeposits.PageSize,
-            PageNumber = allDeposits.PageNumber
+            TotalResults = totalCount,
+            PageSize = take,
+            PageNumber = PageNumber
         };
     }
 

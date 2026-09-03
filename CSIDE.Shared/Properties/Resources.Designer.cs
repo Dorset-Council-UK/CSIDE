@@ -205,6 +205,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add council decision.
+        /// </summary>
+        public static string Add_Council_Decision_Label {
+            get {
+                return ResourceManager.GetString("Add Council Decision Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add event.
         /// </summary>
         public static string Add_Event_Label {
@@ -579,15 +588,6 @@ namespace CSIDE.Shared.Properties {
         public static string Before_You_Start_Title {
             get {
                 return ResourceManager.GetString("Before You Start Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Box number.
-        /// </summary>
-        public static string Box_Number_Label {
-            get {
-                return ResourceManager.GetString("Box Number Label", resourceCulture);
             }
         }
         
@@ -1699,6 +1699,42 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Decision date.
+        /// </summary>
+        public static string Council_Decision_Date_Label {
+            get {
+                return ResourceManager.GetString("Council Decision Date Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notes.
+        /// </summary>
+        public static string Council_Decision_Notes_Label {
+            get {
+                return ResourceManager.GetString("Council Decision Notes Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision type.
+        /// </summary>
+        public static string Council_Decision_Type_Label {
+            get {
+                return ResourceManager.GetString("Council Decision Type Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Council decisions ({0}).
+        /// </summary>
+        public static string Council_Decisions_Label {
+            get {
+                return ResourceManager.GetString("Council Decisions Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Council-owned land affected?.
         /// </summary>
         public static string Council_Land_Affected_Label {
@@ -1843,7 +1879,7 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Date confirmation published.
+        ///   Looks up a localized string similar to Date confirmed order published.
         /// </summary>
         public static string Date_Confirmation_Published_Label {
             get {
@@ -1902,6 +1938,15 @@ namespace CSIDE.Shared.Properties {
         public static string Delete_Contact_Confirmation {
             get {
                 return ResourceManager.GetString("Delete Contact Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this council decision?.
+        /// </summary>
+        public static string Delete_Council_Decision_Confirmation {
+            get {
+                return ResourceManager.GetString("Delete Council Decision Confirmation", resourceCulture);
             }
         }
         
@@ -2113,6 +2158,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View the public register.
+        /// </summary>
+        public static string DMMO_Public_Register_Label {
+            get {
+                return ResourceManager.GetString("DMMO Public Register Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do another survey.
         /// </summary>
         public static string Do_Another_Survey_Button_Text {
@@ -2311,6 +2365,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to External archive reference number.
+        /// </summary>
+        public static string External_Archive_Reference_No_Label {
+            get {
+                return ResourceManager.GetString("External Archive Reference No Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Max file size of {0}MB exceeded for file &apos;{1}&apos;.
         /// </summary>
         public static string File_Too_Large_Upload_Error {
@@ -2428,6 +2491,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Help_Link_Label {
+            get {
+                return ResourceManager.GetString("Help Link Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide previous statements.
         /// </summary>
         public static string Hide_Previous_Statements_Label {
@@ -2460,6 +2532,15 @@ namespace CSIDE.Shared.Properties {
         public static string Images_Label {
             get {
                 return ResourceManager.GetString("Images Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This route is no longer active.
+        /// </summary>
+        public static string Inactive_Route_Warning_Text {
+            get {
+                return ResourceManager.GetString("Inactive Route Warning Text", resourceCulture);
             }
         }
         
@@ -2653,6 +2734,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal archive reference number.
+        /// </summary>
+        public static string Internal_Archive_Reference_No_Label {
+            get {
+                return ResourceManager.GetString("Internal Archive Reference No Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Closure end date must be after start date.
         /// </summary>
         public static string Invalid_Closure_Dates_Validation_Message {
@@ -2721,15 +2811,6 @@ namespace CSIDE.Shared.Properties {
         public static string Landowner_Deposit_Archive_Date_Label {
             get {
                 return ResourceManager.GetString("Landowner Deposit Archive Date Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Archive reference.
-        /// </summary>
-        public static string Landowner_Deposit_Archive_Reference_Label {
-            get {
-                return ResourceManager.GetString("Landowner Deposit Archive Reference Label", resourceCulture);
             }
         }
         
@@ -3130,11 +3211,38 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t sign you in. Please try again, and if the issue continues contact an administrator..
+        /// </summary>
+        public static string Login_Failed_Text {
+            get {
+                return ResourceManager.GetString("Login Failed Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login failed.
+        /// </summary>
+        public static string Login_Failed_Title {
+            get {
+                return ResourceManager.GetString("Login Failed Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logout.
         /// </summary>
         public static string Logout_Label {
             get {
                 return ResourceManager.GetString("Logout Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remember to attach a photo of the finished job if you haven&apos;t already..
+        /// </summary>
+        public static string Maintenance_Attach_Photo_On_Completion_Reminder_Text {
+            get {
+                return ResourceManager.GetString("Maintenance Attach Photo On Completion Reminder Text", resourceCulture);
             }
         }
         
@@ -3481,6 +3589,24 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No summary information available.
+        /// </summary>
+        public static string No_Council_Decision_Summary_Info_Available_Message {
+            get {
+                return ResourceManager.GetString("No Council Decision Summary Info Available Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No council decisions.
+        /// </summary>
+        public static string No_Council_Decisions_Message {
+            get {
+                return ResourceManager.GetString("No Council Decisions Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No events for this DMMO.
         /// </summary>
         public static string No_DMMO_Events_Message {
@@ -3598,6 +3724,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No summary information available. Click &apos;View details&apos; to view further information about this order..
+        /// </summary>
+        public static string No_Order_Summary_Info_Available_Message {
+            get {
+                return ResourceManager.GetString("No Order Summary Info Available Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No orders could be found.
         /// </summary>
         public static string No_Orders_Message {
@@ -3679,6 +3814,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no route closure notices.
+        /// </summary>
+        public static string No_Route_Closure_Documents_Message {
+            get {
+                return ResourceManager.GetString("No Route Closure Documents Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No infrastructure has been recorded on this route.
         /// </summary>
         public static string No_Route_Infra_Message {
@@ -3742,6 +3886,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string None_Label {
+            get {
+                return ResourceManager.GetString("None Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Northing.
         /// </summary>
         public static string Northing_Label {
@@ -3765,6 +3918,15 @@ namespace CSIDE.Shared.Properties {
         public static string Not_Public_Label {
             get {
                 return ResourceManager.GetString("Not Public Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notes.
+        /// </summary>
+        public static string Notes_Label {
+            get {
+                return ResourceManager.GetString("Notes Label", resourceCulture);
             }
         }
         

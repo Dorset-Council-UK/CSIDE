@@ -3,6 +3,7 @@ using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Components.Maintenance
 {
@@ -49,8 +50,8 @@ namespace CSIDE.Web.Components.Maintenance
                         if (AuthenticationStateTask != null)
                         {
                             var authState = await AuthenticationStateTask;
-                            NewComment.AuthorId = authState.GetUserId();
-                            NewComment.AuthorName = authState.GetUserName();
+                            NewComment.AuthorId = authState.User.UserId;
+                            NewComment.AuthorName = authState.User.DisplayName;
                         }
 
                         await maintenanceJobsService.CreateMaintenanceComment(NewComment);

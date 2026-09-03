@@ -9,6 +9,7 @@ using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using System.Globalization;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Components.Pages.Maintenance;
 
@@ -75,8 +76,8 @@ public partial class Create(
                     if (AuthenticationState != null)
                     {
                         var authState = await AuthenticationState;
-                        Job.LoggedById = authState.GetUserId();
-                        Job.LoggedByName = authState.GetUserName();
+                        Job.LoggedById = authState.User.UserId;
+                        Job.LoggedByName = authState.User.DisplayName;
                     }
                     await maintenanceJobsService.CreateMaintenanceJob(Job, SelectedProblemTypes);
 

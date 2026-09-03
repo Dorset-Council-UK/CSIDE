@@ -1,7 +1,6 @@
 ﻿using BlazorBootstrap;
 using Blazored.FluentValidation;
 using CSIDE.Data.Models.DMMO;
-using CSIDE.Data.Models.Infrastructure;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
@@ -9,7 +8,9 @@ using System.Globalization;
 
 namespace CSIDE.Web.Components.Pages.DMMO
 {
-    public partial class Index(IDMMOService dmmoService, ISharedDataService sharedDataService, NavigationManager navigationManager)
+    public partial class Index(IDMMOService dmmoService,
+                               ISharedDataService sharedDataService,
+                               NavigationManager navigationManager)
     {
         private List<BreadcrumbItem>? NavItems;
         private DMMOSearch? SearchParams;
@@ -48,13 +49,11 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 DMMOSearchErrorMessage = null;
                 try
                 {
-                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.DMMO))
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.DMMO) &&
+                        DMMOIDSearch.StartsWith(IDPrefixOptions.Value.DMMO, StringComparison.OrdinalIgnoreCase))
                     {
                         //remove any left in place prefixes
-                        if (DMMOIDSearch.StartsWith(IDPrefixOptions.Value.DMMO, StringComparison.OrdinalIgnoreCase))
-                        {
-                            DMMOIDSearch = DMMOIDSearch[IDPrefixOptions.Value.DMMO.Length..].Trim();
-                        }
+                        DMMOIDSearch = DMMOIDSearch[IDPrefixOptions.Value.DMMO.Length..].Trim();
                     }
                     if (int.TryParse(DMMOIDSearch, CultureInfo.InvariantCulture, out int DMMOIDSearchInt))
                     {

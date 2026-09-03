@@ -15,6 +15,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace CSIDE.Data.Services;
 
@@ -31,11 +32,11 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
     private static readonly Dictionary<string, Expression<Func<Job, object>>> SortExpressions = new()
     {
         { "Id", x => x.Id },
-        { "RouteId", x => x.RouteId },
+        { "RouteId", x => x.RouteId ?? string.Empty },
         { "LogDate", x => x.LogDate ?? Instant.MinValue },
-        { "Parish", x => x.Parish.Name ?? string.Empty },
-        { "JobPriority", x => x.JobPriority.SortOrder },
-        { "JobStatus", x=> x.JobStatus.Description }
+        { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
+        { "JobPriority", x => x.JobPriority == null ? int.MaxValue : x.JobPriority.SortOrder },
+        { "JobStatus", x=> x.JobStatus == null ? string.Empty : x.JobStatus.Description }
     };
 
     public async Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default)
@@ -63,11 +64,12 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         string? JobPriorityId,
         bool? IsComplete,
         string? JobStatusId,
+        string[]? ProblemTypeIds,
         DateOnly? LogDateFrom,
         DateOnly? LogDateTo,
         DateOnly? CompletedDateFrom,
         DateOnly? CompletedDateTo,
-        string? OrderBy = "Id",
+        string OrderBy = "Id",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IMaintenanceJobsService.DefaultPageSize,
@@ -76,12 +78,79 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var take = PageSize < 1 ? IMaintenanceJobsService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.MaintenanceJobs.AsQueryable();
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(j => j.JobPriority)
+            .Include(j => j.JobStatus)
+            .Include(j => j.MaintenanceTeam)
+            .Include(j => j.Parish)
+            .AsQueryable();
 
         if (RouteId is not null)
         {
             query = query.Where(j => j.RouteId == RouteId.ToUpper());
         }
+
+        query = ApplySearchFilters(query,
+                                   ParishIds,
+                                   ParishId,
+                                   AssignedToTeamId,
+                                   JobPriorityId,
+                                   IsComplete,
+                                   JobStatusId,
+                                   ProblemTypeIds,
+                                   LogDateFrom,
+                                   LogDateTo,
+                                   CompletedDateFrom,
+                                   CompletedDateTo);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<Job>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+    }
+
+    private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Job, object>>? sortExpression))
+        {
+            return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
+        }
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
+
+    private static IQueryable<Job> ApplySearchFilters(
+        IQueryable<Job> query,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        string[]? ProblemTypeIds,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo)
+    {
         if (ParishIds is not null && ParishIds.Length != 0)
         {
             var parsedParishIds = ParishIds
@@ -106,6 +175,18 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         {
             query = query.Where(j => j.JobPriorityId == parsedPriorityId);
         }
+        if (ProblemTypeIds is not null && ProblemTypeIds.Length != 0)
+        {
+            var parsedProblemTypeIds = ProblemTypeIds
+                .Select(id => (Parsed: int.TryParse(id, CultureInfo.InvariantCulture, out int value), Value: value))
+                .Where(result => result.Parsed)
+                .Select(result => result.Value)
+                .ToList();
+            if (parsedProblemTypeIds.Count != 0)
+            {
+                query = query.Where(j => j.ProblemTypes.Any(pt => parsedProblemTypeIds.Contains(pt.ProblemTypeId)));
+            }
+        }
         if (IsComplete.HasValue)
         {
             query = query.Where(j => j.JobStatus != null && j.JobStatus.IsComplete == IsComplete.Value);
@@ -118,56 +199,25 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             }
         }
 
-        if (LogDateFrom is not null)
+        if (LogDateFrom.HasValue)
         {
-            query = query.Where(j => j.LogDate >= ConvertDateToInstant(LogDateFrom.Value));
+            query = query.Where(j => j.LogDate >= ConvertDateToInstant(LogDateFrom!.Value));
         }
-        if (LogDateTo is not null)
+        if (LogDateTo.HasValue)
         {
-            query = query.Where(j => j.LogDate < ConvertDateToInstant(LogDateTo.Value).Plus(Duration.FromDays(1)));
+            query = query.Where(j => j.LogDate < ConvertDateToInstant(LogDateTo!.Value).Plus(Duration.FromDays(1)));
         }
-        if (CompletedDateFrom is not null)
+        if (CompletedDateFrom.HasValue)
         {
-            query = query.Where(j => j.CompletionDate >= NodaTime.LocalDate.FromDateOnly(CompletedDateFrom.Value));
-        }
-
-        if (CompletedDateTo is not null)
-        {
-            query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo.Value).PlusDays(1));
+            query = query.Where(j => j.CompletionDate >= NodaTime.LocalDate.FromDateOnly(CompletedDateFrom!.Value));
         }
 
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
-
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<Job>
+        if (CompletedDateTo.HasValue)
         {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
-    }
-
-    private static IQueryable<Job> ApplyOrdering(IQueryable<Job> query, string orderBy, ListSortDirection orderDirection)
-    {
-        // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
-        {
-            return query.OrderByDescending(l => l.LogDate).ThenByDescending(l => l.Id);
+            query = query.Where(j => j.CompletionDate < NodaTime.LocalDate.FromDateOnly(CompletedDateTo!.Value).PlusDays(1));
         }
 
-        var sortExpression = SortExpressions[orderBy];
-
-        return orderDirection == ListSortDirection.Descending
-            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
-            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+        return query;
     }
 
     public async Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)
@@ -188,7 +238,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(j => j.MaintenanceTeamId != null && teamId.Contains(j.MaintenanceTeamId.Value))
-            .Where(job => job.JobStatus!.IsComplete == false)
+            .Where(job => job.JobStatus != null && !job.JobStatus.IsComplete)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
             .Select(j => new RecentJobViewModel
@@ -207,7 +257,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         return await context.MaintenanceJobs
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Where(job => job.JobStatus!.IsComplete == false)
+            .Where(job => job.JobStatus != null && !job.JobStatus.IsComplete)
             .OrderByDescending(j => j.LogDate)
             .Take(maxResults)
             .Select(j => new RecentJobViewModel
@@ -225,14 +275,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         if (!string.IsNullOrEmpty(job.ProblemDescription))
         {
             var containsHarmfulContent = await sharedDataService.DoesTextContainHarmfulContent(job.ProblemDescription, ct);
-            if (containsHarmfulContent)
-            {
-                job.RedactedProblemDescription = "[Hidden due to potentially inappropriate content]";
-            }
-            else
-            {
-                job.RedactedProblemDescription = await sharedDataService.RedactPII(job.ProblemDescription, ct);
-            }
+            job.RedactedProblemDescription = containsHarmfulContent ? "[Hidden due to potentially inappropriate content]" : await sharedDataService.RedactPII(job.ProblemDescription, ct);
         }
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         context.MaintenanceJobs.Add(job);
@@ -483,12 +526,9 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         context.MaintenanceJobProblemTypes.AddRange(problemTypesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingProblemType in existingProblemTypes)
+        foreach (var existingProblemType in existingProblemTypes.Where(existingProblemType => selectedProblemTypes.Contains(existingProblemType.ProblemTypeId)))
         {
-            if (selectedProblemTypes.Contains(existingProblemType.ProblemTypeId))
-            {
-                context.Entry(existingProblemType).State = EntityState.Unchanged;
-            }
+            context.Entry(existingProblemType).State = EntityState.Unchanged;
         }
     }
 
@@ -538,31 +578,64 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         int PageSize = IMaintenanceJobsService.DefaultPageSize,
         CancellationToken ct = default)
     {
-        var jobs = await GetMaintenanceJobsBySearchParameters(RouteId,
-                                                              ParishIds,
-                                                              ParishId,
-                                                              AssignedToTeamId,
-                                                              JobPriorityId,
-                                                              IsComplete,
-                                                              JobStatusId,
-                                                              LogDateFrom,
-                                                              LogDateTo,
-                                                              CompletedDateFrom,
-                                                              CompletedDateTo,
-                                                              OrderBy,
-                                                              OrderDirection,
-                                                              PageNumber,
-                                                              PageSize,
-                                                              ct).ConfigureAwait(false);
+        var take = PageSize < 1 ? IMaintenanceJobsService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
 
-        List<JobSimplePublicViewModel> results = [.. jobs.Results.Select(j => j.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.Maintenance))];
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
+
+        if (RouteId is not null)
+        {
+            query = query.Where(j => j.RouteId == RouteId.ToUpper());
+        }
+
+        query = ApplySearchFilters(query,
+                                   ParishIds,
+                                   ParishId,
+                                   AssignedToTeamId,
+                                   JobPriorityId,
+                                   IsComplete,
+                                   JobStatusId,
+                                   [],
+                                   LogDateFrom,
+                                   LogDateTo,
+                                   CompletedDateFrom,
+                                   CompletedDateTo);
+
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var maintIdPrefix = csideOptions.Value.IDPrefixes.Maintenance;
+
+        var results = await query
+            .Skip(skip)
+            .Take(take)
+            .Select(j => new JobSimplePublicViewModel
+            {
+                Id = j.Id,
+                ReferenceNo = maintIdPrefix + j.Id,
+                LogDate = j.LogDate != null ? new DateOnly(j.LogDate.Value.ToDateTimeUtc().Year, j.LogDate.Value.ToDateTimeUtc().Month, j.LogDate.Value.ToDateTimeUtc().Day) : null,
+                CompletionDate = j.CompletionDate != null ? new DateOnly(j.CompletionDate.Value.Year, j.CompletionDate.Value.Month, j.CompletionDate.Value.Day) : null,
+                Status = j.JobStatus != null ? j.JobStatus.Description : null,
+                IsComplete = j.JobStatus != null && j.JobStatus.IsComplete,
+                IsDuplicate = j.JobStatus != null && j.JobStatus.IsDuplicate,
+                Priority = j.JobPriority != null ? j.JobPriority.Description : null,
+                Route = j.RouteId,
+                MaintenanceTeam = j.MaintenanceTeam != null ? j.MaintenanceTeam.Name : null,
+                Parish = j.Parish != null ? j.Parish.Name : null
+            })
+            .ToListAsync(cancellationToken: ct);
 
         return new PagedResult<JobSimplePublicViewModel>
         {
             Results = results,
-            TotalResults = jobs.TotalResults,
-            PageSize = jobs.PageSize,
-            PageNumber = jobs.PageNumber
+            TotalResults = totalCount,
+            PageSize = take,
+            PageNumber = PageNumber
         };
 
     }
@@ -606,10 +679,13 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var jobStatuses = await GetMaintenanceJobStatuses(ct);
         var jobPriorities = await GetMaintenanceJobPriorities(ct);
 
+        // Some clients send HTML-encoded text, so decode it here as a defensive measure.
+        var decodedProblemDescription = WebUtility.HtmlDecode(model.ProblemDescription);
+
         return new Job
         {
             RouteId = nearestRoute?.RouteCode,
-            ProblemDescription = model.ProblemDescription,
+            ProblemDescription = decodedProblemDescription,
             LoggedByName = "Public",
             JobStatusId = jobStatuses?.FirstOrDefault()?.Id,
             JobPriorityId = jobPriorities?.FirstOrDefault()?.Id,
@@ -749,7 +825,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
             if (existingSubscription is not null)
             {
                 // User is already subscribed, return success
-                logger.LogInformation("User {email} is already subscribed to maintenance job {jobId}", normalizedEmail, jobId);
+                logger.LogInformation("User is already subscribed to maintenance job {jobId}", jobId);
                 return true;
             }
 
@@ -770,7 +846,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "There was an error signing {email} up to maintenance job {jobId} update emails", email, jobId);
+            logger.LogError(ex, "There was an error signing up a user to maintenance job {jobId} update emails", jobId);
             return false;
         }
     }

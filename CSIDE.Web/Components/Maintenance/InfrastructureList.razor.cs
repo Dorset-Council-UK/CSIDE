@@ -100,7 +100,7 @@ namespace CSIDE.Web.Components.Maintenance
             }
         }
 
-        private async Task DeleteInfraLink(int InfrastructureId, int JobId)
+        private async Task DeleteInfraLink(int InfrastructureId, int JobIdToUnlink)
         {
             IsBusy = true;
             try
@@ -108,7 +108,7 @@ namespace CSIDE.Web.Components.Maintenance
                 bool ConfirmDelete = await JS.InvokeAsync<bool>("confirm", localizer["Delete Infra Link Confirmation"].Value);
                 if (ConfirmDelete)
                 {
-                    await maintenanceJobsService.RemoveInfrastructureFromJob(JobId, InfrastructureId);
+                    await maintenanceJobsService.RemoveInfrastructureFromJob(JobIdToUnlink, InfrastructureId);
                     await RefreshComponent();
 
                 }

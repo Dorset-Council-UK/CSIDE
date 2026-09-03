@@ -1,13 +1,20 @@
 ﻿@page "/DMMO"
-
+@inject IOptions<CSIDEOptions> CsideOptions
 <PageTitle>@localizer["DMMO Full Text"]</PageTitle>
-
 
 <div>
     <Breadcrumb Items="NavItems"></Breadcrumb>
 </div>
 
 <h1>@localizer["DMMO Full Text"]</h1>
+
+@if (!string.IsNullOrWhiteSpace(CsideOptions.Value.DMMOPublicRegisterURL))
+{
+    <a href="@CsideOptions.Value.DMMOPublicRegisterURL" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+        @localizer["DMMO Public Register Label"]
+    </a>
+    <hr />
+}
 
 <AuthorizeView Roles="Administrator, RoW Officer">
     <p>@localizer["Create New DMMO Text"]</p>
@@ -165,7 +172,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <button class="btn btn-lg btn-outline-secondary" type="submit" id="search-dmmo-button" disabled="@IsBusy"><span class="bi bi-search"></span> @localizer["Search Label"]</button>
 

@@ -18,8 +18,7 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
     private readonly GovNotifyTemplates _templates = govNotifySettings.Value.Templates;
 
     /// <summary>
-    ///     <para>Send a confirmation link to the user via GovNotify.</para>
-    ///     <para>Generating the confirmation token.</para>
+    ///     <para>Send a bridge survey completed notification to the senior ranger.</para>
     /// </summary>
     public async Task SendNewBridgeSurveyNotification(BridgeSurvey survey, string validationLink)
     {
@@ -32,7 +31,7 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
             }
             //get the user who will be notified
             await using var context = await contextFactory.CreateDbContextAsync();
-            var team = await context.MaintenanceTeams.Where(c => c.Geom.Contains(survey.Infrastructure.Geom)).Include(t => t.TeamUsers).FirstOrDefaultAsync();
+            var team = await context.MaintenanceTeams.Where(c => c.Geom.Contains(survey.Infrastructure.Geom)).Include(t => t.TeamUsers.Where(tu => tu.IsLead)).FirstOrDefaultAsync();
             if (team is null)
             {
                 logger.LogWarning("A team could not be found for survey {surveyId}", survey.Id);
@@ -45,11 +44,22 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 logger.LogWarning("No team leads could be found for team {teamId}", team.Id);
                 return;
             }
+
+            // Batch-load users to avoid sequential N+1 calls in the loop
+            var teamLeaderUserIds = teamLeaders.Select(tl => tl.UserId).Distinct().ToList();
+            var userTasks = teamLeaderUserIds.Select(async userId => new
+            {
+                UserId = userId,
+                User = await userService.GetUser(userId)
+            });
+            var usersById = (await Task.WhenAll(userTasks))
+                .ToDictionary(x => x.UserId, x => x.User);
+
             // Get the validate link
             foreach (var teamLead in teamLeaders)
             {
                 //get the users name and email
-                var user = await userService.GetUser(teamLead.UserId);
+                usersById.TryGetValue(teamLead.UserId, out var user);
                 if (user is null || user.OtherMails is null || user.OtherMails.Count == 0)
                 {
                     logger.LogWarning("Could not find user {userId} or could not find an email for them when attempting to send a bridge survey email", teamLead.UserId);
@@ -66,7 +76,7 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 // Send the email
                 await SendEmail(user.OtherMails[0], _templates.NewBridgeSurvey, personalisation).ConfigureAwait(false);
             }
-        }catch(Exception ex)
+        } catch (Exception ex)
         {
             logger.LogError(ex, "There was an error sending notification emails for bridge surveys");
         }     
@@ -131,8 +141,11 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 { "unsubscribeURL", publicUnsubscribeUrl },
             };
 
+        // Sanitise
+        List<string> sanitiseContentFor = ["workDone"];
+
         // Send the email
-        await SendEmail(email, _templates.MaintenanceJobCompleted, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        await SendEmail(email, _templates.MaintenanceJobCompleted, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl, sanitiseContentFor: sanitiseContentFor).ConfigureAwait(false);
         return true;
     }
 
@@ -187,8 +200,11 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
                 { "unsubscribeURL", publicUnsubscribeUrl },
             };
 
+        // Sanitise
+        List<string> sanitiseContentFor = ["comment"];
+
         // Send the email
-        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl).ConfigureAwait(false);
+        await SendEmail(email, _templates.MaintenanceCommentAdded, personalisation, oneClickUnsubscribeURL: publicUnsubscribeUrl, sanitiseContentFor: sanitiseContentFor).ConfigureAwait(false);
         return true;
     }
 
@@ -200,15 +216,13 @@ public class GovNotifyEmailSender(ILogger<GovNotifyEmailSender> logger,
     /// <remarks>
     /// Error codes are documented at <see href="https://docs.notifications.service.gov.uk/net.html#send-an-email-error-codes">Error Codes</see>
     /// </remarks>
-    private async Task<string> SendEmail(string emailAddress, string templateId, Dictionary<string, dynamic>? personalisation, string? clientReference = null, string? emailReplyToId = null, string? oneClickUnsubscribeURL = null)
+    private async Task<string> SendEmail(string emailAddress, string templateId, Dictionary<string, dynamic>? personalisation, string? clientReference = null, string? emailReplyToId = null, string? oneClickUnsubscribeURL = null, List<string>? sanitiseContentFor = null)
     {
-        logger.LogDebug("Sending email to {EmailAddress}", emailAddress);
-
         var response = await notificationClient
-            .SendEmailAsync(emailAddress, templateId, personalisation, clientReference, emailReplyToId, oneClickUnsubscribeURL)
+            .SendEmailAsync(emailAddress, templateId, personalisation, clientReference, emailReplyToId, oneClickUnsubscribeURL, sanitiseContentFor)
             .ConfigureAwait(false);
 
-        logger.LogDebug("Email sent to {EmailAddress} with GovNotify response ID {ResponseId}", emailAddress, response.id);
+        logger.LogDebug("Email sent to user with GovNotify response ID {ResponseId}", response.id);
 
         return response.id;
     }

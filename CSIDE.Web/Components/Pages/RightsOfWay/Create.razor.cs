@@ -80,12 +80,9 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
                 StateHasChanged();
                 try
                 {
-                    if (Route is not null)
-                    {
-                        await rightsOfWayService.CreateRoute(Route);
-                        //redirect
-                        navigationManager.NavigateTo($"rights-of-way/Details/{Route.RouteCode}");
-                    }
+                    await rightsOfWayService.CreateRoute(Route);
+                    //redirect
+                    navigationManager.NavigateTo($"rights-of-way/Details/{Route.RouteCode}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -163,7 +160,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
             {
-                var attributes = new AttributesTable();
+                var attributes = new AttributesTable(StringComparer.Ordinal);
                 var feature = new Feature(route, attributes);
                 featureCollection.Add(feature);
             }

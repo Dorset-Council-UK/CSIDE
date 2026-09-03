@@ -73,6 +73,7 @@ internal static class WebApplicationBuilderExtension
         var sectionAzureBlobStorage = sectionCSIDE.GetSection(AzureBlobStorageOptions.SectionName);
         var sectionNetworking = sectionCSIDE.GetSection(NetworkingOptions.SectionName);
         var sectionIDPrefixes = sectionCSIDE.GetSection(IDPrefixOptions.SectionName);
+        var sectionDatabase = sectionCSIDE.GetSection(DatabaseOptions.SectionName);
 
         builder.Services
             .Configure<CSIDEOptions>(sectionCSIDE)
@@ -82,7 +83,8 @@ internal static class WebApplicationBuilderExtension
             .Configure<ThemeOptions>(sectionTheme)
             .Configure<AzureBlobStorageOptions>(sectionAzureBlobStorage)
             .Configure<NetworkingOptions>(sectionNetworking)
-            .Configure<IDPrefixOptions>(sectionIDPrefixes);
+            .Configure<IDPrefixOptions>(sectionIDPrefixes)
+            .Configure<DatabaseOptions>(sectionDatabase);
 
         return builder;
     }
@@ -148,13 +150,18 @@ internal static class WebApplicationBuilderExtension
     /// </summary>
     internal static WebApplicationBuilder AddCountrysideAuthentication(this WebApplicationBuilder builder)
     {
+        const string openIdConnectClientName = "OpenIDConnectResilient";
         var csideSection = builder.Configuration.GetSection(CSIDEOptions.SectionName);
-        var azureAdSection = csideSection.GetSection("AzureAd");
+        var azureAdSection = csideSection.GetSection(AzureAdOptions.SectionName);
         var azureAdMfaSection = csideSection.GetSection("AzureAdMFA");
         var configuredPathBase = csideSection["PathBase"];
         var cookiePath = string.IsNullOrWhiteSpace(configuredPathBase)
             ? "/"
             : $"/{configuredPathBase.Trim('/')}";
+
+        builder.Services
+            .AddHttpClient(openIdConnectClientName)
+            .AddStandardResilienceHandler();
 
         builder.Services
             .AddAuthentication(options =>
@@ -180,6 +187,48 @@ internal static class WebApplicationBuilderExtension
                 options.Scope.Add("email");
                 options.AccessDeniedPath = "/account/accessdenied";
                 options.SignedOutRedirectUri = "/account/signedout";
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        context.ProtocolMessage.Prompt = "select_account";
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
+                            context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
+                        {
+                            const string authRetryCookieName = "authretry";
+                            var hasRetried = context.Request.Cookies.ContainsKey(authRetryCookieName);
+
+                            if (!hasRetried)
+                            {
+                                context.Response.Cookies.Append(authRetryCookieName, "1", new CookieOptions
+                                {
+                                    HttpOnly = true,
+                                    IsEssential = true,
+                                    Secure = true,
+                                    SameSite = SameSiteMode.Lax,
+                                    MaxAge = TimeSpan.FromMinutes(5)
+                                });
+
+                                var signInPath = context.Request.PathBase.Add("/account/login");
+                                context.Response.Redirect($"{signInPath}?returnUrl=%2F");
+                                context.HandleResponse();
+                            }
+                            else
+                            {
+                                context.Response.Cookies.Delete(authRetryCookieName);
+                                var loginFailedPath = context.Request.PathBase.Add("/Account/LoginFailed");
+                                context.Response.Redirect(loginFailedPath);
+                                context.HandleResponse();
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             })
             .AddOpenIdConnect("AzureAdMFA", options =>
             {
@@ -210,6 +259,20 @@ internal static class WebApplicationBuilderExtension
                 };
             });
 
+        builder.Services
+            .AddOptions<OpenIdConnectOptions>("AzureAd")
+            .Configure<IHttpClientFactory>((options, httpClientFactory) =>
+            {
+                options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
+            });
+
+        builder.Services
+            .AddOptions<OpenIdConnectOptions>("AzureAdMFA")
+            .Configure<IHttpClientFactory>((options, httpClientFactory) =>
+            {
+                options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
+            });
+
         return builder;
     }
 
@@ -220,16 +283,23 @@ internal static class WebApplicationBuilderExtension
     {
         var connectionString = builder.Configuration.GetConnectionString(CSIDEOptions.ConnectionStringName);
 
+        var databaseOptions = builder.Configuration
+            .GetSection(CSIDEOptions.SectionName)
+            .GetSection(DatabaseOptions.SectionName)
+            .Get<DatabaseOptions>();
+
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(connectionString, x =>
             {
-                x.MigrationsHistoryTable("__EFMigrationsHistory", "cside");
+                x.MigrationsHistoryTable("__EFMigrationsHistory", databaseOptions?.Schema);
                 x.UseNodaTime();
                 x.UseNetTopologySuite();
-                x.MapEnum<SurveyStatus>("survey_status");
+                x.MapEnum<SurveyStatus>("survey_status", databaseOptions?.Schema);
                 x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            });
+            })
+            .UseSnakeCaseNamingConvention();
+
             options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
         });
 

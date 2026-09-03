@@ -120,21 +120,6 @@
             <ValidationMessage For="() => DMMOApplication.ReceivedDate" />
         </div>
 
-        <div class="mb-3 row">
-            <label class="form-label" for="dir-ss-date">@localizer["Determination Date Label"]</label>
-            <div class=" col-sm-4 col-md-6 col-lg-4">
-                @{
-                    string DeterminationDateStringRepresentation = "";
-                    if (DMMOApplication.DeterminationDate.HasValue)
-                    {
-                        DeterminationDateStringRepresentation = DMMOApplication.DeterminationDate.Value.ToDateOnly().ToString("yyyy-MM-dd");
-                    }
-                }
-                <input id="dir-ss-date" type="date" class="form-control" value="@DeterminationDateStringRepresentation" @onchange="UpdateDeterminationDateProperty" />
-            </div>
-            <ValidationMessage For="() => DMMOApplication.DeterminationDate" />
-        </div>
-
         <YesNoBoolean @bind-Value="DMMOApplication.Appeal" Label="@localizer["Appeal Label"]" HasNullOption="true" NullValueLabel="@localizer["Unknown Label"]" class="my-3"></YesNoBoolean>
 
         <div class="mb-3 row">
@@ -158,7 +143,7 @@
                 <InputSelect id="dir-ss" class="form-select" @bind-Value="DMMOApplication.DirectionOfSecStateId">
                     @if (DirectionsOfSecState is not null)
                     {
-                        <option value=""></option>
+                        <option value="">@localizer["None Label"]</option>
                         @foreach (var direction in DirectionsOfSecState.OrderBy(r => r.Name))
                         {
                             <option value="@direction.Id">@direction.Name</option>
@@ -193,6 +178,22 @@
             <ValidationMessage For="() => DMMOApplication.CaseOfficer" />
         </div>
 
+        <div class="mb-3 row">
+            <label class="form-label" for="internal-archive-reference">@localizer["Internal Archive Reference No Label"]</label>
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <InputText id="internal-archive-reference" class="form-control" @bind-Value="DMMOApplication.InternalArchiveReferenceNo"></InputText>
+            </div>
+            <ValidationMessage For="() => DMMOApplication.InternalArchiveReferenceNo" />
+        </div>
+
+        <div class="mb-3 row">
+            <label class="form-label" for="external-archive-reference">@localizer["External Archive Reference No Label"]</label>
+            <div class="col-sm-4 col-md-6 col-lg-4">
+                <InputText id="external-archive-reference" class="form-control" @bind-Value="DMMOApplication.ExternalArchiveReferenceNo"></InputText>
+            </div>
+            <ValidationMessage For="() => DMMOApplication.ExternalArchiveReferenceNo" />
+        </div>
+
         <div class="mb-3">
             <label class="form-label" for="private-comments">@localizer["Private Comments Label"]</label>
             <InputTextArea id="private-comments" class="form-control" @bind-Value="DMMOApplication.PrivateComments"></InputTextArea>
@@ -204,6 +205,8 @@
             <InputTextArea id="public-comments" class="form-control" @bind-Value="DMMOApplication.PublicComments"></InputTextArea>
             <ValidationMessage For="() => DMMOApplication.PublicComments" />
         </div>
+
+        <ValidationSummary />
 
         @if (IsEdit)
         {

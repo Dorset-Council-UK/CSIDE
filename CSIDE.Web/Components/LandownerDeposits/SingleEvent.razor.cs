@@ -1,6 +1,7 @@
 ﻿using Blazored.FluentValidation;
 using CSIDE.Data.Models.LandownerDeposits;
 using CSIDE.Data.Services;
+using CSIDE.Web.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using NodaTime;
@@ -71,23 +72,9 @@ namespace CSIDE.Web.Components.LandownerDeposits
         }
         private void UpdateEventDateProperty(ChangeEventArgs eventArgs)
         {
-            UpdateDateProperty(eventArgs, date => Event!.EventDate = date);
+            DateInputHelper.UpdateDateProperty(eventArgs, date => Event.EventDate = date);
         }
 
-        private static void UpdateDateProperty(ChangeEventArgs eventArgs, Action<LocalDate> updateProperty)
-        {
-            try
-            {
-                var pattern = NodaTime.Text.LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
-                var parseResult = pattern.Parse(eventArgs.Value?.ToString()!);
-                updateProperty(parseResult.Value);
-            }
-            catch (Exception)
-            {
-                // Problem parsing date, don't update
-            }
-        }
-        
         private void CancelUpdate()
         {
             IsEditing = false;

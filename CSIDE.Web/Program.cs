@@ -15,10 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .AddCountrysideNetworking()
     .AddCountrysideOptions()
-    .AddCountrysideTelemetry()
     .AddCountrysideAzureKeyVault()
     .AddCountrysideAuthentication()
-    .AddCountrysideDatabase();
+    .AddCountrysideDatabase()
+    .AddCountrysideTelemetry();
 
 builder.Services
     .AddRazorComponents()
@@ -29,7 +29,6 @@ builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddGovNotify(builder.Configuration);
-builder.Services.AddAutoMapper(typeof(ApplicationDbContext));
 
 // Services from data project
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();

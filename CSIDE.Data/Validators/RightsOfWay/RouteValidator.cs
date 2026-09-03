@@ -61,6 +61,9 @@ namespace CSIDE.Data.Validators.RightsOfWay
                 .WhenAsync(RouteStatusIsClosed)
                 .Unless(route => route.ClosureIsIndefinite)
                 .WithName(_localizer["Closure End Date Label"]);
+            RuleFor(route => route.Notes)
+                .MaximumLength(1000)
+                .WithName(_localizer["Notes Label"]);
         }
 
         private async Task<bool> RouteStatusIsClosed(Models.RightsOfWay.Route route, CancellationToken ct)

@@ -1,0 +1,79 @@
+﻿@using Data.Models.DMMO
+@if (CouncilDecisions is not null)
+{
+    if (IsEditable)
+    {
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="() => ShowAddCouncilDecisionModal()">@localizer["Add Council Decision Label"]</button>
+    }
+
+    @if (CouncilDecisions.Count != 0)
+    {
+        <div class="row">
+            @foreach (DMMOCouncilDecision councilDecision in CouncilDecisions.OrderBy(c => c.CouncilDecisionId))
+            {
+                <div class="col-lg-6 my-2">
+                    <div class="card bg-light-subtle h-100" id="council-decision-@councilDecision.CouncilDecisionId">
+                        <div class="card-header">
+                            <strong>@(councilDecision.DMMOApplicationId)/@(councilDecision.CouncilDecisionId)</strong>
+                        </div>
+                        <div class="card-body">
+                            @if (councilDecision.Date.HasValue || councilDecision.CouncilDecisionType?.Type is not null || councilDecision.Notes is not null)
+                            {
+                                <ul class="list-unstyled">
+                                    @if (councilDecision.Date.HasValue)
+                                    {
+                                        <li><strong>@localizer["Council Decision Date Label"]</strong>: @councilDecision.Date</li>
+                                    }
+                                    @if (councilDecision.CouncilDecisionType?.Type is not null)
+                                    {
+                                        <li><strong>@localizer["Council Decision Type Label"]</strong>: @councilDecision.CouncilDecisionType.Type</li>
+                                    }
+                                    @if (councilDecision.Notes is not null)
+                                    {
+                                        <li><strong>@localizer["Council Decision Notes Label"]</strong>: @councilDecision.Notes</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>@localizer["No Council Decision Summary Info Available Message"]</p>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            @if (IsEditable)
+                            {
+                                <button class="btn btn-sm btn-outline-primary" type="button" disabled="@(IsBusy)" @onclick="() => ShowEditCouncilDecisionModal(councilDecision)">@localizer["Edit Label"]</button>
+                                <button class="btn btn-sm btn-outline-danger" type="button" disabled="@(IsBusy)" @onclick="() => DeleteCouncilDecision(DMMOApplicationId, councilDecision.CouncilDecisionId)">@localizer["Delete Label"]</button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+        }
+    else
+    {
+        <Alert Color="AlertColor.Info" Class="mt-2">@localizer["No Council Decisions Message"]</Alert>
+    }
+
+    @if (NewCouncilDecision is not null && IsEditable)
+    {
+        <Modal @ref="AddCouncilDecisionModal" Title="@localizer["Add Council Decision Label"]">
+            <BodyTemplate>
+                @if (ErrorMessage is not null)
+                {
+                    <Alert Color="AlertColor.Danger">@ErrorMessage</Alert>
+                }
+                <CouncilDecisionEditForm CouncilDecision="NewCouncilDecision"
+                                    CouncilDecisionTypes="CouncilDecisionTypes"
+                                    OnSubmit="SubmitFormAsync"
+                                    OnCancel="HideAddCouncilDecisionModal"
+                                    IsBusy="IsBusy"
+                                    IsEdit="IsEdit"
+                                    @ref="NewCouncilDecisionForm" />
+            </BodyTemplate>
+        </Modal>
+    }
+    
+}

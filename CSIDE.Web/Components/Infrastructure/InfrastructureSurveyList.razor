@@ -17,9 +17,8 @@ else
         <div class="row">
             @foreach (var survey in Surveys.OrderByDescending(s => s.EndDate))
             {
-                string url = $"surveys/bridge/{survey.Id}/details";
                 <div class="col-lg-6">
-                    <Card Color="CardColor.Light">
+                    <Card class="card bg-light-subtle h-100">
                         <CardBody>
                             <CardTitle>@localizer["Bridge Survey Details Title",$"{IDPrefixOptions.Value.Infrastructure}{survey.InfrastructureItemId}/{survey.Id}"]</CardTitle>
                             <CardText>

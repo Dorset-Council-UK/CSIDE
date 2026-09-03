@@ -11,5 +11,6 @@ namespace CSIDE.Data.Models.LandownerDeposits
         public ICollection<MediaPublicViewModel> Media { get; set; } = [];
         public ICollection<ContactPublicViewModel> Contacts { get; set; } = [];
         public ICollection<string> AffectedAddresses { get; set; } = [];
+        public string NearestPlace { get; set; } = string.Empty;
     }
 }

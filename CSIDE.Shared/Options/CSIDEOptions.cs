@@ -15,12 +15,16 @@ public record CSIDEOptions
     public required GovNotifySettings GovNotify { get; init; }
     public required ApiKeyAuthenticationOptions ApiKeyAuthentication { get; init; }
     public ThemeOptions Theme { get; init; } = new();
+    public DatabaseOptions Database { get; init; } = new();
 
     public string AppName { get; init; } = "CSIDE";
     public string Version { get; init; } = "0.1 ALPHA";
     public string PathBase { get; init; } = "";
     public bool UseHttpsRedirection { get; init; }
     public string LandownerDepositsPublicRegisterURL { get; init; } = "";
+    public string DMMOPublicRegisterURL { get; init; } = "";
     public string PublicMaintenanceJobURL { get; init; } = "";
     public string PublicUnsubscribeURL { get; init; } = "";
+    public string HelpDocsURL { get; init; } = "";
+    public bool ShowLanguageSwitcher { get; init; }
 }

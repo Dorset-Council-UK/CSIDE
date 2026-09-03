@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Models.DMMO;
+﻿using CSIDE.Data.Helpers;
+using CSIDE.Data.Models.DMMO;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,8 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         { "Id", x => x.Id },
         { "ApplicationDate", x => x.ApplicationDate ?? LocalDate.MinIsoValue },
         { "ReceivedDate", x => x.ReceivedDate ?? LocalDate.MinIsoValue },
-        { "CaseStatus", x => x.CaseStatus.Name ?? string.Empty },
+        { "CaseStatus", x => x.CaseStatus == null ? string.Empty : x.CaseStatus.Name },
+
     };
     public async Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default)
     {
@@ -29,6 +31,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.DMMOApplication
             .Include(a => a.DMMOParishes)
             .Include(a => a.DMMOAddresses)
+            .Include(a => a.DMMOCouncilDecisions)
             .FirstOrDefaultAsync(a => a.Id == ApplicationId, cancellationToken: ct)
             .ConfigureAwait(false);
     }
@@ -45,7 +48,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         DateOnly? ReceivedDateFrom,
         DateOnly? ReceivedDateTo,
         bool? IsPublic,
-        string? OrderBy = "Id",
+        string OrderBy = "Id",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IDMMOService.DefaultPageSize,
@@ -54,8 +57,52 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.DMMOApplication.AsQueryable();
+        var query = context.DMMOApplication
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(d => d.CaseStatus)
+            .Include(d => d.DirectionOfSecState)
+            .Include(d => d.DMMOClaimedStatuses).ThenInclude(c => c.ClaimedStatus)
+            .Include(d => d.DMMOApplicationTypes).ThenInclude(at => at.ApplicationType)
+            .Include(d => d.DMMOParishes).ThenInclude(p => p.Parish)
+            .AsQueryable();
 
+        query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationClaimedStatusId, Location, ApplicationDateFrom, ApplicationDateTo, ReceivedDateFrom, ReceivedDateTo, IsPublic);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<DMMOApplication>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+
+    }
+
+    private async Task<IQueryable<DMMOApplication>> ApplySearchFilters(
+        IQueryable<DMMOApplication> query,
+        string[]? ParishIds,
+        string? ParishId,
+        string? ApplicationTypeId,
+        string? ApplicationCaseStatusId,
+        string? ApplicationClaimedStatusId,
+        string? Location,
+        DateOnly? ApplicationDateFrom,
+        DateOnly? ApplicationDateTo,
+        DateOnly? ReceivedDateFrom,
+        DateOnly? ReceivedDateTo,
+        bool? IsPublic)
+    {
         if (ParishIds is not null && ParishIds.Length != 0)
         {
             var parsedParishIds = ParishIds
@@ -84,78 +131,51 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         {
             query = query.Where(d => d.DMMOClaimedStatuses.Any(c => c.ClaimedStatusId == parsedApplicationClaimedStatusId));
         }
-        if (Location is not null)
+        if (!string.IsNullOrWhiteSpace(Location))
         {
             var place = await placesSearchService.GetPlaceByName(Location);
             if (place is not null)
             {
-                var bboxPolygon = new Polygon(
-                    new LinearRing(
-                        [
-                            new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMax), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMax)),
-                                new(decimal.ToDouble(place.MbrXMin), decimal.ToDouble(place.MbrYMin)),
-                        ]
-                    )
-                )
-                {
-                    SRID = 27700,
-                };
+                Polygon bboxPolygon = PlaceGeometryHelper.CreateBBOXPolygonFromPlaceGeometry(place);
                 query = query.Where(d => d.Geom.Intersects(bboxPolygon));
+            }
+            else
+            {
+                query = query.Where(d => false);
             }
         }
 
-        if (ApplicationDateFrom is not null)
+        if (ApplicationDateFrom.HasValue)
         {
-            query = query.Where(d => d.ApplicationDate >= NodaTime.LocalDate.FromDateOnly(ApplicationDateFrom.Value));
+            query = query.Where(d => d.ApplicationDate >= NodaTime.LocalDate.FromDateOnly(ApplicationDateFrom!.Value));
         }
-        if (ApplicationDateTo is not null)
+        if (ApplicationDateTo.HasValue)
         {
-            query = query.Where(d => d.ApplicationDate <= NodaTime.LocalDate.FromDateOnly(ApplicationDateTo.Value));
+            query = query.Where(d => d.ApplicationDate <= NodaTime.LocalDate.FromDateOnly(ApplicationDateTo!.Value));
         }
-        if (ReceivedDateFrom is not null)
+        if (ReceivedDateFrom.HasValue)
         {
-            query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateFrom.Value));
+            query = query.Where(d => d.ReceivedDate >= NodaTime.LocalDate.FromDateOnly(ReceivedDateFrom!.Value));
         }
-        if (ReceivedDateTo is not null)
+        if (ReceivedDateTo.HasValue)
         {
-            query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo.Value));
+            query = query.Where(d => d.ReceivedDate <= NodaTime.LocalDate.FromDateOnly(ReceivedDateTo!.Value));
         }
         if (IsPublic.HasValue)
         {
             query = query.Where(j => j.IsPublic == IsPublic);
         }
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
 
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<DMMOApplication>
-        {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
-
+        return query;
     }
 
     private static IQueryable<DMMOApplication> ApplyOrdering(IQueryable<DMMOApplication> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<DMMOApplication, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.ReceivedDate).ThenByDescending(l => l.Id);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
@@ -169,6 +189,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .AsNoTracking()
             .Include(p => p.DecisionOfSecState)
             .FirstOrDefaultAsync(p => p.OrderId == OrderId && p.DMMOApplicationId == ApplicationId, cancellationToken: ct);
+    }
+
+    public async Task<DMMOCouncilDecision?> GetCouncilDecisionById(int CouncilDecisionId, int ApplicationId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOCouncilDecisions
+            .AsNoTracking()
+            .Include(p => p.CouncilDecisionType)
+            .FirstOrDefaultAsync(p => p.CouncilDecisionId == CouncilDecisionId && p.DMMOApplicationId == ApplicationId, cancellationToken: ct);
     }
 
     public async Task<ICollection<DMMOLinkedRoute>> GetDMMOLinkedRoutesByApplicationId(int ApplicationId, CancellationToken ct = default)
@@ -236,6 +265,16 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             .ToListAsync(ct)
             .ConfigureAwait(false);
     }
+
+    public async Task<ICollection<DMMOCouncilDecision>> GetCouncilDecisionsByApplicationId(int ApplicationId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOCouncilDecisions
+            .Where(o => o.DMMOApplicationId == ApplicationId)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task<ICollection<DMMOMediaType>> GetDMMOMediaTypes(CancellationToken ct = default)
     {
         //TODO - Cache this
@@ -263,6 +302,16 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         return await context.OrderDeterminationProcesses
                 .AsNoTracking()
                 .OrderBy(p => p.Name)
+                .ToArrayAsync(cancellationToken: ct);
+    }
+
+    public async Task<ICollection<CouncilDecisionType>> GetCouncilDecisionTypeOptions(CancellationToken ct = default)
+    {
+        //TODO - Cache this
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        return await context.DMMOCouncilDecisionTypes
+                .AsNoTracking()
+                .OrderBy(p => p.Id)
                 .ToArrayAsync(cancellationToken: ct);
     }
 
@@ -324,6 +373,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await context.SaveChangesAsync(ct);
         return dmmoOrder;
     }
+
+    public async Task<DMMOCouncilDecision> AddCouncilDecisionToDMMO(DMMOCouncilDecision dmmoCouncilDecision, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        context.Add(dmmoCouncilDecision);
+        await context.SaveChangesAsync(ct);
+        return dmmoCouncilDecision;
+    }
+
     public async Task<DMMOApplication> AddMediaToDMMO(DMMOApplication DMMOApplication, DMMOMediaType mediaType, List<Media> UploadedMedia, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
@@ -332,7 +390,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         {
             DMMOApplication.DMMOMedia.Add(new DMMOMedia
             {
-                DMMOId = DMMOApplication.Id,
+                DMMOApplicationId = DMMOApplication.Id,
                 MediaTypeId = mediaType.Id,
                 Media = media,
             });
@@ -396,12 +454,9 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.DMMOClaimedStatuses.AddRange(statusesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingStatus in existingStatuses)
+        foreach (var existingStatus in existingStatuses.Where(existingStatus => SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId)))
         {
-            if (SelectedClaimedStatuses.Contains(existingStatus.ClaimedStatusId))
-            {
-                context.Entry(existingStatus).State = EntityState.Unchanged;
-            }
+            context.Entry(existingStatus).State = EntityState.Unchanged;
         }
     }
 
@@ -432,12 +487,9 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.DMMOTypes.AddRange(typesToAdd);
 
         // Mark entities as unchanged if they haven't actually changed
-        foreach (var existingType in existingTypes)
+        foreach (var existingType in existingTypes.Where(existingType => SelectedApplicationTypes.Contains(existingType.ApplicationTypeId)))
         {
-            if (SelectedApplicationTypes.Contains(existingType.ApplicationTypeId))
-            {
-                context.Entry(existingType).State = EntityState.Unchanged;
-            }
+            context.Entry(existingType).State = EntityState.Unchanged;
         }
     }
 
@@ -457,6 +509,15 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         context.Entry(existingOrder).CurrentValues.SetValues(dmmoOrder);
         await context.SaveChangesAsync(ct).ConfigureAwait(false);
         return dmmoOrder;
+    }
+
+    public async Task<DMMOCouncilDecision> UpdateDMMOCouncilDecision(int CouncilDecisionId, DMMOCouncilDecision dmmoCouncilDecision, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var existingCouncilDecision = await context.DMMOCouncilDecisions.FindAsync([CouncilDecisionId, dmmoCouncilDecision.DMMOApplicationId], cancellationToken: ct) ?? throw new Exception($"DMMO Council Decision being edited (ID: {CouncilDecisionId}) was not found prior to updating");
+        context.Entry(existingCouncilDecision).CurrentValues.SetValues(dmmoCouncilDecision);
+        await context.SaveChangesAsync(ct).ConfigureAwait(false);
+        return dmmoCouncilDecision;
     }
 
     public async Task<bool> DeleteDMMOAddress(int ApplicationId, long UPRN, CancellationToken ct = default)
@@ -490,6 +551,18 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         if (DMMOOrderToDelete is not null)
         {
             context.Remove(DMMOOrderToDelete);
+            await context.SaveChangesAsync(ct).ConfigureAwait(false);
+        }
+        return true;
+    }
+
+    public async Task<bool> DeleteDMMOCouncilDecision(int ApplicationId, int CouncilDecisionId, CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var DMMOCouncilDecisionToDelete = await context.DMMOCouncilDecisions.FindAsync([CouncilDecisionId, ApplicationId], ct);
+        if (DMMOCouncilDecisionToDelete is not null)
+        {
+            context.Remove(DMMOCouncilDecisionToDelete);
             await context.SaveChangesAsync(ct).ConfigureAwait(false);
         }
         return true;
@@ -532,13 +605,13 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await using var context = await contextFactory.CreateDbContextAsync(ct);
 
         var totalCount = await context.DMMOApplication
-            .Where(d => d.IsPublic == true)
+            .Where(d => d.IsPublic)
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .CountAsync(ct)
             .ConfigureAwait(false);
         var publicApplications = await context.DMMOApplication
-            .Where(d => d.IsPublic == true)
+            .Where(d => d.IsPublic)
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Include(d => d.CaseStatus)
@@ -566,7 +639,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
     public async Task<DMMOApplicationPublicViewModel?> GetPublicDMMOApplicationById(int id, CancellationToken ct = default)
     {
         var application = await GetDMMOApplicationById(id, ct).ConfigureAwait(false);
-        if (application is null || application.IsPublic == false)
+        if (application is null || !application.IsPublic)
         {
             return null;
         }
@@ -584,37 +657,59 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         DateOnly? ApplicationDateTo,
         DateOnly? ReceivedDateFrom,
         DateOnly? ReceivedDateTo,
-        string? OrderBy = "Id",
+        string OrderBy = "Id",
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = IDMMOService.DefaultPageSize,
         CancellationToken ct = default)
     {
+        var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
+        var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
 
-        var applications = await GetDMMOApplicationsBySearchParameters(ParishIds,
-                                                                          ParishId,
-                                                                          ApplicationTypeId,
-                                                                          ApplicationCaseStatusId,
-                                                                          ApplicationClaimedStatusId,
-                                                                          Location,
-                                                                          ApplicationDateFrom,
-                                                                          ApplicationDateTo,
-                                                                          ReceivedDateFrom,
-                                                                          ReceivedDateTo,
-                                                                          IsPublic:true,
-                                                                          OrderBy,
-                                                                          OrderDirection,
-                                                                          PageNumber,
-                                                                          PageSize,
-                                                                          ct).ConfigureAwait(false);
+        var query = context.DMMOApplication
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
 
-        List<DMMOApplicationSimplePublicViewModel> results = [.. applications.Results.Select(a => a.ToSimplePublicViewModel(csideOptions.Value.IDPrefixes.DMMO))];
+        query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationClaimedStatusId, Location, ApplicationDateFrom, ApplicationDateTo, ReceivedDateFrom, ReceivedDateTo, IsPublic: true);
+
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var dmmoIdPrefix = csideOptions.Value.IDPrefixes.DMMO;
+
+        var results = await query
+            .Skip(skip)
+            .Take(take)
+            .Select(d => new DMMOApplicationSimplePublicViewModel
+            {
+                Id = d.Id,
+                ReferenceNo = dmmoIdPrefix + d.Id,
+                ApplicationDate = d.ApplicationDate != null ? new DateOnly(d.ApplicationDate.Value.Year, d.ApplicationDate.Value.Month, d.ApplicationDate.Value.Day) : null,
+                ReceivedDate = d.ReceivedDate != null ? new DateOnly(d.ReceivedDate.Value.Year, d.ReceivedDate.Value.Month, d.ReceivedDate.Value.Day) : null,
+                ApplicationDetails = d.ApplicationDetails,
+                LocationDescription = d.LocationDescription,
+                CaseOfficer = d.CaseOfficer,
+                PublicComments = d.PublicComments,
+                Appeal = d.Appeal,
+                AppealDate = d.AppealDate != null ? new DateOnly(d.AppealDate.Value.Year, d.AppealDate.Value.Month, d.AppealDate.Value.Day) : null,
+                DateOfDirectionOfSecState = d.DateOfDirectionOfSecState != null ? new DateOnly(d.DateOfDirectionOfSecState.Value.Year, d.DateOfDirectionOfSecState.Value.Month, d.DateOfDirectionOfSecState.Value.Day) : null,
+                ApplicationTypes = d.DMMOApplicationTypes.Select(at => at.ApplicationType.Name).ToList(),
+                CaseStatus = d.CaseStatus != null ? d.CaseStatus.Name : null,
+                DirectionOfSecState = d.DirectionOfSecState != null ? d.DirectionOfSecState.Name : null,
+                ClaimedStatuses = d.DMMOClaimedStatuses.Select(c => c.ClaimedStatus.Name).ToArray(),
+                Parishes = d.DMMOParishes.Select(p => p.Parish.Name).ToList()
+            })
+            .ToListAsync(cancellationToken: ct);
+
         return new PagedResult<DMMOApplicationSimplePublicViewModel>
         {
             Results = results,
-            TotalResults = applications.TotalResults,
-            PageSize = applications.PageSize,
-            PageNumber = applications.PageNumber
+            TotalResults = totalCount,
+            PageSize = take,
+            PageNumber = PageNumber
         };
     }
 

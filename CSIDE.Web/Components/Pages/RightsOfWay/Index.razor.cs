@@ -18,6 +18,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
         private Search? SearchParams;
         private string? RouteIDSearch;
         private IReadOnlyCollection<OperationalStatus> OperationalStatuses { get; set; } = [];
+        private IReadOnlyCollection<LegalStatus> LegalStatuses { get; set; } = [];
         private IReadOnlyCollection<RouteType> RouteTypes { get; set; } = [];
         private IReadOnlyCollection<Data.Models.Maintenance.Team> MaintenanceTeams { get; set; } = [];
         private IReadOnlyCollection<Parish> Parishes { get; set; } = [];
@@ -36,6 +37,7 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
             ];
 
             OperationalStatuses = await rightsOfWayService.GetOperationalStatusOptions();
+            LegalStatuses = await rightsOfWayService.GetLegalStatusOptions();
             RouteTypes = await rightsOfWayService.GetRouteTypeOptions();
             MaintenanceTeams = await maintenanceJobsService.GetMaintenanceTeams();
             Parishes = await sharedDataService.GetParishes();
@@ -46,14 +48,15 @@ namespace CSIDE.Web.Components.Pages.RightsOfWay
         {
             if (RouteIDSearch is not null)
             {
+                var trimmedSearchTerm = RouteIDSearch.Trim();
                 IsBusy = true;
                 RouteIDSearchErrorMessage = null;
                 try
                 {
-                    var routeExists = await rightsOfWayService.RouteExists(RouteIDSearch);
+                    var routeExists = await rightsOfWayService.RouteExists(trimmedSearchTerm);
                     if (routeExists)
                     {
-                        navigationManager.NavigateTo($"rights-of-way/Details/{RouteIDSearch}");
+                        navigationManager.NavigateTo($"rights-of-way/Details/{trimmedSearchTerm}");
                         return;
                     }
 

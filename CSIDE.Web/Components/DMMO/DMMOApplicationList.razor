@@ -1,7 +1,6 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.DMMO
 @using CSIDE.Data.Services
-@using NodaTime
 @using System.Globalization
 @using System.ComponentModel
 @inject NavigationManager navigationManager
@@ -19,7 +18,7 @@ AllowSorting="true"
 AllowSelection="false"
 AllowRowClick="true"
 OnRowClick="OnRowClick"
-AutoHidePaging="true"
+AutoHidePaging="false"
 Responsive="true">
 
     <GridColumns>
@@ -115,7 +114,7 @@ Responsive="true">
                 request.PageNumber,
                 request.PageSize, request.CancellationToken);
 
-        return await Task.FromResult(new GridDataProviderResult<DMMOApplication> { Data = result.Results, TotalCount = result.TotalResults });
+        return await Task.FromResult(new GridDataProviderResult<DMMOApplication> { Data = result?.Results ?? [], TotalCount = result?.TotalResults ?? 0 });
     }
 
     private void OnRowClick(GridRowEventArgs<DMMOApplication> args) => navigationManager.NavigateTo($"DMMO/Details/{args.Item.Id}");

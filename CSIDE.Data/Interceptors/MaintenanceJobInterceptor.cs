@@ -20,15 +20,13 @@ internal class MaintenanceJobInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<Job>())
+        foreach (var entry in context.ChangeTracker.Entries<Job>()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
+            entry.Entity.ParishId = await GetParishIdForGeom(context, entry.Entity.Geom, cancellationToken);
+            if (entry.State is EntityState.Added)
             {
-                entry.Entity.ParishId = await GetParishIdForGeom(context, entry.Entity.Geom, cancellationToken);
-                if (entry.State is EntityState.Added)
-                {
-                    entry.Entity.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, entry.Entity.Geom, cancellationToken);
-                }
+                entry.Entity.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, entry.Entity.Geom, cancellationToken);
             }
         }
     }
@@ -40,13 +38,17 @@ internal class MaintenanceJobInterceptor : ISaveChangesInterceptor
     {
         if (geom == null) return null;
 
-        return await context.Parishes
+        var parishId = await context.Parishes
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(p => p.Geom.Contains(geom))
             .Select(p => p.ParishId)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        if (parishId == 0) return null;
+
+        return parishId;
     }
 
     /// <summary>
@@ -56,12 +58,16 @@ internal class MaintenanceJobInterceptor : ISaveChangesInterceptor
     {
         if (geom == null) return null;
 
-        return await context.MaintenanceTeams
+        var maintenanceTeamId = await context.MaintenanceTeams
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(t => t.Geom.Contains(geom))
             .Select(t => t.Id)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        if (maintenanceTeamId == 0) return null;
+
+        return maintenanceTeamId;
     }
 }

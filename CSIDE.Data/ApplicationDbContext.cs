@@ -1,4 +1,5 @@
-﻿using CSIDE.Data.Interceptors;
+﻿using CSIDE.Data.EntitiesConfiguration;
+using CSIDE.Data.Interceptors;
 using CSIDE.Data.Models.Audit;
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Models.DMMO;
@@ -9,11 +10,13 @@ using CSIDE.Data.Models.PPO;
 using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Shared.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CSIDE.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IOptions<DatabaseOptions> databaseOptions) : DbContext(options)
     {
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
@@ -43,6 +46,7 @@ namespace CSIDE.Data
         public DbSet<Models.DMMO.ApplicationClaimedStatus> DMMOApplicationClaimedStatuses { get; set; }
         public DbSet<Models.DMMO.ApplicationType> DMMOApplicationTypes { get; set; }
         public DbSet<Models.DMMO.ApplicationDirectionOfSecState> DMMOApplicationDirectionsOfSecState { get; set; }
+        public DbSet<CouncilDecisionType> DMMOCouncilDecisionTypes { get; set; }
 
         public DbSet<DMMOMedia> DMMOMedia { get; set; }
         public DbSet<DMMOClaimedStatus> DMMOClaimedStatuses { get; set; }
@@ -52,6 +56,7 @@ namespace CSIDE.Data
         public DbSet<DMMOLinkedRoute> DMMOLinkedRoutes { get; set; }
         public DbSet<DMMOOrder> DMMOOrders { get; set; }
         public DbSet<Models.DMMO.DMMOEvent> DMMOEvents { get; set; }
+        public DbSet<DMMOCouncilDecision> DMMOCouncilDecisions { get; set; }
 
         public DbSet<PPOApplication> PPOApplication { get; set; }
         public DbSet<Models.PPO.ApplicationCaseStatus> PPOApplicationCaseStatuses { get; set; }
@@ -77,6 +82,7 @@ namespace CSIDE.Data
         public DbSet<InfrastructureMedia> InfrastructureMedia { get; set; }
         public DbSet<InfrastructureBridgeDetails> InfrastructureBridgeDetails { get; set; }
         public DbSet<ProblemType> ProblemTypes { get; set; }
+        public DbSet<Organisation> Organisations { get; set; }
 
         public DbSet<LandownerDeposit> LandownerDeposits { get; set; }
         public DbSet<LandownerDepositTypeName> LandownerDepositTypeNames { get; set; }
@@ -115,7 +121,10 @@ namespace CSIDE.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("cside");
+            if (!string.IsNullOrWhiteSpace(databaseOptions.Value.Schema))
+            {
+                modelBuilder.HasDefaultSchema(databaseOptions.Value.Schema);
+            }
 
             modelBuilder.Entity<ApplicationRole>().HasData(
                 new ApplicationRole { Id = 1, RoleName = "Administrator" },
@@ -128,8 +137,19 @@ namespace CSIDE.Data
             );
 
             modelBuilder.Entity<Survey>().UseTpcMappingStrategy();
+            // EFCore.NamingConventions does not rename sequences auto-generated
+            // by the TPC mapping strategy. Explicitly declare with snake_case name.
+            // see https://github.com/efcore/EFCore.NamingConventions/issues/13
+            modelBuilder.HasSequence<int>("survey_sequence", databaseOptions.Value.Schema);
+            modelBuilder.Entity<BridgeSurvey>()
+                .Property(x => x.Id)
+                .UseSequence("survey_sequence", databaseOptions.Value.Schema);
+
             // DbSet configurations
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new BridgeSurveyConfiguration(databaseOptions.Value.Schema));
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                typeof(ApplicationDbContext).Assembly,
+                t => t != typeof(BridgeSurveyConfiguration));
         }
     }
 }

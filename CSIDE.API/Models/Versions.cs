@@ -2,6 +2,6 @@
 
 internal static class Versions
 {
-    internal static VersionInfo V1 = new(new(1, 0));
-    internal static IReadOnlyCollection<VersionInfo> All = [V1];
+    internal static readonly VersionInfo V1 = new(new(1, 0));
+    internal static readonly IReadOnlyCollection<VersionInfo> All = [V1];
 }

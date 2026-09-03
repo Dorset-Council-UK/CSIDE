@@ -21,7 +21,7 @@ namespace CSIDE.Data.EntitiesConfiguration
             builder.Property(x => x.JobStatusId).IsRequired();
             builder.Property(x => x.WorkDone)
                 .HasMaxLength(4000);
-            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry (point)");
+            builder.Property(x => x.Geom).IsRequired().HasColumnType("geometry(point, 27700)");
             builder.Property(x => x.Version)
                 .IsRowVersion();
 

@@ -110,6 +110,11 @@
                 </div>
             </div>
 
+            <div class="mb-3">
+                <label class="form-label" for="route-notes">@localizer["Notes Label"]</label>
+                <InputTextArea id="route-notes" class="form-control" @bind-Value="Route.Notes"></InputTextArea>
+                <ValidationMessage For="() => Route.Notes" />
+            </div>
 
             @if (IsEdit)
             {
@@ -185,6 +190,8 @@
                     <ValidationMessage For="() => Route.ClosureEndDate" />
                 </div>
             </div>
+
+            <ValidationSummary />
 
             @if (IsEdit)
             {

@@ -47,13 +47,11 @@ namespace CSIDE.Web.Components.Pages.LandownerDeposits
                 LandownerDepositIDSearchErrorMessage = null;
                 try
                 {
-                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.LandownerDeposit))
+                    if (!string.IsNullOrEmpty(IDPrefixOptions.Value.LandownerDeposit) &&
+                        LandownerDepositIDSearch.StartsWith(IDPrefixOptions.Value.LandownerDeposit, StringComparison.OrdinalIgnoreCase))
                     {
                         //remove any left in place prefixes
-                        if (LandownerDepositIDSearch.StartsWith(IDPrefixOptions.Value.LandownerDeposit, StringComparison.OrdinalIgnoreCase))
-                        {
-                            LandownerDepositIDSearch = LandownerDepositIDSearch[IDPrefixOptions.Value.LandownerDeposit.Length..].Trim();
-                        }
+                        LandownerDepositIDSearch = LandownerDepositIDSearch[IDPrefixOptions.Value.LandownerDeposit.Length..].Trim();
                     }
                     if (LandownerDepositIDSearch.Split("/").Length == 2 &&
                         int.TryParse(LandownerDepositIDSearch.Split("/")[0], CultureInfo.InvariantCulture, out int PrimaryId) &&

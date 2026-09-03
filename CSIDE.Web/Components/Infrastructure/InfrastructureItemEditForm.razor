@@ -31,7 +31,8 @@
 		<div class="mb-3 row">
 			<div class="col-sm-8 col-lg-6">
 				<label class="form-label" for="infrastructure-type">@localizer["Infrastructure Type Label"]</label>
-				<InputSelect id="infrastructure-type" class="form-select" @bind-Value="InfrastructureItem.InfrastructureTypeId" @bind-Value:after="OnRadioChange">
+				<InputSelect id="infrastructure-type" class="form-select" @bind-Value="InfrastructureItem.InfrastructureTypeId" @bind-Value:after="OnSelectChange">
+					<option value=""></option>
 					@if (InfrastructureTypes is not null)
 					{
 						@foreach (var type in InfrastructureTypes.OrderBy(s => s.Name))
@@ -98,10 +99,7 @@
 			<ValidationMessage For="() => InfrastructureItem.InstallationDate" />
 		</div>
 
-		@if (InfrastructureItem.InfrastructureType is not null 
-			&& InfrastructureItem.InfrastructureType.IsBridge
-			&& BridgeMaterials is not null
-			&& BridgeConditions is not null)
+		@if (ShowBridgeDetailsEditingSection)
 		{
 			if(InfrastructureItem.BridgeDetails is null)
 			{
@@ -110,7 +108,7 @@
 			<CollapsibleCard Id="bridge-details-editing" Title="@localizer["Bridge Details Label"]">
 				<fieldset class="my-3">
 					<legend>@localizer["Bridge Survey Beam Material Label"]</legend>
-					<InputRadioGroup Name="beam-material" @bind-Value="InfrastructureItem.BridgeDetails.BeamMaterialId" @bind-Value:after="OnRadioChange">
+					<InputRadioGroup Name="beam-material" @bind-Value="InfrastructureItem.BridgeDetails.BeamMaterialId" @bind-Value:after="OnSelectChange">
 
 						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
 						{
@@ -155,7 +153,7 @@
 
 				<fieldset class="my-3">
 					<legend>@localizer["Bridge Survey Decking Material Label"]</legend>
-					<InputRadioGroup Name="decking-material" @bind-Value="InfrastructureItem.BridgeDetails.DeckingMaterialId" @bind-Value:after="OnRadioChange">
+					<InputRadioGroup Name="decking-material" @bind-Value="InfrastructureItem.BridgeDetails.DeckingMaterialId" @bind-Value:after="OnSelectChange">
 
 						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
 						{
@@ -211,7 +209,7 @@
 
 				<fieldset class="my-3">
 					<legend>@localizer["Bridge Survey Handrail Material Label"]</legend>
-					<InputRadioGroup Name="handrail-material" @bind-Value="InfrastructureItem.BridgeDetails.HandrailMaterialId" @bind-Value:after="OnRadioChange">
+					<InputRadioGroup Name="handrail-material" @bind-Value="InfrastructureItem.BridgeDetails.HandrailMaterialId" @bind-Value:after="OnSelectChange">
 
 						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
 						{
@@ -252,7 +250,7 @@
 
 				<fieldset class="my-3">
 					<legend>@localizer["Bridge Survey Handrail Posts Material Label"]</legend>
-					<InputRadioGroup Name="handrail-posts-material" @bind-Value="InfrastructureItem.BridgeDetails.HandrailPostsMaterialId" @bind-Value:after="OnRadioChange">
+					<InputRadioGroup Name="handrail-posts-material" @bind-Value="InfrastructureItem.BridgeDetails.HandrailPostsMaterialId" @bind-Value:after="OnSelectChange">
 
 						@foreach (var material in BridgeMaterials.OrderBy(m => m.Name))
 						{

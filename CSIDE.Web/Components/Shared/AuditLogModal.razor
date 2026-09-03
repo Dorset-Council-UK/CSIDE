@@ -92,6 +92,7 @@
 
     public async Task ShowAudit(Data.Models.Audit.AuditLog auditEntry)
     {
+        Changes = null;
         AuditLogEntry = auditEntry;
         if (auditEntry.OldValues is not null || auditEntry.NewValues is not null)
         {

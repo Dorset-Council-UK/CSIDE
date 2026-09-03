@@ -7,6 +7,7 @@
         public string[]? ParishIds { get; set; } = [];
         public string? ParishId { get; set; }
         public int? OperationalStatusId { get; set; }
+        public int? LegalStatusId { get; set; }
         public int? RouteTypeId { get; set; }
         public int? MaintenanceTeamId { get; set; }
     }

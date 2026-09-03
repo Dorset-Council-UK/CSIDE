@@ -20,15 +20,15 @@ internal class InfrastructureItemInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<InfrastructureItem>())
-        {
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
-                var infrastructureItem = entry.Entity;
+        var infrastructureItems = context.ChangeTracker.Entries<InfrastructureItem>()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified)
+            .Select(entry => entry.Entity)
+            .ToList();
 
-                infrastructureItem.ParishId = await GetParishIdForGeom(context, infrastructureItem.Geom, cancellationToken);
-                infrastructureItem.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, infrastructureItem.Geom, cancellationToken);
-            }
+        foreach (var infrastructureItem in infrastructureItems)
+        {
+            infrastructureItem.ParishId = await GetParishIdForGeom(context, infrastructureItem.Geom, cancellationToken);
+            infrastructureItem.MaintenanceTeamId = await GetMaintenanceTeamIdForGeom(context, infrastructureItem.Geom, cancellationToken);
         }
     }
 
@@ -36,25 +36,33 @@ internal class InfrastructureItemInterceptor : ISaveChangesInterceptor
     {
         if (geom == null) return null;
 
-        return await context.Parishes
+        var parishId = await context.Parishes
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(p => p.Geom.Contains(geom))
             .Select(p => p.ParishId)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        if (parishId == 0) return null;
+
+        return parishId;
     }
 
     private static async Task<int?> GetMaintenanceTeamIdForGeom(ApplicationDbContext context, Point? geom, CancellationToken cancellationToken)
     {
         if (geom == null) return null;
 
-        return await context.MaintenanceTeams
+        var maintenanceTeamId = await context.MaintenanceTeams
             .AsNoTracking()
             .IgnoreAutoIncludes()
             .Where(t => t.Geom.Contains(geom))
             .Select(t => t.Id)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        if (maintenanceTeamId == 0) return null;
+
+        return maintenanceTeamId;
     }
 }

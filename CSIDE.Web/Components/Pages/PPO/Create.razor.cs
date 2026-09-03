@@ -75,12 +75,9 @@ namespace CSIDE.Web.Components.Pages.PPO
                 StateHasChanged();
                 try
                 {
-                    if (PPOApplication is not null)
-                    {
-                        await ppoService.CreatePPO(PPOApplication, SelectedTypes);
-                        //redirect
-                        navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
-                    }
+                    await ppoService.CreatePPO(PPOApplication, SelectedTypes);
+                    //redirect
+                    navigationManager.NavigateTo($"PPO/Details/{PPOApplication.Id}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -156,7 +153,7 @@ namespace CSIDE.Web.Components.Pages.PPO
             var featureCollection = new FeatureCollection();
             foreach (var route in routes)
             {
-                var attributes = new AttributesTable();
+                var attributes = new AttributesTable(StringComparer.Ordinal);
                 var feature = new Feature(route, attributes);
                 featureCollection.Add(feature);
             }

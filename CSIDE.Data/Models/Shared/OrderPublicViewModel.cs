@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace CSIDE.Data.Models.Shared
+﻿namespace CSIDE.Data.Models.Shared
 {
     public class OrderPublicViewModel
     {
@@ -15,6 +13,8 @@ namespace CSIDE.Data.Models.Shared
         public DateOnly? DateConfirmed { get; set; }
         public DateOnly? DateSealed { get; set; }
         public DateOnly? DatePublished { get; set; }
+        public DateOnly? ConfirmationPublishedDate { get; set; }
+        public bool? SubmitToPINS { get; set; }
 
     }
 }

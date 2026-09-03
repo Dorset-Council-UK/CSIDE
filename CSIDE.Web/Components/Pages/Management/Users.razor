@@ -45,11 +45,11 @@
                     <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["User ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
                         @context.Id
                     </GridColumn>
-                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["Name Label"]" PropertyName="DisplayName" SortKeySelector="item => item.DisplayName">
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" IsDefaultSortColumn="true" HeaderText="@localizer["Name Label"]" PropertyName="DisplayName" SortKeySelector="item => item.DisplayName">
                         @context.DisplayName
                     </GridColumn>
-                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
-                        @(context.OtherMails is not null ? string.Join(',', context.OtherMails) : "")
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" Filterable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
+                        @(!string.IsNullOrEmpty(context.Mail) ?  context.Mail : (context.OtherMails is not null ? string.Join(',', context.OtherMails) : "") )
                     </GridColumn>
 
                 </GridColumns>
@@ -86,11 +86,11 @@
                     <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["User ID Label"]" PropertyName="Id" SortKeySelector="item => item.Id">
                         @context.Id
                     </GridColumn>
-                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" HeaderText="@localizer["Name Label"]" PropertyName="DisplayName" SortKeySelector="item => item.DisplayName">
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" IsDefaultSortColumn="true" HeaderText="@localizer["Name Label"]" PropertyName="DisplayName" SortKeySelector="item => item.DisplayName">
                         @context.DisplayName
                     </GridColumn>
-                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
-                        @(context.OtherMails is not null ? string.Join(',', context.OtherMails) : "")
+                    <GridColumn TItem="Microsoft.Graph.Beta.Models.User" Sortable="false" Filterable="false" HeaderText="@localizer["Email Label"]" PropertyName="UserEmail">
+                        @(!string.IsNullOrEmpty(context.Mail) ? context.Mail : (context.OtherMails is not null ? string.Join(',', context.OtherMails) : ""))
                     </GridColumn>
 
                 </GridColumns>

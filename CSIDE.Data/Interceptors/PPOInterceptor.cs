@@ -19,19 +19,17 @@ internal class PPOInterceptor : ISaveChangesInterceptor
     {
         if (eventData.Context is not ApplicationDbContext context) return;
 
-        foreach (var entry in context.ChangeTracker.Entries())
+        foreach (var entry in context.ChangeTracker.Entries()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
+            if (entry.Entity is PPOApplication ppoApplication)
             {
-                if (entry.Entity is PPOApplication ppoApplication)
-                {
-                    await UpdatePPOParishIds(context, ppoApplication, cancellationToken);
-                }
+                await UpdatePPOParishIds(context, ppoApplication, cancellationToken);
+            }
 
-                if (entry.Entity is PPOOrder ppoOrder && entry.State is EntityState.Added)
-                {
-                    ppoOrder.OrderId = await NextOrderId(context, ppoOrder.PPOApplicationId, cancellationToken);
-                }
+            if (entry.Entity is PPOOrder ppoOrder && entry.State is EntityState.Added)
+            {
+                ppoOrder.OrderId = await NextOrderId(context, ppoOrder.PPOApplicationId, cancellationToken);
             }
         }
     }

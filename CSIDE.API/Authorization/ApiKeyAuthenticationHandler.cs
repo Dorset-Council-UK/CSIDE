@@ -30,13 +30,11 @@ namespace CSIDE.API.Authorization
             // If not in header, try query string (case-insensitive)
             else
             {
-                foreach (var queryKey in Request.Query.Keys)
+                var queryKey = Request.Query.Keys
+                    .FirstOrDefault(queryKey => ApiKeyQueryNames.Contains(queryKey, StringComparer.OrdinalIgnoreCase));
+                if (queryKey is not null)
                 {
-                    if (ApiKeyQueryNames.Contains(queryKey, StringComparer.OrdinalIgnoreCase))
-                    {
-                        apiKey = Request.Query[queryKey];
-                        break;
-                    }
+                    apiKey = Request.Query[queryKey];
                 }
             }
 

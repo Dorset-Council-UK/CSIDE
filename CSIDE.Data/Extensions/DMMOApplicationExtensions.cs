@@ -18,7 +18,6 @@ public static class DMMOApplicationExtensions
             LocationDescription = application.LocationDescription,
             CaseOfficer = application.CaseOfficer,
             PublicComments = application.PublicComments,
-            DeterminationDate = application.DeterminationDate?.ToDateOnly(),
             Appeal = application.Appeal,
             AppealDate = application.AppealDate?.ToDateOnly(),
             DateOfDirectionOfSecState = application.DateOfDirectionOfSecState?.ToDateOnly(),
@@ -57,8 +56,18 @@ public static class DMMOApplicationExtensions
                 DecisionOfSecState = o.DecisionOfSecState?.Name,
                 DateConfirmed = o.DateConfirmed?.ToDateOnly(),
                 DateSealed = o.DateSealed?.ToDateOnly(),
-                DatePublished = o.DatePublished?.ToDateOnly()
-            })]
+                DatePublished = o.DatePublished?.ToDateOnly(),
+                ConfirmationPublishedDate = o.ConfirmationPublishedDate?.ToDateOnly(),
+                SubmitToPINS = o.SubmitToPINS,
+            })],
+            CouncilDecisions = [.. application.DMMOCouncilDecisions.Select(cd => new CouncilDecisionPublicViewModel
+            {
+                ReferenceNo = $"{application.Id}/{cd.CouncilDecisionId}",
+                CouncilDecision = cd.CouncilDecisionType?.Type,
+                Date = cd.Date?.ToDateOnly(),
+                Notes = cd.Notes,
+             })]
+
         };
     }
 
@@ -74,7 +83,6 @@ public static class DMMOApplicationExtensions
             LocationDescription = application.LocationDescription,
             CaseOfficer = application.CaseOfficer,
             PublicComments = application.PublicComments,
-            DeterminationDate = application.DeterminationDate?.ToDateOnly(),
             Appeal = application.Appeal,
             AppealDate = application.AppealDate?.ToDateOnly(),
             DateOfDirectionOfSecState = application.DateOfDirectionOfSecState?.ToDateOnly(),

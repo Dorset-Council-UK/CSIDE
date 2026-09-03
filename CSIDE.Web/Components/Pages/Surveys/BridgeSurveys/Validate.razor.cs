@@ -1,6 +1,5 @@
-using AutoMapper;
 using BlazorBootstrap;
-using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Mapping;
 using CSIDE.Data.Models.Maintenance;
 using CSIDE.Data.Models.Surveys;
 using CSIDE.Data.Services;
@@ -9,6 +8,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using ProjNet.CoordinateSystems;
+using System.Security.Claims;
 
 namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
 {
@@ -16,7 +16,6 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
         IInfrastructureService infrastructureService,
         NavigationManager navigationManager,
         ILogger<Validate> logger,
-        IMapper mapper,
         ISettingsService settingsService,
         IMaintenanceJobsService maintenanceJobsService,
         ISharedDataService sharedDataService
@@ -92,14 +91,7 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
             IsBusy = true;
             try
             {
-                if (ApproveSurvey.HasValue && ApproveSurvey.Value)
-                {
-                    Survey.Status = SurveyStatus.Verified;
-                }
-                else
-                {
-                    Survey.Status = SurveyStatus.Rejected;
-                }
+                Survey.Status = ApproveSurvey.HasValue && ApproveSurvey.Value ? SurveyStatus.Verified : SurveyStatus.Rejected;
                 
                 await infrastructureService.UpdateBridgeSurvey(SurveyId, Survey);
 
@@ -111,14 +103,12 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                     {
                         if (infra.BridgeDetails is null)
                         {
-                            // Create a new InfrastructureBridgeDetails instance
-                            var mapped = mapper.Map<InfrastructureBridgeDetails>(Survey);
-                            infra.BridgeDetails = mapped;
+                            infra.BridgeDetails = Survey.MapToInfrastructureBridgeDetails();
                             infra.BridgeDetails.InfrastructureId = infra.Id;
                         }
                         else
                         {
-                            mapper.Map(Survey, infra.BridgeDetails);
+                            Survey.MapTo(infra.BridgeDetails);
                         }
                         infra.Width = Survey.Width.HasValue ? Convert.ToDouble(Survey.Width.Value) : infra.Width;
                         infra.Height = Survey.Height.HasValue ? Convert.ToDouble(Survey.Height.Value) : infra.Height;
@@ -160,8 +150,8 @@ namespace CSIDE.Web.Components.Pages.Surveys.BridgeSurveys
                         if (AuthenticationState != null)
                         {
                             var authState = await AuthenticationState;
-                            maintJob.LoggedById = authState.GetUserId();
-                            maintJob.LoggedByName = authState.GetUserName();
+                            maintJob.LoggedById = authState.User.UserId;
+                            maintJob.LoggedByName = authState.User.DisplayName;
                         }
                         
                         createdMaintJob = await maintenanceJobsService.CreateMaintenanceJob(maintJob, []);

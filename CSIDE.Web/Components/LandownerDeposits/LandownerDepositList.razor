@@ -1,7 +1,6 @@
 ﻿@rendermode InteractiveServer
 @using CSIDE.Data.Models.LandownerDeposits
 @using CSIDE.Data.Services
-@using NodaTime
 @using System.Globalization
 @using System.ComponentModel
 @inject NavigationManager navigationManager
@@ -20,7 +19,7 @@
       AllowSelection="false"
       AllowRowClick="true"
       OnRowClick="OnRowClick"
-      AutoHidePaging="true"
+      AutoHidePaging="false"
       Responsive="true">
 
     <GridColumns>
@@ -39,7 +38,7 @@
         <GridColumn TItem="LandownerDeposit" Filterable="false" Class="comment-field" Sortable="false" HeaderText="@localizer["Landowner Deposit Location Label"]" PropertyName="Location">
             @if (context.Location?.Length > 200)
             {
-                @context.Location?.Substring(0, 200)
+                @context.Location.Substring(0, 200)
             
                 <text>&hellip;</text>
             }

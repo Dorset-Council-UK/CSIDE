@@ -18,6 +18,7 @@ namespace CSIDE.Data.Validators.Maintenance
                 s.ParishIds?.Length != 0 ||
                 s.JobStatusId.HasValue ||
                 s.JobPriorityId.HasValue ||
+                s.ProblemTypeIds?.Length != 0 ||
                 s.LogDateFrom.HasValue ||
                 s.LogDateTo.HasValue ||
                 s.CompletedDateFrom.HasValue ||

@@ -24,8 +24,6 @@ namespace CSIDE.Data.Validators.PPO
                 .NotEmpty();
             RuleFor(app => app.ReceivedDate)
                 .NotEmpty();
-            RuleFor(app => app.ReceivedDate)
-                .NotEmpty();
             RuleFor(app => app.LegislationId)
                 .NotEmpty()
                 .WithName(_localizer["PPO Legislation Label"]);
@@ -39,6 +37,12 @@ namespace CSIDE.Data.Validators.PPO
             RuleFor(app => app.PriorityId)
                 .NotEmpty()
                 .WithMessage(_localizer[nameof(Resources.Priority_Must_Be_Selected)]);
+            RuleFor(app => app.InternalArchiveReferenceNo)
+                .MaximumLength(50)
+                .WithName(_localizer["Internal Archive Reference No Label"]);
+            RuleFor(app => app.ExternalArchiveReferenceNo)
+                .MaximumLength(50)
+                .WithName(_localizer["External Archive Reference No Label"]);
         }
     }
 }

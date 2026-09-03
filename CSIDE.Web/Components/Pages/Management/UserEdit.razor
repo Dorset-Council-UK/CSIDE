@@ -7,12 +7,12 @@
     </NotAuthorized>
 
     <Authorized>
-        <PageTitle>@localizer["User Edit Title", User?.DisplayName]</PageTitle>
+        <PageTitle>@localizer["User Edit Title", User?.DisplayName ?? ""]</PageTitle>
         <div>
             <Breadcrumb Items="NavItems"></Breadcrumb>
         </div>
 
-        <h1>@localizer["User Edit Title", User?.DisplayName]</h1>
+        <h1>@localizer["User Edit Title", User?.DisplayName ?? ""]</h1>
 
         @if (IsBusy)
         {
@@ -32,14 +32,7 @@
                             <tr><th>@localizer["Name Label"]</th><td>@User.DisplayName</td></tr>
                             <tr>
                                 <th>@localizer["Email Label"]</th>
-                                <td>
-                                    @if(User.OtherMails is not null){
-                                        @foreach (var mail in User.OtherMails)
-                                        {
-                                            @mail
-                                            <br />
-                                        }
-                                    }
+                                <td>@(!string.IsNullOrEmpty(User.Mail) ?  User.Mail : (User.OtherMails is not null ? string.Join(',', User.OtherMails) : ""))
                                 </td>
                             </tr>
                         </tbody>

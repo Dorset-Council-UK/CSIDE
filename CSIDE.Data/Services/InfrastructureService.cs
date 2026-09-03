@@ -16,9 +16,9 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     private static readonly Dictionary<string, Expression<Func<InfrastructureItem, object>>> SortExpressions = new()
     {
         { "Id", x => x.Id },
-        { "Parish", x => x.Parish.Name ?? string.Empty },
+        { "Parish", x => x.Parish == null ? string.Empty : x.Parish.Name },
         { "RouteId", x => x.RouteId ?? string.Empty },
-        { "InfrastructureType", x => x.InfrastructureType.Name ?? string.Empty },
+        { "InfrastructureType", x => x.InfrastructureType == null ? string.Empty : x.InfrastructureType.Name },
     };
     public async Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default)
     {
@@ -42,7 +42,12 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
         var skip = PageNumber < 1 ? 0 : (PageNumber - 1) * take;
         await using var context = await contextFactory.CreateDbContextAsync(ct);
-        var query = context.Infrastructure.AsQueryable();
+        var query = context.Infrastructure
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(i => i.InfrastructureType)
+            .Include(i => i.Parish)
+            .AsQueryable();
 
         if (RouteId is not null)
         {
@@ -71,13 +76,13 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         {
             query = query.Where(i => i.InfrastructureTypeId == parsedStatusId);
         }
-        if (InstallationDateFrom is not null)
+        if (InstallationDateFrom.HasValue)
         {
-            query = query.Where(i => i.InstallationDate >= LocalDate.FromDateOnly(InstallationDateFrom.Value));
+            query = query.Where(i => i.InstallationDate >= LocalDate.FromDateOnly(InstallationDateFrom!.Value));
         }
-        if (InstallationDateTo is not null)
+        if (InstallationDateTo.HasValue)
         {
-            query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo.Value).PlusDays(1));
+            query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo!.Value).PlusDays(1));
         }
 
         // Get total count before applying skip/take
@@ -102,12 +107,10 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
     private static IQueryable<InfrastructureItem> ApplyOrdering(IQueryable<InfrastructureItem> query, string orderBy, ListSortDirection orderDirection)
     {
         // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.ContainsKey(orderBy))
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<InfrastructureItem, object>>? sortExpression))
         {
             return query.OrderByDescending(l => l.Id);
         }
-
-        var sortExpression = SortExpressions[orderBy];
 
         return orderDirection == ListSortDirection.Descending
             ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
@@ -182,7 +185,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         return await context.Infrastructure
             .IgnoreAutoIncludes()
             .Include(i => i.InfrastructureType)
-            .Where(i => (i.InfrastructureType != null && i.InfrastructureType.IsBridge == true) && i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
+            .Where(i => (i.InfrastructureType != null && i.InfrastructureType.IsBridge) && i.Geom != null && i.Geom.IsWithinDistance(transformedPoint.Geom, distance))
             .OrderBy(i => i.Geom!.Distance(transformedPoint.Geom))
             .Select(i => new BridgeWithDistance(i, i.Geom!.Distance(transformedPoint.Geom)))
             .ToArrayAsync(ct)

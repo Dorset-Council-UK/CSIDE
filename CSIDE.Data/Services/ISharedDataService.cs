@@ -10,6 +10,7 @@ namespace CSIDE.Data.Services
         Task<string?> GetParishCodeByParishId(int ParishId, CancellationToken ct = default);
         Task<Parish?> GetBestFitParish(Geometry geometry, CancellationToken ct = default);
         Task<IReadOnlyCollection<ContactType>> GetContactTypeOptions(CancellationToken ct = default);
+        Task<IReadOnlyCollection<Organisation>> GetOrganisations(CancellationToken ct = default);
         Task<Contact> UpdateContact(Contact contact, CancellationToken ct = default);
         Task<Media?> UploadMedia(FileUploadRequest fileRequest, CancellationToken ct = default);
         Task<bool> DeleteContact(int contactId, CancellationToken ct = default);

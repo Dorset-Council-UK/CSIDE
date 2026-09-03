@@ -75,14 +75,9 @@ namespace CSIDE.Web.Components.Pages.Maintenance
                 StateHasChanged();
                 try
                 {
-                    if (Job is not null)
-                    {
-                        await maintenanceJobsService.UpdateMaintenanceJob(Job.Id, Job, SelectedProblemTypes);
-
-                        //redirect
-                        NavigateBackToJobDetailsPage();
-                        
-                    }
+                    await maintenanceJobsService.UpdateMaintenanceJob(Job.Id, Job, SelectedProblemTypes);
+                    //redirect
+                    NavigateBackToJobDetailsPage();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

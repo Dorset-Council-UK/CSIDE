@@ -47,7 +47,6 @@ internal class AuditInterceptor : ISaveChangesInterceptor
         {
 
             var currentUserService = context.GetService<ICurrentUserService>();
-            var jsonSerializerOpts = new JsonSerializerOptions().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
             // Build the audit logs to add at the end
             List<AuditLog> auditLogs = [];
@@ -61,12 +60,9 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             var userName = currentUserService.UserName;
 
             // Loop through the changes
-            foreach (var entry in context.ChangeTracker.Entries())
+            foreach (var entry in context.ChangeTracker.Entries()
+                .Where(entry => !DontAudit(entry) && !(entry.Entity is Media && entry.State is EntityState.Modified)))
             {
-                if (DontAudit(entry)) continue;
-                if (entry.Entity is Media && entry.State is EntityState.Modified) continue;
-
-
                 //add the modification logs first
                 if (entry.State == EntityState.Added)
                 {
@@ -266,9 +262,15 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             secondaryId = primaryId;
             primaryId = ppoEvent.PPOApplicationId.ToString(CultureInfo.InvariantCulture);
         }
+        if(entry.Entity is JobSubscriber)
+        {
+            secondaryId = ObscureEmailAddress(secondaryId);
+        }
 
         return (primaryId, secondaryId);
     }
+
+
 
     /// <summary>
     /// Default values for EntityId and SecondaryEntityId
@@ -307,27 +309,19 @@ internal class AuditInterceptor : ISaveChangesInterceptor
     {
         IDictionary<string, object> properties;
 
-        if (entityState == EntityState.Added)
+        var q = entry.Properties.AsQueryable();
+
+        if (entityState != EntityState.Added)
         {
-            // On add, get new/current properties
-            properties = entry.Properties.ToDictionary(
+            q = q.Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue));
+        }
+
+        properties = q.ToDictionary(
                 p => p.Metadata.Name,
                 p => ConvertGeometryToSerializableFormat(p.CurrentValue!),
                 StringComparer.Ordinal
             );
-        }
-        else
-        {
-            // Get changed new/current properties
-            properties = entry.Properties
-                .Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue))
-                .ToDictionary(
-                    p => p.Metadata.Name,
-                    p => ConvertGeometryToSerializableFormat(p.CurrentValue!),
-                    StringComparer.Ordinal
-                );
-        }
-
+        properties = ObscureSensitiveAuditProperties(entry, properties);
         return JsonSerializer.SerializeToDocument(properties, _jsonSerializerOptions);
     }
 
@@ -339,67 +333,20 @@ internal class AuditInterceptor : ISaveChangesInterceptor
     {
         IDictionary<string, object> properties;
 
-        if (entityState == EntityState.Deleted)
+        var q = entry.Properties.AsQueryable();
+
+        if(entityState != EntityState.Deleted)
         {
-            // On delete, get original/old values
-            properties = entry.Properties.ToDictionary(
+            q = q.Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue));
+        }
+
+        properties = q.ToDictionary(
                 p => p.Metadata.Name,
                 p => ConvertGeometryToSerializableFormat(p.OriginalValue!),
                 StringComparer.Ordinal
             );
-        }
-        else
-        {
-            // Get changed original/old values
-            properties = entry.Properties
-                .Where(p => p.IsModified && !Equals(p.OriginalValue, p.CurrentValue))
-                .ToDictionary(
-                    p => p.Metadata.Name,
-                    p => ConvertGeometryToSerializableFormat(p.OriginalValue!),
-                    StringComparer.Ordinal
-                );
-        }
-
+        properties = ObscureSensitiveAuditProperties(entry, properties);
         return JsonSerializer.SerializeToDocument(properties, _jsonSerializerOptions);
-    }
-
-    private static ICollection<EntityEntry> GetChildEntities(ApplicationDbContext context, EntityEntry parentEntry)
-    {
-        ICollection<EntityEntry> childEntries = [];
-        var entityType = parentEntry.Metadata;
-
-        foreach (var navigation in entityType.GetNavigations())
-        {
-            if (navigation.IsCollection)
-            {
-                var relatedEntities = context.Entry(parentEntry.Entity).Collection(navigation.Name).CurrentValue;
-                if (relatedEntities != null)
-                {
-                    foreach (var relatedEntity in relatedEntities)
-                    {
-                        var relatedEntry = context.Entry(relatedEntity);
-                        if (relatedEntry.State != EntityState.Detached)
-                        {
-                            childEntries.Add(relatedEntry);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var relatedEntity = context.Entry(parentEntry.Entity).Reference(navigation.Name).CurrentValue;
-                if (relatedEntity != null)
-                {
-                    var relatedEntry = context.Entry(relatedEntity);
-                    if (relatedEntry.State != EntityState.Detached)
-                    {
-                        childEntries.Add(relatedEntry);
-                    }
-                }
-            }
-        }
-
-        return childEntries;
     }
 
     private static object ConvertGeometryToSerializableFormat(object value)
@@ -410,5 +357,42 @@ internal class AuditInterceptor : ISaveChangesInterceptor
             return wktWriter.Write(geometry);
         }
         return value;
+    }
+
+    private static string ObscureEmailAddress(string emailAddress)
+    {
+        if (string.IsNullOrWhiteSpace(emailAddress))
+        {
+            return emailAddress;
+        }
+
+        var atIndex = emailAddress.IndexOf('@');
+        if (atIndex <= 0 || atIndex == emailAddress.Length - 1)
+        {
+            // Invalid email format, return as is
+            return emailAddress;
+        }
+
+        var localPart = emailAddress.AsSpan(0, atIndex);
+        var domainPart = emailAddress.AsSpan(atIndex);
+
+        if (localPart.Length <= 2)
+        {
+            // If local part is too short, obscure it completely
+            return $"{new string('*', localPart.Length)}{domainPart}";
+        }
+
+        // Show first and last character, obscure the middle
+        var obscuredLength = localPart.Length - 2;
+        return $"{localPart[0]}{new string('*', obscuredLength)}{localPart[^1]}{domainPart}";
+    }
+
+    private static IDictionary<string, object> ObscureSensitiveAuditProperties(EntityEntry entry, IDictionary<string, object> properties)
+    {
+        if (entry.Entity is JobSubscriber && properties.TryGetValue(nameof(JobSubscriber.EmailAddress), out object? value))
+        {
+            properties[nameof(JobSubscriber.EmailAddress)] = ObscureEmailAddress(value?.ToString() ?? string.Empty);
+        }
+        return properties;
     }
 }

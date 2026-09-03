@@ -1,0 +1,54 @@
+﻿@using CSIDE.Data.Models.Shared
+
+@if (CouncilDecision is not null)
+{
+    <EditForm Model="CouncilDecision" OnSubmit="@HandleSubmit">
+
+        <FluentValidationValidator @ref="fluentValidationValidator" />
+        <ValidationSummary />
+
+        <div class="mb-3 row">
+            <div class=" col-sm-4 col-md-6 col-lg-4">
+                <label class="form-label" for="council-decision-date">@localizer["Council Decision Date Label"]</label>
+                @{
+                    string DateStringRepresentation = "";
+                    if (CouncilDecision.Date.HasValue)
+                    {
+                        DateStringRepresentation = CouncilDecision.Date.Value.ToDateOnly().ToString("yyyy-MM-dd");
+                    }
+                }
+                <input id="council-decision-date" type="date" class="form-control" value="@DateStringRepresentation" @onchange="UpdateDecisionDateProperty" />
+            </div>
+            <ValidationMessage For="() => CouncilDecision.Date" />
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="council-decision-type">@localizer["Council Decision Type Label"]</label>
+                <InputSelect id="council-decision-type" class="form-select" @bind-Value="CouncilDecision.CouncilDecisionTypeId">
+                    <option value=""></option>
+                    @if (CouncilDecisionTypes is not null)
+                    {
+                        @foreach (var type in CouncilDecisionTypes.OrderBy(s => s.Id))
+                        {
+                            <option value="@type.Id">@type.Type</option>
+                        }
+                    }
+
+                </InputSelect>
+            </div>
+            <ValidationMessage For="() => CouncilDecision.CouncilDecisionTypeId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="council-decision-notes">@localizer["Council Decision Notes Label"]</label>
+            <InputTextArea id="council-decision-notes" class="form-control" @bind-Value="CouncilDecision.Notes"></InputTextArea>
+            <ValidationMessage For="() => CouncilDecision.Notes" />
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary" disabled="@IsBusy">@localizer["Save Label"]</button>
+        <button type="button" class="btn btn-link ms-2" disabled="@IsBusy" @onclick="HandleCancel">@localizer["Cancel Label"]</button>
+
+    </EditForm>
+
+}

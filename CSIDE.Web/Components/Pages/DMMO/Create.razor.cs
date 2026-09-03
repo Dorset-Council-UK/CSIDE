@@ -53,7 +53,6 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 {
                     Geom = MultiLineString.Empty,
                     ApplicationDetails = "",
-                    CaseStatusId = CaseStatuses.Select(o => o.Id).FirstOrDefault(),
                 };
                 GeometryIsValid = true;
             }
@@ -76,12 +75,9 @@ namespace CSIDE.Web.Components.Pages.DMMO
                 StateHasChanged();
                 try
                 {
-                    if (DMMOApplication is not null)
-                    {
-                        await dmmoService.CreateDMMO(DMMOApplication, SelectedClaimedStatuses, SelectedApplicationTypes);
-                        //redirect
-                        navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
-                    }
+                    await dmmoService.CreateDMMO(DMMOApplication, SelectedClaimedStatuses, SelectedApplicationTypes);
+                    //redirect
+                    navigationManager.NavigateTo($"DMMO/Details/{DMMOApplication.Id}");
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
