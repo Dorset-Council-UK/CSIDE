@@ -1,5 +1,6 @@
 ﻿@page "/Account/MyAccount"
 @using CSIDE.Data.Services
+@using CSIDE.Web.Authorization
 @inject IUserService userService
 
 <PageTitle>@localizer["My Account Label"]</PageTitle>
@@ -14,6 +15,19 @@
         <tr><th>@localizer["Email Label"]</th><td>@UserPrimaryEmailAddress</td></tr>
         <tr><th>@localizer["Identity Provider Label"]</th><td>@UserIdentityProvider</td></tr>
         <tr><th>@localizer["User ID Label"]</th><td>@UserID</td></tr>
+        <tr>
+            <th>MFA Session</th>
+            <td>
+                @if (IsMfaSessionTriggered)
+                {
+                    <span class="badge text-bg-success">Triggered</span>
+                }
+                else
+                {
+                    <span class="badge text-bg-secondary">Not triggered</span>
+                }
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -69,6 +83,7 @@
     private string? UserDisplayName{ get; set; }
     private string? UserPrimaryEmailAddress { get; set; }
     private string? UserIdentityProvider{ get; set; }
+    private bool IsMfaSessionTriggered { get; set; }
     private IEnumerable<System.Security.Claims.Claim>? UserClaims{ get; set; }
     private IReadOnlyCollection<ApplicationRole> ApplicationRoles { get; set; } = [];
 
@@ -83,6 +98,7 @@
             UserPrimaryEmailAddress = authState.GetUserEmail();
             UserIdentityProvider = authState.GetUserIdentityProvider();
             UserClaims = authState.User.Claims;
+            IsMfaSessionTriggered = MfaClaimsHelper.IsMfaAuthenticated(authState.User);
 
             if(UserID is not null)
             {

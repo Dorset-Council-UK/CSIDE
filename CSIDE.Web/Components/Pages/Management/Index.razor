@@ -1,11 +1,13 @@
 ﻿@page "/management"
 @using CSIDE.Web.Components.Pages.Account
+@using CSIDE.Web.Authorization
 @using CSIDE.Shared.Options
 @using Microsoft.Extensions.Options
 
 @inject IOptions<CSIDEOptions> CsideOptions
+@inject NavigationManager NavigationManager
 
-<AuthorizeView Roles="Administrator">
+<AuthorizeView Roles="Administrator" Policy="RequireMFA">
     <NotAuthorized>
         <AccessDenied></AccessDenied>
     </NotAuthorized>
@@ -48,16 +50,44 @@
 </AuthorizeView>
 
 @code{
-    
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+
+    private bool _redirectToMfa;
+    private string? _mfaReturnUrl;
+
     private List<BreadcrumbItem>? NavItems;
     private CSIDEOptions _csideOptions => CsideOptions.Value;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        NavItems = new List<BreadcrumbItem>
+        var authState = await AuthenticationStateTask;
+        if (authState.User.Identity?.IsAuthenticated == true)
         {
+            var isMfaAuthenticated = MfaClaimsHelper.IsMfaAuthenticated(authState.User);
+
+            if (isMfaAuthenticated == false)
+            {
+                _redirectToMfa = true;
+                _mfaReturnUrl = Uri.EscapeDataString("/management");
+                return;
+            }
+        }
+
+        NavItems =
+        [
             new BreadcrumbItem { Text = localizer["Home"], Href = "" },
             new BreadcrumbItem { Text = localizer["Management Title"], Href = "management", IsCurrentPage = true }
-        };
+        ];
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _redirectToMfa)
+        {
+            NavigationManager.NavigateTo($"/account/login-mfa?returnUrl={_mfaReturnUrl}", forceLoad: true);
+        }
+
+        return Task.CompletedTask;
     }
 }

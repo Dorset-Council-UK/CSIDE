@@ -3,13 +3,14 @@ using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using CSIDE.Shared.Options;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -143,48 +144,71 @@ internal static class WebApplicationBuilderExtension
     }
 
     /// <summary>
-    /// Add the Microsoft Identity Web App authentication
+    /// Add dual OpenID Connect authentication schemes: AzureAd (default) and AzureAdMFA.
     /// </summary>
     internal static WebApplicationBuilder AddCountrysideAuthentication(this WebApplicationBuilder builder)
     {
-        const string b2cClientName = "B2CResilient";
+        var csideSection = builder.Configuration.GetSection(CSIDEOptions.SectionName);
+        var azureAdSection = csideSection.GetSection("AzureAd");
+        var azureAdMfaSection = csideSection.GetSection("AzureAdMFA");
+        var configuredPathBase = csideSection["PathBase"];
+        var cookiePath = string.IsNullOrWhiteSpace(configuredPathBase)
+            ? "/"
+            : $"/{configuredPathBase.Trim('/')}";
 
-        var azureAdSection = builder.Configuration
-            .GetSection(CSIDEOptions.SectionName)
-            .GetSection(AzureAdOptions.SectionName);
-
-        // Register a named HttpClient for B2C with resilience
         builder.Services
-            .AddHttpClient(b2cClientName)
-            .AddStandardResilienceHandler();
-
-        // Add microsoft identity web app authentication
-        builder.Services
-            .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApp(options =>
+            .AddAuthentication(options =>
             {
-                azureAdSection.Bind(options);
-                options.ErrorPath = "/Error";
-                options.SignedOutRedirectUri = "/account/signedout";
-                options.AccessDeniedPath = "/account/accessdenied";
-            });
-        builder.Services.AddRazorPages();
-        builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
-
-        // Configure OpenIdConnectOptions to use our resilient HttpClient
-        builder.Services
-            .AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
-            .Configure<IHttpClientFactory>((options, httpClientFactory) =>
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = "AzureAd";
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                options.Backchannel = httpClientFactory.CreateClient(b2cClientName);
-                options.SignedOutRedirectUri = "/account/signedout";
+                options.Cookie.Path = cookiePath;
                 options.AccessDeniedPath = "/account/accessdenied";
-            });
+            })
+            .AddOpenIdConnect("AzureAd", options =>
+            {
+                options.ClientId = azureAdSection["ClientId"];
+                options.ClientSecret = azureAdSection["ClientSecret"];
+                options.Authority = $"{azureAdSection["Instance"]}{azureAdSection["TenantId"]}/v2.0/";
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.CallbackPath = "/signin-oidc";
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                options.TokenValidationParameters.NameClaimType = "name";
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
+                options.AccessDeniedPath = "/account/accessdenied";
+                options.SignedOutRedirectUri = "/account/signedout";
+            })
+            .AddOpenIdConnect("AzureAdMFA", options =>
+            {
+                options.ClientId = azureAdMfaSection["ClientId"];
+                options.ClientSecret = azureAdMfaSection["ClientSecret"];
+                options.Authority = $"{azureAdMfaSection["Instance"]}{azureAdMfaSection["TenantId"]}/v2.0/";
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.CallbackPath = "/signin-oidc2";
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                options.TokenValidationParameters.NameClaimType = "name";
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
+                options.AccessDeniedPath = "/account/accessdenied";
+                options.SignedOutRedirectUri = "/account/signedout";
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        if (context.Principal?.Identity is ClaimsIdentity identity &&
+                            !identity.HasClaim("cside_mfa", "true"))
+                        {
+                            identity.AddClaim(new Claim("cside_mfa", "true"));
+                        }
 
-        builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-        {
-            options.AccessDeniedPath = "/account/accessdenied";
-        });
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
         return builder;
     }

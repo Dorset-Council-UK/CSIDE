@@ -11,7 +11,10 @@ internal static class AuthenticationStateExtensions
     /// </summary>
     internal static string? GetUserId(this AuthenticationState? authenticationState)
     {
-        return authenticationState?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = authenticationState?.User;
+        return user?.FindFirstValue("oid")
+            ?? user?.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")
+            ?? user?.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
     /// <summary>
@@ -56,8 +59,12 @@ internal static class AuthenticationStateExtensions
     /// </summary>
     internal static string? GetUserEmail(this AuthenticationState? authenticationState)
     {
-        // Could have used authenticationState?.User.FindFirst(c => c.Type.Contains("email"))?.Value BUT not ClaimTypes.Email in this case
-        return authenticationState?.User.FindFirstValue("emails");
+        var user = authenticationState?.User;
+        return user?.FindFirstValue(ClaimTypes.Email)
+            ?? user?.FindFirstValue("email")
+            ?? user?.FindFirstValue("emails")
+            ?? user?.FindFirstValue("preferred_username")
+            ?? user?.FindFirstValue("upn");
     }
 
     /// <summary>
