@@ -36,7 +36,7 @@
                                 
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a id="logout" class="btn btn-outline-danger btn-sm ms-2" href="account/logout"><i class="bi-door-open"></i> @localizer["Logout Label"]</a>
+                                    <a id="logout" class="btn btn-outline-danger btn-sm ms-2" href="account/logout" data-enhance-nav="false"><i class="bi-door-open"></i> @localizer["Logout Label"]</a>
                                 </li>
                             </ul>
                         </li>
@@ -45,7 +45,7 @@
 
                 </Authorized>
                 <NotAuthorized>
-                    <a id="login" class="btn btn-outline-primary btn-sm ms-2" href="account/login"><i class="bi-door-open"></i> @localizer["Sign In Label"]</a>
+                    <a id="login" class="btn btn-outline-primary btn-sm ms-2" href="account/login" data-enhance-nav="false"><i class="bi-door-open"></i> @localizer["Sign In Label"]</a>
                 </NotAuthorized>
             </AuthorizeView>
         </div>

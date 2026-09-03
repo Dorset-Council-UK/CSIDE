@@ -209,7 +209,7 @@ internal static class WebApplicationBuilderExtension
                                 {
                                     HttpOnly = true,
                                     IsEssential = true,
-                                    Secure = true,
+                                    Secure = context.Request.IsHttps,
                                     SameSite = SameSiteMode.Lax,
                                     MaxAge = TimeSpan.FromMinutes(5)
                                 });
@@ -225,6 +225,14 @@ internal static class WebApplicationBuilderExtension
                                 context.Response.Redirect(loginFailedPath);
                                 context.HandleResponse();
                             }
+                        }
+                        else
+                        {
+                            const string authRetryCookieName = "authretry";
+                            context.Response.Cookies.Delete(authRetryCookieName);
+                            var loginFailedPath = context.Request.PathBase.Add("/Account/LoginFailed");
+                            context.Response.Redirect(loginFailedPath);
+                            context.HandleResponse();
                         }
 
                         return Task.CompletedTask;

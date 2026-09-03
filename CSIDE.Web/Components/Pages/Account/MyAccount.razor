@@ -16,15 +16,15 @@
         <tr><th>@localizer["Identity Provider Label"]</th><td>@UserIdentityProvider</td></tr>
         <tr><th>@localizer["User ID Label"]</th><td>@UserID</td></tr>
         <tr>
-            <th>MFA Session</th>
+            <th>@localizer["MFA Session Label"]</th>
             <td>
                 @if (IsMfaSessionTriggered)
                 {
-                    <span class="badge text-bg-success">Triggered</span>
+                    <span class="badge text-bg-success">@localizer["Triggered Label"]</span>
                 }
                 else
                 {
-                    <span class="badge text-bg-secondary">Not triggered</span>
+                    <span class="badge text-bg-secondary">@localizer["Not Triggered Label"]</span>
                 }
             </td>
         </tr>

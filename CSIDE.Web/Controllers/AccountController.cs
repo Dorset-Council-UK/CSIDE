@@ -13,19 +13,31 @@ public class AccountController : Controller
     /// <summary>
     /// Challenges the user with the default OIDC scheme.
     /// </summary>
-    [HttpGet("login")]
     public IActionResult Login(string returnUrl = "/")
     {
-        return Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "AzureAd");
+        if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            returnUrl = "/";
+
+        returnUrl = returnUrl.StartsWith('/') ? returnUrl : "/" + returnUrl;
+
+        var properties = new AuthenticationProperties { RedirectUri = Url.Content("~" + returnUrl) };
+        properties.Items[".AuthScheme"] = "AzureAd";
+        return Challenge(properties, "AzureAd");
     }
 
     /// <summary>
     /// Challenges the user with the MFA OIDC scheme.
     /// </summary>
-    [HttpGet("login-mfa")]
     public IActionResult LoginMfa(string returnUrl = "/")
     {
-        return Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "AzureAdMFA");
+        if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            returnUrl = "/";
+
+        returnUrl = returnUrl.StartsWith('/') ? returnUrl : "/" + returnUrl;
+
+        var properties = new AuthenticationProperties { RedirectUri = Url.Content("~" + returnUrl) };
+        properties.Items[".AuthScheme"] = "AzureAdMFA";
+        return Challenge(properties, "AzureAdMFA");
     }
 
     /// <summary>
