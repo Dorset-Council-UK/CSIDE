@@ -8,7 +8,6 @@ using CSIDE.Web.Components;
 using CSIDE.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
 using NodaTime;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +22,7 @@ builder
 
 builder.Services
     .AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddMicrosoftIdentityConsentHandler();
+    .AddInteractiveServerComponents();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
@@ -56,17 +54,26 @@ builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
 builder.Services.AddSingleton<IAuthorizationHandler, SurveyAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, RequireMfaRequirementHandler>();
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AuthenticatedOnly", policy => policy.RequireAuthenticatedUser())
     .AddPolicy("IsSurveyor", policy => policy.Requirements.Add(new IsSurveyorRequirement()))
+    .AddPolicy("RequireMFA", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.Requirements.Add(new RequireMfaCookieRequirement());
+    })
     .AddDefaultPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor", "View", "Surveyor"));
 
 var options = builder.Configuration.GetSection(CSIDEOptions.SectionName).Get<CSIDEOptions>();
 
 var app = builder.Build();
 
-app.UsePathBase($"/{options?.PathBase}");
+if (!string.IsNullOrWhiteSpace(options?.PathBase))
+{
+    app.UsePathBase($"/{options.PathBase.Trim('/')}");
+}
 
 app.UseForwardedHeaders();
 

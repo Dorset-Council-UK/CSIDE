@@ -3,13 +3,14 @@ using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Data;
 using CSIDE.Data.Models.Surveys;
 using CSIDE.Shared.Options;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -145,116 +146,142 @@ internal static class WebApplicationBuilderExtension
     }
 
     /// <summary>
-    /// Add the Microsoft Identity Web App authentication
+    /// Add dual OpenID Connect authentication schemes: AzureAd (default) and AzureAdMFA.
     /// </summary>
     internal static WebApplicationBuilder AddCountrysideAuthentication(this WebApplicationBuilder builder)
     {
         const string openIdConnectClientName = "OpenIDConnectResilient";
-        const string graphClientName = "MicrosoftGraphResilient";
+        var csideSection = builder.Configuration.GetSection(CSIDEOptions.SectionName);
+        var azureAdSection = csideSection.GetSection(AzureAdOptions.SectionName);
+        var azureAdMfaSection = csideSection.GetSection("AzureAdMFA");
+        var configuredPathBase = csideSection["PathBase"];
+        var cookiePath = string.IsNullOrWhiteSpace(configuredPathBase)
+            ? "/"
+            : $"/{configuredPathBase.Trim('/')}";
 
-        var azureAdSection = builder.Configuration
-            .GetSection(CSIDEOptions.SectionName)
-            .GetSection(AzureAdOptions.SectionName);
-
-        // Register named HttpClients for external auth calls with resilience
         builder.Services
             .AddHttpClient(openIdConnectClientName)
             .AddStandardResilienceHandler();
 
         builder.Services
-            .AddHttpClient(graphClientName, httpClient =>
+            .AddAuthentication(options =>
             {
-                httpClient.BaseAddress = new Uri("https://graph.microsoft.com/");
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = "AzureAd";
             })
-            .AddStandardResilienceHandler();
-
-        // Add microsoft identity web app authentication
-        builder.Services
-            .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApp(options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                azureAdSection.Bind(options);
-
-                if (string.IsNullOrWhiteSpace(options.SignedOutCallbackPath))
-                {
-                    options.SignedOutCallbackPath = "/signout-callback-oidc";
-                }
-
-                options.ErrorPath = "/Error";
-                options.SignedOutRedirectUri = "/account/signedout";
+                options.Cookie.Path = cookiePath;
                 options.AccessDeniedPath = "/account/accessdenied";
-            });
-        builder.Services.AddRazorPages();
-        builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
-
-        // Configure OpenIdConnectOptions to use our resilient HttpClient
-        builder.Services
-            .AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
-            .Configure<IHttpClientFactory>((options, httpClientFactory) =>
+            })
+            .AddOpenIdConnect("AzureAd", options =>
             {
-                options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
-                options.SignedOutRedirectUri = "/account/signedout";
+                options.ClientId = azureAdSection["ClientId"];
+                options.ClientSecret = azureAdSection["ClientSecret"];
+                options.Authority = $"{azureAdSection["Instance"]}{azureAdSection["TenantId"]}/v2.0/";
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.CallbackPath = "/signin-oidc";
+                options.SignedOutCallbackPath = "/signout-callback-oidc";
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                options.TokenValidationParameters.NameClaimType = "name";
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
                 options.AccessDeniedPath = "/account/accessdenied";
-                options.Events ??= new OpenIdConnectEvents();
-                var existingRedirectHandler = options.Events.OnRedirectToIdentityProvider;
-                var existingOnRemoteFailureHandler = options.Events.OnRemoteFailure;
-
-                options.Events.OnRedirectToIdentityProvider = async context =>
+                options.SignedOutRedirectUri = "/account/signedout";
+                options.Events = new OpenIdConnectEvents
                 {
-                    context.ProtocolMessage.Prompt = "select_account";
-                    if (existingRedirectHandler != null)
-                        await existingRedirectHandler(context);
-                };
-                // Workaround for Entra External ID stale session errors on first login of the day.
-                // When a user's Entra session expires overnight, the first authentication attempt can fail
-                // with AADSTS50133 (session invalid due to expiry) or AADSTS165000 (session context missing).
-                // This handler retries authentication once to obtain a fresh session. If the retry also fails
-                // (indicating a genuine issue like a required password change), the user is redirected to an
-                // error page to avoid an infinite redirect loop.
-                options.Events.OnRemoteFailure = async context =>
-                {
-                    if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
-                        context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
+                    OnRedirectToIdentityProvider = context =>
                     {
-                        const string authRetryCookieName = "authretry";
-                        var hasRetried = context.Request.Cookies.ContainsKey(authRetryCookieName);
-
-                        if (!hasRetried)
+                        context.ProtocolMessage.Prompt = "select_account";
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        if (context.Failure?.Message?.Contains("AADSTS50133", StringComparison.Ordinal) == true ||
+                            context.Failure?.Message?.Contains("AADSTS165000", StringComparison.Ordinal) == true)
                         {
-                            context.Response.Cookies.Append(authRetryCookieName, "1", new CookieOptions
-                            {
-                                HttpOnly = true,
-                                IsEssential = true,
-                                Secure = true,
-                                SameSite = SameSiteMode.Lax,
-                                MaxAge = TimeSpan.FromMinutes(5)
-                            });
+                            const string authRetryCookieName = "authretry";
+                            var hasRetried = context.Request.Cookies.ContainsKey(authRetryCookieName);
 
-                            var signInPath = context.Request.PathBase.Add("/MicrosoftIdentity/Account/SignIn");
-                            context.Response.Redirect($"{signInPath}?returnUrl=%2F");
-                            context.HandleResponse();
+                            if (!hasRetried)
+                            {
+                                context.Response.Cookies.Append(authRetryCookieName, "1", new CookieOptions
+                                {
+                                    HttpOnly = true,
+                                    IsEssential = true,
+                                    Secure = context.Request.IsHttps,
+                                    SameSite = SameSiteMode.Lax,
+                                    MaxAge = TimeSpan.FromMinutes(5)
+                                });
+
+                                var signInPath = context.Request.PathBase.Add("/account/login");
+                                context.Response.Redirect($"{signInPath}?returnUrl=%2F");
+                                context.HandleResponse();
+                            }
+                            else
+                            {
+                                context.Response.Cookies.Delete(authRetryCookieName);
+                                var loginFailedPath = context.Request.PathBase.Add("/Account/LoginFailed");
+                                context.Response.Redirect(loginFailedPath);
+                                context.HandleResponse();
+                            }
                         }
                         else
                         {
+                            const string authRetryCookieName = "authretry";
                             context.Response.Cookies.Delete(authRetryCookieName);
                             var loginFailedPath = context.Request.PathBase.Add("/Account/LoginFailed");
                             context.Response.Redirect(loginFailedPath);
                             context.HandleResponse();
                         }
-                    }
-                    else
-                    {
 
-                        if (existingOnRemoteFailureHandler != null)
-                            await existingOnRemoteFailureHandler(context);
+                        return Task.CompletedTask;
+                    }
+                };
+            })
+            .AddOpenIdConnect("AzureAdMFA", options =>
+            {
+                options.ClientId = azureAdMfaSection["ClientId"];
+                options.ClientSecret = azureAdMfaSection["ClientSecret"];
+                options.Authority = $"{azureAdMfaSection["Instance"]}{azureAdMfaSection["TenantId"]}/v2.0/";
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.CallbackPath = "/signin-oidc2";
+                options.SignedOutCallbackPath = "/signout-callback-oidc2";
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+                options.TokenValidationParameters.NameClaimType = "name";
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
+                options.AccessDeniedPath = "/account/accessdenied";
+                options.SignedOutRedirectUri = "/account/signedout";
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        if (context.Principal?.Identity is ClaimsIdentity identity &&
+                            !identity.HasClaim("cside_mfa", "true"))
+                        {
+                            identity.AddClaim(new Claim("cside_mfa", "true"));
+                        }
+
+                        return Task.CompletedTask;
                     }
                 };
             });
 
-        builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-        {
-            options.AccessDeniedPath = "/account/accessdenied";
-        });
+        builder.Services
+            .AddOptions<OpenIdConnectOptions>("AzureAd")
+            .Configure<IHttpClientFactory>((options, httpClientFactory) =>
+            {
+                options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
+            });
+
+        builder.Services
+            .AddOptions<OpenIdConnectOptions>("AzureAdMFA")
+            .Configure<IHttpClientFactory>((options, httpClientFactory) =>
+            {
+                options.Backchannel = httpClientFactory.CreateClient(openIdConnectClientName);
+            });
 
         return builder;
     }

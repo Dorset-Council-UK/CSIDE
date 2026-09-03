@@ -36,9 +36,7 @@
                                 
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form action="MicrosoftIdentity/Account/SignOut">
-                                        <button id="logout" class="btn btn-outline-danger btn-sm ms-2"><i class="bi-door-open"></i> @localizer["Logout Label"]</button>
-                                    </form>
+                                    <a id="logout" class="btn btn-outline-danger btn-sm ms-2" href="account/logout" data-enhance-nav="false"><i class="bi-door-open"></i> @localizer["Logout Label"]</a>
                                 </li>
                             </ul>
                         </li>
@@ -47,7 +45,7 @@
 
                 </Authorized>
                 <NotAuthorized>
-                    <a id="login" class="btn btn-outline-primary btn-sm ms-2" href="MicrosoftIdentity/Account/SignIn"><i class="bi-door-open"></i> @localizer["Sign In Label"]</a>
+                    <a id="login" class="btn btn-outline-primary btn-sm ms-2" href="account/login" data-enhance-nav="false"><i class="bi-door-open"></i> @localizer["Sign In Label"]</a>
                 </NotAuthorized>
             </AuthorizeView>
         </div>
