@@ -13,6 +13,7 @@ public class AccountController : Controller
     /// <summary>
     /// Challenges the user with the default OIDC scheme.
     /// </summary>
+    [HttpGet("login")]
     public IActionResult Login(string returnUrl = "/")
     {
         if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
@@ -28,6 +29,8 @@ public class AccountController : Controller
     /// <summary>
     /// Challenges the user with the MFA OIDC scheme.
     /// </summary>
+    [HttpGet("login-mfa")]
+    [HttpGet("loginmfa")]
     public IActionResult LoginMfa(string returnUrl = "/")
     {
         if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
@@ -47,7 +50,8 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         var authResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        authResult?.Ticket?.Properties?.Items?.TryGetValue(".AuthScheme", out var authenticatedScheme);
+        string? authenticatedScheme = null;
+        authResult?.Ticket?.Properties?.Items?.TryGetValue(".AuthScheme", out authenticatedScheme);
 
         authenticatedScheme = string.Equals(authenticatedScheme, "AzureAdMFA", StringComparison.Ordinal)
             ? "AzureAdMFA"

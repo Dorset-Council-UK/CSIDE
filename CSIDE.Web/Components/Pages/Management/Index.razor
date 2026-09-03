@@ -85,7 +85,7 @@
     {
         if (firstRender && _redirectToMfa)
         {
-            NavigationManager.NavigateTo($"/account/login-mfa?returnUrl={_mfaReturnUrl}", forceLoad: true);
+            NavigationManager.NavigateTo($"account/login-mfa?returnUrl={_mfaReturnUrl}", forceLoad: true);
         }
 
         return Task.CompletedTask;
