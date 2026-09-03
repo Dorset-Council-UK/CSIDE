@@ -41,27 +41,21 @@ public class AccountController : Controller
     }
 
     /// <summary>
-    /// Signs out both local cookie contexts and both OIDC schemes.
+    /// Signs out the local cookie and the OIDC scheme that was used for sign-in.
     /// </summary>
     [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
         var authResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        string? authenticatedScheme = null;
-        if (authResult?.Ticket?.Properties?.Items is not null)
-        {
-            authResult.Ticket.Properties.Items.TryGetValue(".AuthScheme", out authenticatedScheme);
-        }
+        authResult?.Ticket?.Properties?.Items?.TryGetValue(".AuthScheme", out var authenticatedScheme);
 
-        if (!string.Equals(authenticatedScheme, "AzureAdMFA", StringComparison.Ordinal))
-        {
-            authenticatedScheme = "AzureAd";
-        }
-
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        authenticatedScheme = string.Equals(authenticatedScheme, "AzureAdMFA", StringComparison.Ordinal)
+            ? "AzureAdMFA"
+            : "AzureAd";
 
         return SignOut(
-            new AuthenticationProperties { RedirectUri = "/account/signedout" },
+            new AuthenticationProperties { RedirectUri = Url.Content("~/account/signedout") },
+            CookieAuthenticationDefaults.AuthenticationScheme,
             authenticatedScheme);
     }
 }
