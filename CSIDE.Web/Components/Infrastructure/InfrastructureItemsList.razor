@@ -1,11 +1,28 @@
 ﻿@rendermode InteractiveServer
+@using System.ComponentModel
 @using CSIDE.Data.Models.Infrastructure
 @using CSIDE.Data.Services
-@using System.ComponentModel
+@using CSIDE.Web.Extensions
+@using ClosedXML.Excel
 @inject NavigationManager navigationManager
 @inject IInfrastructureService infrastructureService
+@inject IJSRuntime JS
 
-<a href="Infrastructure#search-form">@localizer["Search Again Label"]</a>
+@implements IAsyncDisposable
+
+<p><a href="Infrastructure#search-form">@localizer["Search Again Label"]</a></p>
+
+    <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+    @if (IsExporting)
+    {
+        <Spinner Size="SpinnerSize.Small" class="me-3"/>
+    }
+    else
+    {
+        <Icon Name="IconName.Download" class="me-3" />
+    }
+    @localizer["Download Label"]
+</button>
 
 <Grid TItem="InfrastructureItem"
         Class="table table-hover table-bordered table-striped mt-2"
@@ -68,6 +85,8 @@
     [Parameter]
     public DateOnly? InstallationDateTo { get; set; }
 
+    private IJSObjectReference? _jsModule;
+    private bool IsExporting;
 
     public async Task<GridDataProviderResult<InfrastructureItem>> InfrastructureItemsDataProvider(GridDataProviderRequest<InfrastructureItem> request)
     {
@@ -99,4 +118,202 @@
 
 
     private void OnRowClick(GridRowEventArgs<InfrastructureItem> args) => navigationManager.NavigateTo($"Infrastructure/Details/{args.Item.Id}");
+
+    private async Task OnExport()
+    {
+        IsExporting = true;
+
+        try
+        {
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+
+            var result = await infrastructureService.GetDownloadableInfrastructureItemsBySearchParameters(
+                RouteId,
+                ParishIds,
+                ParishId,
+                MaintenanceTeamId,
+                InfrastructureTypeId,
+                InstallationDateFrom,
+                InstallationDateTo
+                );
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Infrastructure Items Export");
+
+            string[] headers =
+            [
+                localizer["Infrastructure ID Label"],
+                localizer["Infrastructure Type Label"],
+                localizer["Infrastructure Description Label"],
+                localizer["Infrastructure Installation Date Label"],
+                localizer["Infrastructure Height Label"],
+                localizer["Infrastructure Width Label"],
+                localizer["Infrastructure Length Label"],
+                localizer["Easting Label"],
+                localizer["Northing Label"],
+                @localizer["Route ID Label"],
+                @localizer["Parish Label"],
+                @localizer["Maintenance Team Label"],
+                localizer["Bridge Survey Beams Short Label"],
+                localizer["Bridge Survey Decking Short Label"],
+                localizer["Bridge Survey Handrail Short Label"],
+                localizer["Bridge Survey Handrail Posts Short Label"],
+                localizer["Bridge Survey Bank Seat Short Label"],
+                localizer["Bridge Survey Anti Slip Short Label"],
+                localizer["Bridge Survey Gates Short Label"],
+                localizer["Bridge Survey Stiles Short Label"],
+                localizer["Bridge Survey Ramps Short Label"],
+                localizer["Bridge Survey Steps Short Label"],
+                $"{localizer["Bridge Survey Condition Title"]} - {localizer["Bridge Survey Beams Short Label"]}",
+                $"{localizer["Bridge Survey Condition Title"]} - {localizer["Bridge Survey Decking Short Label"]}",
+                $"{localizer["Bridge Survey Condition Title"]} - {localizer["Bridge Survey Handrail Short Label"]}",
+                $"{localizer["Bridge Survey Condition Title"]} - {localizer["Bridge Survey Handrail Posts Short Label"]}",
+                $"{localizer["Bridge Survey Condition Title"]} - {localizer["Bridge Survey Bank Seat Short Label"]}",
+                $"{localizer["Bridge Survey Repairs Title"]} - {localizer["Bridge Survey Overgrown Short Label"]}",
+                $"{localizer["Bridge Survey Repairs Title"]} - {localizer["Bridge Survey Signs Of Bank Erosion Short Label"]}",
+                $"{localizer["Bridge Survey Repairs Title"]} - {localizer["Bridge Survey Seriously Eroded Short Label"]}",
+                $"{localizer["Bridge Survey Repairs Title"]} - {localizer["Bridge Survey High Usage Short Label"]}",
+                $"{localizer["Bridge Survey Repairs Title"]} - {localizer["Bridge Survey Cover Boards In Place Short Label"]}"
+            ];
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
+            }
+
+            int row = 2;
+            foreach (var infra in result)
+            {
+                worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.Infrastructure}{infra.Id}";
+                worksheet.Cell(row, 2).Value = infra.InfrastructureType?.Name;
+                worksheet.Cell(row, 3).Value = infra.Description;
+                var installationDateCell = worksheet.Cell(row, 4);
+                if (infra.InstallationDate.HasValue)
+                {
+                    installationDateCell.Value = infra.InstallationDate.Value.ToDateTimeUnspecified();
+                    installationDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    installationDateCell.Clear();
+                }
+                worksheet.Cell(row, 5).Value = infra.Height;
+                worksheet.Cell(row, 6).Value = infra.Width;
+                worksheet.Cell(row, 7).Value = infra.Length;
+                worksheet.Cell(row, 8).Value = infra.Geom?.X.ToString("F2");
+                worksheet.Cell(row, 9).Value = infra.Geom?.Y.ToString("F2");
+                worksheet.Cell(row, 10).Value = infra.RouteId;
+                worksheet.Cell(row, 11).Value = infra.Parish?.Name;
+                worksheet.Cell(row, 12).Value = infra.MaintenanceTeam?.Name;
+                if (infra.InfrastructureType?.IsBridge == true)
+                {
+                    var bridge = infra.BridgeDetails;
+
+                    var beamValue = bridge?.BeamMaterial?.Name ?? localizer["Not Provided Label"];
+                    if (bridge?.BeamMaterial is not null && bridge.BeamMaterial.IsWood)
+                    {
+                        var beamDetails = new List<string>
+                        {
+                            $"{localizer["Bridge Num Timbers Short Label"]}: {bridge.NumBeamTimbers}",
+                            $"{localizer["Bridge Timbers Size Short Label"]}: {bridge.BeamTimbersSize}"
+                        };
+                        beamValue = $"{beamValue}; {string.Join("; ", beamDetails.Where(detail => !string.IsNullOrWhiteSpace(detail)))}";
+                    }
+                    worksheet.Cell(row, 13).Value = beamValue;
+
+                    var deckingValue = bridge?.DeckingMaterial?.Name ?? localizer["Not Provided Label"];
+                    if (bridge?.DeckingMaterial is not null && bridge.DeckingMaterial.IsWood)
+                    {
+                        var deckingDetails = new List<string>
+                        {
+                            $"{localizer["Bridge Num Boards Short Label"]}: {bridge.NumDeckingBoards}",
+                            $"{localizer["Bridge Timbers Size Short Label"]}: {bridge.DeckingBoardsSize}",
+                            $"{localizer["Bridge Timbers Length Short Label"]}: {bridge.DeckingBoardsLength} {localizer["Metres Label"]}"
+                        };
+                        deckingValue = $"{deckingValue}; {string.Join("; ", deckingDetails.Where(detail => !string.IsNullOrWhiteSpace(detail)))}";
+                    }
+                    worksheet.Cell(row, 14).Value = deckingValue;
+
+                    var handrailValue = bridge?.HandrailMaterial?.Name ?? localizer["Not Provided Label"];
+                    if (bridge?.HandrailMaterial is not null && bridge.HandrailMaterial.IsWood)
+                    {
+                        var handrailDetails = new List<string>
+                        {
+                            $"{localizer["Bridge Handrails In Place Short Label"]}: {bridge.HandrailsInPlace.ToLocalizedDisplayString(localizer)}",
+                            $"{localizer["Bridge Timbers Size Short Label"]}: {bridge.HandrailTimbersSize}"
+                        };
+                        handrailValue = $"{handrailValue}; {string.Join("; ", handrailDetails.Where(detail => !string.IsNullOrWhiteSpace(detail)))}";
+                    }
+                    worksheet.Cell(row, 15).Value = handrailValue;
+
+                    var handrailPostsValue = bridge?.HandrailPostsMaterial?.Name ?? localizer["Not Provided Label"];
+                    if (bridge?.HandrailPostsMaterial is not null && bridge.HandrailPostsMaterial.IsWood)
+                    {
+                        var handrailPostDetails = new List<string>
+                        {
+                            $"{localizer["Bridge Num Timbers Short Label"]}: {bridge.NumHandrailPostsTimbers}",
+                            $"{localizer["Bridge Timbers Size Short Label"]}: {bridge.HandrailPostsTimbersSize}"
+                        };
+                        handrailPostsValue = $"{handrailPostsValue}; {string.Join("; ", handrailPostDetails.Where(detail => !string.IsNullOrWhiteSpace(detail)))}";
+                    }
+                    worksheet.Cell(row, 16).Value = handrailPostsValue;
+
+                    worksheet.Cell(row, 17).Value = bridge?.BankSeatMaterial?.Name ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 18).Value = bridge?.AntiSlipInstalled.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 19).Value = bridge?.GateInstalled.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 20).Value = bridge?.StileInstalled.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 21).Value = bridge?.RampInstalled.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 22).Value = bridge?.StepsInstalled.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+
+                    worksheet.Cell(row, 23).Value = bridge?.BeamCondition?.Name ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 24).Value = bridge?.DeckingCondition?.Name ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 25).Value = bridge?.HandrailCondition?.Name ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 26).Value = bridge?.HandrailPostsCondition?.Name ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 27).Value = bridge?.BankSeatCondition?.Name ?? localizer["Not Provided Label"];
+
+                    worksheet.Cell(row, 28).Value = bridge?.Overgrown.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 29).Value = bridge?.SignsOfBankErosion.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 30).Value = bridge?.SeriouslyEroded.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 31).Value = bridge?.HighUsage.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                    worksheet.Cell(row, 32).Value = bridge?.CoverBoardsInPlace.ToLocalizedDisplayString(localizer) ?? localizer["Not Provided Label"];
+                }
+                row++;
+            }
+            
+            var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
+            usedRange.CreateTable();
+            worksheet.Columns().AdjustToContents(10.0,200.0);
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"infrastructure-{DateTime.UtcNow:yyyyMMdd-HHmmss}.xlsx";
+            using var streamReference = new DotNetStreamReference(stream);
+            await _jsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
 }

@@ -3,6 +3,7 @@
 @using System.Globalization
 @using CSIDE.Data.Models.DMMO
 @using CSIDE.Data.Services
+@using CSIDE.Web.Extensions
 @using ClosedXML.Excel
 @inject NavigationManager navigationManager
 @inject IDMMOService dmmoService
@@ -220,7 +221,7 @@ Responsive="true">
                 worksheet.Cell(row, 8).Value = string.Join(", ", application.DMMOApplicationTypes.Select(da => da.ApplicationType.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
                 worksheet.Cell(row, 9).Value = string.Join(", ", application.DMMOClaimedStatuses.Select(dc => dc.ClaimedStatus.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
                 worksheet.Cell(row, 10).Value = application.CaseOfficer;
-                worksheet.Cell(row, 11).Value = (application.Appeal.HasValue ? (application.Appeal.Value == true ? localizer["Yes Label"] : localizer["No Label"]) : localizer["Not Provided Label"]).ToString();
+                worksheet.Cell(row, 11).Value = application.Appeal.ToLocalizedDisplayString(localizer);
                 var appealDateCell = worksheet.Cell(row, 12);
                 if (application.AppealDate.HasValue)
                 {

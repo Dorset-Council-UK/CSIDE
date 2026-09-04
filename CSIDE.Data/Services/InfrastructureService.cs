@@ -1,4 +1,5 @@
 ﻿using CSIDE.Data.Models.Infrastructure;
+using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CSIDE.Data.Services;
 
@@ -49,6 +51,50 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
             .Include(i => i.Parish)
             .AsQueryable();
 
+        query = ApplySearchFilters(query, RouteId, ParishIds, ParishId, MaintenanceTeamId, InfrastructureTypeId, InstallationDateFrom, InstallationDateTo);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<InfrastructureItem>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+
+    }
+    private static IQueryable<InfrastructureItem> ApplyOrdering(IQueryable<InfrastructureItem> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<InfrastructureItem, object>>? sortExpression))
+        {
+            return query.OrderByDescending(l => l.Id);
+        }
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
+
+    private static IQueryable<InfrastructureItem> ApplySearchFilters(
+        IQueryable<InfrastructureItem> query,
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? MaintenanceTeamId,
+        string? InfrastructureTypeId,
+        DateOnly? InstallationDateFrom,
+        DateOnly? InstallationDateTo)
+    {
         if (RouteId is not null)
         {
             query = query.Where(i => i.RouteId == RouteId.ToUpper());
@@ -84,38 +130,31 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         {
             query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo!.Value).PlusDays(1));
         }
-
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
-
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<InfrastructureItem>
-        {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
-
+        return query;
     }
-    private static IQueryable<InfrastructureItem> ApplyOrdering(IQueryable<InfrastructureItem> query, string orderBy, ListSortDirection orderDirection)
+
+    public async Task<IList<InfrastructureItem>> GetDownloadableInfrastructureItemsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? MaintenanceTeamId,
+        string? InfrastructureTypeId,
+        DateOnly? InstallationDateFrom,
+        DateOnly? InstallationDateTo,
+        CancellationToken ct = default)
     {
-        // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<InfrastructureItem, object>>? sortExpression))
-        {
-            return query.OrderByDescending(l => l.Id);
-        }
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.Infrastructure
+            .AsNoTracking()
+            .AsQueryable();
 
-        return orderDirection == ListSortDirection.Descending
-            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
-            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+        query = ApplySearchFilters(query, RouteId, ParishIds, ParishId, MaintenanceTeamId, InfrastructureTypeId, InstallationDateFrom, InstallationDateTo);
+
+        var results = await query.OrderBy(i => i.Id).ToListAsync(cancellationToken: ct);
+
+        return results;
     }
+
     public async Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);

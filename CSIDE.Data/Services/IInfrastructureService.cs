@@ -25,6 +25,15 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
             CancellationToken ct = default);
+        Task<IList<InfrastructureItem>> GetDownloadableInfrastructureItemsBySearchParameters(
+            string? RouteId,
+            string[]? ParishIds,
+            string? ParishId,
+            string? MaintenanceTeamId,
+            string? InfrastructureTypeId,
+            DateOnly? InstallationDateFrom,
+            DateOnly? InstallationDateTo,
+            CancellationToken ct = default);
         Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default);
         Task<BridgeSurvey?> GetBridgeSurveyById(int SurveyId, CancellationToken ct = default);
         Task<ICollection<BridgeSurvey>> GetAllBridgeSurveys(CancellationToken ct = default);
