@@ -27,7 +27,7 @@ namespace CSIDE.Data.Services
             int PageSize = DefaultPageSize,
             CancellationToken ct = default);
 
-        Task<IList<Route>> GetDownloadableRoutesBySearchParameters(
+        IAsyncEnumerable<DownloadableRouteExportRow> GetDownloadableRoutesBySearchParameters(
             string? RouteId,
             string? Name,
             string[]? ParishIds,

@@ -6,6 +6,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services;
 
@@ -210,7 +211,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         return query;
     }
 
-    public async Task<IList<Route>> GetDownloadableRoutesBySearchParameters(
+    public async IAsyncEnumerable<DownloadableRouteExportRow> GetDownloadableRoutesBySearchParameters(
         string? RouteId,
         string? Name,
         string[]? ParishIds,
@@ -219,25 +220,53 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         string? OperationalStatusId,
         string? LegalStatusId,
         string? RouteTypeId,
-        CancellationToken ct = default)
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.Routes
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Include(r => r.Parish)
-            .Include(r => r.MaintenanceTeam)
-            .Include(r => r.OperationalStatus)
-            .Include(r => r.LegalStatus)
-            .Include(r => r.RouteType)
-            .Include(r => r.Statements)
             .AsQueryable();
 
         query = ApplySearchFilters(query, RouteId, Name, ParishIds, ParishId, MaintenanceTeamId, OperationalStatusId, LegalStatusId, RouteTypeId);
 
-        var results = await query.OrderBy(r => r.RouteCode).ToListAsync(cancellationToken: ct);
+        var projectedQuery = query
+            .OrderBy(r => r.RouteCode)
+            .Select(r => new DownloadableRouteExportRow
+            {
+                RouteCode = r.RouteCode,
+                Name = r.Name,
+                RouteTypeName = r.RouteType != null ? r.RouteType.Name : null,
+                ParishName = r.Parish != null ? r.Parish.Name : null,
+                LegalStatusName = r.LegalStatus != null ? r.LegalStatus.Name : null,
+                OperationalStatusName = r.OperationalStatus != null ? r.OperationalStatus.Name : null,
+                OperationalStatusIsClosed = r.OperationalStatus != null && r.OperationalStatus.IsClosed,
+                ClosureStartDate = r.ClosureStartDate,
+                ClosureEndDate = r.ClosureEndDate,
+                ClosureIsIndefinite = r.ClosureIsIndefinite,
+                MaintenanceTeamName = r.MaintenanceTeam != null ? r.MaintenanceTeam.Name : null,
+                Notes = r.Notes,
+                LatestStatementText = r.Statements
+                    .OrderByDescending(s => s.CreatedDate)
+                    .ThenByDescending(s => s.Id)
+                    .Select(s => s.StatementText)
+                    .FirstOrDefault(),
+                LatestStatementStartGridRef = r.Statements
+                    .OrderByDescending(s => s.CreatedDate)
+                    .ThenByDescending(s => s.Id)
+                    .Select(s => s.StartGridRef)
+                    .FirstOrDefault(),
+                LatestStatementEndGridRef = r.Statements
+                    .OrderByDescending(s => s.CreatedDate)
+                    .ThenByDescending(s => s.Id)
+                    .Select(s => s.EndGridRef)
+                    .FirstOrDefault()
+            });
 
-        return results;
+        await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return row;
+        }
     }
 
     public async Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default)

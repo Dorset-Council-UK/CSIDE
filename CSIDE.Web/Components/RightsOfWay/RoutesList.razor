@@ -137,7 +137,7 @@
         {
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
 
-            var result = await rightsOfWayService.GetDownloadableRoutesBySearchParameters(
+            var result = rightsOfWayService.GetDownloadableRoutesBySearchParameters(
                 RouteId,
                 Name,
                 ParishIds,
@@ -174,18 +174,17 @@
             }
 
             int row = 2;
-            foreach (var route in result)
+            await foreach (var route in result)
             {
                 worksheet.Cell(row, 1).Value = route.RouteCode;
                 worksheet.Cell(row, 2).Value = route.Name ?? string.Empty;
-                worksheet.Cell(row, 3).Value = route.RouteType?.Name ?? string.Empty;
-                worksheet.Cell(row, 4).Value = route.Parish?.Name ?? string.Empty;
-                worksheet.Cell(row, 5).Value = route.LegalStatus?.Name ?? string.Empty;
+                worksheet.Cell(row, 3).Value = route.RouteTypeName ?? string.Empty;
+                worksheet.Cell(row, 4).Value = route.ParishName ?? string.Empty;
+                worksheet.Cell(row, 5).Value = route.LegalStatusName ?? string.Empty;
 
-                var operationalStatus = route.OperationalStatus?.Name ?? string.Empty;
+                var operationalStatus = route.OperationalStatusName ?? string.Empty;
                 var isPlannedClosure =
-                    route.OperationalStatus is not null &&
-                    route.OperationalStatus.IsClosed &&
+                    route.OperationalStatusIsClosed &&
                     route.ClosureStartDate.HasValue &&
                     route.ClosureStartDate.Value.ToDateOnly() > DateOnly.FromDateTime(DateTime.Now);
 
@@ -224,23 +223,17 @@
                     closureEndCell.Clear();
                 }
 
-                worksheet.Cell(row, 9).Value = route.MaintenanceTeam?.Name ?? string.Empty;
+                worksheet.Cell(row, 9).Value = route.MaintenanceTeamName ?? string.Empty;
                 worksheet.Cell(row, 10).Value = route.Notes ?? string.Empty;
+                worksheet.Cell(row, 11).Value = route.LatestStatementText ?? string.Empty;
+                worksheet.Cell(row, 12).Value = route.LatestStatementStartGridRef ?? string.Empty;
+                worksheet.Cell(row, 13).Value = route.LatestStatementEndGridRef ?? string.Empty;
 
-                if(route.Statements.OrderByDescending(s => s.CreatedDate).FirstOrDefault() is not null)
-                {
-                    var latestStatement = route.Statements.OrderByDescending(s => s.CreatedDate).First();
-                    worksheet.Cell(row, 11).Value = latestStatement.StatementText ?? string.Empty;
-                    worksheet.Cell(row, 12).Value = latestStatement.StartGridRef ?? string.Empty;
-                    worksheet.Cell(row, 13).Value = latestStatement.EndGridRef ?? string.Empty;
-                }
-                
                 row++;
             }
             
             var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
             usedRange.CreateTable();
-            worksheet.Columns().AdjustToContents(10.0,200.0);
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
