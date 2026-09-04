@@ -138,6 +138,30 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         return query;
     }
 
+    public async Task<IList<LandownerDeposit>> GetDownloadableLandownerDepositsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? Location,
+        CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .Include(ld => ld.LandownerDepositTypes).ThenInclude(t => t.LandownerDepositTypeName)
+            .Include(ld => ld.LandownerDepositParishes).ThenInclude(p => p.Parish)
+            .AsQueryable();
+
+        // Filter out any empty/whitespace entries that may have come through
+        var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+
+        query = await ApplySearchFilters(query, filteredParishIds, ParishId, Location);
+
+        var results = await query.OrderByDescending(ld => ld.ReceivedDate).ToListAsync(cancellationToken: ct);
+
+        return results;
+    }
+
     public async Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int landownerDepositSecondaryId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);

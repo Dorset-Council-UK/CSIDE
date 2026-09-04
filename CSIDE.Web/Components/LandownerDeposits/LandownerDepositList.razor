@@ -1,13 +1,28 @@
 ﻿@rendermode InteractiveServer
+@using System.ComponentModel
+@using System.Globalization
 @using CSIDE.Data.Models.LandownerDeposits
 @using CSIDE.Data.Services
-@using System.Globalization
-@using System.ComponentModel
+@using ClosedXML.Excel
 @inject NavigationManager navigationManager
 @inject ILandownerDepositService landownerDepositService
+@inject IJSRuntime JS
 
-<a href="landowner-deposits#search-form">@localizer["Search Again Label"]</a>
+@implements IAsyncDisposable
 
+<p><a href="landowner-deposits#search-form">@localizer["Search Again Label"]</a></p>
+
+    <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+    @if (IsExporting)
+    {
+        <Spinner Size="SpinnerSize.Small" class="me-3"/>
+    }
+    else
+    {
+        <Icon Name="IconName.Download" class="me-3" />
+    }
+    @localizer["Download Label"]
+</button>
 
 <Grid TItem="LandownerDeposit"
       Class="table table-hover table-bordered table-striped mt-2"
@@ -73,6 +88,9 @@
     [Parameter]
     public string? Location { get; set; }
 
+    private IJSObjectReference? _jsModule;
+    private bool IsExporting;
+
     public async Task<GridDataProviderResult<LandownerDeposit>> LandownerDepositDataProvider(GridDataProviderRequest<LandownerDeposit> request)
     {
         //handle sorting
@@ -98,4 +116,206 @@
     }
 
     private void OnRowClick(GridRowEventArgs<LandownerDeposit> args) => navigationManager.NavigateTo($"landowner-deposits/Details/{args.Item.Id}/{args.Item.SecondaryId}");
+
+    private async Task OnExport()
+    {
+        IsExporting = true;
+
+        try
+        {
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+
+            var result = await landownerDepositService.GetDownloadableLandownerDepositsBySearchParameters(
+                ParishIds,
+                ParishId,
+                Location
+                );
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Landowner Deposits Export");
+
+            string[] headers =
+            [
+                localizer["Landowner Deposit ID Label"],
+                localizer["Landowner Deposit Type Label"],
+                localizer["Landowner Deposit Received Date Label"],
+                localizer["Landowner Deposit Location Description Label"],
+                localizer["Landowner Deposit Completed Correctly Label"],
+                localizer["Landowner Deposit Map Correct Label"],
+                localizer["Landowner Deposit Fee Paid Label"],
+                localizer["Landowner Deposit Signed Label"],
+                localizer["Landowner Deposit Date Acknowledged Label"],
+                localizer["Landowner Deposit Cheque Receipt Label"],
+                localizer["Landowner Deposit Cheque Paid In Label"],
+                localizer["Landowner Deposit Notice Drafted Label"],
+                localizer["Landowner Deposit Website Notice Published Label"],
+                localizer["Landowner Deposit Email Notice Label"],
+                localizer["Landowner Deposit Onsite Notice Label"],
+                localizer["Landowner Deposit Website Entry Printed Label"],
+                localizer["Landowner Deposit Archive Date Label"],
+                localizer["Internal Archive Reference No Label"],
+                localizer["External Archive Reference No Label"],
+                localizer["Primary Contact Label"]
+            ];
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
+            }
+
+            int row = 2;
+            foreach (var application in result)
+            {
+                worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.LandownerDeposit}{application.Id}/{application.SecondaryId}";
+                worksheet.Cell(row, 2).Value = string.Join(", ", application.LandownerDepositTypes.Select(type => type.LandownerDepositTypeName?.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+
+                var receivedDateCell = worksheet.Cell(row, 3);
+                if (application.ReceivedDate.HasValue)
+                {
+                    receivedDateCell.Value = application.ReceivedDate.Value.ToDateTimeUnspecified();
+                    receivedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    receivedDateCell.Clear();
+                }
+
+                worksheet.Cell(row, 4).Value = application.Location ?? string.Empty;
+                worksheet.Cell(row, 5).Value = application.FormCompleted ? localizer["Yes Label"].Value : localizer["No Label"].Value;
+                worksheet.Cell(row, 6).Value = application.MapCorrect ? localizer["Yes Label"].Value : localizer["No Label"].Value;
+                worksheet.Cell(row, 7).Value = application.FeePaid ? localizer["Yes Label"].Value : localizer["No Label"].Value;
+                worksheet.Cell(row, 8).Value = application.AllSigned ? localizer["Yes Label"].Value : localizer["No Label"].Value;
+
+                var acknowledgedDateCell = worksheet.Cell(row, 9);
+                if (application.DateAcknowledged.HasValue)
+                {
+                    acknowledgedDateCell.Value = application.DateAcknowledged.Value.ToDateTimeUnspecified();
+                    acknowledgedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    acknowledgedDateCell.Clear();
+                }
+
+                worksheet.Cell(row, 10).Value = application.ChequeReceiptNumber ?? string.Empty;
+
+                var chequePaidInDateCell = worksheet.Cell(row, 11);
+                if (application.ChequePaidInDate.HasValue)
+                {
+                    chequePaidInDateCell.Value = application.ChequePaidInDate.Value.ToDateTimeUnspecified();
+                    chequePaidInDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    chequePaidInDateCell.Clear();
+                }
+
+                var noticeDraftedDateCell = worksheet.Cell(row, 12);
+                if (application.NoticeDrafted.HasValue)
+                {
+                    noticeDraftedDateCell.Value = application.NoticeDrafted.Value.ToDateTimeUnspecified();
+                    noticeDraftedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    noticeDraftedDateCell.Clear();
+                }
+
+                var websiteNoticePublishedDateCell = worksheet.Cell(row, 13);
+                if (application.WebsiteNoticePublished.HasValue)
+                {
+                    websiteNoticePublishedDateCell.Value = application.WebsiteNoticePublished.Value.ToDateTimeUnspecified();
+                    websiteNoticePublishedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    websiteNoticePublishedDateCell.Clear();
+                }
+
+                var emailNoticeSentDateCell = worksheet.Cell(row, 14);
+                if (application.EmailNoticeSent.HasValue)
+                {
+                    emailNoticeSentDateCell.Value = application.EmailNoticeSent.Value.ToDateTimeUnspecified();
+                    emailNoticeSentDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    emailNoticeSentDateCell.Clear();
+                }
+
+                var onsiteNoticeErectedDateCell = worksheet.Cell(row, 15);
+                if (application.OnsiteNoticeErected.HasValue)
+                {
+                    onsiteNoticeErectedDateCell.Value = application.OnsiteNoticeErected.Value.ToDateTimeUnspecified();
+                    onsiteNoticeErectedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    onsiteNoticeErectedDateCell.Clear();
+                }
+
+                var websiteEntryAddedDateCell = worksheet.Cell(row, 16);
+                if (application.WebsiteEntryAdded.HasValue)
+                {
+                    websiteEntryAddedDateCell.Value = application.WebsiteEntryAdded.Value.ToDateTimeUnspecified();
+                    websiteEntryAddedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    websiteEntryAddedDateCell.Clear();
+                }
+
+                var sentToArchiveDateCell = worksheet.Cell(row, 17);
+                if (application.SentToArchive.HasValue)
+                {
+                    sentToArchiveDateCell.Value = application.SentToArchive.Value.ToDateTimeUnspecified();
+                    sentToArchiveDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    sentToArchiveDateCell.Clear();
+                }
+
+                worksheet.Cell(row, 18).Value = application.InternalArchiveReferenceNo ?? string.Empty;
+                worksheet.Cell(row, 19).Value = application.ExternalArchiveReferenceNo ?? string.Empty;
+                worksheet.Cell(row, 20).Value = application.PrimaryContact ?? string.Empty;
+                row++;
+            }
+            
+            var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
+            usedRange.CreateTable();
+            worksheet.Columns().AdjustToContents(10.0,200.0);
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"landowner-deposits-{DateTime.UtcNow:yyyyMMdd-HHmmss}.xlsx";
+            using var streamReference = new DotNetStreamReference(stream);
+            await _jsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
 }

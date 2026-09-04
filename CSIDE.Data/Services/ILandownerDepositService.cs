@@ -17,6 +17,12 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
             CancellationToken ct = default);
+
+        Task<IList<LandownerDeposit>> GetDownloadableLandownerDepositsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? Location,
+            CancellationToken ct = default);
         Task<ICollection<LandownerDeposit>> GetLinkedLandownerDepositsByPrimaryId(int landownerDepositId, int? excludeSecondaryId, CancellationToken ct = default);
         Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int secondaryLandownerDepositId, CancellationToken ct = default);
         Task<ICollection<LandownerDepositMediaType>> GetLandownerDepositMediaTypeOptions(CancellationToken ct = default);
