@@ -24,9 +24,6 @@ namespace Microsoft.AspNetCore.Builder;
 
 internal static class WebApplicationBuilderExtension
 {
-    private const string StepUpAcrValuesItemKey = "stepup_acr_values";
-    private const string StepUpClaimsItemKey = "stepup_claims";
-
     /// <summary>
     /// Add resilience to the HttpClient
     /// </summary>
@@ -217,13 +214,13 @@ internal static class WebApplicationBuilderExtension
 
                     context.ProtocolMessage.Prompt = "select_account";
 
-                    if (context.Properties.Items.TryGetValue(StepUpAcrValuesItemKey, out var acrValues)
+                    if (context.Properties.Items.TryGetValue(AuthenticationContextConstants.StepUpAcrValuesItemKey, out var acrValues)
                         && !string.IsNullOrWhiteSpace(acrValues))
                     {
                         context.ProtocolMessage.AcrValues = acrValues;
                     }
 
-                    if (context.Properties.Items.TryGetValue(StepUpClaimsItemKey, out var claimsChallenge)
+                    if (context.Properties.Items.TryGetValue(AuthenticationContextConstants.StepUpClaimsItemKey, out var claimsChallenge)
                         && !string.IsNullOrWhiteSpace(claimsChallenge))
                     {
                         context.ProtocolMessage.SetParameter("claims", claimsChallenge);
@@ -281,8 +278,8 @@ internal static class WebApplicationBuilderExtension
                         await existingOnTokenValidatedHandler(context);
                     }
 
-                    if (!context.Properties.Items.TryGetValue(StepUpAcrValuesItemKey, out var stepUpAcrValues)
-                        || !context.Properties.Items.ContainsKey(StepUpClaimsItemKey)
+                    if (!context.Properties.Items.TryGetValue(AuthenticationContextConstants.StepUpAcrValuesItemKey, out var stepUpAcrValues)
+                        || !context.Properties.Items.ContainsKey(AuthenticationContextConstants.StepUpClaimsItemKey)
                         || !string.Equals(stepUpAcrValues, AuthenticationContextConstants.ManagementMfa, StringComparison.OrdinalIgnoreCase)
                         || context.Principal is null
                         || !context.Principal.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa))

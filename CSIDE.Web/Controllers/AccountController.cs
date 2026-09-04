@@ -16,8 +16,6 @@ public class AccountController : Controller
     private const string AccessDeniedPath = "/Account/AccessDenied";
     private const string StepUpRetryCookieName = "stepupretry";
     private const int MaxStepUpAttempts = 3;
-    private const string StepUpAcrValuesItemKey = "stepup_acr_values";
-    private const string StepUpClaimsItemKey = "stepup_claims";
     private static readonly string ClaimsChallenge = $"{{\"id_token\":{{\"acrs\":{{\"essential\":true,\"value\":\"{AuthenticationContextConstants.ManagementMfa}\"}}}}}}";
 
     /// <summary>
@@ -73,8 +71,8 @@ public class AccountController : Controller
             RedirectUri = localReturnUrl,
         };
 
-        authenticationProperties.Items[StepUpAcrValuesItemKey] = AuthenticationContextConstants.ManagementMfa;
-        authenticationProperties.Items[StepUpClaimsItemKey] = ClaimsChallenge;
+        authenticationProperties.Items[AuthenticationContextConstants.StepUpAcrValuesItemKey] = AuthenticationContextConstants.ManagementMfa;
+        authenticationProperties.Items[AuthenticationContextConstants.StepUpClaimsItemKey] = ClaimsChallenge;
 
         return Challenge(authenticationProperties, OpenIdConnectDefaults.AuthenticationScheme);
     }
