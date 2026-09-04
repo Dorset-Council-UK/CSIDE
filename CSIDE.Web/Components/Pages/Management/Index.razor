@@ -1,9 +1,12 @@
 ﻿@page "/management"
 @using CSIDE.Web.Components.Pages.Account
+@using CSIDE.Web.Authorization
+@using CSIDE.Web.Extensions
 @using CSIDE.Shared.Options
 @using Microsoft.Extensions.Options
 
 @inject IOptions<CSIDEOptions> CsideOptions
+@inject NavigationManager NavigationManager
 
 <AuthorizeView Roles="Administrator">
     <NotAuthorized>
@@ -11,45 +14,56 @@
     </NotAuthorized>
 
     <Authorized>
-        <PageTitle>@localizer["Management Title"]</PageTitle>
-        <div>
-            <Breadcrumb Items="NavItems"></Breadcrumb>
-        </div>
+        @if (HasManagementStepUpAccess)
+        {
+            <PageTitle>@localizer["Management Title"]</PageTitle>
+            <div>
+                <Breadcrumb Items="NavItems"></Breadcrumb>
+            </div>
 
-        <h1>@localizer["Management Title"]</h1>
-        <p>@localizer["Management Text", _csideOptions.AppName]</p>
-        <div class="container-fluid">
-            <div class="row justify-content-start row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 ">
-                <div class="col">
-                    <div class="card link-card h-100">
-                        <div class="card-body">
-                            <a href="management/users" class="stretched-link">
-                                <h4 class="card-title"><i class="bi bi-people"></i> @localizer["User Management Title"]</h4>
-                            </a>
-                            <p class="card-text">@localizer["User Management Text"]</p>
+            <h1>@localizer["Management Title"]</h1>
+            <p>@localizer["Management Text", _csideOptions.AppName]</p>
+            <div class="container-fluid">
+                <div class="row justify-content-start row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 ">
+                    <div class="col">
+                        <div class="card link-card h-100">
+                            <div class="card-body">
+                                <a href="management/users" class="stretched-link">
+                                    <h4 class="card-title"><i class="bi bi-people"></i> @localizer["User Management Title"]</h4>
+                                </a>
+                                <p class="card-text">@localizer["User Management Text"]</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col">
-                    <div class="card link-card h-100">
-                        <div class="card-body">
-                            <a href="management/auditlog" class="stretched-link">
-                                <h4 class="card-title"><i class="bi bi-people"></i> @localizer["Audit Log Title"]</h4>
-                                <p class="card-text">@localizer["Audit Log Text", _csideOptions.AppName]</p>
-                            </a>
+                    <div class="col">
+                        <div class="card link-card h-100">
+                            <div class="card-body">
+                                <a href="management/auditlog" class="stretched-link">
+                                    <h4 class="card-title"><i class="bi bi-people"></i> @localizer["Audit Log Title"]</h4>
+                                    <p class="card-text">@localizer["Audit Log Text", _csideOptions.AppName]</p>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
+        }
+        else
+        {
+            <p>@localizer["Management Step Up Redirect Message"]</p>
+        }
     </Authorized>
 </AuthorizeView>
 
 @code{
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
     
     private List<BreadcrumbItem>? NavItems;
+    private bool HasManagementStepUpAccess;
+    private bool StepUpChallengeTriggered;
     private CSIDEOptions _csideOptions => CsideOptions.Value;
 
     protected override void OnInitialized()
@@ -59,5 +73,34 @@
             new BreadcrumbItem { Text = localizer["Home"], Href = "" },
             new BreadcrumbItem { Text = localizer["Management Title"], Href = "management", IsCurrentPage = true }
         };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask is null)
+        {
+            HasManagementStepUpAccess = false;
+            return;
+        }
+
+        var authState = await AuthenticationStateTask;
+        HasManagementStepUpAccess = authState.User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa);
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !HasManagementStepUpAccess && !StepUpChallengeTriggered)
+        {
+            StepUpChallengeTriggered = true;
+            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            if (!relativePath.StartsWith('/'))
+            {
+                relativePath = $"/{relativePath}";
+            }
+
+            NavigationManager.NavigateTo($"Account/StepUp?returnUrl={Uri.EscapeDataString(relativePath)}", forceLoad: true);
+        }
+
+        return Task.CompletedTask;
     }
 }

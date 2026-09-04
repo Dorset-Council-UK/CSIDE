@@ -1,5 +1,7 @@
 ﻿@page "/Account/MyAccount"
 @using CSIDE.Data.Services
+@using CSIDE.Web.Authorization
+@using CSIDE.Web.Extensions
 @inject IUserService userService
 
 <PageTitle>@localizer["My Account Label"]</PageTitle>
@@ -14,6 +16,7 @@
         <tr><th>@localizer["Email Label"]</th><td>@UserPrimaryEmailAddress</td></tr>
         <tr><th>@localizer["Identity Provider Label"]</th><td>@UserIdentityProvider</td></tr>
         <tr><th>@localizer["User ID Label"]</th><td>@UserID</td></tr>
+        <tr><th>@localizer["MFA Session Status Label"]</th><td>@(HasMfaInCurrentSession ? localizer["MFA Session Enabled Text"] : localizer["MFA Session Not Enabled Text"])</td></tr>
     </tbody>
 </table>
 
@@ -69,6 +72,7 @@
     private string? UserDisplayName{ get; set; }
     private string? UserPrimaryEmailAddress { get; set; }
     private string? UserIdentityProvider{ get; set; }
+    private bool HasMfaInCurrentSession { get; set; }
     private IEnumerable<System.Security.Claims.Claim>? UserClaims{ get; set; }
     private IReadOnlyCollection<ApplicationRole> ApplicationRoles { get; set; } = [];
 
@@ -83,6 +87,7 @@
             UserPrimaryEmailAddress = authState.User.Email;
             UserIdentityProvider = authState.User.IdentityProvider;
             UserClaims = authState.User.Claims;
+            HasMfaInCurrentSession = authState.User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa) || authState.User.HasMultiFactorAuthentication();
 
             if(UserID is not null)
             {
