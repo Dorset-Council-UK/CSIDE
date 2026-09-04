@@ -22,7 +22,7 @@ public class AccountController : Controller
     /// Challenges the current signed-in user for the management MFA auth context.
     /// </summary>
     [HttpGet]
-    public IActionResult StepUp([FromQuery] string? returnUrl)
+    public IActionResult BeginStepUp([FromQuery] string? returnUrl)
     {
         var localReturnUrl = string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl)
             ? DefaultManagementPath

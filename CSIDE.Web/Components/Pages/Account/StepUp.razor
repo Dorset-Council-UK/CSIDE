@@ -1,0 +1,26 @@
+@page "/Account/StepUp"
+
+<PageTitle>@localizer["Step Up Title"]</PageTitle>
+
+<h3>@localizer["Step Up Title"]</h3>
+
+<p>@localizer["Step Up Text"]</p>
+
+<div class="d-flex gap-2">
+    <a class="btn btn-primary" href="@ContinueUrl">@localizer["Continue Label"]</a>
+    <a class="btn btn-link" href="">@localizer["Cancel Label"]</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private string ContinueUrl
+    {
+        get
+        {
+            var returnUrl = string.IsNullOrWhiteSpace(ReturnUrl) ? "/management" : ReturnUrl;
+            return $"Account/BeginStepUp?returnUrl={Uri.EscapeDataString(returnUrl)}";
+        }
+    }
+}
