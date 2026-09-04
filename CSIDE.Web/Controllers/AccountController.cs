@@ -30,6 +30,12 @@ public class AccountController : Controller
             ? DefaultManagementPath
             : returnUrl;
 
+        var pathBase = HttpContext.Request.PathBase;
+        if (pathBase.HasValue && !localReturnUrl.StartsWith(pathBase, StringComparison.OrdinalIgnoreCase))
+        {
+            localReturnUrl = pathBase.Add(localReturnUrl).ToString();
+        }
+
         if (User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa))
         {
             Response.Cookies.Delete(StepUpRetryCookieName);
@@ -47,7 +53,7 @@ public class AccountController : Controller
         if (currentAttempt >= MaxStepUpAttempts)
         {
             Response.Cookies.Delete(StepUpRetryCookieName);
-            return LocalRedirect(AccessDeniedPath);
+            return LocalRedirect(HttpContext.Request.PathBase.Add(AccessDeniedPath).ToString());
         }
 
         Response.Cookies.Append(

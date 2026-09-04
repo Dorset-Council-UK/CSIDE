@@ -327,6 +327,14 @@ internal static class WebApplicationBuilderExtension
                     {
                         logger.LogError(invalidOperationException, "Failed to resolve audit logging services for step-up authentication user {UserId}", userId);
                     }
+                    catch (OperationCanceledException) when (context.HttpContext.RequestAborted.IsCancellationRequested)
+                    {
+                        // Request was aborted; don't fail authentication because audit logging was cancelled.
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Unexpected error writing step-up authentication audit log for user {UserId}", userId);
+                    }
                 };
             });
 
