@@ -147,7 +147,7 @@ Responsive="true">
         {
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
 
-            var result = await dmmoService.GetDownloadableDMMOApplicationsBySearchParameters(
+            var result = dmmoService.GetDownloadableDMMOApplicationsBySearchParameters(
                 ParishIds,
                 ParishId,
                 ApplicationTypeId,
@@ -191,7 +191,7 @@ Responsive="true">
             }
 
             int row = 2;
-            foreach (var application in result)
+            await foreach (var application in result)
             {
                 worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.DMMO}{application.Id}";
                 var applicationDateCell = worksheet.Cell(row, 2);
@@ -216,10 +216,10 @@ Responsive="true">
                 }
                 worksheet.Cell(row, 4).Value = application.ApplicationDetails;
                 worksheet.Cell(row, 5).Value = application.LocationDescription;
-                worksheet.Cell(row, 6).Value = string.Join(", ", application.DMMOParishes.Select(dp => dp.Parish.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
-                worksheet.Cell(row, 7).Value = application.CaseStatus?.Name;
-                worksheet.Cell(row, 8).Value = string.Join(", ", application.DMMOApplicationTypes.Select(da => da.ApplicationType.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
-                worksheet.Cell(row, 9).Value = string.Join(", ", application.DMMOClaimedStatuses.Select(dc => dc.ClaimedStatus.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 6).Value = string.Join(", ", application.ParishNames.Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 7).Value = application.CaseStatusName;
+                worksheet.Cell(row, 8).Value = string.Join(", ", application.ApplicationTypeNames.Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 9).Value = string.Join(", ", application.ClaimedStatusNames.Where(name => !string.IsNullOrWhiteSpace(name)));
                 worksheet.Cell(row, 10).Value = application.CaseOfficer;
                 worksheet.Cell(row, 11).Value = application.Appeal.ToLocalizedDisplayString(localizer);
                 var appealDateCell = worksheet.Cell(row, 12);
@@ -232,7 +232,7 @@ Responsive="true">
                 {
                     appealDateCell.Clear();
                 }
-                worksheet.Cell(row, 13).Value = application.DirectionOfSecState?.Name;
+                worksheet.Cell(row, 13).Value = application.DirectionOfSecStateName;
                 var dateOfDirectionOfSecStateCell = worksheet.Cell(row, 14);
                 if (application.DateOfDirectionOfSecState.HasValue)
                 {
@@ -252,7 +252,7 @@ Responsive="true">
             
             var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
             usedRange.CreateTable();
-            worksheet.Columns().AdjustToContents(10.0,200.0);
+
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);

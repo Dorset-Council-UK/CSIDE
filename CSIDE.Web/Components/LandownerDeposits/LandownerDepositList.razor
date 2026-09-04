@@ -125,7 +125,7 @@
         {
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
 
-            var result = await landownerDepositService.GetDownloadableLandownerDepositsBySearchParameters(
+            var result = landownerDepositService.GetDownloadableLandownerDepositsBySearchParameters(
                 ParishIds,
                 ParishId,
                 Location
@@ -164,10 +164,10 @@
             }
 
             int row = 2;
-            foreach (var application in result)
+            await foreach (var application in result)
             {
                 worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.LandownerDeposit}{application.Id}/{application.SecondaryId}";
-                worksheet.Cell(row, 2).Value = string.Join(", ", application.LandownerDepositTypes.Select(type => type.LandownerDepositTypeName?.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 2).Value = string.Join(", ", application.LandownerDepositTypeNames.Where(name => !string.IsNullOrWhiteSpace(name)));
 
                 var receivedDateCell = worksheet.Cell(row, 3);
                 if (application.ReceivedDate.HasValue)
@@ -284,7 +284,7 @@
             
             var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
             usedRange.CreateTable();
-            worksheet.Columns().AdjustToContents(10.0,200.0);
+
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);

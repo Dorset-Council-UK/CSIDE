@@ -9,6 +9,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services
 {
@@ -178,7 +179,7 @@ namespace CSIDE.Data.Services
             return query;
         }
 
-        public async Task<IList<PPOApplication>> GetDownloadablePPOApplicationsBySearchParameters(
+        public async IAsyncEnumerable<DownloadablePPOApplicationExportRow> GetDownloadablePPOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationLegislationId,
@@ -189,24 +190,42 @@ namespace CSIDE.Data.Services
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
             bool? IsPublic,
-            CancellationToken ct = default)
+            [EnumeratorCancellation] CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
             var query = context.PPOApplication
                 .AsNoTracking()
                 .IgnoreAutoIncludes()
-                .Include(d => d.CaseStatus)
-                .Include(d => d.Priority)
-                .Include(d => d.Legislation)
-                .Include(d => d.PPOParishes).ThenInclude(p => p.Parish)
-                .Include(d => d.PPOTypes).ThenInclude(p => p.Type)
                 .AsQueryable();
 
             query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationLegislationId, ApplicationCaseStatusId, ApplicationTypeId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, IsPublic);
 
-            var results = await query.OrderByDescending(p => p.ReceivedDate).ToListAsync(cancellationToken: ct);
+            var projectedQuery = query
+                .OrderByDescending(p => p.ReceivedDate)
+                .ThenByDescending(p => p.Id)
+                .Select(p => new DownloadablePPOApplicationExportRow
+                {
+                    Id = p.Id,
+                    LegislationName = p.Legislation != null ? p.Legislation.Name : null,
+                    CaseStatusName = p.CaseStatus != null ? p.CaseStatus.Name : null,
+                    ApplicationTypeNames = p.PPOTypes.Select(t => t.Type.Name).ToList(),
+                    ApplicationDetails = p.ApplicationDetails,
+                    LocationDescription = p.LocationDescription,
+                    ReceivedDate = p.ReceivedDate,
+                    CaseOfficer = p.CaseOfficer,
+                    DeterminationDate = p.DeterminationDate,
+                    CouncilLandAffected = p.CouncilLandAffected,
+                    Charge = p.Charge,
+                    InternalArchiveReferenceNo = p.InternalArchiveReferenceNo,
+                    ExternalArchiveReferenceNo = p.ExternalArchiveReferenceNo,
+                    PrivateComments = p.PrivateComments,
+                    PublicComments = p.PublicComments
+                });
 
-            return results;
+            await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+            {
+                yield return row;
+            }
         }
 
         public async Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default)

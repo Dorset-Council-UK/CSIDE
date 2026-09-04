@@ -145,7 +145,7 @@ Responsive="true">
         {
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
 
-            var result = await ppoService.GetDownloadablePPOApplicationsBySearchParameters(
+            var result = ppoService.GetDownloadablePPOApplicationsBySearchParameters(
                 ParishIds,
                 ParishId,
                 LegislationId,
@@ -186,12 +186,12 @@ Responsive="true">
             }
 
             int row = 2;
-            foreach (var application in result)
+            await foreach (var application in result)
             {
                 worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.PPO}{application.Id}";
-                worksheet.Cell(row, 2).Value = application.Legislation?.Name ?? string.Empty;
-                worksheet.Cell(row, 3).Value = application.CaseStatus?.Name ?? string.Empty;
-                worksheet.Cell(row, 4).Value = string.Join(", ", application.PPOTypes.Select(type => type.Type?.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 2).Value = application.LegislationName ?? string.Empty;
+                worksheet.Cell(row, 3).Value = application.CaseStatusName ?? string.Empty;
+                worksheet.Cell(row, 4).Value = string.Join(", ", application.ApplicationTypeNames.Where(name => !string.IsNullOrWhiteSpace(name)));
                 worksheet.Cell(row, 5).Value = application.ApplicationDetails;
                 worksheet.Cell(row, 6).Value = application.LocationDescription ?? string.Empty;
 
@@ -241,7 +241,7 @@ Responsive="true">
             
             var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
             usedRange.CreateTable();
-            worksheet.Columns().AdjustToContents(10.0,200.0);
+
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);

@@ -25,7 +25,7 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
             CancellationToken ct = default);
-        Task<IList<InfrastructureItem>> GetDownloadableInfrastructureItemsBySearchParameters(
+        IAsyncEnumerable<DownloadableInfrastructureItemExportRow> GetDownloadableInfrastructureItemsBySearchParameters(
             string? RouteId,
             string[]? ParishIds,
             string? ParishId,

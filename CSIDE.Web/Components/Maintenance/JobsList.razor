@@ -159,7 +159,7 @@ Responsive="true">
         {
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
 
-            var result = await maintenanceJobsService.GetDownloadableMaintenanceJobsBySearchParameters(
+            var result = maintenanceJobsService.GetDownloadableMaintenanceJobsBySearchParameters(
                 RouteId,
                 ParishIds,
                 ParishId,
@@ -202,7 +202,7 @@ Responsive="true">
             }
 
             int row = 2;
-            foreach (var job in result)
+            await foreach (var job in result)
             {
                 worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.Maintenance}{job.Id}";
                 var loggedCell = worksheet.Cell(row, 2);
@@ -230,21 +230,21 @@ Responsive="true">
                 }
                 worksheet.Cell(row, 5).Value = job.WorkDone;
                 worksheet.Cell(row, 6).Value = job.LoggedByName;
-                worksheet.Cell(row, 7).Value = job.JobPriority?.Description;
-                worksheet.Cell(row, 8).Value = job.Geom?.X.ToString("F2");
-                worksheet.Cell(row, 9).Value = job.Geom?.Y.ToString("F2");
-                worksheet.Cell(row, 10).Value = job.JobStatus?.Description;
+                worksheet.Cell(row, 7).Value = job.JobPriorityDescription;
+                worksheet.Cell(row, 8).Value = job.Easting?.ToString("F2");
+                worksheet.Cell(row, 9).Value = job.Northing?.ToString("F2");
+                worksheet.Cell(row, 10).Value = job.JobStatusDescription;
                 worksheet.Cell(row, 11).Value = job.DuplicateJobId.HasValue ? $"{IDPrefixOptions.Value.Maintenance}{job.DuplicateJobId}" : string.Empty;
                 worksheet.Cell(row, 12).Value = job.RouteId;
-                worksheet.Cell(row, 13).Value = job.MaintenanceTeam?.Name;
-                worksheet.Cell(row, 14).Value = job.Parish?.Name;
-                worksheet.Cell(row, 15).Value = string.Join(", ", job.ProblemTypes.Select(problem => problem.ProblemType?.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 13).Value = job.MaintenanceTeamName;
+                worksheet.Cell(row, 14).Value = job.ParishName;
+                worksheet.Cell(row, 15).Value = string.Join(", ", job.ProblemTypeNames.Where(name => !string.IsNullOrWhiteSpace(name)));
                 row++;
             }
             
             var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
             usedRange.CreateTable();
-            worksheet.Columns().AdjustToContents(10.0,200.0);
+
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);

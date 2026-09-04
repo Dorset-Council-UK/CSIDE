@@ -40,7 +40,7 @@ public interface IMaintenanceJobsService
     /// <summary>
     /// Gets all maintenance jobs from the database that match the specified search parameters, without paging and sorting, suitable for export.
     /// </summary>
-    Task<IList<Job>> GetDownloadableMaintenanceJobsBySearchParameters(
+    IAsyncEnumerable<DownloadableMaintenanceJobExportRow> GetDownloadableMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
         string? ParishId,

@@ -25,7 +25,7 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default);
-        Task<IList<DMMOApplication>> GetDownloadableDMMOApplicationsBySearchParameters(
+        IAsyncEnumerable<DownloadableDMMOApplicationExportRow> GetDownloadableDMMOApplicationsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? ApplicationTypeId,

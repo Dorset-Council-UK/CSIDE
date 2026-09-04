@@ -18,7 +18,7 @@ namespace CSIDE.Data.Services
             int PageSize = DefaultPageSize,
             CancellationToken ct = default);
 
-        Task<IList<LandownerDeposit>> GetDownloadableLandownerDepositsBySearchParameters(
+        IAsyncEnumerable<DownloadableLandownerDepositExportRow> GetDownloadableLandownerDepositsBySearchParameters(
             string[]? ParishIds,
             string? ParishId,
             string? Location,

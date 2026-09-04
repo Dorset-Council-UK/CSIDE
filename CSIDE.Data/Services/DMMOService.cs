@@ -9,6 +9,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services;
 
@@ -182,7 +183,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
             : query.OrderBy(sortExpression).ThenBy(l => l.Id);
     }
 
-    public async Task<IList<DMMOApplication>> GetDownloadableDMMOApplicationsBySearchParameters(
+    public async IAsyncEnumerable<DownloadableDMMOApplicationExportRow> GetDownloadableDMMOApplicationsBySearchParameters(
         string[]? ParishIds,
         string? ParishId,
         string? ApplicationTypeId,
@@ -194,24 +195,44 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
         DateOnly? ReceivedDateFrom,
         DateOnly? ReceivedDateTo,
         bool? IsPublic,
-        CancellationToken ct = default)
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
         var query = context.DMMOApplication
             .AsNoTracking()
             .IgnoreAutoIncludes()
-            .Include(d => d.CaseStatus)
-            .Include(d => d.DirectionOfSecState)
-            .Include(d => d.DMMOClaimedStatuses).ThenInclude(c => c.ClaimedStatus)
-            .Include(d => d.DMMOApplicationTypes).ThenInclude(at => at.ApplicationType)
-            .Include(d => d.DMMOParishes).ThenInclude(p => p.Parish)
             .AsQueryable();
 
         query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationTypeId, ApplicationCaseStatusId, ApplicationClaimedStatusId, Location, ApplicationDateFrom, ApplicationDateTo, ReceivedDateFrom, ReceivedDateTo, IsPublic);
 
-        var results = await query.OrderBy(d => d.Id).ToListAsync(cancellationToken: ct);
+        var projectedQuery = query
+            .OrderBy(d => d.Id)
+            .Select(d => new DownloadableDMMOApplicationExportRow
+            {
+                Id = d.Id,
+                ApplicationDate = d.ApplicationDate,
+                ReceivedDate = d.ReceivedDate,
+                ApplicationDetails = d.ApplicationDetails,
+                LocationDescription = d.LocationDescription,
+                ParishNames = d.DMMOParishes.Select(p => p.Parish.Name).ToList(),
+                CaseStatusName = d.CaseStatus != null ? d.CaseStatus.Name : null,
+                ApplicationTypeNames = d.DMMOApplicationTypes.Select(t => t.ApplicationType.Name).ToList(),
+                ClaimedStatusNames = d.DMMOClaimedStatuses.Select(c => c.ClaimedStatus.Name).ToList(),
+                CaseOfficer = d.CaseOfficer,
+                Appeal = d.Appeal,
+                AppealDate = d.AppealDate,
+                DirectionOfSecStateName = d.DirectionOfSecState != null ? d.DirectionOfSecState.Name : null,
+                DateOfDirectionOfSecState = d.DateOfDirectionOfSecState,
+                InternalArchiveReferenceNo = d.InternalArchiveReferenceNo,
+                ExternalArchiveReferenceNo = d.ExternalArchiveReferenceNo,
+                PrivateComments = d.PrivateComments,
+                PublicComments = d.PublicComments
+            });
 
-        return results;
+        await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return row;
+        }
 
     }
 
