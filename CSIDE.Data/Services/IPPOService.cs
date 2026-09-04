@@ -24,6 +24,18 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = IDMMOService.DefaultPageSize,
             CancellationToken ct = default);
+        Task<IList<PPOApplication>> GetDownloadablePPOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationLegislationId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationTypeId,
+            string? ApplicationPriorityId,
+            string? Location,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            bool? IsPublic,
+            CancellationToken ct = default);
         Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default);
         Task<PPOOrder?> GetPPOOrderById(int orderId, int applicationId, CancellationToken ct = default);
         Task<IReadOnlyCollection<ApplicationCaseStatus>> GetPPOCaseStatusOptions(CancellationToken ct = default);

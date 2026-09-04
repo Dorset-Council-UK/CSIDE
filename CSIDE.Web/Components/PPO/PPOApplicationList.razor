@@ -1,12 +1,29 @@
 ﻿@rendermode InteractiveServer
+@using System.ComponentModel
+@using System.Globalization
 @using CSIDE.Data.Models.PPO
 @using CSIDE.Data.Services
-@using System.Globalization
-@using System.ComponentModel
+@using CSIDE.Web.Extensions
+@using ClosedXML.Excel
 @inject NavigationManager navigationManager
 @inject IPPOService ppoService
+@inject IJSRuntime JS
 
-<a href="PPO#search-form">@localizer["Search Again Label"]</a>
+@implements IAsyncDisposable
+
+<p><a href="PPO#search-form">@localizer["Search Again Label"]</a></p>
+
+<button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+    @if (IsExporting)
+    {
+        <Spinner Size="SpinnerSize.Small" class="me-3"/>
+    }
+    else
+    {
+        <Icon Name="IconName.Download" class="me-3" />
+    }
+    @localizer["Download Label"]
+</button>
 
 <Grid TItem="PPOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
@@ -84,6 +101,9 @@ Responsive="true">
     [Parameter]
     public bool? IsPublic{ get; set; }
 
+    private IJSObjectReference? _jsModule;
+    private bool IsExporting;
+
     public async Task<GridDataProviderResult<PPOApplication>> PPOApplicationDataProvider(GridDataProviderRequest<PPOApplication> request)
     {
         //handle sorting
@@ -116,4 +136,143 @@ Responsive="true">
     }
 
     private void OnRowClick(GridRowEventArgs<PPOApplication> args) => navigationManager.NavigateTo($"PPO/Details/{args.Item.Id}");
+
+    private async Task OnExport()
+    {
+        IsExporting = true;
+
+        try
+        {
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+
+            var result = await ppoService.GetDownloadablePPOApplicationsBySearchParameters(
+                ParishIds,
+                ParishId,
+                LegislationId,
+                ApplicationCaseStatusId,
+                ApplicationTypeId,
+                ApplicationPriorityId,
+                Location,
+                ReceivedDateFrom,
+                ReceivedDateTo,
+                IsPublic
+                );
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("PPO Applications Export");
+
+            string[] headers =
+            [
+                localizer["Reference Number Label"],
+                localizer["PPO Legislation Label"],
+                localizer["Case Status Label"],
+                localizer["PPO Application Types Label"],
+                localizer["Application Details Label"],
+                localizer["Location Description Label"],
+                localizer["Application Received Label"],
+                localizer["Case Officer Label"],
+                localizer["Determination Date Label"],
+                localizer["Council Land Affected Label"],
+                localizer["Charge Label"],
+                localizer["Internal Archive Reference No Label"],
+                localizer["External Archive Reference No Label"],
+                localizer["Private Comments Label"],
+                localizer["Public Comments Label"]
+            ];
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
+            }
+
+            int row = 2;
+            foreach (var application in result)
+            {
+                worksheet.Cell(row, 1).Value = $"{IDPrefixOptions.Value.PPO}{application.Id}";
+                worksheet.Cell(row, 2).Value = application.Legislation?.Name ?? string.Empty;
+                worksheet.Cell(row, 3).Value = application.CaseStatus?.Name ?? string.Empty;
+                worksheet.Cell(row, 4).Value = string.Join(", ", application.PPOTypes.Select(type => type.Type?.Name ?? string.Empty).Where(name => !string.IsNullOrWhiteSpace(name)));
+                worksheet.Cell(row, 5).Value = application.ApplicationDetails;
+                worksheet.Cell(row, 6).Value = application.LocationDescription ?? string.Empty;
+
+                var receivedDateCell = worksheet.Cell(row, 7);
+                if (application.ReceivedDate.HasValue)
+                {
+                    receivedDateCell.Value = application.ReceivedDate.Value.ToDateTimeUnspecified();
+                    receivedDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    receivedDateCell.Clear();
+                }
+
+                worksheet.Cell(row, 8).Value = application.CaseOfficer ?? string.Empty;
+
+                var determinationDateCell = worksheet.Cell(row, 9);
+                if (application.DeterminationDate.HasValue)
+                {
+                    determinationDateCell.Value = application.DeterminationDate.Value.ToDateTimeUnspecified();
+                    determinationDateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    determinationDateCell.Clear();
+                }
+
+                worksheet.Cell(row, 10).Value = application.CouncilLandAffected.ToLocalizedDisplayString(localizer);
+
+                var chargeCell = worksheet.Cell(row, 11);
+                if (application.Charge.HasValue)
+                {
+                    chargeCell.Value = application.Charge.Value;
+                    chargeCell.Style.NumberFormat.Format = "£#,##0.00";
+                }
+                else
+                {
+                    chargeCell.Clear();
+                }
+
+                worksheet.Cell(row, 12).Value = application.InternalArchiveReferenceNo ?? string.Empty;
+                worksheet.Cell(row, 13).Value = application.ExternalArchiveReferenceNo ?? string.Empty;
+                worksheet.Cell(row, 14).Value = application.PrivateComments ?? string.Empty;
+                worksheet.Cell(row, 15).Value = application.PublicComments ?? string.Empty;
+                row++;
+            }
+            
+            var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
+            usedRange.CreateTable();
+            worksheet.Columns().AdjustToContents(10.0,200.0);
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"ppo-applications-{DateTime.UtcNow:yyyyMMdd-HHmmss}.xlsx";
+            using var streamReference = new DotNetStreamReference(stream);
+            await _jsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
 }

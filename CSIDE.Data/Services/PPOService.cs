@@ -178,6 +178,37 @@ namespace CSIDE.Data.Services
             return query;
         }
 
+        public async Task<IList<PPOApplication>> GetDownloadablePPOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationLegislationId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationTypeId,
+            string? ApplicationPriorityId,
+            string? Location,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            bool? IsPublic,
+            CancellationToken ct = default)
+        {
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+            var query = context.PPOApplication
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
+                .Include(d => d.CaseStatus)
+                .Include(d => d.Priority)
+                .Include(d => d.Legislation)
+                .Include(d => d.PPOParishes).ThenInclude(p => p.Parish)
+                .Include(d => d.PPOTypes).ThenInclude(p => p.Type)
+                .AsQueryable();
+
+            query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationLegislationId, ApplicationCaseStatusId, ApplicationTypeId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, IsPublic);
+
+            var results = await query.OrderByDescending(p => p.ReceivedDate).ToListAsync(cancellationToken: ct);
+
+            return results;
+        }
+
         public async Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
