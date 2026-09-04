@@ -26,6 +26,17 @@ namespace CSIDE.Data.Services
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
             CancellationToken ct = default);
+
+        Task<IList<Route>> GetDownloadableRoutesBySearchParameters(
+            string? RouteId,
+            string? Name,
+            string[]? ParishIds,
+            string? ParishId,
+            string? MaintenanceTeamId,
+            string? OperationalStatusId,
+            string? LegalStatusId,
+            string? RouteTypeId,
+            CancellationToken ct = default);
         Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<RouteType>> GetRouteTypeOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<OperationalStatus>> GetOperationalStatusOptions(CancellationToken ct = default);

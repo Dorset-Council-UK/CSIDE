@@ -1,11 +1,29 @@
 ﻿@rendermode InteractiveServer
-@using CSIDE.Data.Models.RightsOfWay
 @using System.ComponentModel
+@using CSIDE.Data.Models.RightsOfWay
 @using CSIDE.Data.Services
+@using ClosedXML.Excel
 @inject NavigationManager navigationManager
 @inject IRightsOfWayService rightsOfWayService
+@inject IJSRuntime JS
 
-<a href="rights-of-way#search-form">@localizer["Search Again Label"]</a>
+@implements IAsyncDisposable
+
+<p><a href="rights-of-way#search-form">@localizer["Search Again Label"]</a></p>
+
+<button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+    @if (IsExporting)
+    {
+        <Spinner Size="SpinnerSize.Small" class="me-3"/>
+    }
+    else
+    {
+        <Icon Name="IconName.Download" class="me-3" />
+    }
+    @localizer["Download Label"]
+</button>
+
+
 
 <Grid TItem="Route"
         Class="table table-hover table-bordered table-striped mt-2"
@@ -76,6 +94,9 @@
     [Parameter]
     public string? RouteTypeId { get; set; }
 
+    private IJSObjectReference? _jsModule;
+    private bool IsExporting;
+
     public async Task<GridDataProviderResult<Route>> RoutesDataProvider(GridDataProviderRequest<Route> request)
     {
         //handle sorting
@@ -107,4 +128,151 @@
     }
 
     private void OnRowClick(GridRowEventArgs<Route> args) => navigationManager.NavigateTo($"rights-of-way/Details/{args.Item.RouteCode}");
+
+    private async Task OnExport()
+    {
+        IsExporting = true;
+
+        try
+        {
+            _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/download.js");
+
+            var result = await rightsOfWayService.GetDownloadableRoutesBySearchParameters(
+                RouteId,
+                Name,
+                ParishIds,
+                ParishId,
+                MaintenanceTeamId,
+                OperationalStatusId,
+                LegalStatusId,
+                RouteTypeId
+            );
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Rights of Way Export");
+
+            string[] headers =
+            [
+                localizer["Route ID Label"],
+                localizer["Name Label"],
+                localizer["Path Type Label"],
+                localizer["Parish Label"],
+                localizer["Legal Status Label"],
+                localizer["Operational Status Label"],
+                localizer["Closure Start Date Label"],
+                localizer["Closure End Date Label"],
+                localizer["Maintenance Team Label"],
+                localizer["Notes Label"],
+                localizer["Statement Text Label"],
+                localizer["Statement Start Grid Ref Label"],
+                localizer["Statement End Grid Ref Label"]
+            ];
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
+            }
+
+            int row = 2;
+            foreach (var route in result)
+            {
+                worksheet.Cell(row, 1).Value = route.RouteCode;
+                worksheet.Cell(row, 2).Value = route.Name ?? string.Empty;
+                worksheet.Cell(row, 3).Value = route.RouteType?.Name ?? string.Empty;
+                worksheet.Cell(row, 4).Value = route.Parish?.Name ?? string.Empty;
+                worksheet.Cell(row, 5).Value = route.LegalStatus?.Name ?? string.Empty;
+
+                var operationalStatus = route.OperationalStatus?.Name ?? string.Empty;
+                var isPlannedClosure =
+                    route.OperationalStatus is not null &&
+                    route.OperationalStatus.IsClosed &&
+                    route.ClosureStartDate.HasValue &&
+                    route.ClosureStartDate.Value.ToDateOnly() > DateOnly.FromDateTime(DateTime.Now);
+
+                if (isPlannedClosure)
+                {
+                    operationalStatus = string.IsNullOrWhiteSpace(operationalStatus)
+                        ? localizer["Planned Label"]
+                        : $"{operationalStatus} ({localizer["Planned Label"]})";
+                }
+
+                worksheet.Cell(row, 6).Value = operationalStatus;
+
+                var closureStartCell = worksheet.Cell(row, 7);
+                if (route.ClosureStartDate.HasValue)
+                {
+                    closureStartCell.Value = route.ClosureStartDate.Value.ToDateTimeUnspecified();
+                    closureStartCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    closureStartCell.Clear();
+                }
+
+                var closureEndCell = worksheet.Cell(row, 8);
+                if (route.ClosureIsIndefinite)
+                {
+                    closureEndCell.Value = localizer["Indefinite Closure Text"].Value;
+                }
+                else if (route.ClosureEndDate.HasValue)
+                {
+                    closureEndCell.Value = route.ClosureEndDate.Value.ToDateTimeUnspecified();
+                    closureEndCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                }
+                else
+                {
+                    closureEndCell.Clear();
+                }
+
+                worksheet.Cell(row, 9).Value = route.MaintenanceTeam?.Name ?? string.Empty;
+                worksheet.Cell(row, 10).Value = route.Notes ?? string.Empty;
+
+                if(route.Statements.OrderByDescending(s => s.CreatedDate).FirstOrDefault() is not null)
+                {
+                    var latestStatement = route.Statements.OrderByDescending(s => s.CreatedDate).First();
+                    worksheet.Cell(row, 11).Value = latestStatement.StatementText ?? string.Empty;
+                    worksheet.Cell(row, 12).Value = latestStatement.StartGridRef ?? string.Empty;
+                    worksheet.Cell(row, 13).Value = latestStatement.EndGridRef ?? string.Empty;
+                }
+                
+                row++;
+            }
+            
+            var usedRange = worksheet.Range(1, 1, Math.Max(row - 1, 1), headers.Length);
+            usedRange.CreateTable();
+            worksheet.Columns().AdjustToContents(10.0,200.0);
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"rights-of-way-routes-{DateTime.UtcNow:yyyyMMdd-HHmmss}.xlsx";
+            using var streamReference = new DotNetStreamReference(stream);
+            await _jsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore as it doesn't matter
+        }
+        finally
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
+}
 }
