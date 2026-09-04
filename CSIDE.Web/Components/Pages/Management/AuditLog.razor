@@ -1,25 +1,41 @@
 ﻿@page "/management/auditlog"
 @using CSIDE.Web.Components.Pages.Account
+@using CSIDE.Web.Authorization
+@using CSIDE.Web.Extensions
+
+@inject NavigationManager NavigationManager
 
 <AuthorizeView Roles="Administrator">
     <NotAuthorized>
         <AccessDenied></AccessDenied>
     </NotAuthorized>
     <Authorized>
-        <PageTitle>@localizer["Audit Log Title"]</PageTitle>
-        <div>
-            <Breadcrumb Items="NavItems"></Breadcrumb>
-        </div>
+        @if (HasManagementStepUpAccess)
+        {
+            <PageTitle>@localizer["Audit Log Title"]</PageTitle>
+            <div>
+                <Breadcrumb Items="NavItems"></Breadcrumb>
+            </div>
 
 
-        <h1>@localizer["Audit Log Title"]</h1>
+            <h1>@localizer["Audit Log Title"]</h1>
 
-        <AuditLogList></AuditLogList>
+            <AuditLogList></AuditLogList>
+        }
+        else
+        {
+            <p>@localizer["Management Step Up Redirect Message"]</p>
+        }
     </Authorized>
 </AuthorizeView>
 
 @code{
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
     private List<BreadcrumbItem>? NavItems;
+    private bool HasManagementStepUpAccess;
+    private bool StepUpChallengeTriggered;
 
     protected override void OnInitialized()
     {
@@ -29,5 +45,34 @@
             new BreadcrumbItem { Text = localizer["Management Title"], Href = "management" },
             new BreadcrumbItem { Text = localizer["Audit Log Title"], Href = "management/auditlog", IsCurrentPage = true }
         };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask is null)
+        {
+            HasManagementStepUpAccess = false;
+            return;
+        }
+
+        var authState = await AuthenticationStateTask;
+        HasManagementStepUpAccess = authState.User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa);
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !HasManagementStepUpAccess && !StepUpChallengeTriggered)
+        {
+            StepUpChallengeTriggered = true;
+            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            if (!relativePath.StartsWith('/'))
+            {
+                relativePath = $"/{relativePath}";
+            }
+
+            NavigationManager.NavigateTo($"Account/StepUp?returnUrl={Uri.EscapeDataString(relativePath)}", forceLoad: true);
+        }
+
+        return Task.CompletedTask;
     }
 }

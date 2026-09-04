@@ -1,16 +1,22 @@
 ﻿using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CSIDE.Data;
+using CSIDE.Data.Models.Audit;
 using CSIDE.Data.Models.Surveys;
+using CSIDE.Data.Services;
 using CSIDE.Shared.Options;
+using CSIDE.Web.Authorization;
+using CSIDE.Web.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using NodaTime;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.AspNetCore.Builder;
@@ -174,6 +180,7 @@ internal static class WebApplicationBuilderExtension
             .AddMicrosoftIdentityWebApp(options =>
             {
                 azureAdSection.Bind(options);
+                options.ResponseType = "code";
 
                 if (string.IsNullOrWhiteSpace(options.SignedOutCallbackPath))
                 {
@@ -198,12 +205,26 @@ internal static class WebApplicationBuilderExtension
                 options.Events ??= new OpenIdConnectEvents();
                 var existingRedirectHandler = options.Events.OnRedirectToIdentityProvider;
                 var existingOnRemoteFailureHandler = options.Events.OnRemoteFailure;
+                var existingOnTokenValidatedHandler = options.Events.OnTokenValidated;
 
                 options.Events.OnRedirectToIdentityProvider = async context =>
                 {
-                    context.ProtocolMessage.Prompt = "select_account";
                     if (existingRedirectHandler != null)
                         await existingRedirectHandler(context);
+
+                    context.ProtocolMessage.Prompt = "select_account";
+
+                    if (context.Properties.Items.TryGetValue(AuthenticationContextConstants.StepUpAcrValuesItemKey, out var acrValues)
+                        && !string.IsNullOrWhiteSpace(acrValues))
+                    {
+                        context.ProtocolMessage.AcrValues = acrValues;
+                    }
+
+                    if (context.Properties.Items.TryGetValue(AuthenticationContextConstants.StepUpClaimsItemKey, out var claimsChallenge)
+                        && !string.IsNullOrWhiteSpace(claimsChallenge))
+                    {
+                        context.ProtocolMessage.SetParameter("claims", claimsChallenge);
+                    }
                 };
                 // Workaround for Entra External ID stale session errors on first login of the day.
                 // When a user's Entra session expires overnight, the first authentication attempt can fail
@@ -247,6 +268,69 @@ internal static class WebApplicationBuilderExtension
 
                         if (existingOnRemoteFailureHandler != null)
                             await existingOnRemoteFailureHandler(context);
+                    }
+                };
+
+                options.Events.OnTokenValidated = async context =>
+                {
+                    if (existingOnTokenValidatedHandler != null)
+                    {
+                        await existingOnTokenValidatedHandler(context);
+                    }
+
+                    if (!context.Properties.Items.TryGetValue(AuthenticationContextConstants.StepUpAcrValuesItemKey, out var stepUpAcrValues)
+                        || !context.Properties.Items.ContainsKey(AuthenticationContextConstants.StepUpClaimsItemKey)
+                        || !string.Equals(stepUpAcrValues, AuthenticationContextConstants.ManagementMfa, StringComparison.OrdinalIgnoreCase)
+                        || context.Principal is null
+                        || !context.Principal.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa))
+                    {
+                        return;
+                    }
+
+                    var loggerFactory = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
+                    var logger = loggerFactory.CreateLogger("AuthenticationStepUpAudit");
+
+                    var userId = context.Principal.GetObjectId() ?? "Unknown";
+                    var userName = context.Principal.FindFirst("name")?.Value
+                        ?? context.Principal.Identity?.Name
+                        ?? "Unknown";
+
+                    var auditLog = new AuditLog
+                    {
+                        EntityName = "Authentication",
+                        EntityId = userId,
+                        ChangeType = "StepUpSucceeded",
+                        UserId = userId,
+                        UserName = userName,
+                        LogDate = SystemClock.Instance.GetCurrentInstant(),
+                        NewValues = JsonSerializer.SerializeToDocument(new
+                        {
+                            AuthenticationContext = AuthenticationContextConstants.ManagementMfa,
+                            Acrs = context.Principal.FindAll("acrs").Select(x => x.Value).ToArray(),
+                            Amr = context.Principal.FindAll("amr").Select(x => x.Value).ToArray(),
+                        }),
+                    };
+
+                    try
+                    {
+                        var auditLogService = context.HttpContext.RequestServices.GetRequiredService<IAuditLogService>();
+                        await auditLogService.AddLogAsync(auditLog, context.HttpContext.RequestAborted);
+                    }
+                    catch (DbUpdateException dbUpdateException)
+                    {
+                        logger.LogError(dbUpdateException, "Failed to write step-up authentication audit log for user {UserId}", userId);
+                    }
+                    catch (InvalidOperationException invalidOperationException)
+                    {
+                        logger.LogError(invalidOperationException, "Failed to resolve audit logging services for step-up authentication user {UserId}", userId);
+                    }
+                    catch (OperationCanceledException) when (context.HttpContext.RequestAborted.IsCancellationRequested)
+                    {
+                        // Request was aborted; don't fail authentication because audit logging was cancelled.
+                    }
+                    catch (SystemException systemException)
+                    {
+                        logger.LogError(systemException, "Unexpected system error writing step-up authentication audit log for user {UserId}", userId);
                     }
                 };
             });

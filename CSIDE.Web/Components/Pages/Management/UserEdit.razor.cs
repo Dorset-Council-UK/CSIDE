@@ -2,6 +2,9 @@ using BlazorBootstrap;
 using CSIDE.Data.Models.Authorization;
 using CSIDE.Data.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using CSIDE.Web.Authorization;
+using CSIDE.Web.Extensions;
 using Microsoft.Graph.Beta.Models;
 
 namespace CSIDE.Web.Components.Pages.Management
@@ -19,9 +22,28 @@ namespace CSIDE.Web.Components.Pages.Management
 
         private string? ErrorMessage { get; set; } = null;
         private bool IsBusy { get; set; } = false;
+        private bool HasManagementStepUpAccess { get; set; }
+        private bool StepUpChallengeTriggered { get; set; }
+
+        [CascadingParameter]
+        private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {
+            if (AuthenticationStateTask is null)
+            {
+                HasManagementStepUpAccess = false;
+                return;
+            }
+
+            var authenticationState = await AuthenticationStateTask;
+            HasManagementStepUpAccess = authenticationState.User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa);
+
+            if (!HasManagementStepUpAccess)
+            {
+                return;
+            }
+
             IsBusy = true;
             User = await userService.GetUser(Id);
             if(User is not null)
@@ -43,6 +65,23 @@ namespace CSIDE.Web.Components.Pages.Management
             }
 
             IsBusy = false;
+        }
+
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender && !HasManagementStepUpAccess && !StepUpChallengeTriggered)
+            {
+                StepUpChallengeTriggered = true;
+                var relativePath = navigationManager.ToBaseRelativePath(navigationManager.Uri);
+                if (!relativePath.StartsWith('/'))
+                {
+                    relativePath = $"/{relativePath}";
+                }
+
+                navigationManager.NavigateTo($"Account/StepUp?returnUrl={Uri.EscapeDataString(relativePath)}", forceLoad: true);
+            }
+
+            return Task.CompletedTask;
         }
 
         public async Task OnSubmit()

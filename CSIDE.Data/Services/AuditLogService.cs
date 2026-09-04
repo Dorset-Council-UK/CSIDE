@@ -5,6 +5,15 @@ namespace CSIDE.Data.Services
 {
     public class AuditLogService(IDbContextFactory<ApplicationDbContext> contextFactory) : IAuditLogService
     {
+        public async Task AddLogAsync(AuditLog auditLog, CancellationToken ct)
+        {
+            ArgumentNullException.ThrowIfNull(auditLog);
+
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+            context.AuditLogs.Add(auditLog);
+            await context.SaveChangesAsync(ct);
+        }
+
         public async Task<AuditLogGridResult> GetLogsAsync(int pageNumber, int pageSize, string[]? sectionNames, string? entityId, string? userId, CancellationToken ct)
         {
             await using var context = await contextFactory.CreateDbContextAsync(ct);
