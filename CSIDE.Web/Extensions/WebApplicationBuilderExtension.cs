@@ -328,10 +328,6 @@ internal static class WebApplicationBuilderExtension
                     {
                         // Request was aborted; don't fail authentication because audit logging was cancelled.
                     }
-                    catch (ObjectDisposedException objectDisposedException)
-                    {
-                        logger.LogError(objectDisposedException, "Request services were disposed while writing step-up authentication audit log for user {UserId}", userId);
-                    }
                     catch (SystemException systemException)
                     {
                         logger.LogError(systemException, "Unexpected system error writing step-up authentication audit log for user {UserId}", userId);
