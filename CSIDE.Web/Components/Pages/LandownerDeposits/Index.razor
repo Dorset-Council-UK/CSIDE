@@ -11,7 +11,8 @@
 @if (!string.IsNullOrWhiteSpace(CsideOptions.LandownerDepositsPublicRegisterURL))
 {
     <a href="@CsideOptions.LandownerDepositsPublicRegisterURL" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-        @localizer["Landowner Deposits Public Register Label"]</a>
+        @localizer["Landowner Deposits Public Register Label"]
+    </a>
     <hr />
 }
 
@@ -24,7 +25,6 @@
 
 <h2 class="mb-3">@localizer["Search Landowner Deposits Title"]</h2>
 
-<a href="landowner-deposits/Items" class="btn btn-outline-primary">@localizer["View All Label"]</a>
 <form method="post" @onsubmit="@OnLandownerDepositIDSearchSubmit" @formname="LandownerDepositIDSearch" class="mt-3">
     @if (LandownerDepositIDSearchErrorMessage is not null)
     {
@@ -46,6 +46,8 @@
 </form>
 
 <hr />
+
+<a href="landowner-deposits/Items" class="btn btn-outline-primary">@localizer["View All Label"]</a>
 
 @if (SearchParams is not null)
 {
