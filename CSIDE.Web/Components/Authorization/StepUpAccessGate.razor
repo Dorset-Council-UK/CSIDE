@@ -1,0 +1,86 @@
+@using CSIDE.Shared.Options
+@using CSIDE.Web.Authorization
+@using CSIDE.Web.Extensions
+
+@inject NavigationManager NavigationManager
+@inject IOptions<StepUpAuthenticationOptions> AuthenticationOptions
+
+@if (_stepUpRedirectRequired)
+{
+    <p>@localizer["Management Step Up Redirect Message"]</p>
+}
+else
+{
+    <AccessDenied></AccessDenied>
+}
+
+@code {
+    private const string ManagementStepUpPolicyName = "ManagementStepUp";
+
+    [Parameter]
+    public required RouteData RouteData { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    private bool _stepUpRedirectRequired;
+    private bool _stepUpRedirectTriggered;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _stepUpRedirectRequired = false;
+
+        if (!AuthenticationOptions.Value.EnableManagementStepUp || !IsManagementStepUpRoute())
+        {
+            return;
+        }
+
+        if (AuthenticationStateTask is null)
+        {
+            return;
+        }
+
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+
+        if (!(user.Identity?.IsAuthenticated ?? false)
+            || !user.IsInRole("Administrator")
+            || user.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa))
+        {
+            return;
+        }
+
+        _stepUpRedirectRequired = true;
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || !_stepUpRedirectRequired || _stepUpRedirectTriggered)
+        {
+            return Task.CompletedTask;
+        }
+
+        _stepUpRedirectTriggered = true;
+
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (!relativePath.StartsWith('/'))
+        {
+            relativePath = $"/{relativePath}";
+        }
+
+        var stepUpPath = AuthenticationOptions.Value.UseStepUpExplainerPage
+            ? "Account/StepUp"
+            : "Account/BeginStepUp";
+
+        NavigationManager.NavigateTo($"{stepUpPath}?returnUrl={Uri.EscapeDataString(relativePath)}", forceLoad: true);
+        return Task.CompletedTask;
+    }
+
+    private bool IsManagementStepUpRoute()
+    {
+        return RouteData.PageType
+            .GetCustomAttributes(typeof(AuthorizeAttribute), inherit: true)
+            .OfType<AuthorizeAttribute>()
+            .Any(attribute => string.Equals(attribute.Policy, ManagementStepUpPolicyName, StringComparison.Ordinal));
+    }
+}

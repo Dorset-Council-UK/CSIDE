@@ -5,6 +5,7 @@ using CSIDE.Shared.Options;
 using CSIDE.Shared.Services;
 using CSIDE.Web.Authorization;
 using CSIDE.Web.Components;
+using CSIDE.Web.Extensions;
 using CSIDE.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -57,9 +58,26 @@ builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
 builder.Services.AddSingleton<IAuthorizationHandler, SurveyAuthorizationHandler>();
 
+var authenticationOptions = builder.Configuration
+    .GetSection(CSIDEOptions.SectionName)
+    .GetSection(StepUpAuthenticationOptions.SectionName)
+    .Get<StepUpAuthenticationOptions>()
+    ?? new StepUpAuthenticationOptions();
+
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AuthenticatedOnly", policy => policy.RequireAuthenticatedUser())
     .AddPolicy("IsSurveyor", policy => policy.Requirements.Add(new IsSurveyorRequirement()))
+    .AddPolicy("ManagementStepUp", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("Administrator");
+
+        if (authenticationOptions.EnableManagementStepUp)
+        {
+            policy.RequireAssertion(context =>
+                context.User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa));
+        }
+    })
     .AddDefaultPolicy("CanAccessApp", policy => policy.RequireRole("Administrator", "Ranger", "RoW Officer", "Survey Validator", "RoW Statement Editor", "View", "Surveyor"));
 
 var options = builder.Configuration.GetSection(CSIDEOptions.SectionName).Get<CSIDEOptions>();

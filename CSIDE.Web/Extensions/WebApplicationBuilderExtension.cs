@@ -75,6 +75,7 @@ internal static class WebApplicationBuilderExtension
         var sectionMapping = sectionCSIDE.GetSection(MappingOptions.SectionName);
         var sectionKeyVault = sectionCSIDE.GetSection(KeyVaultOptions.SectionName);
         var sectionTheme = sectionCSIDE.GetSection(ThemeOptions.SectionName);
+        var sectionAuthentication = sectionCSIDE.GetSection(StepUpAuthenticationOptions.SectionName);
         var sectionAzureBlobStorage = sectionCSIDE.GetSection(AzureBlobStorageOptions.SectionName);
         var sectionNetworking = sectionCSIDE.GetSection(NetworkingOptions.SectionName);
         var sectionIDPrefixes = sectionCSIDE.GetSection(IDPrefixOptions.SectionName);
@@ -86,6 +87,7 @@ internal static class WebApplicationBuilderExtension
             .Configure<MappingOptions>(sectionMapping)
             .Configure<KeyVaultOptions>(sectionKeyVault)
             .Configure<ThemeOptions>(sectionTheme)
+            .Configure<StepUpAuthenticationOptions>(sectionAuthentication)
             .Configure<AzureBlobStorageOptions>(sectionAzureBlobStorage)
             .Configure<NetworkingOptions>(sectionNetworking)
             .Configure<IDPrefixOptions>(sectionIDPrefixes)

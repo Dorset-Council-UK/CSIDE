@@ -1,4 +1,8 @@
 @page "/Account/StepUp"
+@using CSIDE.Shared.Options
+
+@inject IOptions<StepUpAuthenticationOptions> AuthenticationOptions
+@inject NavigationManager Navigation
 
 <PageTitle>@localizer["Step Up Title"]</PageTitle>
 
@@ -14,6 +18,21 @@
 @code {
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    private bool _redirectTriggered;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender
+            && !_redirectTriggered
+            && !AuthenticationOptions.Value.UseStepUpExplainerPage)
+        {
+            _redirectTriggered = true;
+            Navigation.NavigateTo(ContinueUrl, forceLoad: true);
+        }
+
+        return Task.CompletedTask;
+    }
 
     private string ContinueUrl
     {

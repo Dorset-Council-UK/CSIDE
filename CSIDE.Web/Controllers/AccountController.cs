@@ -4,13 +4,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CSIDE.Web.Authorization;
 using CSIDE.Web.Extensions;
+using CSIDE.Shared.Options;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace CSIDE.Controllers;
 
 [Authorize]
 [Route("Account/[action]")]
-public class AccountController : Controller
+public class AccountController(IOptions<StepUpAuthenticationOptions> authenticationOptions) : Controller
 {
     private const string DefaultManagementPath = "/management";
     private const string AccessDeniedPath = "/Account/AccessDenied";
@@ -32,6 +34,12 @@ public class AccountController : Controller
         if (pathBase.HasValue && !localReturnUrl.StartsWith(pathBase, StringComparison.OrdinalIgnoreCase))
         {
             localReturnUrl = pathBase.Add(localReturnUrl).ToString();
+        }
+
+        if (!authenticationOptions.Value.EnableManagementStepUp)
+        {
+            Response.Cookies.Delete(StepUpRetryCookieName);
+            return LocalRedirect(localReturnUrl);
         }
 
         if (User.HasAuthenticationContext(AuthenticationContextConstants.ManagementMfa))
