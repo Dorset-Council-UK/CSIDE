@@ -66,6 +66,24 @@ To run CSIDE with minimal modification, you will need:
 
 CSIDE uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/). Postgres has been set up for this project, but with some modifications, any Entity Framework Core compatible provider should work. For a full list of providers, check the [Entity Framework docs](https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli).
 
+## Authentication and management MFA step-up
+
+CSIDE supports configurable management MFA step-up for sensitive admin screens.
+
+- `CSIDE:Authentication:EnableManagementStepUp` (default `true`)
+  - `true`: management pages protected by the `ManagementStepUp` policy require elevated authentication context (`acrs=c1`).
+  - `false`: management pages protected by the same policy do not require MFA step-up and fall back to baseline authorization.
+- `CSIDE:Authentication:UseStepUpExplainerPage` (default `true`)
+  - `true`: users are shown an explainer page before the step-up challenge.
+  - `false`: users are sent directly to the step-up challenge.
+
+> [!WARNING]
+> Disabling management step-up weakens protection for privileged operations. Keep `EnableManagementStepUp=true` in production unless your identity environment cannot support MFA step-up.
+
+If you enable step-up, your identity provider configuration must be able to return the required authentication context (`acrs=c1`) for management MFA flows.
+
+For setup details and example configuration, see `DEVELOPING.md`.
+
 ## Contributing
 
 Please see our guide on [contributing](CONTRIBUTING.md) if you're interested in getting involved.
