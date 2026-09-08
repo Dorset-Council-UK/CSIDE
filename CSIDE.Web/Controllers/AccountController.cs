@@ -18,7 +18,7 @@ public class AccountController(IOptions<StepUpAuthenticationOptions> authenticat
     private const string AccessDeniedPath = "/Account/AccessDenied";
     private const string StepUpRetryCookieName = "stepupretry";
     private const int MaxStepUpAttempts = 3;
-    private static readonly string ClaimsChallenge = $"{{\"id_token\":{{\"acrs\":{{\"essential\":true,\"value\":\"{AuthenticationContextConstants.ManagementMfa}\"}}}}}}";
+    private static readonly string ClaimsChallenge = System.Text.Json.JsonSerializer.Serialize(new { id_token = new { acrs = new { essential = true, value = AuthenticationContextConstants.ManagementMfa } } });
 
     /// <summary>
     /// Challenges the current signed-in user for the management MFA auth context.
