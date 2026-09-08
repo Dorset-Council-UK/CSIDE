@@ -1,10 +1,11 @@
 ﻿@using CSIDE.Web.Components.Pages
 @using CSIDE.Web.Components.Pages.Account
+@using CSIDE.Web.Components.Authorization
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>
-                <AccessDenied></AccessDenied>
+                <StepUpAccessGate RouteData="routeData"></StepUpAccessGate>
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

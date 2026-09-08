@@ -76,6 +76,10 @@ Once you've got a service set up, you'll need to add a number of settings to you
 
 ```
 "CSIDE": {
+    "Authentication": {
+      "EnableManagementStepUp": true,
+      "UseStepUpExplainerPage": true
+    },
 	"AzureAd": {
 	  "Instance": "https://<your-instance-name>.b2clogin.com",
 	  "Domain": "<your-b2c-domain>",
@@ -87,6 +91,22 @@ Once you've got a service set up, you'll need to add a number of settings to you
 	}
 }
 ```
+
+#### Management MFA step-up configuration
+
+CSIDE can enforce step-up MFA for selected management/admin pages using the `ManagementStepUp` authorization policy.
+
+- `CSIDE:Authentication:EnableManagementStepUp`
+  - `true` (recommended/default): requires elevated auth context (`acrs=c1`) for pages that opt into `ManagementStepUp`.
+  - `false`: turns off the MFA step-up requirement while keeping the same policy in place for baseline authorization.
+- `CSIDE:Authentication:UseStepUpExplainerPage`
+  - `true`: users see an explainer page before the MFA challenge.
+  - `false`: users are sent directly to the MFA challenge endpoint.
+
+If you enable step-up MFA, your identity provider setup must support issuing the required authentication context (`acrs=c1`) for the configured management flow.
+
+> [!WARNING]
+> Disabling `EnableManagementStepUp` reduces protection for privileged operations. This should generally be limited to constrained/non-MFA environments and local development.
 
 ### Setting up Blob Storage
 For media upload, you need an Azure Blob Storage account. Refer to the official documentation to set this up in your Azure instance.

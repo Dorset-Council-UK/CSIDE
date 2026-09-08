@@ -2,53 +2,44 @@
 @using CSIDE.Web.Components.Pages.Account
 @using CSIDE.Shared.Options
 @using Microsoft.Extensions.Options
+@attribute [Authorize(Policy = "ManagementStepUp")]
 
 @inject IOptions<CSIDEOptions> CsideOptions
 
-<AuthorizeView Roles="Administrator">
-    <NotAuthorized>
-        <AccessDenied></AccessDenied>
-    </NotAuthorized>
+<PageTitle>@localizer["Management Title"]</PageTitle>
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
 
-    <Authorized>
-        <PageTitle>@localizer["Management Title"]</PageTitle>
-        <div>
-            <Breadcrumb Items="NavItems"></Breadcrumb>
-        </div>
-
-        <h1>@localizer["Management Title"]</h1>
-        <p>@localizer["Management Text", _csideOptions.AppName]</p>
-        <div class="container-fluid">
-            <div class="row justify-content-start row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 ">
-                <div class="col">
-                    <div class="card link-card h-100">
-                        <div class="card-body">
-                            <a href="management/users" class="stretched-link">
-                                <h4 class="card-title"><i class="bi bi-people"></i> @localizer["User Management Title"]</h4>
-                            </a>
-                            <p class="card-text">@localizer["User Management Text"]</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card link-card h-100">
-                        <div class="card-body">
-                            <a href="management/auditlog" class="stretched-link">
-                                <h4 class="card-title"><i class="bi bi-people"></i> @localizer["Audit Log Title"]</h4>
-                                <p class="card-text">@localizer["Audit Log Text", _csideOptions.AppName]</p>
-                            </a>
-                        </div>
-                    </div>
+<h1>@localizer["Management Title"]</h1>
+<p>@localizer["Management Text", _csideOptions.AppName]</p>
+<div class="container-fluid">
+    <div class="row justify-content-start row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 ">
+        <div class="col">
+            <div class="card link-card h-100">
+                <div class="card-body">
+                    <a href="management/users" class="stretched-link">
+                        <h4 class="card-title"><i class="bi bi-people"></i> @localizer["User Management Title"]</h4>
+                    </a>
+                    <p class="card-text">@localizer["User Management Text"]</p>
                 </div>
             </div>
         </div>
 
-    </Authorized>
-</AuthorizeView>
+        <div class="col">
+            <div class="card link-card h-100">
+                <div class="card-body">
+                    <a href="management/auditlog" class="stretched-link">
+                        <h4 class="card-title"><i class="bi bi-people"></i> @localizer["Audit Log Title"]</h4>
+                        <p class="card-text">@localizer["Audit Log Text", _csideOptions.AppName]</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code{
-    
     private List<BreadcrumbItem>? NavItems;
     private CSIDEOptions _csideOptions => CsideOptions.Value;
 
@@ -60,4 +51,5 @@
             new BreadcrumbItem { Text = localizer["Management Title"], Href = "management", IsCurrentPage = true }
         };
     }
+
 }

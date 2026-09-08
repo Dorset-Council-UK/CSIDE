@@ -19,6 +19,7 @@ namespace CSIDE.Web.Components.Pages.Management
         private List<User>? AvailableUsers { get; set; }
 
         private bool IsBusy { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             IsBusy = true;
@@ -34,6 +35,7 @@ namespace CSIDE.Web.Components.Pages.Management
             AvailableUsers = [.. AllUsers.Where(u => !activeUserIds.Contains(u.Id, StringComparer.OrdinalIgnoreCase))];
             IsBusy = false;
         }
+
         private async Task<GridDataProviderResult<User>> ActiveUserDataProvider(GridDataProviderRequest<User> request)
         {
             if (ActiveUsers is null)

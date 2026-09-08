@@ -1,22 +1,16 @@
 ﻿@page "/management/auditlog"
 @using CSIDE.Web.Components.Pages.Account
+@attribute [Authorize(Policy = "ManagementStepUp")]
 
-<AuthorizeView Roles="Administrator">
-    <NotAuthorized>
-        <AccessDenied></AccessDenied>
-    </NotAuthorized>
-    <Authorized>
-        <PageTitle>@localizer["Audit Log Title"]</PageTitle>
-        <div>
-            <Breadcrumb Items="NavItems"></Breadcrumb>
-        </div>
+<PageTitle>@localizer["Audit Log Title"]</PageTitle>
+<div>
+    <Breadcrumb Items="NavItems"></Breadcrumb>
+</div>
 
 
-        <h1>@localizer["Audit Log Title"]</h1>
+<h1>@localizer["Audit Log Title"]</h1>
 
-        <AuditLogList></AuditLogList>
-    </Authorized>
-</AuthorizeView>
+<AuditLogList></AuditLogList>
 
 @code{
     private List<BreadcrumbItem>? NavItems;
@@ -30,4 +24,5 @@
             new BreadcrumbItem { Text = localizer["Audit Log Title"], Href = "management/auditlog", IsCurrentPage = true }
         };
     }
+
 }

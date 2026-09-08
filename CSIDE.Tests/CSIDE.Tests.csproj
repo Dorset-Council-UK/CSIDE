@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CSIDE.API\CSIDE.API.csproj" />
     <ProjectReference Include="..\CSIDE.Data\CSIDE.Data.csproj" />
+    <ProjectReference Include="..\CSIDE.Web\CSIDE.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

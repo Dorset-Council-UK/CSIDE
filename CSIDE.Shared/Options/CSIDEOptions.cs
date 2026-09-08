@@ -14,6 +14,7 @@ public record CSIDEOptions
     public required KeyVaultOptions KeyVault { get; init; }
     public required GovNotifySettings GovNotify { get; init; }
     public required ApiKeyAuthenticationOptions ApiKeyAuthentication { get; init; }
+    public StepUpAuthenticationOptions Authentication { get; init; } = new();
     public ThemeOptions Theme { get; init; } = new();
     public DatabaseOptions Database { get; init; } = new();
 
