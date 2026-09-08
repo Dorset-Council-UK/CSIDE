@@ -1,0 +1,45 @@
+@page "/Account/StepUp"
+@using CSIDE.Shared.Options
+
+@inject IOptions<StepUpAuthenticationOptions> AuthenticationOptions
+@inject NavigationManager Navigation
+
+<PageTitle>@localizer["Step Up Title"]</PageTitle>
+
+<h1>@localizer["Step Up Title"]</h1>
+
+<p>@localizer["Step Up Text"]</p>
+
+<div class="d-flex gap-2">
+    <a class="btn btn-primary" href="@ContinueUrl">@localizer["Continue Label"]</a>
+    <a class="btn btn-link" href="">@localizer["Cancel Label"]</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private bool _redirectTriggered;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender
+            && !_redirectTriggered
+            && !AuthenticationOptions.Value.UseStepUpExplainerPage)
+        {
+            _redirectTriggered = true;
+            Navigation.NavigateTo(ContinueUrl, forceLoad: true);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private string ContinueUrl
+    {
+        get
+        {
+            var returnUrl = string.IsNullOrWhiteSpace(ReturnUrl) ? "/management" : ReturnUrl;
+            return $"Account/BeginStepUp?returnUrl={Uri.EscapeDataString(returnUrl)}";
+        }
+    }
+}

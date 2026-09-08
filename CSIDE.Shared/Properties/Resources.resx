@@ -1860,4 +1860,25 @@
   <data name="No Route Closure Documents Message" xml:space="preserve">
     <value>There are no route closure notices</value>
   </data>
+  <data name="Management Step Up Redirect Message" xml:space="preserve">
+    <value>Additional verification is required for management. Redirecting to sign-in.</value>
+  </data>
+  <data name="MFA Session Status Label" xml:space="preserve">
+    <value>MFA status</value>
+  </data>
+  <data name="MFA Session Enabled Text" xml:space="preserve">
+    <value>MFA has been completed in this session.</value>
+  </data>
+  <data name="MFA Session Not Enabled Text" xml:space="preserve">
+    <value>MFA has not been completed in this session.</value>
+  </data>
+  <data name="Step Up Title" xml:space="preserve">
+    <value>Additional verification required</value>
+  </data>
+  <data name="Step Up Text" xml:space="preserve">
+    <value>You need to reauthenticate using multi-factor authentication before you can continue to management.</value>
+  </data>
+  <data name="Continue Label" xml:space="preserve">
+    <value>Continue</value>
+  </data>
 </root>
