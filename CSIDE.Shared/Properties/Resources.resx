@@ -1881,4 +1881,7 @@
   <data name="Continue Label" xml:space="preserve">
     <value>Continue</value>
   </data>
+  <data name="Too Many Results To Export Warning Label" xml:space="preserve">
+    <value>Too many results to export. Refine your search to export.</value>
+  </data>
 </root>

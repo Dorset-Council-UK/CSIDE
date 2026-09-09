@@ -32,7 +32,7 @@ internal static class PPOApplicationEndpoints
             DateOnly? ReceivedDateFrom,
             DateOnly? ReceivedDateTo,
             int pageNumber = 1,
-            int pageSize = IDMMOService.DefaultPageSize,
+            int pageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default)
     {
         var applications = await service.GetPublicPPOApplicationsBySearchParameters(ParishIds,

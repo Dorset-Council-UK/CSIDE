@@ -13,17 +13,25 @@
 
 <p><a href="PPO#search-form">@localizer["Search Again Label"]</a></p>
 
-<button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
-    @if (IsExporting)
-    {
-        <Spinner Size="SpinnerSize.Small" class="me-3"/>
-    }
-    else
-    {
-        <Icon Name="IconName.Download" class="me-3" />
-    }
-    @localizer["Download Label"]
-</button>
+@if (CanExport)
+{
+    <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+        @if (IsExporting)
+        {
+            <Spinner Size="SpinnerSize.Small" class="me-3" />
+        }
+        else
+        {
+            <Icon Name="IconName.Download" class="me-3" />
+        }
+        @localizer["Download Label"]
+    </button>
+
+}
+else
+{
+    <p class="text-muted"><Icon Name="IconName.ExclamationCircle"></Icon> @localizer["Too Many Results To Export Warning Label"]</p>
+}
 
 <Grid TItem="PPOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
@@ -103,6 +111,8 @@ Responsive="true">
 
     private IJSObjectReference? _jsModule;
     private bool IsExporting;
+    private int? TotalResultCount;
+    private bool CanExport => TotalResultCount is not null && TotalResultCount <= IPPOService.MaxExportableRows;
 
     public async Task<GridDataProviderResult<PPOApplication>> PPOApplicationDataProvider(GridDataProviderRequest<PPOApplication> request)
     {

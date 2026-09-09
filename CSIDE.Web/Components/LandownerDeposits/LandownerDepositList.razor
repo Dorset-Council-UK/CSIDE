@@ -11,18 +11,23 @@
 @implements IAsyncDisposable
 
 <p><a href="landowner-deposits#search-form">@localizer["Search Again Label"]</a></p>
-
+@if(CanExport){
     <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
-    @if (IsExporting)
-    {
-        <Spinner Size="SpinnerSize.Small" class="me-3"/>
-    }
-    else
-    {
-        <Icon Name="IconName.Download" class="me-3" />
-    }
-    @localizer["Download Label"]
-</button>
+        @if (IsExporting)
+        {
+            <Spinner Size="SpinnerSize.Small" class="me-3"/>
+        }
+        else
+        {
+            <Icon Name="IconName.Download" class="me-3" />
+        }
+        @localizer["Download Label"]
+    </button>
+}
+else
+{
+<p class="text-muted"><Icon Name="IconName.ExclamationCircle"></Icon> @localizer["Too Many Results To Export Warning Label"]</p>
+}
 
 <Grid TItem="LandownerDeposit"
       Class="table table-hover table-bordered table-striped mt-2"
@@ -90,6 +95,8 @@
 
     private IJSObjectReference? _jsModule;
     private bool IsExporting;
+    private int? TotalResultCount;
+    private bool CanExport => TotalResultCount is not null && TotalResultCount <= ILandownerDepositService.MaxExportableRows;
 
     public async Task<GridDataProviderResult<LandownerDeposit>> LandownerDepositDataProvider(GridDataProviderRequest<LandownerDeposit> request)
     {
@@ -112,6 +119,8 @@
                 request.PageNumber,
                 request.PageSize, request.CancellationToken);
 
+        TotalResultCount = result.TotalResults;
+
         return await Task.FromResult(new GridDataProviderResult<LandownerDeposit> { Data = result.Results, TotalCount = result.TotalResults });
     }
 
@@ -119,6 +128,11 @@
 
     private async Task OnExport()
     {
+        if (!CanExport)
+        {
+            return;
+        }
+
         IsExporting = true;
 
         try

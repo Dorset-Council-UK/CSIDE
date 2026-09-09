@@ -8,6 +8,7 @@ namespace CSIDE.Data.Services;
 public interface IMaintenanceJobsService
 {
     const int DefaultPageSize = 100;
+    const int MaxExportableRows = 100_000;
 
     /// <summary>
     /// Gets all maintenance jobs from the database.

@@ -55,7 +55,7 @@ namespace CSIDE.Data.Services
             string OrderBy = "Id",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
-            int PageSize = IDMMOService.DefaultPageSize,
+            int PageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default)
         {
             var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
@@ -203,6 +203,7 @@ namespace CSIDE.Data.Services
             var projectedQuery = query
                 .OrderByDescending(p => p.ReceivedDate)
                 .ThenByDescending(p => p.Id)
+                .Take(IPPOService.MaxExportableRows)
                 .Select(p => new DownloadablePPOApplicationExportRow
                 {
                     Id = p.Id,
@@ -539,7 +540,7 @@ namespace CSIDE.Data.Services
             string OrderBy = "Id",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
-            int PageSize = IDMMOService.DefaultPageSize,
+            int PageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default)
         {
             var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;

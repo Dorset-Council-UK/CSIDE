@@ -232,6 +232,7 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
 
         var projectedQuery = query
             .OrderBy(r => r.RouteCode)
+            .Take(IRightsOfWayService.MaxExportableRows)
             .Select(r => new DownloadableRouteExportRow
             {
                 RouteCode = r.RouteCode,

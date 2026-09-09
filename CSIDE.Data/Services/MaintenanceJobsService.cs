@@ -263,6 +263,7 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         var projectedQuery = query
             .OrderByDescending(r => r.LogDate)
             .ThenByDescending(r => r.Id)
+            .Take(IMaintenanceJobsService.MaxExportableRows)
             .Select(j => new DownloadableMaintenanceJobExportRow
             {
                 Id = j.Id,

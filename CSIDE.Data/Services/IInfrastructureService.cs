@@ -9,6 +9,7 @@ namespace CSIDE.Data.Services
     public interface IInfrastructureService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
 
         Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default);
         Task<ICollection<BridgeSurvey>> GetValidatedBridgeSurveysByInfrastructureItemId(int infrastructureItemId, CancellationToken ct = default);

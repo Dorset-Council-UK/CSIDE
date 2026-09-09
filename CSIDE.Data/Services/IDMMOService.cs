@@ -7,6 +7,7 @@ namespace CSIDE.Data.Services
     public interface IDMMOService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
         Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default);
         Task<PagedResult<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
             string[]? parishIds,

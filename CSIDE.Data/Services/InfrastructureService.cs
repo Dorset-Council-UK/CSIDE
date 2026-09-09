@@ -152,6 +152,7 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
 
         var projectedQuery = query
             .OrderBy(i => i.Id)
+            .Take(IInfrastructureService.MaxExportableRows)
             .Select(i => new DownloadableInfrastructureItemExportRow
             {
                 Id = i.Id,

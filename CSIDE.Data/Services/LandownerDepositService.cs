@@ -159,6 +159,7 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         var projectedQuery = query
             .OrderByDescending(ld => ld.ReceivedDate)
             .ThenByDescending(ld => ld.Id)
+            .Take(ILandownerDepositService.MaxExportableRows)
             .Select(ld => new DownloadableLandownerDepositExportRow
             {
                 Id = ld.Id,

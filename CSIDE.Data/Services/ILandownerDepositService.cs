@@ -7,6 +7,7 @@ namespace CSIDE.Data.Services
     public interface ILandownerDepositService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
         Task<LandownerDeposit?> GetLandownerDepositById(int Id, int SecondaryId, CancellationToken ct = default);
         Task<PagedResult<LandownerDeposit>> GetLandownerDepositsBySearchParameters(
             string[]? ParishIds,

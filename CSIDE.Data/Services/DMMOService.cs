@@ -207,6 +207,7 @@ public class DMMOService(IDbContextFactory<ApplicationDbContext> contextFactory,
 
         var projectedQuery = query
             .OrderBy(d => d.Id)
+            .Take(IDMMOService.MaxExportableRows)
             .Select(d => new DownloadableDMMOApplicationExportRow
             {
                 Id = d.Id,

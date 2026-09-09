@@ -6,6 +6,8 @@ namespace CSIDE.Data.Services
 {
     public interface IPPOService
     {
+        const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
         Task<PPOApplication?> GetPPOApplicationById(int id, CancellationToken ct = default);
         Task<ICollection<PPOApplication>> GetAllPPOApplications(CancellationToken ct);
         Task<PagedResult<PPOApplication>?> GetPPOApplicationsBySearchParameters(
@@ -22,7 +24,7 @@ namespace CSIDE.Data.Services
             string OrderBy = "Id",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
-            int PageSize = IDMMOService.DefaultPageSize,
+            int PageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default);
         IAsyncEnumerable<DownloadablePPOApplicationExportRow> GetDownloadablePPOApplicationsBySearchParameters(
             string[]? ParishIds,
@@ -77,7 +79,7 @@ namespace CSIDE.Data.Services
             string OrderBy = "Id",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
-            int PageSize = IDMMOService.DefaultPageSize,
+            int PageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default);
 
     }
