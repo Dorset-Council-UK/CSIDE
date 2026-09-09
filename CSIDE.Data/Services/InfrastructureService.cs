@@ -1,5 +1,4 @@
 ﻿using CSIDE.Data.Models.Infrastructure;
-using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using CSIDE.Data.Models.Surveys;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +8,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CSIDE.Data.Services;
 

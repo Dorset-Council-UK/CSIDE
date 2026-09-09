@@ -17,6 +17,7 @@ export async function downloadFileFromStream(fileName: string, contentStreamRefe
         anchorElement.remove();
     }
     finally {
-        URL.revokeObjectURL(url);
+        // Allow the click event to start the download before revoking the URL.
+        setTimeout(() => URL.revokeObjectURL(url), 0);setTimeout(() => URL.revokeObjectURL(url), 0);
     }
 }

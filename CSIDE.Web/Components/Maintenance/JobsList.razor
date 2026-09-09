@@ -109,11 +109,6 @@ Responsive="true">
     private IJSObjectReference? _jsModule;
     private bool IsExporting;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
     public async Task<GridDataProviderResult<Job>> JobsDataProvider(GridDataProviderRequest<Job> request)
     {
         //handle sorting
