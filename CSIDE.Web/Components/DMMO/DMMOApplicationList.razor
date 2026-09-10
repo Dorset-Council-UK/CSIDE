@@ -13,9 +13,8 @@
 
 <p><a href="DMMO#search-form">@localizer["Search Again Label"]</a></p>
 
-@if (CanExport)
-{
-    <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@IsExporting">
+<Tooltip Class="d-inline-block" Title="@ExportTooltip">
+    <button type="button" class="btn btn-outline-secondary" @onclick="OnExport" disabled="@(!CanExport || IsExporting)">
         @if (IsExporting)
         {
             <Spinner Size="SpinnerSize.Small" class="me-3" />
@@ -26,12 +25,7 @@
         }
         @localizer["Download Label"]
     </button>
-
-}
-else
-{
-    <p class="text-muted"><Icon Name="IconName.ExclamationCircle"></Icon> @localizer["Too Many Results To Export Warning Label"]</p>
-}
+</Tooltip>
 
 <Grid TItem="DMMOApplication"
 Class="table table-hover table-bordered table-striped mt-2"
@@ -114,7 +108,9 @@ Responsive="true">
     private IJSObjectReference? _jsModule;
     private bool IsExporting;
     private int? TotalResultCount;
-    private bool CanExport => TotalResultCount is not null && TotalResultCount <= IDMMOService.MaxExportableRows;
+    private bool CanExport => TotalResultCount is not null && (TotalResultCount > 0 && TotalResultCount <= IDMMOService.MaxExportableRows);
+    private string? ExportTooltip =>
+        CanExport ? localizer["Download Search Results Tooltip"].Value : localizer["Result Count Export Warning Label"].Value;
 
     public async Task<GridDataProviderResult<DMMOApplication>> DMMOApplicationDataProvider(GridDataProviderRequest<DMMOApplication> request)
     {
@@ -143,6 +139,9 @@ Responsive="true">
                 sortDirection,
                 request.PageNumber,
                 request.PageSize, request.CancellationToken);
+
+        TotalResultCount = result?.TotalResults;
+        await InvokeAsync(StateHasChanged);
 
         return await Task.FromResult(new GridDataProviderResult<DMMOApplication> { Data = result?.Results ?? [], TotalCount = result?.TotalResults ?? 0 });
     }

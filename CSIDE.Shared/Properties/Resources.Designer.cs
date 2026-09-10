@@ -2203,6 +2203,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download your search results to Excel.
+        /// </summary>
+        public static string Download_Search_Results_Tooltip {
+            get {
+                return ResourceManager.GetString("Download Search Results Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate of.
         /// </summary>
         public static string Duplicate_Job_ID_Label {
@@ -4435,6 +4444,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Too many or not enough results to export. Refine your search to export..
+        /// </summary>
+        public static string Result_Count_Export_Warning_Label {
+            get {
+                return ResourceManager.GetString("Result Count Export Warning Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Rights of Way with ID &apos;{0}&apos; could be found.
         /// </summary>
         public static string Right_of_Way_Not_Found_Error_Message {
@@ -5061,15 +5079,6 @@ namespace CSIDE.Shared.Properties {
         public static string Too_Many_Files_Upload_Error {
             get {
                 return ResourceManager.GetString("Too Many Files Upload Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Too many results to export. Refine your search to export..
-        /// </summary>
-        public static string Too_Many_Results_To_Export_Warning_Label {
-            get {
-                return ResourceManager.GetString("Too Many Results To Export Warning Label", resourceCulture);
             }
         }
         
