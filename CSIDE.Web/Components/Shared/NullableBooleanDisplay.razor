@@ -1,4 +1,6 @@
-﻿@(Value.HasValue ? (Value.Value ? localizer["Yes Label"] : localizer["No Label"]) : NullLabel ?? localizer["Not Provided Label"])
+﻿@using CSIDE.Web.Extensions
+
+@(Value.ToLocalizedDisplayString(localizer, NullLabel))
 
 @code {
     [Parameter, EditorRequired]

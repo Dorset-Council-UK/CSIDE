@@ -8,6 +8,7 @@ namespace CSIDE.Data.Services
     public interface IRightsOfWayService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
         Task<Route?> GetRouteByCode(string routeCode, CancellationToken ct = default);
         Task<Route?> GetNearestRoute(Point location, int maxDistance = 20,CancellationToken ct = default);
         Task<ICollection<Route>> GetNearestRoutes(Geometry geometry, int maxDistance = 50, int maxRoutes = 50, CancellationToken ct = default);
@@ -25,6 +26,17 @@ namespace CSIDE.Data.Services
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
+            CancellationToken ct = default);
+
+        IAsyncEnumerable<DownloadableRouteExportRow> GetDownloadableRoutesBySearchParameters(
+            string? RouteId,
+            string? Name,
+            string[]? ParishIds,
+            string? ParishId,
+            string? MaintenanceTeamId,
+            string? OperationalStatusId,
+            string? LegalStatusId,
+            string? RouteTypeId,
             CancellationToken ct = default);
         Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default);
         Task<IReadOnlyCollection<RouteType>> GetRouteTypeOptions(CancellationToken ct = default);

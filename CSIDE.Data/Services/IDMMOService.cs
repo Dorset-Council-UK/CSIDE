@@ -7,6 +7,7 @@ namespace CSIDE.Data.Services
     public interface IDMMOService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
         Task<DMMOApplication?> GetDMMOApplicationById(int ApplicationId, CancellationToken ct = default);
         Task<PagedResult<DMMOApplication>?> GetDMMOApplicationsBySearchParameters(
             string[]? parishIds,
@@ -24,6 +25,19 @@ namespace CSIDE.Data.Services
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
             int PageSize = IDMMOService.DefaultPageSize,
+            CancellationToken ct = default);
+        IAsyncEnumerable<DownloadableDMMOApplicationExportRow> GetDownloadableDMMOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationTypeId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationClaimedStatusId,
+            string? Location,
+            DateOnly? ApplicationDateFrom,
+            DateOnly? ApplicationDateTo,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            bool? IsPublic,
             CancellationToken ct = default);
         Task<DMMOOrder?> GetDMMOOrderById(int OrderId, int ApplicationId, CancellationToken ct = default);
         Task<DMMOCouncilDecision?> GetCouncilDecisionById(int CouncilDecisionId, int ApplicationId, CancellationToken ct = default);

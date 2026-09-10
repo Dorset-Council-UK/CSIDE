@@ -1,5 +1,4 @@
-﻿using CSIDE.Data.Models.Maintenance;
-using CSIDE.Data.Models.RightsOfWay;
+﻿using CSIDE.Data.Models.RightsOfWay;
 using CSIDE.Data.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -7,6 +6,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services;
 
@@ -124,6 +124,51 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
             .Include(r => r.RouteType)
             .AsQueryable();
 
+        query = ApplySearchFilters(query, RouteId, Name, ParishIds, ParishId, MaintenanceTeamId, OperationalStatusId, LegalStatusId, RouteTypeId);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<Route>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+    }
+
+    private static IQueryable<Route> ApplyOrdering(IQueryable<Route> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Route, object>>? sortExpression))
+        {
+            return query.OrderByDescending(l => l.RouteCode);
+        }
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.RouteCode)
+            : query.OrderBy(sortExpression).ThenBy(l => l.RouteCode);
+    }
+
+    private static IQueryable<Route> ApplySearchFilters(
+        IQueryable<Route> query,
+        string? RouteId,
+        string? Name,
+        string[]? ParishIds,
+        string? ParishId,
+        string? MaintenanceTeamId,
+        string? OperationalStatusId,
+        string? LegalStatusId,
+        string? RouteTypeId)
+    {
         if (RouteId is not null)
         {
             query = query.Where(j => j.RouteCode == RouteId.ToUpper());
@@ -163,36 +208,68 @@ public class RightsOfWayService(IDbContextFactory<ApplicationDbContext> contextF
         {
             query = query.Where(j => j.RouteTypeId == parsedRouteTypeId);
         }
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
-
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<Route>
-        {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
+        return query;
     }
-    private static IQueryable<Route> ApplyOrdering(IQueryable<Route> query, string orderBy, ListSortDirection orderDirection)
+
+    public async IAsyncEnumerable<DownloadableRouteExportRow> GetDownloadableRoutesBySearchParameters(
+        string? RouteId,
+        string? Name,
+        string[]? ParishIds,
+        string? ParishId,
+        string? MaintenanceTeamId,
+        string? OperationalStatusId,
+        string? LegalStatusId,
+        string? RouteTypeId,
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
-        // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<Route, object>>? sortExpression))
-        {
-            return query.OrderByDescending(l => l.RouteCode);
-        }
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.Routes
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
 
-        return orderDirection == ListSortDirection.Descending
-            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.RouteCode)
-            : query.OrderBy(sortExpression).ThenBy(l => l.RouteCode);
+        query = ApplySearchFilters(query, RouteId, Name, ParishIds, ParishId, MaintenanceTeamId, OperationalStatusId, LegalStatusId, RouteTypeId);
+
+        var projectedQuery = query
+            .OrderBy(r => r.RouteCode)
+            .Take(IRightsOfWayService.MaxExportableRows)
+            .Select(r => new DownloadableRouteExportRow
+            {
+                RouteCode = r.RouteCode,
+                Name = r.Name,
+                RouteTypeName = r.RouteType != null ? r.RouteType.Name : null,
+                ParishName = r.Parish != null ? r.Parish.Name : null,
+                LegalStatusName = r.LegalStatus != null ? r.LegalStatus.Name : null,
+                OperationalStatusName = r.OperationalStatus != null ? r.OperationalStatus.Name : null,
+                OperationalStatusIsClosed = r.OperationalStatus != null && r.OperationalStatus.IsClosed,
+                ClosureStartDate = r.ClosureStartDate,
+                ClosureEndDate = r.ClosureEndDate,
+                ClosureIsIndefinite = r.ClosureIsIndefinite,
+                MaintenanceTeamName = r.MaintenanceTeam != null ? r.MaintenanceTeam.Name : null,
+                Notes = r.Notes,
+                LatestStatementText = r.Statements
+                    .OrderByDescending(s => s.CreatedDate)
+                    .ThenByDescending(s => s.Id)
+                    .Select(s => s.StatementText)
+                    .FirstOrDefault(),
+                LatestStatementStartGridRef = r.Statements
+                    .OrderByDescending(s => s.CreatedDate)
+                    .ThenByDescending(s => s.Id)
+                    .Select(s => s.StartGridRef)
+                    .FirstOrDefault(),
+                LatestStatementEndGridRef = r.Statements
+                    .OrderByDescending(s => s.CreatedDate)
+                    .ThenByDescending(s => s.Id)
+                    .Select(s => s.EndGridRef)
+                    .FirstOrDefault()
+            });
+
+        await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return row;
+        }
     }
+
     public async Task<IReadOnlyCollection<LegalStatus>> GetLegalStatusOptions(CancellationToken ct = default)
     {
         //TODO: cache this

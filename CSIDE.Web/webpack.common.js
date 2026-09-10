@@ -6,6 +6,7 @@ module.exports = {
     miniMap: './Scripts/MiniMap.ts',
     routeSelectorMap: './Scripts/RouteSelectorMap.ts',
     locationFetcher: './Scripts/LocationFetcher.ts',
+    download: './Scripts/Download.ts',
   },
   experiments: {
     outputModule: true,

@@ -8,12 +8,17 @@ namespace CSIDE.Data.Services;
 public interface IMaintenanceJobsService
 {
     const int DefaultPageSize = 100;
+    const int MaxExportableRows = 100_000;
 
     /// <summary>
     /// Gets all maintenance jobs from the database.
     /// </summary>
     Task<IReadOnlyCollection<Job>> GetMaintenanceJobs(CancellationToken ct = default);
 
+    /// <summary>
+    /// Gets all maintenance jobs from the database that match the specified search parameters, with paging and sorting options.
+    /// </summary>
+    /// <returns></returns>
     Task<PagedResult<Job>> GetMaintenanceJobsBySearchParameters(
         string? RouteId,
         string[]? ParishIds,
@@ -31,6 +36,24 @@ public interface IMaintenanceJobsService
         ListSortDirection OrderDirection = ListSortDirection.Descending,
         int PageNumber = 1,
         int PageSize = DefaultPageSize,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets all maintenance jobs from the database that match the specified search parameters, without paging and sorting, suitable for export.
+    /// </summary>
+    IAsyncEnumerable<DownloadableMaintenanceJobExportRow> GetDownloadableMaintenanceJobsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        string[]? ProblemTypeIds,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo,
         CancellationToken ct = default);
 
     /// <summary>

@@ -9,6 +9,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services;
 
@@ -136,6 +137,61 @@ public class LandownerDepositService(IDbContextFactory<ApplicationDbContext> con
         }
 
         return query;
+    }
+
+    public async IAsyncEnumerable<DownloadableLandownerDepositExportRow> GetDownloadableLandownerDepositsBySearchParameters(
+        string[]? ParishIds,
+        string? ParishId,
+        string? Location,
+        [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.LandownerDeposits
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
+
+        // Filter out any empty/whitespace entries that may have come through
+        var filteredParishIds = ParishIds?.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+
+        query = await ApplySearchFilters(query, filteredParishIds, ParishId, Location);
+
+        var projectedQuery = query
+            .OrderByDescending(ld => ld.ReceivedDate)
+            .ThenByDescending(ld => ld.Id)
+            .Take(ILandownerDepositService.MaxExportableRows)
+            .Select(ld => new DownloadableLandownerDepositExportRow
+            {
+                Id = ld.Id,
+                SecondaryId = ld.SecondaryId,
+                LandownerDepositTypeNames = ld.LandownerDepositTypes
+                    .Where(t => t.LandownerDepositTypeName != null)
+                    .Select(t => t.LandownerDepositTypeName!.Name)
+                    .ToList(),
+                ReceivedDate = ld.ReceivedDate,
+                Location = ld.Location,
+                FormCompleted = ld.FormCompleted,
+                MapCorrect = ld.MapCorrect,
+                FeePaid = ld.FeePaid,
+                AllSigned = ld.AllSigned,
+                DateAcknowledged = ld.DateAcknowledged,
+                ChequeReceiptNumber = ld.ChequeReceiptNumber,
+                ChequePaidInDate = ld.ChequePaidInDate,
+                NoticeDrafted = ld.NoticeDrafted,
+                WebsiteNoticePublished = ld.WebsiteNoticePublished,
+                EmailNoticeSent = ld.EmailNoticeSent,
+                OnsiteNoticeErected = ld.OnsiteNoticeErected,
+                WebsiteEntryAdded = ld.WebsiteEntryAdded,
+                SentToArchive = ld.SentToArchive,
+                InternalArchiveReferenceNo = ld.InternalArchiveReferenceNo,
+                ExternalArchiveReferenceNo = ld.ExternalArchiveReferenceNo,
+                PrimaryContact = ld.PrimaryContact
+            });
+
+        await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return row;
+        }
     }
 
     public async Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int landownerDepositSecondaryId, CancellationToken ct = default)

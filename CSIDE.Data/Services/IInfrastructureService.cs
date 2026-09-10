@@ -9,6 +9,7 @@ namespace CSIDE.Data.Services
     public interface IInfrastructureService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
 
         Task<InfrastructureItem?> GetInfrastructureItemById(int id, CancellationToken ct = default);
         Task<ICollection<BridgeSurvey>> GetValidatedBridgeSurveysByInfrastructureItemId(int infrastructureItemId, CancellationToken ct = default);
@@ -24,6 +25,15 @@ namespace CSIDE.Data.Services
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
+            CancellationToken ct = default);
+        IAsyncEnumerable<DownloadableInfrastructureItemExportRow> GetDownloadableInfrastructureItemsBySearchParameters(
+            string? RouteId,
+            string[]? ParishIds,
+            string? ParishId,
+            string? MaintenanceTeamId,
+            string? InfrastructureTypeId,
+            DateOnly? InstallationDateFrom,
+            DateOnly? InstallationDateTo,
             CancellationToken ct = default);
         Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default);
         Task<BridgeSurvey?> GetBridgeSurveyById(int SurveyId, CancellationToken ct = default);

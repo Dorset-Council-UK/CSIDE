@@ -9,6 +9,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services
 {
@@ -54,7 +55,7 @@ namespace CSIDE.Data.Services
             string OrderBy = "Id",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
-            int PageSize = IDMMOService.DefaultPageSize,
+            int PageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default)
         {
             var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;
@@ -176,6 +177,56 @@ namespace CSIDE.Data.Services
             }
 
             return query;
+        }
+
+        public async IAsyncEnumerable<DownloadablePPOApplicationExportRow> GetDownloadablePPOApplicationsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? ApplicationLegislationId,
+            string? ApplicationCaseStatusId,
+            string? ApplicationTypeId,
+            string? ApplicationPriorityId,
+            string? Location,
+            DateOnly? ReceivedDateFrom,
+            DateOnly? ReceivedDateTo,
+            bool? IsPublic,
+            [EnumeratorCancellation] CancellationToken ct = default)
+        {
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+            var query = context.PPOApplication
+                .AsNoTracking()
+                .IgnoreAutoIncludes()
+                .AsQueryable();
+
+            query = await ApplySearchFilters(query, ParishIds, ParishId, ApplicationLegislationId, ApplicationCaseStatusId, ApplicationTypeId, ApplicationPriorityId, Location, ReceivedDateFrom, ReceivedDateTo, IsPublic);
+
+            var projectedQuery = query
+                .OrderByDescending(p => p.ReceivedDate)
+                .ThenByDescending(p => p.Id)
+                .Take(IPPOService.MaxExportableRows)
+                .Select(p => new DownloadablePPOApplicationExportRow
+                {
+                    Id = p.Id,
+                    LegislationName = p.Legislation != null ? p.Legislation.Name : null,
+                    CaseStatusName = p.CaseStatus != null ? p.CaseStatus.Name : null,
+                    ApplicationTypeNames = p.PPOTypes.Select(t => t.Type.Name).ToList(),
+                    ApplicationDetails = p.ApplicationDetails,
+                    LocationDescription = p.LocationDescription,
+                    ReceivedDate = p.ReceivedDate,
+                    CaseOfficer = p.CaseOfficer,
+                    DeterminationDate = p.DeterminationDate,
+                    CouncilLandAffected = p.CouncilLandAffected,
+                    Charge = p.Charge,
+                    InternalArchiveReferenceNo = p.InternalArchiveReferenceNo,
+                    ExternalArchiveReferenceNo = p.ExternalArchiveReferenceNo,
+                    PrivateComments = p.PrivateComments,
+                    PublicComments = p.PublicComments
+                });
+
+            await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+            {
+                yield return row;
+            }
         }
 
         public async Task<ICollection<PPOOrder>> GetPPOOrderByApplicationId(int applicationId, CancellationToken ct = default)
@@ -489,7 +540,7 @@ namespace CSIDE.Data.Services
             string OrderBy = "Id",
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
-            int PageSize = IDMMOService.DefaultPageSize,
+            int PageSize = IPPOService.DefaultPageSize,
             CancellationToken ct = default)
         {
             var take = PageSize < 1 ? ILandownerDepositService.DefaultPageSize : PageSize;

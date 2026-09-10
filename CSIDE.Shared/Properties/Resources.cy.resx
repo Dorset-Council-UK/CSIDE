@@ -1892,4 +1892,10 @@ Creu Blaendal Perchennog Tir newydd gan ddefnyddio map</value>
   <data name="Continue Label" xml:space="preserve">
     <value>Parhau</value>
   </data>
+  <data name="Result Count Export Warning Label" xml:space="preserve">
+    <value>Gormod neu ddim digon o ganlyniadau i'w hallforio. Mireiniwch eich chwiliad i'w allforio.</value>
+  </data>
+  <data name="Download Search Results Tooltip" xml:space="preserve">
+    <value>Lawrlwythwch eich canlyniadau chwilio i Excel</value>
+  </data>
 </root>

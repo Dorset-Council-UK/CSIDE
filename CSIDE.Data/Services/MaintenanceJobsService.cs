@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Net;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services;
 
@@ -218,6 +219,77 @@ public class MaintenanceJobsService(IDbContextFactory<ApplicationDbContext> cont
         }
 
         return query;
+    }
+
+    public async IAsyncEnumerable<DownloadableMaintenanceJobExportRow> GetDownloadableMaintenanceJobsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? AssignedToTeamId,
+        string? JobPriorityId,
+        bool? IsComplete,
+        string? JobStatusId,
+        string[]? ProblemTypeIds,
+        DateOnly? LogDateFrom,
+        DateOnly? LogDateTo,
+        DateOnly? CompletedDateFrom,
+        DateOnly? CompletedDateTo,
+        [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.MaintenanceJobs
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
+
+        if (RouteId is not null)
+        {
+            query = query.Where(j => j.RouteId == RouteId.ToUpper());
+        }
+
+        query = ApplySearchFilters(query,
+                                   ParishIds,
+                                   ParishId,
+                                   AssignedToTeamId,
+                                   JobPriorityId,
+                                   IsComplete,
+                                   JobStatusId,
+                                   ProblemTypeIds,
+                                   LogDateFrom,
+                                   LogDateTo,
+                                   CompletedDateFrom,
+                                   CompletedDateTo);
+
+        var projectedQuery = query
+            .OrderByDescending(r => r.LogDate)
+            .ThenByDescending(r => r.Id)
+            .Take(IMaintenanceJobsService.MaxExportableRows)
+            .Select(j => new DownloadableMaintenanceJobExportRow
+            {
+                Id = j.Id,
+                LogDate = j.LogDate,
+                ProblemDescription = j.ProblemDescription,
+                CompletionDate = j.CompletionDate,
+                WorkDone = j.WorkDone,
+                LoggedByName = j.LoggedByName,
+                JobPriorityDescription = j.JobPriority != null ? j.JobPriority.Description : null,
+                Easting = j.Geom != null ? j.Geom.X : null,
+                Northing = j.Geom != null ? j.Geom.Y : null,
+                JobStatusDescription = j.JobStatus != null ? j.JobStatus.Description : null,
+                DuplicateJobId = j.DuplicateJobId,
+                RouteId = j.RouteId,
+                MaintenanceTeamName = j.MaintenanceTeam != null ? j.MaintenanceTeam.Name : null,
+                ParishName = j.Parish != null ? j.Parish.Name : null,
+                ProblemTypeNames = j.ProblemTypes
+                    .Where(p => p.ProblemType != null)
+                    .Select(p => p.ProblemType!.Name)
+                    .ToList()
+            });
+
+        await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return row;
+        }
     }
 
     public async Task<IReadOnlyCollection<Team?>> GetMaintenanceTeamForUser(string userId, CancellationToken ct = default)

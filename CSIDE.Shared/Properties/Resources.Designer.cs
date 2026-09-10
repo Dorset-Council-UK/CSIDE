@@ -1699,6 +1699,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string Continue_Label {
+            get {
+                return ResourceManager.GetString("Continue Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Decision date.
         /// </summary>
         public static string Council_Decision_Date_Label {
@@ -2190,6 +2199,15 @@ namespace CSIDE.Shared.Properties {
         public static string Download_Label {
             get {
                 return ResourceManager.GetString("Download Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download your search results to Excel.
+        /// </summary>
+        public static string Download_Search_Results_Tooltip {
+            get {
+                return ResourceManager.GetString("Download Search Results Tooltip", resourceCulture);
             }
         }
         
@@ -3346,6 +3364,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Additional verification is required for management. Redirecting to sign-in..
+        /// </summary>
+        public static string Management_Step_Up_Redirect_Message {
+            get {
+                return ResourceManager.GetString("Management Step Up Redirect Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage users for {0} and view the audit logs.
         /// </summary>
         public static string Management_Text {
@@ -3414,6 +3441,33 @@ namespace CSIDE.Shared.Properties {
         public static string Metres_Label {
             get {
                 return ResourceManager.GetString("Metres Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MFA has been completed in this session..
+        /// </summary>
+        public static string MFA_Session_Enabled_Text {
+            get {
+                return ResourceManager.GetString("MFA Session Enabled Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MFA has not been completed in this session..
+        /// </summary>
+        public static string MFA_Session_Not_Enabled_Text {
+            get {
+                return ResourceManager.GetString("MFA Session Not Enabled Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MFA status.
+        /// </summary>
+        public static string MFA_Session_Status_Label {
+            get {
+                return ResourceManager.GetString("MFA Session Status Label", resourceCulture);
             }
         }
         
@@ -4390,6 +4444,15 @@ namespace CSIDE.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Too many or not enough results to export. Refine your search to export..
+        /// </summary>
+        public static string Result_Count_Export_Warning_Label {
+            get {
+                return ResourceManager.GetString("Result Count Export Warning Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Rights of Way with ID &apos;{0}&apos; could be found.
         /// </summary>
         public static string Right_of_Way_Not_Found_Error_Message {
@@ -4863,6 +4926,24 @@ namespace CSIDE.Shared.Properties {
         public static string Status_Label {
             get {
                 return ResourceManager.GetString("Status Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to reauthenticate using multi-factor authentication before you can continue to management..
+        /// </summary>
+        public static string Step_Up_Text {
+            get {
+                return ResourceManager.GetString("Step Up Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional verification required.
+        /// </summary>
+        public static string Step_Up_Title {
+            get {
+                return ResourceManager.GetString("Step Up Title", resourceCulture);
             }
         }
         

@@ -7,6 +7,7 @@ namespace CSIDE.Data.Services
     public interface ILandownerDepositService
     {
         const int DefaultPageSize = 100;
+        const int MaxExportableRows = 100_000;
         Task<LandownerDeposit?> GetLandownerDepositById(int Id, int SecondaryId, CancellationToken ct = default);
         Task<PagedResult<LandownerDeposit>> GetLandownerDepositsBySearchParameters(
             string[]? ParishIds,
@@ -16,6 +17,12 @@ namespace CSIDE.Data.Services
             ListSortDirection OrderDirection = ListSortDirection.Descending,
             int PageNumber = 1,
             int PageSize = DefaultPageSize,
+            CancellationToken ct = default);
+
+        IAsyncEnumerable<DownloadableLandownerDepositExportRow> GetDownloadableLandownerDepositsBySearchParameters(
+            string[]? ParishIds,
+            string? ParishId,
+            string? Location,
             CancellationToken ct = default);
         Task<ICollection<LandownerDeposit>> GetLinkedLandownerDepositsByPrimaryId(int landownerDepositId, int? excludeSecondaryId, CancellationToken ct = default);
         Task<ICollection<LandownerDepositAddress>> GetLandownerDepositAddressesByDepositId(int landownerDepositId, int secondaryLandownerDepositId, CancellationToken ct = default);

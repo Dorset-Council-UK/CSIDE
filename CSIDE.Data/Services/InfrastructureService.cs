@@ -7,6 +7,7 @@ using NodaTime;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace CSIDE.Data.Services;
 
@@ -49,6 +50,50 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
             .Include(i => i.Parish)
             .AsQueryable();
 
+        query = ApplySearchFilters(query, RouteId, ParishIds, ParishId, MaintenanceTeamId, InfrastructureTypeId, InstallationDateFrom, InstallationDateTo);
+
+        // Get total count before applying skip/take
+        var totalCount = await query.CountAsync(cancellationToken: ct);
+
+        query = ApplyOrdering(query, OrderBy, OrderDirection);
+
+        var results = await query
+                          .Skip(skip)
+                          .Take(take)
+                          .ToListAsync(cancellationToken: ct);
+
+        return new PagedResult<InfrastructureItem>
+        {
+            TotalResults = totalCount,
+            PageNumber = PageNumber,
+            PageSize = take,
+            Results = results
+        };
+
+    }
+    private static IQueryable<InfrastructureItem> ApplyOrdering(IQueryable<InfrastructureItem> query, string orderBy, ListSortDirection orderDirection)
+    {
+        // Default fallback ordering
+        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<InfrastructureItem, object>>? sortExpression))
+        {
+            return query.OrderByDescending(l => l.Id);
+        }
+
+        return orderDirection == ListSortDirection.Descending
+            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
+            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+    }
+
+    private static IQueryable<InfrastructureItem> ApplySearchFilters(
+        IQueryable<InfrastructureItem> query,
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? MaintenanceTeamId,
+        string? InfrastructureTypeId,
+        DateOnly? InstallationDateFrom,
+        DateOnly? InstallationDateTo)
+    {
         if (RouteId is not null)
         {
             query = query.Where(i => i.RouteId == RouteId.ToUpper());
@@ -84,38 +129,86 @@ public class InfrastructureService(IDbContextFactory<ApplicationDbContext> conte
         {
             query = query.Where(i => i.InstallationDate < LocalDate.FromDateOnly(InstallationDateTo!.Value).PlusDays(1));
         }
-
-        // Get total count before applying skip/take
-        var totalCount = await query.CountAsync(cancellationToken: ct);
-
-        query = ApplyOrdering(query, OrderBy, OrderDirection);
-
-        var results = await query
-                          .Skip(skip)
-                          .Take(take)
-                          .ToListAsync(cancellationToken: ct);
-
-        return new PagedResult<InfrastructureItem>
-        {
-            TotalResults = totalCount,
-            PageNumber = PageNumber,
-            PageSize = take,
-            Results = results
-        };
-
+        return query;
     }
-    private static IQueryable<InfrastructureItem> ApplyOrdering(IQueryable<InfrastructureItem> query, string orderBy, ListSortDirection orderDirection)
+
+    public async IAsyncEnumerable<DownloadableInfrastructureItemExportRow> GetDownloadableInfrastructureItemsBySearchParameters(
+        string? RouteId,
+        string[]? ParishIds,
+        string? ParishId,
+        string? MaintenanceTeamId,
+        string? InfrastructureTypeId,
+        DateOnly? InstallationDateFrom,
+        DateOnly? InstallationDateTo,
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
-        // Default fallback ordering
-        if (string.IsNullOrWhiteSpace(orderBy) || !SortExpressions.TryGetValue(orderBy, out Expression<Func<InfrastructureItem, object>>? sortExpression))
-        {
-            return query.OrderByDescending(l => l.Id);
-        }
+        await using var context = await contextFactory.CreateDbContextAsync(ct);
+        var query = context.Infrastructure
+            .AsNoTracking()
+            .IgnoreAutoIncludes()
+            .AsQueryable();
 
-        return orderDirection == ListSortDirection.Descending
-            ? query.OrderByDescending(sortExpression).ThenByDescending(l => l.Id)
-            : query.OrderBy(sortExpression).ThenBy(l => l.Id);
+        query = ApplySearchFilters(query, RouteId, ParishIds, ParishId, MaintenanceTeamId, InfrastructureTypeId, InstallationDateFrom, InstallationDateTo);
+
+        var projectedQuery = query
+            .OrderBy(i => i.Id)
+            .Take(IInfrastructureService.MaxExportableRows)
+            .Select(i => new DownloadableInfrastructureItemExportRow
+            {
+                Id = i.Id,
+                InfrastructureTypeName = i.InfrastructureType != null ? i.InfrastructureType.Name : null,
+                InfrastructureTypeIsBridge = i.InfrastructureType != null && i.InfrastructureType.IsBridge,
+                Description = i.Description,
+                InstallationDate = i.InstallationDate,
+                Height = i.Height,
+                Width = i.Width,
+                Length = i.Length,
+                Easting = i.Geom != null ? i.Geom.X : null,
+                Northing = i.Geom != null ? i.Geom.Y : null,
+                RouteId = i.RouteId,
+                ParishName = i.Parish != null ? i.Parish.Name : null,
+                MaintenanceTeamName = i.MaintenanceTeam != null ? i.MaintenanceTeam.Name : null,
+                BeamMaterialName = i.BridgeDetails != null && i.BridgeDetails.BeamMaterial != null ? i.BridgeDetails.BeamMaterial.Name : null,
+                BeamMaterialIsWood = i.BridgeDetails != null && i.BridgeDetails.BeamMaterial != null ? i.BridgeDetails.BeamMaterial.IsWood : null,
+                NumBeamTimbers = i.BridgeDetails != null ? i.BridgeDetails.NumBeamTimbers : null,
+                BeamTimbersSize = i.BridgeDetails != null ? i.BridgeDetails.BeamTimbersSize : null,
+                DeckingMaterialName = i.BridgeDetails != null && i.BridgeDetails.DeckingMaterial != null ? i.BridgeDetails.DeckingMaterial.Name : null,
+                DeckingMaterialIsWood = i.BridgeDetails != null && i.BridgeDetails.DeckingMaterial != null ? i.BridgeDetails.DeckingMaterial.IsWood : null,
+                NumDeckingBoards = i.BridgeDetails != null ? i.BridgeDetails.NumDeckingBoards : null,
+                DeckingBoardsSize = i.BridgeDetails != null ? i.BridgeDetails.DeckingBoardsSize : null,
+                DeckingBoardsLength = i.BridgeDetails != null ? i.BridgeDetails.DeckingBoardsLength : null,
+                HandrailMaterialName = i.BridgeDetails != null && i.BridgeDetails.HandrailMaterial != null ? i.BridgeDetails.HandrailMaterial.Name : null,
+                HandrailMaterialIsWood = i.BridgeDetails != null && i.BridgeDetails.HandrailMaterial != null ? i.BridgeDetails.HandrailMaterial.IsWood : null,
+                HandrailsInPlace = i.BridgeDetails != null ? i.BridgeDetails.HandrailsInPlace : null,
+                HandrailTimbersSize = i.BridgeDetails != null ? i.BridgeDetails.HandrailTimbersSize : null,
+                HandrailPostsMaterialName = i.BridgeDetails != null && i.BridgeDetails.HandrailPostsMaterial != null ? i.BridgeDetails.HandrailPostsMaterial.Name : null,
+                HandrailPostsMaterialIsWood = i.BridgeDetails != null && i.BridgeDetails.HandrailPostsMaterial != null ? i.BridgeDetails.HandrailPostsMaterial.IsWood : null,
+                NumHandrailPostsTimbers = i.BridgeDetails != null ? i.BridgeDetails.NumHandrailPostsTimbers : null,
+                HandrailPostsTimbersSize = i.BridgeDetails != null ? i.BridgeDetails.HandrailPostsTimbersSize : null,
+                BankSeatMaterialName = i.BridgeDetails != null && i.BridgeDetails.BankSeatMaterial != null ? i.BridgeDetails.BankSeatMaterial.Name : null,
+                AntiSlipInstalled = i.BridgeDetails != null ? i.BridgeDetails.AntiSlipInstalled : null,
+                GateInstalled = i.BridgeDetails != null ? i.BridgeDetails.GateInstalled : null,
+                StileInstalled = i.BridgeDetails != null ? i.BridgeDetails.StileInstalled : null,
+                RampInstalled = i.BridgeDetails != null ? i.BridgeDetails.RampInstalled : null,
+                StepsInstalled = i.BridgeDetails != null ? i.BridgeDetails.StepsInstalled : null,
+                BeamConditionName = i.BridgeDetails != null && i.BridgeDetails.BeamCondition != null ? i.BridgeDetails.BeamCondition.Name : null,
+                DeckingConditionName = i.BridgeDetails != null && i.BridgeDetails.DeckingCondition != null ? i.BridgeDetails.DeckingCondition.Name : null,
+                HandrailConditionName = i.BridgeDetails != null && i.BridgeDetails.HandrailCondition != null ? i.BridgeDetails.HandrailCondition.Name : null,
+                HandrailPostsConditionName = i.BridgeDetails != null && i.BridgeDetails.HandrailPostsCondition != null ? i.BridgeDetails.HandrailPostsCondition.Name : null,
+                BankSeatConditionName = i.BridgeDetails != null && i.BridgeDetails.BankSeatCondition != null ? i.BridgeDetails.BankSeatCondition.Name : null,
+                Overgrown = i.BridgeDetails != null ? i.BridgeDetails.Overgrown : null,
+                SignsOfBankErosion = i.BridgeDetails != null ? i.BridgeDetails.SignsOfBankErosion : null,
+                SeriouslyEroded = i.BridgeDetails != null ? i.BridgeDetails.SeriouslyEroded : null,
+                HighUsage = i.BridgeDetails != null ? i.BridgeDetails.HighUsage : null,
+                CoverBoardsInPlace = i.BridgeDetails != null ? i.BridgeDetails.CoverBoardsInPlace : null
+            });
+
+        await foreach (var row in projectedQuery.AsAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return row;
+        }
     }
+
     public async Task<ICollection<InfrastructureItem>> GetInfrastructureItemsByRouteId(string routeId, CancellationToken ct = default)
     {
         await using var context = await contextFactory.CreateDbContextAsync(ct);
